@@ -49,7 +49,7 @@ void Composer::set_ranking(int in_ranking)
 {
     ranking_ = in_ranking;
 }
-int Composer::ranking()
+int Composer::ranking() const
 {
     return ranking_;
 }

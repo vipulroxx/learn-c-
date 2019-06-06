@@ -15,12 +15,12 @@ Database::~Database()
 void Database::AddComposer(string in_first_name, string in_last_name, string in_genre, int in_yob, string in_fact, int in_ranking)
 {
     Composer composer;
-    composer.set_first_name = in_first_name;
-    composer.set_last_name = in_last_name;
-    composer.set_composer_genre = in_genre;
-    composer.set_fact = in_fact;
-    composer.set_composer_yob = in_yob;
-    composer.set_ranking = in_ranking;
+    composer.set_first_name(in_first_name);
+    composer.set_last_name(in_last_name);
+    composer.set_composer_genre(in_genre);
+    composer.set_fact(in_fact);
+    composer.set_composer_yob(in_yob);
+    composer.set_ranking(in_ranking);
     composers_[next_slot_] = composer;
     next_slot_++;
 }
