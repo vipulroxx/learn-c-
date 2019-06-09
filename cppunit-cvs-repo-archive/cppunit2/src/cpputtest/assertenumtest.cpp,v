@@ -1,0 +1,276 @@
+head	1.4;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.3
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.3
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@// @;
+
+
+1.4
+date	2007.08.14.17.30.52;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.02.23.23.09.29;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.10.22.06.20.06;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@   Modified assertion implementation to force evaluation of user
+condition expression first, while preserving delegation to
+function, overloading and optional parameters feature.
+   See CPPUT_BEGIN_ASSERTION_MACRO() documentation in testinfo.h for an example
+to update your custom assertion code.
+
+   New implementation rely on operator evaluation order and operator overloading. The trick is documented in CPPUT_BEGIN_ASSERTION_MACRO().
+@
+text
+@#include "assertenumtest.h"
+#include <algorithm>
+#include <iterator>
+
+
+void 
+AssertEnumTest::setUp()
+{
+   vEmpty_.clear();
+   v123_.clear();
+   v123_.push_back( 1 );
+   v123_.push_back( 2 );
+   v122_ = std::vector<int>( v123_ );
+   v122_.push_back( 2 );
+   v123_.push_back( 3 );
+
+   v1234_ = std::vector<int>( v123_ );
+   v1234_.push_back( 4  );
+
+   v321_ = std::vector<int>( v123_ );
+   std::reverse( v321_.begin(), v321_.end() );
+
+   v4321_ = std::vector<int>( v1234_ );
+   std::reverse( v4321_.begin(), v4321_.end() );
+}
+
+
+void 
+AssertEnumTest::tearDown()
+{
+   v122_.clear();
+   v123_.clear();
+   v1234_.clear();
+   v321_.clear();
+   v4321_.clear();
+}
+
+
+void 
+AssertEnumTest::testAssertSequenceEqual()
+{
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( vEmpty_ ),
+                                                              CppTL::Enum::container( v123_ ) ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( v123_ ), 
+                                                              CppTL::Enum::container( v321_ ) ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( v123_ ), 
+                                                              CppTL::Enum::container( v122_ ) ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( v123_ ), 
+                                                              CppTL::Enum::container( v4321_ ) ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( v123_ ), 
+                                                              CppTL::Enum::container( v1234_ ) ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( v1234_ ), 
+                                                              CppTL::Enum::container( v123_ ) ) ));
+
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( vEmpty_ ), 
+                                                              CppTL::Enum::container( vEmpty_ ) ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( v122_ ), 
+                                                              CppTL::Enum::container( v122_ ) ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( v1234_ ), 
+                                                              CppTL::Enum::container( v1234_ ) ) ));
+}
+
+
+void 
+AssertEnumTest::testAssertSetEqual()
+{
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_SET_EQUAL( CppTL::Enum::container( vEmpty_ ),
+                                                        CppTL::Enum::container( v123_ ) ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_SET_EQUAL( CppTL::Enum::container( v123_ ),
+                                                        CppTL::Enum::container( vEmpty_ ) ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_SET_EQUAL( CppTL::Enum::container( v123_ ),
+                                                        CppTL::Enum::container( v1234_ ) ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_SET_EQUAL( CppTL::Enum::container( v123_ ),
+                                                        CppTL::Enum::container( v122_ ) ) ));
+
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_SET_EQUAL( CppTL::Enum::container( v123_ ),
+                                                        CppTL::Enum::container( v321_ ) ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_SET_EQUAL( CppTL::Enum::container( v4321_ ),
+                                                        CppTL::Enum::container( v1234_ ) ) ));
+}
+@
+
+
+1.3
+log
+@* preprocessor portability fix: enclosed all CPPUT_ASSERT_ASSERTION... within double brace to ensure that the tested assertion is used as the first argument of the macro
+@
+text
+@d43 1
+a43 1
+                                                             CppTL::Enum::container( v123_ ) ) ));
+d45 1
+a45 1
+                                                             CppTL::Enum::container( v321_ ) ) ));
+d47 1
+a47 1
+                                                             CppTL::Enum::container( v122_ ) ) ));
+d49 1
+a49 1
+                                                             CppTL::Enum::container( v4321_ ) ) ));
+d51 1
+a51 1
+                                                             CppTL::Enum::container( v1234_ ) ) ));
+d53 1
+a53 1
+                                                             CppTL::Enum::container( v123_ ) ) ));
+d56 1
+a56 1
+                                                             CppTL::Enum::container( vEmpty_ ) ) ));
+d58 1
+a58 1
+                                                             CppTL::Enum::container( v122_ ) ) ));
+d60 1
+a60 1
+                                                             CppTL::Enum::container( v1234_ ) ) ));
+@
+
+
+1.2
+log
+@* Replaced the EnumerationSugar strangely curring template  with a macro (compiler was too stressed)
+* Fixed Internal compiler error on Keys
+* Added sugar() enumeration for custom enumerator
+* Test cases for all enumerator
+@
+text
+@d42 12
+a53 12
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( vEmpty_ ),
+                                                             CppTL::Enum::container( v123_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( v123_ ), 
+                                                             CppTL::Enum::container( v321_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( v123_ ), 
+                                                             CppTL::Enum::container( v122_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( v123_ ), 
+                                                             CppTL::Enum::container( v4321_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( v123_ ), 
+                                                             CppTL::Enum::container( v1234_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( v1234_ ), 
+                                                             CppTL::Enum::container( v123_ ) ) );
+d55 6
+a60 6
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( vEmpty_ ), 
+                                                             CppTL::Enum::container( vEmpty_ ) ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( v122_ ), 
+                                                             CppTL::Enum::container( v122_ ) ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_SEQUENCE_EQUAL( CppTL::Enum::container( v1234_ ), 
+                                                             CppTL::Enum::container( v1234_ ) ) );
+d67 8
+a74 8
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SET_EQUAL( CppTL::Enum::container( vEmpty_ ),
+                                                        CppTL::Enum::container( v123_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SET_EQUAL( CppTL::Enum::container( v123_ ),
+                                                        CppTL::Enum::container( vEmpty_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SET_EQUAL( CppTL::Enum::container( v123_ ),
+                                                        CppTL::Enum::container( v1234_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SET_EQUAL( CppTL::Enum::container( v123_ ),
+                                                        CppTL::Enum::container( v122_ ) ) );
+d76 4
+a79 4
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_SET_EQUAL( CppTL::Enum::container( v123_ ),
+                                                        CppTL::Enum::container( v321_ ) ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_SET_EQUAL( CppTL::Enum::container( v4321_ ),
+                                                        CppTL::Enum::container( v1234_ ) ) );
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d42 12
+a53 12
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SEQUENCE_EQUAL( CppUT::enumStl( vEmpty_ ),
+                                                             CppUT::enumStl( v123_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SEQUENCE_EQUAL( CppUT::enumStl( v123_ ), 
+                                                             CppUT::enumStl( v321_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SEQUENCE_EQUAL( CppUT::enumStl( v123_ ), 
+                                                             CppUT::enumStl( v122_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SEQUENCE_EQUAL( CppUT::enumStl( v123_ ), 
+                                                             CppUT::enumStl( v4321_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SEQUENCE_EQUAL( CppUT::enumStl( v123_ ), 
+                                                             CppUT::enumStl( v1234_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SEQUENCE_EQUAL( CppUT::enumStl( v1234_ ), 
+                                                             CppUT::enumStl( v123_ ) ) );
+d55 6
+a60 6
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_SEQUENCE_EQUAL( CppUT::enumStl( vEmpty_ ), 
+                                                             CppUT::enumStl( vEmpty_ ) ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_SEQUENCE_EQUAL( CppUT::enumStl( v122_ ), 
+                                                             CppUT::enumStl( v122_ ) ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_SEQUENCE_EQUAL( CppUT::enumStl( v1234_ ), 
+                                                             CppUT::enumStl( v1234_ ) ) );
+d67 8
+a74 8
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SET_EQUAL( CppUT::enumStl( vEmpty_ ),
+                                                        CppUT::enumStl( v123_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SET_EQUAL( CppUT::enumStl( v123_ ),
+                                                        CppUT::enumStl( vEmpty_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SET_EQUAL( CppUT::enumStl( v123_ ),
+                                                        CppUT::enumStl( v1234_ ) ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_SET_EQUAL( CppUT::enumStl( v123_ ),
+                                                        CppUT::enumStl( v122_ ) ) );
+d76 4
+a79 4
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_SET_EQUAL( CppUT::enumStl( v123_ ),
+                                                        CppUT::enumStl( v321_ ) ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_SET_EQUAL( CppUT::enumStl( v4321_ ),
+                                                        CppUT::enumStl( v1234_ ) ) );
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

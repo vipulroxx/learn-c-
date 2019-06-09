@@ -1,0 +1,162 @@
+head	1.6;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.6
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.3
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.3
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.1
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.6
+date	2005.07.20.21.06.49;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.07.04.08.11.25;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.07.02.20.27.35;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.11.21.22.24.45;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.11.20.15.06.59;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.11.15.08.30.40;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@* Added IntrusivePtr, a reference counted smart-pointer
+* Changed Test hierarchy and TestFixture to use IntrusivePtr instead of SharedPtr (this allows simple upcasting).
+@
+text
+@#ifndef CPPUT_TESTRUNNER_H_INCLUDED
+# define CPPUT_TESTRUNNER_H_INCLUDED
+
+# include <cpput/forwards.h>
+# include <opentest/testrunner.h>
+# include <cpptl/intrusiveptr.h>
+# include <map>
+
+
+namespace CppUT {
+
+class CPPUT_API TestRunner : public OpenTest::TestRunner
+{
+public:
+   typedef std::map<OpenTest::TestId,Test *> DeclaredTests;
+
+   TestRunner();
+
+   void setRootSuite( const AbstractTestSuitePtr &suite );
+
+   AbstractTestSuitePtr rootSuite() const;
+
+public: // overridden from OpenTest::TestRunner
+   void declareTests( OpenTest::TestDeclarator &declarator );
+
+   void runTests( const OpenTest::TestPlan &testPlan,
+                  OpenTest::TestRunTracker &tracker,
+                  const OpenTest::Properties &configuration );
+	
+private:
+   class TestDeclaratorVisitor;
+   class TestResultUpdaterImpl;
+
+   void sendTestStatus( const OpenTest::TestPlanEntry &entry,
+                        OpenTest::TestRunTracker &tracker );
+
+   AbstractTestSuitePtr suite_;
+   DeclaredTests tests_;
+};
+
+
+
+} // namespace CppUT
+
+
+#endif // CPPUT_TESTRUNNER_H_INCLUDED
+@
+
+
+1.5
+log
+@* fixed bug in lighttestrunner: called AbstractTestCase::run instead of runTest().
+* fixed usage of incomplete SharedPtr in TestRunner.
+@
+text
+@d6 1
+@
+
+
+1.4
+log
+@* Added a simple test runner that does not rely on the open test framework to run cppunit2 tests.
+* added CppTL::ConstCharView to wrapper const char *strings.
+* added CppTL::quoteMultiLineString()
+* string assertion output actual and expected using quoteMultiLineString().
+* added serialize unit test for basic Properties
+* opentest tests now use the LightTestRunner.
+@
+text
+@a31 1
+   typedef CppTL::SharedPtr<TestResultUpdaterImpl> TestResultUpdaterImplPtr;
+a37 1
+   TestResultUpdaterImplPtr resultUpdater_;
+@
+
+
+1.3
+log
+@* test result are propagated to the test runner during test
+@
+text
+@d39 1
+@
+
+
+1.2
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@d31 2
+@
+
+
+1.1
+log
+@* basic TestRunner implementation for use with OpenTest TestDriver.
+@
+text
+@d31 3
+a33 1
+   class TestTrackerListener;
+@
+

@@ -1,0 +1,176 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2
+	REL_1_9_4:1.2
+	REL_1_9_0:1.2
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2002.04.12.19.28.44;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.20.14.17.37;	author smr99;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* Makefile.am: added examples/qt to tar ball release.
+
+* TODO: heavily updated.
+
+* contrib/msvc/CppUnit*.wwtpl: changed base class for unit test to TestFixture.
+
+* include/cppunit/Test.h: removed toString() method. Not used by the framework
+  and source of confusions with getName().
+  Added getChildTestCount() and getChildTestAt(), introducing the composite pattern
+  at top level. Added utility methods findTest() and findTestPath().
+
+* src/cppunit/Test.cpp: added. Implementation of new utility methods.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: inherits TestLeaf. Removed toString(), run(void) and
+  defaultResult(). Removed default constructor.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestSuite.cpp: fixed some includes that used "" instead of <>.
+
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: added. Common implementation of Test for composite
+  tests (TestSuite).
+
+* include/cppunit/TestFailure.h:
+* src/cppunit/TestFailure.cpp: removed toString().
+
+* include/cppunit/TestLeaf.h:
+* src/cppunit/TestLeaf.cpp: added. Common implementation of Test for single test
+  (TestCase).
+
+* include/cppunit/TestListener.h: added TimingListener example to documentation.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: added. List of test traversed to access a test in the
+  test hierarchy.
+
+* include/cppunit/TestRunner.h: added. Generic TestRunner.
+
+* src/cppunit/TestRunner.cpp: moved to TextTestRunner.cpp. Added new implementation
+  of includecppunit/TestRunner.h.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: inherits TestComposite and implements new Test
+  interface. Removed toString().
+
+* src/cppunit/TextTestRunner.cpp: moved from TestRunner.cpp. Implementation of
+  include/cppunit/ui/text/TestRunner.h.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* src/cppunit/RepeatedTest.cpp: removed toString().
+
+* include/cppunit/extensions/TestDecorator.h: inherits TestLeaf.
+  Removed toString()
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h: XML outputter now escape node content.
+  Add unit test for that bug (#540944). Added style sheet support. Modified
+  XML structure: failure message as its own element.
+
+* src/msvc/testrunner/TestRunnerModel.h:
+* src/msvc/testrunner/TestRunnerModel.cpp: used Test::findTest() to find a test
+  by name instead of using RTTI. Added toAnsiString() for convertion when
+  compiling as UNICODE.
+
+* src/msvc/testrunner/TreeHierarchyDlg.h:
+* src/msvc/testrunner/TreeHierarchyDlg.cpp: used new composite interface of Test
+  to explorer the test hierarchy instead of RTTI.
+
+* examples/cppunittest/TestPathTest.h:
+* examples/cppunittest/TestPathTest.cpp: added, unit tests for TestPath.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: added test for TestLeaf.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: added test for TestComposite and
+  new Test interface.
+@
+text
+@* Unix:
+
+To generate the configure script, you need several auxiliary
+tools.  The version numbers are minimal: later versions should
+also work.
+
+	autoconf 2.50 
+	- see http://www.gnu.org/directory/autoconf.html
+
+	automake 1.4
+	- see http://www.gnu.org/directory/automake.html
+
+	libtool 1.4
+	- see http://www.gnu.org/directory/libtool.html
+
+
+After checking the sources out from CVS, you need to run the script
+
+	sh autogen.sh
+
+from the top-level source directory (i.e. the one containing this
+file).  This needs only to be done once.
+
+* Win32:
+
+To generate the documentation, use doc/makedox.bat. You need doxygen 
+(doc generator tool), which can be found at: 
+http://www.doxygen.org/
+
+
+@
+
+
+1.1
+log
+@Add README.CVS; improve autogen.sh
+@
+text
+@d1 2
+d23 7
+@
+

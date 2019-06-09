@@ -1,0 +1,722 @@
+head	1.14;
+access;
+symbols
+	TG_AFTER_REMOVING_TESTCONTEXT:1.12
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.10
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.10;
+locks; strict;
+comment	@// @;
+
+
+1.14
+date	2005.02.22.21.26.51;	author blep;	state dead;
+branches;
+next	1.13;
+
+1.13
+date	2005.02.22.21.14.40;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2004.11.20.15.26.38;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2004.11.20.15.07.00;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2004.08.04.19.57.33;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2004.08.04.19.54.38;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2004.08.04.19.41.19;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2004.08.04.19.33.38;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.08.04.08.01.15;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.08.04.07.55.43;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.01.31.10.10.47;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.01.29.08.41.05;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.29.07.22.44;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.28.23.13.09;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.14
+log
+@* renamed testfailureguard.h/cpp to exceptionguard.h/cpp
+@
+text
+@#include <cpput/testfailureguard.h>
+#include <cpput/testinfo.h>
+#include <cpput/typehelper.h>
+
+namespace CppUT {
+
+// class ExceptionGuardElement
+// //////////////////////////////////////////////////////////////////
+
+struct ExceptionGuardElement::Context
+{
+   Context( Functor0 test )
+      : test_( test )
+   {
+   }
+
+   Functor0 test_;
+};
+   
+   
+   
+void 
+ExceptionGuardElement::setNextInChain( const ExceptionGuardElementPtr &deleguate )
+{
+   deleguate_ = deleguate;
+}
+
+
+bool 
+ExceptionGuardElement::callNextInChain( Context &context )
+{
+   if ( deleguate_ )
+      return deleguate_->protect( context );
+   context.test_();
+   return true;
+}
+
+
+namespace Impl {
+
+   // class StandardTestExceptionGuard
+   // //////////////////////////////////////////////////////////////////
+
+   // catch CppUT::AssertionException, std::exception, ...
+   class CPPUT_API StandardTestExceptionGuard : public ExceptionGuardElement
+   {
+   public: // overridden from ExceptionGuardElement
+      bool protect( Context &context )
+      {
+         try
+         {
+            return callNextInChain( context );
+         }
+         catch ( const AbortingAssertionException & )
+         {
+            // Already injected into result
+         }
+#ifndef CPPTL_NO_RTTI
+         catch ( const std::exception &e )
+         {
+            addFault( extractObjectType( e, "std::exception" ), e.what() );
+         }
+#else    // @@todo Need to add catch for all standard derived classes. 
+         // Warning: => they don't always exist on all platforms.
+         catch ( const std::runtime_error &e )
+         {
+            addFault( extractObjectType( e, "std::runtime_error" ), e.what() );
+         }
+         catch ( const std::exception &e )
+         {
+            addFault( extractObjectType( e, "std::exception" ), e.what() );
+         }
+#endif
+         catch ( ... ) 
+         {
+            OpenTest::Properties fault;
+            fault["type"] = "unexpected exception";
+            fault["message"].append( "caught unexpected exception of unknown type." );
+            TestInfo::appendFaultToResult( fault );
+         }
+
+         return false;
+      }
+
+   private:
+      void addFault( const std::string &exceptionType,
+                     const char *what )
+      {
+         OpenTest::Properties fault;
+         fault["type"] = "unexpected exception";
+         fault["exception_type"] = exceptionType;
+         fault["message"].append( "caught unexpected exception." );
+         fault["message"].append( what );
+         TestInfo::appendFaultToResult( fault );
+      }
+   };
+
+} // namespace Impl
+
+
+
+// class ExceptionGuard
+// //////////////////////////////////////////////////////////////////
+
+ExceptionGuard::ExceptionGuard()
+{
+   guards_.push_back( ExceptionGuardElementPtr( new Impl::StandardTestExceptionGuard() ) );
+}
+
+
+void 
+ExceptionGuard::append( const ExceptionGuardElementPtr &guard )
+{
+   guard->setNextInChain( ExceptionGuardElementPtr() );
+   guards_.back()->setNextInChain( guard );
+   guards_.insert( guards_.end()-1, guard );
+}
+
+
+void 
+ExceptionGuard::removeLast()
+{
+   if ( guards_.size() == 1 ) // should we throw an exception ?
+      return;
+
+   guards_.erase( guards_.end() - 1 );
+   guards_.back()->setNextInChain( ExceptionGuardElementPtr() );
+}
+
+
+bool
+ExceptionGuard::protect( Functor0 test ) const
+{
+   ExceptionGuardElement::Context context( test );
+   return guards_.front()->protect( context );
+}
+
+} // namespace CppUT
+@
+
+
+1.13
+log
+@* simplified TestExceptionGuard implementation
+* renamed TestExceptionGuardChain to ExceptionGuard
+* added facility to easily register an exception translator.
+@
+text
+@@
+
+
+1.12
+log
+@* Removed TestContext.
+* TestContext/AbstractTestCase: moved responsibility of running the test to AbstractTestCase.
+@
+text
+@d7 1
+a7 1
+// class TestExceptionGuard
+d9 13
+d23 1
+a23 1
+TestExceptionGuard::setNextInChain( const TestExceptionGuardPtr &deleguate )
+d30 1
+a30 1
+TestExceptionGuard::callNextInChain( Context &context )
+d32 4
+a35 1
+   return deleguate_->protect( context );
+d45 1
+a45 1
+   class CPPUT_API StandardTestExceptionGuard : public TestExceptionGuard
+d47 1
+a47 1
+   public: // overridden from TestExceptionGuard
+a97 14
+
+   // class Impl::ExecutorTestExceptionGuard
+   // //////////////////////////////////////////////////////////////////
+
+   class ExecutorTestExceptionGuard : public TestExceptionGuard
+   {
+   public: // overridden from TestExceptionGuard
+      bool protect( Context &context )
+      {
+         context.test_();
+         return true;
+      }
+   };
+
+d102 1
+a102 1
+// class TestExceptionGuardChain
+d105 3
+a107 11
+// Order of the guard in the chain:
+// standard  <= always the first to be called
+// user 1
+// user 2
+// executor
+
+TestExceptionGuardChain::TestExceptionGuardChain()
+{
+   guards_.push_back( TestExceptionGuardPtr( new Impl::StandardTestExceptionGuard() ) );
+   guards_.push_back( TestExceptionGuardPtr( new Impl::ExecutorTestExceptionGuard() ) );
+   connectChain();
+d112 1
+a112 1
+TestExceptionGuardChain::appendGuard( const TestExceptionGuardPtr &guard )
+d114 2
+a116 1
+   connectChain();
+d121 1
+a121 1
+TestExceptionGuardChain::removeLastGuard()
+d123 1
+a123 1
+   if ( guards_.size() <= 2 ) // should we throw an exception ?
+d126 2
+a127 2
+   guards_.erase( guards_.end() - 2 );
+   connectChain();
+d132 1
+a132 1
+TestExceptionGuardChain::protect( Functor0 test ) const
+d134 1
+a134 1
+   TestExceptionGuard::Context context( test );
+a137 12
+
+void 
+TestExceptionGuardChain::connectChain()
+{
+   unsigned int length = guards_.size();
+   if ( length >= 2 )
+      guards_[ length-2 ]->setNextInChain( guards_[ length-1 ] );
+   if ( length >= 3 )
+      guards_[ length-3 ]->setNextInChain( guards_[ length-2 ] );
+}
+
+
+@
+
+
+1.11
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@d137 1
+a137 1
+TestExceptionGuardChain::protect( Functor0 test )
+@
+
+
+1.10
+log
+@* renamed FailuresPropagationException to TestResultsPropagationException.
+@
+text
+@d2 1
+a2 1
+#include <cpput/resultexception.h>
+d38 1
+a38 1
+         catch ( const TestResultsPropagationException &e )
+d40 1
+a40 1
+            e.handleFailures( context.exceptionHandler_ );
+d42 8
+a49 1
+         catch ( const ResultException &e )
+d51 1
+a51 1
+            context.exceptionHandler_.handleResultException( context.protectedTest_, e );
+d55 9
+a63 10
+            Message message( "unexpected exception caught" );
+            message.add( "Type: " + extractObjectType( e, "std::exception" ) );
+            message.add( std::string("What: ") + e.what() );
+
+            FaultException fault( message );
+            context.exceptionHandler_.handleResultException( context.protectedTest_, fault );
+         } catch ( ... ) {
+            Message message( "unexpected unknown exception caught" );
+            FaultException fault( message );
+            context.exceptionHandler_.handleResultException( context.protectedTest_, fault );
+d68 12
+d126 1
+a126 1
+TestExceptionGuardChain::removeGuard()
+d137 1
+a137 3
+TestExceptionGuardChain::protect( TestExceptionHandler &exceptionHandler,
+                                Functor0 test, 
+                                Test &protectedTest )
+d139 1
+a139 1
+   TestExceptionGuard::Context context( exceptionHandler, test, protectedTest );
+a154 28
+
+// class TestResultsPropagationException
+// //////////////////////////////////////////////////////////////////
+TestResultsPropagationException::TestResultsPropagationException()
+   : std::exception( "propagating multiple test failures" )
+{
+}
+
+
+void 
+TestResultsPropagationException::addResult( Test &test, 
+                                            const ResultException &e )
+{
+   results_.push_back( ResultData( test, e ) );
+}
+
+
+void 
+TestResultsPropagationException::handleFailures( TestExceptionHandler &handler ) const
+{
+   for ( unsigned int index = 0; index < results_.size(); ++index )
+   {
+      const ResultData &data = results_[index];
+      handler.handleResultException( data.test_, data.exception_ );
+   }
+}
+
+
+@
+
+
+1.9
+log
+@* inlined TestData template
+@
+text
+@d38 1
+a38 1
+         catch ( const FailuresPropagationException &e )
+d140 1
+a140 1
+// class FailuresPropagationException
+d142 1
+a142 1
+FailuresPropagationException::FailuresPropagationException()
+d149 2
+a150 2
+FailuresPropagationException::addResult( Test &test, 
+                                         const ResultException &e )
+d157 1
+a157 1
+FailuresPropagationException::handleFailures( TestExceptionHandler &handler ) const
+@
+
+
+1.8
+log
+@* renamed TestFailureGuard TestExceptionGuard.
+@
+text
+@d162 1
+a162 1
+      handler.handleResultException( data.failedTest_, data.exception_ );
+@
+
+
+1.7
+log
+@* renamed TestFailureHandler to TestExceptionHandler.
+@
+text
+@d7 1
+a7 1
+// class TestFailureGuard
+d10 1
+a10 1
+TestFailureGuard::setNextInChain( const TestFailureGuardPtr &deleguate )
+d17 1
+a17 1
+TestFailureGuard::callNextInChain( Context &context )
+d25 1
+a25 1
+   // class StandardTestFailureGuard
+d29 1
+a29 1
+   class CPPUT_API StandardTestFailureGuard : public TestFailureGuard
+d31 1
+a31 1
+   public: // overridden from TestFailureGuard
+d65 1
+a65 1
+   // class Impl::ExecutorTestFailureGuard
+d68 1
+a68 1
+   class ExecutorTestFailureGuard : public TestFailureGuard
+d70 1
+a70 1
+   public: // overridden from TestFailureGuard
+d82 1
+a82 1
+// class TestFailureGuardChain
+d91 1
+a91 1
+TestFailureGuardChain::TestFailureGuardChain()
+d93 2
+a94 2
+   guards_.push_back( TestFailureGuardPtr( new Impl::StandardTestFailureGuard() ) );
+   guards_.push_back( TestFailureGuardPtr( new Impl::ExecutorTestFailureGuard() ) );
+d100 1
+a100 1
+TestFailureGuardChain::appendGuard( const TestFailureGuardPtr &guard )
+d108 1
+a108 1
+TestFailureGuardChain::removeGuard()
+d119 1
+a119 1
+TestFailureGuardChain::protect( TestExceptionHandler &exceptionHandler,
+d123 1
+a123 1
+   TestFailureGuard::Context context( exceptionHandler, test, protectedTest );
+d129 1
+a129 1
+TestFailureGuardChain::connectChain()
+@
+
+
+1.6
+log
+@* renamed cpput/assertexception.h to cpput/resultexception.h
+@
+text
+@d40 1
+a40 1
+            e.handleFailures( context.failureHandler_ );
+d44 1
+a44 1
+            context.failureHandler_.handleResultException( context.protectedTest_, e );
+d53 1
+a53 1
+            context.failureHandler_.handleResultException( context.protectedTest_, fault );
+d57 1
+a57 1
+            context.failureHandler_.handleResultException( context.protectedTest_, fault );
+d119 1
+a119 1
+TestFailureGuardChain::protect( TestFailureHandler &failureHandler,
+d123 1
+a123 1
+   TestFailureGuard::Context context( failureHandler, test, protectedTest );
+d157 1
+a157 1
+FailuresPropagationException::handleFailures( TestFailureHandler &handler ) const
+@
+
+
+1.5
+log
+@* TestResult: succeeded status moved to property "cpput.status' of the message
+* Reworked exception hierarchy to allow for a 'success' exception.
+* Reworked TestFailureGuard & TestFailureHandler to handle a generic ResultException.
+@
+text
+@d2 1
+a2 1
+#include <cpput/assertexception.h>
+@
+
+
+1.4
+log
+@* added FailuresPropagationException to propage test failure from multiple threads
+@
+text
+@d42 1
+a42 1
+         catch ( const FaultException &e )
+d44 1
+a44 5
+            context.failureHandler_.handleFault( context.protectedTest_, e );
+         }
+         catch ( const AssertException &e )
+         {
+            context.failureHandler_.handleAssertion( context.protectedTest_, e );
+d53 1
+a53 1
+            context.failureHandler_.handleFault( context.protectedTest_, fault );
+d57 1
+a57 1
+            context.failureHandler_.handleFault( context.protectedTest_, fault );
+d149 2
+a150 2
+FailuresPropagationException::addAssertion( Test &failedTest, 
+                                          const AssertException &e )
+d152 1
+a152 15
+   assertions_.push_back( AssertionData( failedTest, e ) );
+}
+
+
+void 
+FailuresPropagationException::addFault( Test &failedTest, 
+                                      const FaultException &e )
+{
+   faults_.push_back( FaultData( failedTest, e ) );
+}
+
+bool 
+FailuresPropagationException::hasFailures() const
+{
+   return !assertions_.empty()  ||  !faults_.empty();
+d159 1
+a159 7
+   for ( unsigned int index = 0; index < assertions_.size(); ++index )
+   {
+      const AssertionData &data = assertions_[index];
+      handler.handleAssertion( data.failedTest_, data.exception_ );
+   }
+
+   for ( unsigned int index2 = 0; index2 < faults_.size(); ++index2 )
+d161 2
+a162 2
+      const FaultData &data = faults_[index2];
+      handler.handleFault( data.failedTest_, data.exception_ );
+@
+
+
+1.3
+log
+@* fixed bug when appending and removing TestFailureGuard
+@
+text
+@d38 4
+d143 48
+@
+
+
+1.2
+log
+@* integrated TestFailureGuardChain into TestContext
+@
+text
+@d85 6
+d93 3
+a95 2
+   appendGuard( TestFailureGuardPtr( new Impl::ExecutorTestFailureGuard() ) );
+   appendGuard( TestFailureGuardPtr( new Impl::StandardTestFailureGuard() ) );
+d102 2
+a103 2
+   guards_.push_back( guard );
+   connectLastInChain();
+d113 2
+a114 1
+   guards_.erase( guards_.end() - 1 );
+d124 1
+a124 1
+   return guards_.back()->protect( context );
+d129 1
+a129 1
+TestFailureGuardChain::connectLastInChain()
+d131 5
+a135 2
+   if ( guards_.size() > 1 )
+      guards_.back()->setNextInChain( guards_[guards_.size()-2] );
+@
+
+
+1.1
+log
+@* added TestFailureGuardChain and support classes
+@
+text
+@d23 7
+a29 6
+// class StandardTestFailureGuard
+// //////////////////////////////////////////////////////////////////
+bool
+StandardTestFailureGuard::protect( Context &context )
+{
+   try
+d31 28
+a58 23
+      return callNextInChain( context );
+   }
+   catch ( const FaultException &e )
+   {
+      context.failureHandler_.handleFault( context.protectedTest_, e );
+   }
+   catch ( const AssertException &e )
+   {
+      context.failureHandler_.handleAssertion( context.protectedTest_, e );
+   }
+   catch ( const std::exception &e )
+   {
+      Message message( "unexpected exception caught" );
+      message.add( "Type: " + extractObjectType( e, "std::exception" ) );
+      message.add( std::string("What: ") + e.what() );
+
+      FaultException fault( message );
+      context.failureHandler_.handleFault( context.protectedTest_, fault );
+   } catch ( ... ) {
+      Message message( "unexpected unknown exception caught" );
+      FaultException fault( message );
+      context.failureHandler_.handleFault( context.protectedTest_, fault );
+   }
+d60 3
+a62 2
+   return false;
+}
+d65 2
+a66 4
+// class Impl::ExecutorTestFailureGuard
+// //////////////////////////////////////////////////////////////////
+
+namespace Impl {
+d88 1
+d103 1
+a103 1
+   if ( guards_.size() <= 1 ) // should we throw an exception ?
+d106 1
+a106 2
+   guards_.erase( guards_.begin() + 1 );
+   connectLastInChain();
+d124 1
+a124 1
+      guards_[1]->setNextInChain( guards_.front() );
+@
+

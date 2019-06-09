@@ -1,0 +1,177 @@
+head	1.3;
+access;
+symbols
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2004.11.20.15.06.59;	author blep;	state dead;
+branches;
+next	1.2;
+
+1.2
+date	2004.08.04.07.55.37;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.08.03.22.36.14;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@#ifndef CPPUT_TESTFAILURE_H_INCLUDED
+# define CPPUT_TESTFAILURE_H_INCLUDED
+
+# include <cpput/config.h>
+# include <cpput/forwards.h>
+# include <cpput/location.h>
+# include <cpput/message.h>
+
+
+namespace CppUT {
+
+
+/// @@todo make succeeded a property like failure_type.
+class CPPUT_API TestResult
+{
+public:
+   TestResult( Test &test,
+               const Message &message )
+      : test_( &test )
+      , message_( message )
+   {
+   }
+
+   TestResult( Test &test,
+               const Message &message,
+               const Location &location )
+      : test_( &test )
+      , message_( message )
+      , location_( location )
+   {
+   }
+
+   bool succeeded() const
+   {
+      return get<bool>( properties().tryGet( "cpput.status", false ) );
+   }
+
+   bool failed() const
+   {
+      return !succeeded();
+   }
+
+   bool isFaultFailure() const
+   {
+      return resultType() == "fault";
+   }
+
+   bool isAssertionFailure() const
+   {
+      return resultType() == "assertion";
+   }
+
+   std::string resultType() const
+   {
+      return get<std::string>( properties().tryGet( "cpput.result_type", 
+                                                    std::string("") ) );
+   }
+
+   Test &test() const
+   {
+      return *test_;
+   }
+
+   const Properties &properties() const
+   {
+      return message_.properties();
+   }
+
+   const Message &message() const
+   {
+      return message_;
+   }
+
+   const Location &location() const
+   {
+      return location_;
+   }
+
+private:
+   Test *test_;
+   Message message_;
+   Location location_;
+};
+
+} // namespace CppUT
+
+
+#endif // CPPUT_TESTFAILURE_H_INCLUDED
+@
+
+
+1.2
+log
+@* TestResult: succeeded status moved to property "cpput.status' of the message
+* Reworked exception hierarchy to allow for a 'success' exception.
+* Reworked TestFailureGuard & TestFailureHandler to handle a generic ResultException.
+@
+text
+@@
+
+
+1.1
+log
+@* renamed TestFailure to TestResult (can now be a success or a failure)
+* renamed testfailure.h to testresult.h
+* renamed testresult.cpp to testtestrunresult.cpp
+@
+text
+@d18 1
+a18 2
+               const Message &message,
+               bool succeeded )
+a20 1
+      , succeeded_( succeeded )
+d26 1
+a26 2
+               const Location &location,
+               bool succeeded )
+a29 1
+      , succeeded_( succeeded )
+d35 1
+a35 1
+      return succeeded_;
+d45 1
+a45 1
+      return failureType() == "fault";
+d50 1
+a50 1
+      return failureType() == "assertion";
+d53 1
+a53 1
+   std::string failureType() const
+d55 1
+a55 1
+      return get<std::string>( properties().tryGet( "cpput.failure_type", 
+a82 1
+   bool succeeded_;
+@
+

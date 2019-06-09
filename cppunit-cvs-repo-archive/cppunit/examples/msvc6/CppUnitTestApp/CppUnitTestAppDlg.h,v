@@ -1,0 +1,106 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.4
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2001.06.01.19.34.42;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* added project cppunittest to examples/: unit tests to test cppunit. The
+  main file is CppUnitTestMain.cpp. Unit tests have been implemented
+  for TestCaller and TestListener.
+* added project CppUnitTestApp to examples/msvc6: graphical runner for
+  cppunittest.
+* added TestListener to TestResult. It is a port of junit TestListener.
+* updated some .cvsignore to ignore files generated with VC++.
+@
+text
+@// CppUnitTestAppDlg.h : header file
+//
+
+#if !defined(AFX_CPPUNITTESTAPPDLG_H__25E1CF20_72A4_4E25_B930_626DF60AD4C7__INCLUDED_)
+#define AFX_CPPUNITTESTAPPDLG_H__25E1CF20_72A4_4E25_B930_626DF60AD4C7__INCLUDED_
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+/////////////////////////////////////////////////////////////////////////////
+// CppUnitTestAppDlg dialog
+
+class CppUnitTestAppDlg : public CDialog
+{
+// Construction
+public:
+	CppUnitTestAppDlg(CWnd* pParent = NULL);	// standard constructor
+
+// Dialog Data
+	//{{AFX_DATA(CppUnitTestAppDlg)
+	enum { IDD = IDD_CPPUNITTESTAPP_DIALOG };
+		// NOTE: the ClassWizard will add data members here
+	//}}AFX_DATA
+
+	// ClassWizard generated virtual function overrides
+	//{{AFX_VIRTUAL(CppUnitTestAppDlg)
+	protected:
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+	//}}AFX_VIRTUAL
+
+// Implementation
+protected:
+	HICON m_hIcon;
+
+	// Generated message map functions
+	//{{AFX_MSG(CppUnitTestAppDlg)
+	virtual BOOL OnInitDialog();
+	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+	afx_msg void OnPaint();
+	afx_msg HCURSOR OnQueryDragIcon();
+	//}}AFX_MSG
+	DECLARE_MESSAGE_MAP()
+};
+
+//{{AFX_INSERT_LOCATION}}
+// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
+
+#endif // !defined(AFX_CPPUNITTESTAPPDLG_H__25E1CF20_72A4_4E25_B930_626DF60AD4C7__INCLUDED_)
+@

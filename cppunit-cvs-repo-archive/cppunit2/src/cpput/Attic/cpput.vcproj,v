@@ -1,0 +1,1468 @@
+head	1.40;
+access;
+symbols
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.27
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.26
+	TG_AFTER_REMOVING_TESTCONTEXT:1.24
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.21
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.18
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@# @;
+
+
+1.40
+date	2005.09.06.07.45.55;	author blep;	state dead;
+branches;
+next	1.39;
+
+1.39
+date	2005.09.06.07.14.49;	author blep;	state Exp;
+branches;
+next	1.38;
+
+1.38
+date	2005.08.08.22.10.21;	author blep;	state Exp;
+branches;
+next	1.37;
+
+1.37
+date	2005.08.06.22.24.53;	author blep;	state Exp;
+branches;
+next	1.36;
+
+1.36
+date	2005.07.20.21.06.51;	author blep;	state Exp;
+branches;
+next	1.35;
+
+1.35
+date	2005.07.04.08.11.25;	author blep;	state Exp;
+branches;
+next	1.34;
+
+1.34
+date	2005.07.02.20.27.36;	author blep;	state Exp;
+branches;
+next	1.33;
+
+1.33
+date	2005.07.01.08.19.36;	author blep;	state Exp;
+branches;
+next	1.32;
+
+1.32
+date	2005.06.24.19.49.58;	author blep;	state Exp;
+branches;
+next	1.31;
+
+1.31
+date	2005.03.06.18.48.23;	author blep;	state Exp;
+branches;
+next	1.30;
+
+1.30
+date	2005.03.03.08.15.54;	author blep;	state Exp;
+branches;
+next	1.29;
+
+1.29
+date	2005.02.28.22.11.55;	author blep;	state Exp;
+branches;
+next	1.28;
+
+1.28
+date	2005.02.27.14.38.27;	author blep;	state Exp;
+branches;
+next	1.27;
+
+1.27
+date	2005.02.27.10.16.37;	author blep;	state Exp;
+branches;
+next	1.26;
+
+1.26
+date	2005.02.26.11.40.58;	author blep;	state Exp;
+branches;
+next	1.25;
+
+1.25
+date	2005.02.23.23.15.34;	author blep;	state Exp;
+branches;
+next	1.24;
+
+1.24
+date	2004.11.20.15.26.38;	author blep;	state Exp;
+branches;
+next	1.23;
+
+1.23
+date	2004.11.20.15.07.00;	author blep;	state Exp;
+branches;
+next	1.22;
+
+1.22
+date	2004.11.20.12.17.51;	author blep;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2004.11.19.19.31.38;	author blep;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2004.11.18.09.20.33;	author blep;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2004.11.17.21.47.10;	author blep;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2004.11.17.09.00.33;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2004.11.16.22.48.02;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2004.11.15.08.51.43;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2004.10.22.06.20.23;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2004.08.04.21.21.57;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2004.08.04.08.01.15;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2004.08.03.22.36.15;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2004.08.03.22.07.05;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2004.06.23.20.42.45;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2004.06.14.23.31.25;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2004.02.08.15.52.02;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2004.02.07.21.51.00;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.02.01.16.12.56;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.01.31.10.19.10;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.01.29.08.54.51;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.01.27.23.37.22;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.27.21.13.55;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.35;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.35;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.40
+log
+@* moved project files to cppunit2/makefiles/vs71
+@
+text
+@<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="7.10"
+	Name="cpput"
+	ProjectGUID="{18A62E20-3130-4A6F-B6EB-85B126D46E6D}"
+	SccProjectName=""
+	SccLocalPath="">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<Configurations>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory=".\..\..\build\cpput\release"
+			IntermediateDirectory=".\..\..\build\cpput\release"
+			ConfigurationType="4"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="..\..\include"
+				PreprocessorDefinitions="WIN32,NDEBUG,_LIB"
+				StringPooling="TRUE"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="TRUE"
+				DisableLanguageExtensions="TRUE"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\..\..\build\cpput\release/cpput.pch"
+				AssemblerListingLocation=".\..\..\build\cpput\release/"
+				ObjectFile=".\..\..\build\cpput\release/"
+				ProgramDataBaseFileName=".\..\..\build\cpput\release/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				CompileAs="0"
+				DisableSpecificWarnings="4244"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				OutputFile="..\..\build\cpput\release\cpput_vc7_mt.lib"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1036"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory=".\..\..\build\cpput\debug"
+			IntermediateDirectory=".\..\..\build\cpput\debug"
+			ConfigurationType="4"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="..\..\include"
+				PreprocessorDefinitions="WIN32,_DEBUG,_LIB"
+				BasicRuntimeChecks="3"
+				SmallerTypeCheck="TRUE"
+				RuntimeLibrary="1"
+				BufferSecurityCheck="TRUE"
+				EnableFunctionLevelLinking="TRUE"
+				DisableLanguageExtensions="TRUE"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderFile=".\..\..\build\cpput\debug/cpput.pch"
+				AssemblerListingLocation=".\..\..\build\cpput\debug/"
+				ObjectFile=".\..\..\build\cpput\debug/"
+				ProgramDataBaseFileName=".\..\..\build\cpput\debug/"
+				BrowseInformation="1"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="4"
+				CompileAs="0"
+				DisableSpecificWarnings="4244"
+				ShowIncludes="FALSE"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				OutputFile="..\..\build\cpput\debug\cpput_vc7_mtd.lib"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1036"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="build"
+			Filter="">
+			<File
+				RelativePath="..\cpputtest\SConscript">
+			</File>
+			<File
+				RelativePath=".\SConscript">
+			</File>
+			<File
+				RelativePath="..\..\sconstruct">
+			</File>
+		</Filter>
+		<Filter
+			Name="cpputtools"
+			Filter="">
+			<File
+				RelativePath="..\..\include\cpputtools\configuration.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpputtools\convertor.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpputtools\ctti.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpputtools\function.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpputtools\refcountptr.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpputtools\value.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpputtools\valuebinder.h">
+			</File>
+			<Filter
+				Name="configuration"
+				Filter="">
+				<File
+					RelativePath="..\..\include\cpputtools\configuration\description.h">
+				</File>
+				<File
+					RelativePath="..\..\include\cpputtools\configuration\errors.h">
+				</File>
+				<File
+					RelativePath="..\..\include\cpputtools\configuration\forwards.h">
+				</File>
+				<File
+					RelativePath="..\..\include\cpputtools\configuration\parser.h">
+				</File>
+				<File
+					RelativePath="..\..\include\cpputtools\configuration\simplertti.h">
+				</File>
+				<File
+					RelativePath="..\..\include\cpputtools\configuration\validator.h">
+				</File>
+				<File
+					RelativePath="..\..\include\cpputtools\configuration\values.h">
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="cpptl"
+			Filter="">
+			<File
+				RelativePath="..\..\include\cpptl\any.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\atomiccounter.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\config.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\conststring.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\enumerator.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\enumstringizer.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\forwards.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\functor.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\intrusiveptr.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\reflection.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\reflection.inl">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\reflectionimpl10.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\scopedptr.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\sharedptr.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\stringtools.h">
+			</File>
+			<File
+				RelativePath="..\cpptl\thread.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						DisableLanguageExtensions="FALSE"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						DisableLanguageExtensions="FALSE"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\thread.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\typeinfo.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\typename.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\typetraits.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="opentest"
+			Filter="">
+			<File
+				RelativePath="..\..\include\opentest\config.h">
+			</File>
+			<File
+				RelativePath="..\..\include\opentest\forwards.h">
+			</File>
+			<File
+				RelativePath="..\opentest\interfaces.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\opentest\interfaces.h">
+			</File>
+			<File
+				RelativePath=".\properties.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\opentest\properties.h">
+			</File>
+			<File
+				RelativePath="..\opentest\remoteinterfaces.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\opentest\remoteinterfaces.h">
+			</File>
+			<File
+				RelativePath="..\..\include\opentest\resourcelist.h">
+			</File>
+			<File
+				RelativePath="..\opentest\serializer.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\opentest\serializer.h">
+			</File>
+			<File
+				RelativePath="..\opentest\sharedmemorytransport.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						DisableLanguageExtensions="FALSE"
+						ForceConformanceInForLoopScope="TRUE"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						DisableLanguageExtensions="FALSE"
+						ForceConformanceInForLoopScope="TRUE"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\include\opentest\sharedmemorytransport.h">
+			</File>
+			<File
+				RelativePath="..\..\include\opentest\testplan.h">
+			</File>
+			<File
+				RelativePath="..\..\include\opentest\testrunner.h">
+			</File>
+			<File
+				RelativePath="..\opentest\texttestdriver.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\opentest\texttestdriver.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="doc"
+			Filter="">
+			<File
+				RelativePath="..\..\doc\cppunit2todo.txt">
+			</File>
+			<File
+				RelativePath="..\..\doc\features.txt">
+			</File>
+			<File
+				RelativePath="..\..\doc\index.txt">
+			</File>
+			<File
+				RelativePath="..\..\doc\opentest.txt">
+			</File>
+			<File
+				RelativePath="..\..\doc\opentesttodo.txt">
+			</File>
+		</Filter>
+		<Filter
+			Name="experimental"
+			Filter="">
+			<File
+				RelativePath=".\dllproxy.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						DisableLanguageExtensions="FALSE"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						DisableLanguageExtensions="FALSE"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\include\cpput\dllproxy.h">
+			</File>
+			<File
+				RelativePath="parametrizedsource.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\cpput\parametrizedsource.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpput\progresslistener.h">
+			</File>
+			<File
+				RelativePath=".\tablefixture.cpp">
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\include\cpput\tablefixture.h">
+			</File>
+		</Filter>
+		<File
+			RelativePath=".\assert.cpp">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\assert.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\assertenum.h">
+		</File>
+		<File
+			RelativePath="assertstring.cpp">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\assertstring.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\autolink.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\config.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\equality.h">
+		</File>
+		<File
+			RelativePath=".\exceptionguard.cpp">
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					GeneratePreprocessedFile="0"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\exceptionguard.h">
+		</File>
+		<File
+			RelativePath=".\extendeddata.cpp">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\extendeddata.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\forwards.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\inputtest.h">
+		</File>
+		<File
+			RelativePath=".\lighttestrunner.cpp">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\lighttestrunner.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\message.h">
+		</File>
+		<File
+			RelativePath=".\registry.cpp">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\registry.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\resource.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\stringize.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\test.h">
+		</File>
+		<File
+			RelativePath=".\testcase.cpp">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\testcase.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\testfixture.h">
+		</File>
+		<File
+			RelativePath=".\testinfo.cpp">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\testinfo.h">
+		</File>
+		<File
+			RelativePath=".\testrunner.cpp">
+			<FileConfiguration
+				Name="Release|Win32"
+				ExcludedFromBuild="TRUE">
+				<Tool
+					Name="VCCLCompilerTool"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32"
+				ExcludedFromBuild="TRUE">
+				<Tool
+					Name="VCCLCompilerTool"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\testrunner.h">
+		</File>
+		<File
+			RelativePath=".\testsuite.cpp">
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					GeneratePreprocessedFile="0"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\testsuite.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\testvisitor.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\translate.h">
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>
+@
+
+
+1.39
+log
+@* added CPPTL_ARRAY_SIZE
+* added typedef LargestInt and LargestUnsignedInt
+@
+text
+@@
+
+
+1.38
+log
+@Rewrote failure reporting during test. It now provides more structure while still providing some flexibility.
+@
+text
+@d135 1
+a135 1
+				RelativePath=".\SConscript">
+d138 1
+a138 1
+				RelativePath="..\cpputtest\SConscript">
+d453 3
+@
+
+
+1.37
+log
+@Added possibility to add test to a fixture and set its description and time-out (and other specifics).
+@
+text
+@d493 12
+@
+
+
+1.36
+log
+@* Added IntrusivePtr, a reference counted smart-pointer
+* Changed Test hierarchy and TestFixture to use IntrusivePtr instead of SharedPtr (this allows simple upcasting).
+@
+text
+@d135 1
+a135 1
+				RelativePath="..\cpputtest\SConscript">
+d138 1
+a138 1
+				RelativePath=".\SConscript">
+d444 6
+@
+
+
+1.35
+log
+@* fixed bug in lighttestrunner: called AbstractTestCase::run instead of runTest().
+* fixed usage of incomplete SharedPtr in TestRunner.
+@
+text
+@d135 1
+a135 1
+				RelativePath=".\SConscript">
+d138 1
+a138 1
+				RelativePath="..\cpputtest\SConscript">
+d222 3
+@
+
+
+1.34
+log
+@* Added a simple test runner that does not rely on the open test framework to run cppunit2 tests.
+* added CppTL::ConstCharView to wrapper const char *strings.
+* added CppTL::quoteMultiLineString()
+* string assertion output actual and expected using quoteMultiLineString().
+* added serialize unit test for basic Properties
+* opentest tests now use the LightTestRunner.
+@
+text
+@d231 3
+@
+
+
+1.33
+log
+@* started adding unit tests for opentest
+* added serializer unit test squeleton
+* fixed some bug in serializer
+* added opentesttest project to VS solution.
+@
+text
+@d441 6
+@
+
+
+1.32
+log
+@Updated.
+@
+text
+@d39 2
+a40 1
+				CompileAs="0"/>
+d98 1
+d135 1
+a135 1
+				RelativePath="..\cpputtest\SConscript">
+d138 1
+a138 1
+				RelativePath=".\SConscript">
+d301 20
+@
+
+
+1.31
+log
+@* added a library for cpptl for threading functionnalies.
+@
+text
+@d237 6
+d272 6
+d284 6
+d293 6
+@
+
+
+1.30
+log
+@* added unit tests for CppTL::Reflect
+@
+text
+@d211 3
+d226 3
+d235 12
+a448 18
+			RelativePath=".\thread.cpp">
+			<FileConfiguration
+				Name="Release|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					DisableLanguageExtensions="FALSE"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					DisableLanguageExtensions="FALSE"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\thread.h">
+		</File>
+		<File
+@
+
+
+1.29
+log
+@* moved texttestdriver.h class implementations into a .cpp
+@
+text
+@d133 1
+a133 1
+				RelativePath=".\SConscript">
+d136 1
+a136 1
+				RelativePath="..\cpputtest\SConscript">
+d196 3
+d217 6
+d229 3
+@
+
+
+1.28
+log
+@* changed cppunit 2 to use the new functors (cpptl/functor.h). bind_cfn & bind_memfn simplified some of the test code.
+@
+text
+@d133 1
+a133 1
+				RelativePath="..\cpputtest\SConscript">
+d136 1
+a136 1
+				RelativePath=".\SConscript">
+d220 3
+d251 3
+a438 3
+		<File
+			RelativePath="..\..\include\cpput\typehelper.h">
+		</File>
+@
+
+
+1.27
+log
+@* added ConstString and StringBuffer
+@
+text
+@a213 3
+				RelativePath="..\..\include\cpptl\functor3.h">
+			</File>
+			<File
+a358 6
+			RelativePath="..\..\include\cpput\functor.h">
+		</File>
+		<File
+			RelativePath=".\functor.py">
+		</File>
+		<File
+@
+
+
+1.26
+log
+@* simpler implementation of functors.
+* complete rewrote of the generator (much easier to maintain)
+@
+text
+@d92 1
+d96 2
+a97 1
+				CompileAs="0"/>
+d208 3
+a370 3
+			RelativePath="..\..\include\cpput\properties.h">
+		</File>
+		<File
+@
+
+
+1.25
+log
+@* removed include/cpput/enumerator.h which has been replaced by include/cpptl/enumerator.h
+* added explicit type passing to any*() generator functions.
+@
+text
+@d206 6
+@
+
+
+1.24
+log
+@* Removed TestContext.
+* TestContext/AbstractTestCase: moved responsibility of running the test to AbstractTestCase.
+@
+text
+@d200 3
+a310 4
+		<Filter
+			Name="obsolete by opentest"
+			Filter="">
+		</Filter>
+d333 1
+a333 1
+			RelativePath="..\..\include\cpput\enumerator.h">
+d336 10
+a345 1
+			RelativePath="..\..\include\cpput\equality.h">
+a383 6
+			RelativePath=".\testfailureguard.cpp">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\testfailureguard.h">
+		</File>
+		<File
+d400 6
+@
+
+
+1.23
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@a375 6
+			RelativePath=".\testcontext.cpp">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\testcontext.h">
+		</File>
+		<File
+@
+
+
+1.22
+log
+@* moved the assertion implementation to using TestInfo.
+* added assertion (tested/failed) counter to TestInfo.
+@
+text
+@a348 3
+			RelativePath="..\..\include\cpput\location.h">
+		</File>
+		<File
+a363 3
+			RelativePath="..\..\include\cpput\resultexception.h">
+		</File>
+		<File
+a396 6
+			RelativePath="..\..\include\cpput\testlistener.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\testresult.h">
+		</File>
+		<File
+a402 3
+			RelativePath="..\..\include\cpput\testrunresult.h">
+		</File>
+		<File
+@
+
+
+1.21
+log
+@* added support for PropertyPath
+@
+text
+@d131 1
+a131 1
+				RelativePath=".\SConscript">
+d134 1
+a134 1
+				RelativePath="..\cpputtest\SConscript">
+d206 3
+@
+
+
+1.20
+log
+@* started implementing assertion support for both checking and aborting assertion
+* TestInfo to send incremental update on the test result to the test driver (logging...)
+@
+text
+@d131 1
+a131 1
+				RelativePath="..\cpputtest\SConscript">
+d134 1
+a134 1
+				RelativePath=".\SConscript">
+d219 3
+@
+
+
+1.19
+log
+@* started removing TestDriver stuff from CppUnit 2
+* Removed Test::run(), Test::totalTestCount and Test::parent
+* User can only subclass AbstractTestSuite or AbstractTestCase.
+* AbstractTest has been inlined into Test
+* Test no longer have parent
+* Removed TestListener::enterTest() & TestListener::exitTest()
+* Moved responsibility of running TestCase from AbstractTestCase to TestContext::run( AbstractTestCase &test ).
+* Removed method related to suite and enter/exit event from TestContext.
+* Disabled some unit tests (rely on running test which will change again shortly)
+@
+text
+@d391 6
+@
+
+
+1.18
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@d253 53
+a327 18
+			RelativePath=".\dllproxy.cpp">
+			<FileConfiguration
+				Name="Release|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					DisableLanguageExtensions="FALSE"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					DisableLanguageExtensions="FALSE"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\dllproxy.h">
+		</File>
+		<File
+a348 9
+			RelativePath="parametrizedsource.cpp">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\parametrizedsource.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\progresslistener.h">
+		</File>
+		<File
+a366 18
+			RelativePath=".\tablefixture.cpp">
+			<FileConfiguration
+				Name="Release|Win32"
+				ExcludedFromBuild="TRUE">
+				<Tool
+					Name="VCCLCompilerTool"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32"
+				ExcludedFromBuild="TRUE">
+				<Tool
+					Name="VCCLCompilerTool"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\tablefixture.h">
+		</File>
+		<File
+d400 3
+@
+
+
+1.17
+log
+@* updated
+@
+text
+@d131 1
+a131 1
+				RelativePath=".\SConscript">
+d134 1
+a134 1
+				RelativePath="..\cpputtest\SConscript">
+a268 18
+			RelativePath=".\atomiccounter.cpp">
+			<FileConfiguration
+				Name="Release|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					DisableLanguageExtensions="FALSE"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					DisableLanguageExtensions="FALSE"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\include\cpput\impl\atomiccounter.h">
+		</File>
+		<File
+d305 3
+a337 3
+			RelativePath="..\..\include\cpput\smartptr.h">
+		</File>
+		<File
+@
+
+
+1.16
+log
+@* update with OpenTest stuff
+@
+text
+@d131 1
+a131 1
+				RelativePath="..\cpputtest\SConscript">
+d134 1
+a134 1
+				RelativePath=".\SConscript">
+d212 40
+@
+
+
+1.15
+log
+@* Replaced the EnumerationSugar strangely curring template  with a macro (compiler was too stressed)
+* Fixed Internal compiler error on Keys
+* Added sugar() enumeration for custom enumerator
+* Test cases for all enumerator
+@
+text
+@d131 1
+a131 1
+				RelativePath=".\SConscript">
+d134 1
+a134 1
+				RelativePath="..\cpputtest\SConscript">
+d194 3
+d203 3
+d209 4
+d367 3
+@
+
+
+1.14
+log
+@* moved drafty progress listener from main.cpp to include/cpput/progresslistener.h
+@
+text
+@d44 1
+a44 1
+				OutputFile="..\..\build\cpput\release\cpput_vc6_mrs.lib"
+d100 1
+a100 1
+				OutputFile="..\..\build\cpput\debug\cpput_vc6_mds.lib"
+d153 3
+d190 13
+@
+
+
+1.13
+log
+@* renamed cpput/assertexception.h to cpput/resultexception.h
+@
+text
+@d131 1
+a131 1
+				RelativePath="..\cpputtest\SConscript">
+d134 1
+a134 1
+				RelativePath=".\SConscript">
+d269 3
+@
+
+
+1.12
+log
+@* renamed TestFailure to TestResult (can now be a success or a failure)
+* renamed testfailure.h to testresult.h
+* renamed testresult.cpp to testtestrunresult.cpp
+@
+text
+@a196 3
+			RelativePath="..\..\include\cpput\assertexception.h">
+		</File>
+		<File
+d281 3
+@
+
+
+1.11
+log
+@* added cpput/properties.h
+@
+text
+@d131 1
+a131 1
+				RelativePath=".\SConscript">
+d134 1
+a134 1
+				RelativePath="..\cpputtest\SConscript">
+a283 3
+			RelativePath="..\..\include\cpput\result.h">
+		</File>
+		<File
+a322 3
+			RelativePath="..\..\include\cpput\testfailure.h">
+		</File>
+		<File
+d335 6
+@
+
+
+1.10
+log
+@* added command line options stuff
+@
+text
+@d272 3
+@
+
+
+1.9
+log
+@* adding cpputtools library, command line options among other thing (for test runners). In progress.
+@
+text
+@d131 3
+d137 20
+a156 1
+				RelativePath=".\SConscript">
+d159 1
+a159 1
+				RelativePath="..\..\sconstruct">
+d161 25
+@
+
+
+1.8
+log
+@* added portable api to load dynamic libraries
+@
+text
+@d231 3
+d243 18
+@
+
+
+1.7
+log
+@* fixed compilation issue in thread safe mode
+@
+text
+@d131 1
+a131 1
+				RelativePath=".\SConscript">
+d134 1
+a134 1
+				RelativePath="..\cpputtest\SConscript">
+d183 18
+@
+
+
+1.6
+log
+@* added /Za setting to project to force conformance to ANSI C++
+* fixed issues related to ANSI C++ conformance
+* fixed bug in SliceEnumerator copy constructor & added test
+@
+text
+@d6 1
+d84 1
+d160 12
+d262 12
+@
+
+
+1.5
+log
+@* added a minimum thread api for cppunit thread-safety implementation
+@
+text
+@d29 1
+d83 1
+d125 13
+@
+
+
+1.4
+log
+@* added testfailureguard
+@
+text
+@d232 3
+@
+
+
+1.3
+log
+@* SmartPtr now subclass boost::shared_ptr to make templated function
+  overloading easier.
+* Added our own smart pointer implementation
+* Added AtomicCounter as implementation detail.
+  Can use boost::detail::atomic_counter.
+@
+text
+@a150 3
+			RelativePath="..\..\include\cpput\callback.h">
+		</File>
+		<File
+d211 6
+@
+
+
+1.2
+log
+@* added .cvsignore files and a bit of documentation.
+@
+text
+@d83 1
+a83 1
+				UsePrecompiledHeader="2"
+d142 6
+a189 3
+			RelativePath="smartptr.cpp">
+		</File>
+		<File
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 1
+a1 1
+<?xml version="1.0" encoding = "Windows-1252"?>
+d4 1
+a4 1
+	Version="7.00"
+d58 6
+d112 6
+d120 2
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

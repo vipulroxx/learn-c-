@@ -1,0 +1,235 @@
+head	1.4;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.4;
+locks; strict;
+comment	@// @;
+
+
+1.4
+date	2005.11.13.10.12.01;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.11.11.20.54.15;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.08.10.21.34.29;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.02.28.20.43.02;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@- renamed include/cpput/assert.h to include/cpput/assertcommon.h. This avoid clash with include <assert.h> in doxygen documentation
+- most Impl namespaces are now hidden from documentation using \cond and \endcond.
+@
+text
+@#include <cpput/assertcommon.h>
+#include <cpput/exceptionguard.h>
+#include <cpptl/functor.h>
+#include <stdio.h>
+
+static void increment( int *value )
+{
+   ++*value;
+   CppUT::TestInfo::threadInstance().testStatus().setStatus( CppUT::TestStatus::failed );
+}
+
+
+static void throwStdException()
+{
+   throw std::exception();
+}
+
+namespace {
+   struct CustomException
+   {
+   };
+
+   struct AnyException
+   {
+   };
+}
+
+
+static void throwAnyException()
+{
+   throw AnyException();
+}
+
+
+static void throwCustomException()
+{
+   throw CustomException();
+}
+
+
+static void 
+testExceptionGuardRunFunctor()
+{
+   int value = 1;
+   CppUT::ExceptionGuard guard;
+   CppUT::TestInfo::threadInstance().startNewTest();
+   bool result = guard.protect( CppTL::bind_cfn( &increment, &value ) );
+   CPPUT_ASSERT_EQUAL( 2, value );
+   ( true, result );
+}
+
+
+static void 
+testExceptionGuardCatchStandardException()
+{
+   CppUT::ExceptionGuard guard;
+   CppUT::TestInfo::threadInstance().startNewTest();
+   bool result = guard.protect( CppTL::cfn0( &throwStdException ) );
+   CPPUT_ASSERT_EQUAL( false, result );
+}
+
+
+static void 
+testExceptionGuardCatchAnyException()
+{
+   CppUT::ExceptionGuard guard;
+   CppUT::TestInfo::threadInstance().startNewTest();
+   bool result = guard.protect( CppTL::cfn0( &throwAnyException ) );
+   CPPUT_ASSERT_EQUAL( false, result );
+}
+
+
+static void customExceptionTranslation( const CustomException &e,
+                                        int *value )
+{
+   ++*value;
+   CppUT::TestInfo::threadInstance().testStatus().setStatus( CppUT::TestStatus::failed );
+}
+
+static void
+testExceptionGuardAddCustomHandler()
+{
+   int value = 1;
+   CppUT::ExceptionGuard guard;
+   // check that the exception translator is called
+   CppUT::registerExceptionTranslation( guard, 
+      CppTL::bind2( CppTL::cfn2( &customExceptionTranslation ), &value ),
+      CppTL::Type<CustomException>() );
+   CppUT::TestInfo::threadInstance().startNewTest();
+   bool result = guard.protect( CppTL::cfn0( &throwCustomException ) );
+   CPPUT_ASSERT_EQUAL( false, result );
+   CPPUT_ASSERT_EQUAL( 2, value );
+
+   // check that standard and ... catch handler are still active.
+   CppUT::TestInfo::threadInstance().startNewTest();
+   result = guard.protect( CppTL::cfn0( &throwStdException ) );
+   CPPUT_ASSERT_EQUAL( false, result );
+   CPPUT_ASSERT_EQUAL( 2, value );
+
+   CppUT::TestInfo::threadInstance().startNewTest();
+   result = guard.protect( CppTL::cfn0( &throwAnyException ) );
+   CPPUT_ASSERT_EQUAL( false, result );
+
+   guard.removeLast();
+
+   // check that standard and ... catch handler are still active, 
+   // but not the custom exception handler.
+   CppUT::TestInfo::threadInstance().startNewTest();
+   result = guard.protect( CppTL::cfn0( &throwCustomException ) );
+   CPPUT_ASSERT_EQUAL( false, result );
+   CPPUT_ASSERT_EQUAL( 2, value );
+
+   CppUT::TestInfo::threadInstance().startNewTest();
+   result = guard.protect( CppTL::cfn0( &throwStdException ) );
+   CPPUT_ASSERT_EQUAL( false, result );
+}
+
+
+/* Notes: startNewtest() must be called before each protect because
+ * protect() returns value depends on testStatus.
+ */
+
+bool testExceptionGuard()
+{
+   printf( "Running bootstrap test: testExceptionGuard()...\n" );
+   try
+   {
+      CppUT::TestInfo::threadInstance().startNewTest();
+      testExceptionGuardRunFunctor();
+      testExceptionGuardCatchStandardException();
+      testExceptionGuardCatchAnyException();
+      testExceptionGuardAddCustomHandler();
+   }
+   catch ( const CppUT::AbortingAssertionException &e )
+   {
+      printf( "testExceptionGuard() failed: %s\n", e.what() );
+      return false;
+   }
+   catch ( ... )
+   {
+      printf( "testExceptionGuard() failed (uncaught exception).\n" );
+      return false;
+   }
+
+   return true;
+}
+@
+
+
+1.3
+log
+@- added unit tests for TestInfo
+- fixed bug in CPPUT_IGNORE_FAILURE and exception guard.
+- added 'isIgnoredFailure' to Assertion.
+- lighttestrunner now print ignored failure and skipped tests.
+@
+text
+@d1 1
+a1 1
+#include <cpput/assert.h>
+@
+
+
+1.2
+log
+@* Replaced function in namespace TestInfo by exposing the TestInfoData class and renaming it TestInfo. TestInfo in now an exposed per thread singleton.
+* startNewTest() is now called from TestCase::runTest() instead of being the test runner responsability. There still a few call to this method in cpput bootstrap test (which use assertion without run a test case).
+@
+text
+@d9 1
+d46 1
+d49 1
+a49 1
+   CPPUT_ASSERT_EQUAL( true, result );
+d57 1
+d67 1
+d77 1
+d89 1
+d95 1
+d100 1
+d108 1
+d113 1
+d119 4
+d128 1
+@
+
+
+1.1
+log
+@* added testexceptionguard.cpp which replaces testtestcontext.cpp
+@
+text
+@a113 1
+      CppUT::TestInfo::startNewTest();
+@
+

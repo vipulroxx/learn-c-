@@ -1,0 +1,144 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2
+	REL_1_9_4:1.2
+	REL_1_9_0:1.2
+	REL_1_8_0:1.2
+	REL_1_7_8:1.2
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1
+	REL_1_5_5:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2002.03.25.07.15.06;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.28.14.27.24;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* INSTALL-WIN32.txt: updated for MFC Unicode TestRunner.
+
+* src/msvc6/testrunner/TestRunner.dsp: added Unicode configurations.
+
+* src/msvc6/testrunner/ListCtrlSetter.cpp:
+* src/msvc6/testrunner/ListCtrlSetter.h: replaced usage of std::string by
+CString for easier ansi/unicode switch.
+
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: made changes to compile with
+either ANSI and UNICODE support.
+
+* examples/msvc6/HostApp/HostApp.cpp:
+* examples/msvc6/HostApp/HostApp.h:
+* examples/msvc6/HostApp/HostAppDoc.cpp:
+* examples/msvc6/HostApp/HostAppDoc.h: moved TestRunner execution to
+HostApp::RunUnitTests() and removed the MainFrame application window.
+
+* examples/msvc6/HostApp/HostApp.dsp: added Unicode configurations.
+@
+text
+@// HostApp.h : main header file for the HOSTAPP application
+//
+
+#if !defined(AFX_HOSTAPP_H__A9C94DE7_1663_11D2_A499_00805FC1C042__INCLUDED_)
+#define AFX_HOSTAPP_H__A9C94DE7_1663_11D2_A499_00805FC1C042__INCLUDED_
+
+#if _MSC_VER >= 1000
+#pragma once
+#endif // _MSC_VER >= 1000
+
+#ifndef __AFXWIN_H__
+    #error include 'stdafx.h' before including this file for PCH
+#endif
+
+#include "resource.h"       // main symbols
+
+/////////////////////////////////////////////////////////////////////////////
+// CHostAppApp:
+// See HostApp.cpp for the implementation of this class
+//
+
+class CHostAppApp : public CWinApp
+{
+public:
+    CHostAppApp();
+
+// Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CHostAppApp)
+    public:
+    virtual BOOL InitInstance();
+    //}}AFX_VIRTUAL
+
+// Implementation
+
+    //{{AFX_MSG(CHostAppApp)
+    afx_msg void OnAppAbout();
+        // NOTE - the ClassWizard will add and remove member functions here.
+        //    DO NOT EDIT what you see in these blocks of generated code !
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP();
+
+private:
+  void RunUnitTests();
+};
+
+
+/////////////////////////////////////////////////////////////////////////////
+
+//{{AFX_INSERT_LOCATION}}
+// Microsoft Developer Studio will insert additional declarations immediately before the previous line.
+
+#endif // !defined(AFX_HOSTAPP_H__A9C94DE7_1663_11D2_A499_00805FC1C042__INCLUDED_)
+@
+
+
+1.1
+log
+@Merged msvc6 specific TestRunner and example adapted from Michael Feathers
+version by Baptiste Lepilleur.
+@
+text
+@d41 4
+a44 1
+    DECLARE_MESSAGE_MAP()
+@
+

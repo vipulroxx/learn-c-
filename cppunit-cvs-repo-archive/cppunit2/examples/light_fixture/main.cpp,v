@@ -1,0 +1,84 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@// @;
+
+
+1.1
+date	2007.08.15.17.35.39;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@   Added initial support for table fixture (still like cell value automatic
+conversion, but it is usable).
+@
+text
+@#include <examples/common/examplecommon.h>
+#include <cpput/lightfixture.h>
+
+
+struct Point
+{
+   Point( int x, int y )
+      : x_( x )
+      , y_( y )
+   {
+   }
+
+   int squaredLength() const
+   {
+      return x_*x_ + y_*y_;
+   }
+
+   void add( const Point &other )
+   {
+      x_ += other.x_;
+      y_ += other.y_;
+   }
+
+   int x_;
+   int y_;
+};
+
+struct LineTest
+{
+    LineTest() 
+        : p1_( 1, 0 )
+        , p2_( 0, 2 )
+    {
+    }
+    Point p1_;
+    Point p2_;
+};
+
+// In the light fixture test you can directly access fixture members
+CPPUT_TEST_LIGHT_FIXTURE( LineTest, testSquaredLength )
+{
+   CPPUT_CHECK_EQUAL( 1, p1_.squaredLength() );
+   CPPUT_CHECK_EQUAL( 2*2, p2_.squaredLength() );
+}
+
+CPPUT_TEST_LIGHT_FIXTURE_WITH_SPECIFICS( LineTest, testAdd, timeOut(0.2) )
+{
+   p1_.add( p2_ );
+   CPPUT_CHECK_EQUAL( 1+2*2, p1_.squaredLength() );
+}
+
+// Register the light fixture test suite to the default test suite.
+CPPUT_REGISTER_LIGHT_FIXTURE( LineTest );
+
+
+int main( int argc, const char *argv[] )
+{
+   CppUT::TestSuitePtr allSuite = CppUT::Registry::instance().createDefaultTests();
+   return runExampleTests( argc, argv, allSuite.get() );
+}
+@

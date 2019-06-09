@@ -1,0 +1,415 @@
+head	1.13;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.13
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.9
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.9
+	TG_AFTER_REMOVING_TESTCONTEXT:1.8
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.8
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.8
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.13
+date	2005.11.11.23.23.48;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2005.03.06.18.39.50;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2005.03.05.12.29.38;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2005.03.03.20.57.14;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.02.26.13.44.38;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2004.11.15.08.24.40;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2004.10.21.17.23.22;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.06.15.00.45.51;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.02.08.15.50.01;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.01.31.13.22.29;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.01.31.11.39.59;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.27.23.37.21;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.25;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.25;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.13
+log
+@Rough documentation: placed most function/class/macro in group.
+@
+text
+@#ifndef CPPUT_CONFIG_H_INCLUDED
+# define CPPUT_CONFIG_H_INCLUDED
+
+# include <cpptl/config.h>
+
+# define CPPUT_BOOST_FRIENDLY
+//# define CPPUT_DLL_SUPPORT
+//# define CPPUT_USE_WIN32_DLL     // LoadLibrary
+//# define CPPUT_USE_DL_DLL      // dlopen
+//# define CPPUT_USE_SHL_DLL     // shl_open
+//# define CPPUT_USE_BEOS_DLL
+
+# define CPPUT_USE_RTTI_TO_NAME_SUITE 1
+
+// compiler specific stuffs...
+///////////////////////////////////////////////////////////////////////////
+
+# if _MSC_VER <= 1200    // VC++ 6 or before
+#  pragma warning( disable : 4786 ) // ident trunc to '255' chars in debug info
+#  define CPPUT_STD_VECTOR_ITERATOR_IS_POINTER 1
+#  define CPPUT_HAS_FUNCTION_TEMPLATE_ORDERING 0
+#  define CPPUT_HAS_TEMPLATE_PARTIAL_SPECIALIZATION 0
+# endif
+
+# if _MSC_VER <= 1300    // VC++ 7.0 or before
+// VC++ 7.0 does have deduced typename, but their behavior is not consistent with
+// VC++ 7.1. Since it is not required to compile, we just pretend it's not available.
+#  define CPPUT_NO_DEDUCED_TYPENAME
+# endif
+
+# if _MSC_VER >= 1310 // VC++ 7.1
+#  define CPPUT_HAS_FUNCTION_TEMPLATE_ORDERING 1
+#  define CPPUT_HAS_TEMPLATE_PARTIAL_SPECIALIZATION 1
+#  pragma warning( disable : 4800 ) // forcing value to bool performance warning
+#  pragma warning( disable : 4018 ) // '<' signed/unsigned mismatch
+# endif
+
+// compiler suffix...
+///////////////////////////////////////////
+
+// Set CPPUT_DEDUCED_TYPENAME depending on the compiler support for deduced typename.
+# ifdef CPPUT_NO_DEDUCED_TYPENAME
+#  define CPPUT_DEDUCED_TYPENAME
+# else
+#  define CPPUT_DEDUCED_TYPENAME typename
+# endif
+
+# ifdef CPPUT_NO_FUNCTION_TEMPLATE_ORDERING
+#  define CPPUT_HAS_FUNCTION_TEMPLATE_ORDERING 0
+# endif
+
+# ifdef CPPUT_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+#  define CPPUT_HAS_TEMPLATE_PARTIAL_SPECIALIZATION 0
+# endif
+
+# ifdef CPPUT_USE_BOOST_SHARED_PTR
+#  undef CPPUT_BOOST_FRIENDLY
+#  define CPPUT_BOOST_FRIENDLY 1
+# endif
+
+# if !defined(CPPUT_NO_DLL_SUPPORT)
+# define CPPUT_DLL_SUPPORT 1
+# endif
+
+// STL specific stuffs...
+///////////////////////////////////////////////////////////////////////////
+
+
+// define CPPUT_DLL_BUILD when building CppUnit dll.
+# ifdef CPPUT_DLL_BUILD
+#  define CPPUT_API __declspec(dllexport)
+# endif
+
+// define CPPUT_DLL when linking to CppUnit dll.
+# if defined( CPPUT_DLL )
+#  define CPPUT_API __declspec(dllimport)
+# endif
+
+// generating or linking to a static library
+#if !defined( CPPUT_API )
+#  define CPPUT_API
+#endif
+
+// Auto-link feature, define symbol CPPUT_NO_AUTO_LINK to disable
+# if !defined(CPPUT_NO_AUTO_LINK)
+#  define CPPUT_LIB_NAME "cpput"
+//#  include <cpput/autolink.h>
+# endif
+
+#endif // CPPUT_CONFIG_H_INCLUDED
+@
+
+
+1.12
+log
+@* removed thread-safety related variables.
+@
+text
+@a89 28
+
+namespace CppUT {
+
+// defines YesType and NoType for simple generic programming
+   struct YesType {};
+   struct NoType { char padding[256]; };
+
+
+   /// Base class for non copyable class.
+   class CPPUT_API NonCopyable
+   {
+   public:
+      NonCopyable()
+      {
+      }
+
+      ~NonCopyable()
+      {
+      }
+
+   private:
+      NonCopyable( const NonCopyable &other );
+      void operator =( const NonCopyable &other );
+   };
+
+} // namespace CppUT
+
+
+@
+
+
+1.11
+log
+@* added config macro CPPTL_NO_SSTREAM and CPPTL_NO_STL_SEQUENCE_AT for gcc 2.95
+* added portability macro CPPTL_AT to access sequence container portably
+@
+text
+@a5 5
+//# define CPPUT_THREAD_SAFE
+//# define CPPUT_USE_WIN32_THREAD
+//# define CPPUT_USE_PTHREAD_THREAD // untested
+//# define CPPUT_USE_BOOST_ATOMIC_COUNTER
+//# define CPPUT_USE_BOOST_SHARED_PTR
+@
+
+
+1.10
+log
+@* renamed and moved macro CPPUT_MAKE_UNIQUE_NAME to cpptl library.
+@
+text
+@a73 12
+// Indicates if the stl provides std::vector::at()
+# define CPPUT_HAS_VECTOR_AT 1
+
+// GCC 2.95 STL don't provides std::vector::at(). Don't know how to detect that
+// version of STL, so we detect gcc version.
+// Though, it would be better to detect the stl vendor & version (stlport could be used for instance)
+# if defined __GNUC__ &&  __GNUC__ < 3
+#  undef CPPUT_HAS_VECTOR_AT
+#  define CPPUT_HAS_VECTOR_AT 0
+# endif
+
+
+@
+
+
+1.9
+log
+@* removed include of boost/config.hpp
+@
+text
+@a107 39
+
+
+// Macro tools...
+///////////////////////////////////////////////////////////////////////////
+
+
+/*! Joins to symbol after expanding them into string.
+ *
+ * Use this macro to join two symbols. Example of usage:
+ *
+ * \code
+ * #define MAKE_UNIQUE_NAME(prefix) CPPUT_JOIN( prefix, __LINE__ )
+ * \endcode
+ *
+ * The macro defined in the example concatenate a given prefix with the line number
+ * to obtain a 'unique' identifier.
+ *
+ * \internal From boost documentation:
+ * The following piece of macro magic joins the two 
+ * arguments together, even when one of the arguments is
+ * itself a macro (see 16.3.1 in C++ standard).  The key
+ * is that macro expansion of macro arguments does not
+ * occur in CPPUT_JOIN2 but does in CPPUT_JOIN.
+ */
+#define CPPUT_JOIN( symbol1, symbol2 ) _CPPUT_DO_JOIN( symbol1, symbol2 )
+
+/// \internal
+#define _CPPUT_DO_JOIN( symbol1, symbol2 ) _CPPUT_DO_JOIN2( symbol1, symbol2 )
+
+/// \internal
+#define _CPPUT_DO_JOIN2( symbol1, symbol2 ) symbol1##symbol2
+
+/*! Adds the line number to the specified string to create a unique identifier.
+ * \param prefix Prefix added to the line number to create a unique identifier.
+ * \see CPPUT_TEST_SUITE_REGISTRATION for an example of usage.
+ */
+#define CPPUT_MAKE_UNIQUE_NAME( prefix ) CPPUT_JOIN( prefix, __LINE__ )
+
+
+@
+
+
+1.8
+log
+@* added preprocessor macro to indicate if fixture suite name should be deduced through RTTI or macro expansion: CPPUT_USE_RTTI_TO_NAME_SUITE
+* added missing include of cpptl config.
+@
+text
+@a4 1
+# include <boost/config.hpp>
+@
+
+
+1.7
+log
+@* moving CppUTTools library to CppTL library & namespace
+* implemented new enumerator library providing both "any" enumerator and specific enumerator avoid virtual function cost
+* fixed NoType declaration
+@
+text
+@d4 1
+d19 1
+a19 1
+
+d149 2
+d154 2
+@
+
+
+1.6
+log
+@* fixed compilation issue related to changing OptionValue into the new Value library
+@
+text
+@d66 4
+d149 1
+a149 1
+   struct NoType {};
+@
+
+
+1.5
+log
+@* added portable api to load dynamic libraries
+@
+text
+@d39 2
+@
+
+
+1.4
+log
+@* added some comment
+@
+text
+@d12 5
+@
+
+
+1.3
+log
+@* added thread api implementation for non thread-safe mode
+@
+text
+@d8 1
+a8 1
+//# define CPPUT_USE_PTHREAD_THREAD
+d27 1
+a27 1
+// VC++ 7.1. Since it is not required to compile, we just pretend it's available.
+d68 1
+@
+
+
+1.2
+log
+@* SmartPtr now subclass boost::shared_ptr to make templated function
+  overloading easier.
+* Added our own smart pointer implementation
+* Added AtomicCounter as implementation detail.
+  Can use boost::detail::atomic_counter.
+@
+text
+@d6 3
+a8 1
+# define CPPUT_THREAD_SAFE
+d138 17
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d6 3
+a8 1
+# define CPPUT_USE_BOOST_SHARED_PTR
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

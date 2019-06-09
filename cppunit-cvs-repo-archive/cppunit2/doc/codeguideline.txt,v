@@ -1,0 +1,229 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2006.03.04.23.47.26;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* naming convention for variable, classes...
+@
+text
+@* Naming conventions
+  ------------------
+
+* Naming conventions synopsis:
+  - macro names are in uppercase
+  - type names start with an uppercase
+  - expression (parameter, variable, attribute, function, method...)
+    names start with a lowercase.
+
+* Naming conventions rationale:
+
+  This naming convention helps distinguishing between macro,
+type/namespace and function/expression, just by looking at a given
+identifier This makes the code easier to read. For instance:
+
+  Object 			// this is a type name (or a namespace name)
+  object			// this is a variable name (no verb in the name)
+  setObject	  // this is a method name (could also be a variable
+              // name)
+  object_			// this is an attribute name
+  OBJECT      // this is a macro name
+
+  This also helps avoiding conflict between type name and
+function/attribute name.
+
+* Naming convention common to all names:
+-	no name starts with an underscore ('_') (this is usually a
+  prefix reserved to compiler/library implementers).
+-	acronym are written in the same case (AST or ast, but not Ast or
+  ast).
+- abbreviation are written in the Capitalized first letter style (Ptr
+  for Pointer).
+- names should not reflect how the named entity is implemented, but what
+  the entity is.
+
+* Macro name
+
+  Macros are written in uppercase, using the underscore ('_') as a word
+separator. They should use a (short) prefix to avoid clash with existing
+macro.
+
+  RFTA_HAS_TEMPLATE_PARTIAL_SPECIALIZATION
+  BOOST_REPEAT_N
+
+* Type name (and namespace)
+
+  Type (struct, class, enum) and namespace names start with an uppercase
+and have the first letter of each word capitalised. They should not
+contain underscore ('_'), unless you are simulating namespace or nested
+scope because of platform limitation.
+
+  Examples:
+
+  ASTNode
+  SourceASTNode
+  ParseContext
+  IfStatementParser
+  StringList
+
+  - Test fixture class name is the name of the class being tested
+suffixed with Test. For example, ParseContextTest is the fixture used to
+test ParseContext.
+
+  - boost::shared_ptr<> and boost::weak_ptr<> typedef are named after
+the type being pointed to, suffix with Ptr and WeakPtr respectively. For
+example:
+
+  class ASTNode;
+  typedef boost::shared_ptr<ASTNode> ASTNodePtr;
+  typedef boost::weak_ptr<ASTNode> ASTNodeWeakPtr;
+
+  - typedef name for container should be plural and should not reflect
+the container type. For example:
+
+  typedef std::deque<ASTNodePtr> Nodes;
+  typedef std::map<std::string,ASTNodePtr> Properties;
+
+* Expression name (parameter, variable, attribute, function, method...)
+
+  Parameter, variable, class attribute, function and method names start
+with a lowercase and have the first letter of each word capitalised.
+They should not contain underscore ('_').
+
+  - Additional convention for method names:
+
+    Getter and setter methods are prefixed, usually by 'get/set' (but it
+may be another word). Methods name should contains a verb (isEmpty() is
+correct, but empty() is not). This help distinguishing between variable
+names and method names.
+
+  - Additional convention for attributes names:
+
+    Attributes names are suffixed with an underscore ('_').
+
+    Attributes names that represents a container are plural and should
+not reflects the container type. Example:
+
+    Properties properties_;
+    Nodes childNodes_
+
+  Example of parameter and variable names:
+
+int fieldIndex;
+ASTNodePtr parentNode;
+
+  Example of method and function names:
+
+bool hasProperty( const std::string &propertyName ) const;
+SourceRange getConditionSourceRange() const;
+void removeAllProperties();
+
+  Example of class attribute names:
+
+ASTNodeWeakPtr parentNode_;
+Properties properties_;
+int startIndex_;
+
+* Code sample using the naming convention
+
+#ifndef RFTA_ASTNODE_H
+#define RFTA_ASTNODE_H
+
+#include <string>
+#include <boost/shared_ptr.hpp>
+#include <boost/utility.hpp>
+#include <boost/weak_ptr.hpp>
+
+
+namespace Refactoring
+{
+
+   class ASTNode;
+   typedef boost::shared_ptr<ASTNode> ASTNodePtr;
+   typedef boost::weak_ptr<ASTNode> ASTNodeWeakPtr;
+
+   /// An abstract syntax tree node.
+   class ASTNode : public boost::noncopyable
+   {
+   public:
+      static ASTNodePtr create( const ASTNodeWeakPtr &parentNode,
+                                const std::string &type,
+                                int startIndex,
+                                int length );
+
+      /// Destructor.
+      virtual ~ASTNode();
+
+      const std::string &getType() const;
+
+      void mutateType( const std::string &type );
+
+      int getStartIndex() const;
+
+      int getLength() const;
+
+      void setLength( int length );
+
+      const ASTNodeWeakPtr &parentNode() const;
+
+      void addChild( const ASTNodePtr &child );
+
+      int getChildCount() const;
+
+      const ASTNodePtr &getChildAt( int index ) const;
+
+      void setPropertyNode( const std::string &propertyName,
+                            const ASTNodePtr &node );
+
+      bool hasProperty( const std::string &propertyName ) const;
+
+      ASTNodePtr getProperty( const std::string &propertyName ) const;
+
+      void removeProperty( const std::string &propertyName );
+
+      void removeAllProperties();
+
+   protected:
+     /*! Constructs a ASTNode object.
+      */
+      ASTNode( const ASTNodeWeakPtr &parentNode,
+               const std::string &type,
+               int startIndex,
+               int length );
+
+   private:
+      typedef std::deque<ASTNodePtr> Nodes;
+      Nodes childNodes_;
+
+      typedef std::map<std::string,ASTNodePtr> Properties;
+      Properties properties_;
+
+      ASTNodeWeakPtr parentNode_;
+      std::string type_;
+      int startIndex_;
+      int length_;
+   };
+
+} // namespace Refactoring
+
+
+#endif  // RFTA_ASTNODE_H
+
+--
+Baptiste Lepilleur <gaiacrtn@@free.fr>
+September 2002
+@

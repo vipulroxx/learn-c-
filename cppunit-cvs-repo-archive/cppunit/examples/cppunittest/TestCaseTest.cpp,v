@@ -1,0 +1,712 @@
+head	1.6;
+access;
+symbols
+	REL_1_12_1:1.6
+	REL_1_11_6:1.6
+	REL_1_11_4:1.6
+	REL_1_11_0:1.6
+	TG_CPPUNIT_NO_STREAM_AFTER:1.6
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.6
+	REL_1_10_2:1.6
+	REL_1_10_0:1.6
+	REL_1_9_14:1.6
+	REL_1_9_12:1.6
+	BRANCH_1_9_12:1.6.0.2
+	TG_BRANCH_1_9_12:1.6
+	TG_BEFORE_HPUX_PLUGIN:1.6
+	TG_BEFORE_SUN4_PORT:1.6
+	REL_1_9_10:1.6
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	REL_1_9_6:1.4
+	REL_1_9_4:1.4
+	REL_1_9_0:1.4
+	REL_1_8_0:1.3
+	REL_1_7_8:1.3
+	REL_1_7_3:1.3
+	REL_1_7_1:1.2
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.6
+date	2002.07.14.19.48.31;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.07.13.10.33.49;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.04.12.19.28.46;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.02.28.10.49.20;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.10.02.20.43.55;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.11.19.56.23;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@#include "CoreSuite.h"
+#include "FailureException.h"
+#include "MockTestCase.h"
+#include "TestCaseTest.h"
+#include <cppunit/TestResult.h>
+
+/*
+ - test have been done to check exception management in run(). other 
+   tests need to be added to check the other aspect of TestCase.
+ */
+
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( TestCaseTest,
+                                       coreSuiteName() );
+
+
+TestCaseTest::TestCaseTest()
+{
+}
+
+
+TestCaseTest::~TestCaseTest()
+{
+}
+
+
+void 
+TestCaseTest::setUp()
+{
+  m_testListener = new MockTestListener( "mock-testlistener" );
+  m_result = new CPPUNIT_NS::TestResult();
+  m_result->addListener( m_testListener );
+}
+
+
+void 
+TestCaseTest::tearDown()
+{
+  delete m_result;
+  delete m_testListener;
+}
+
+
+void 
+TestCaseTest::testSetUpFailure()
+{
+  checkFailure( true, false, false );
+}
+
+
+void 
+TestCaseTest::testRunTestFailure()
+{
+  checkFailure( false, true, false );
+}
+
+
+void 
+TestCaseTest::testTearDownFailure()
+{
+  checkFailure( false, false, true );
+}
+
+
+void 
+TestCaseTest::testFailAll()
+{
+  checkFailure( true, true, true );
+}
+
+
+void 
+TestCaseTest::testNoFailure()
+{
+  checkFailure( false, false, false );
+}
+
+
+void 
+TestCaseTest::checkFailure( bool failSetUp, 
+                            bool failRunTest,
+                            bool failTearDown )
+{
+  try
+  {
+    MockTestCase testCase( "mock-test" );
+    if ( failSetUp )
+      testCase.makeSetUpThrow();
+    if ( failRunTest )
+      testCase.makeRunTestThrow();
+    if ( failTearDown )
+      testCase.makeTearDownThrow();
+    testCase.setExpectedSetUpCall( 1 );
+    testCase.setExpectedRunTestCall( failSetUp ? 0 : 1 );
+    testCase.setExpectedTearDownCall( failSetUp ? 0 : 1 );
+    
+    testCase.run( m_result );
+
+    testCase.verify();
+  }
+  catch ( FailureException & )
+  {
+    CPPUNIT_ASSERT_MESSAGE( "exception should have been caught", false );
+  }
+}
+
+
+void 
+TestCaseTest::testCountTestCases()
+{
+  CPPUNIT_NS::TestCase test;
+  CPPUNIT_ASSERT_EQUAL( 1, test.countTestCases() );
+}
+
+
+void 
+TestCaseTest::testDefaultConstructor()
+{
+  CPPUNIT_NS::TestCase test;
+  CPPUNIT_ASSERT_EQUAL( std::string(""), test.getName() );
+}
+
+
+void 
+TestCaseTest::testConstructorWithName()
+{
+  std::string testName( "TestName" );
+  CPPUNIT_NS::TestCase test( testName );
+  CPPUNIT_ASSERT_EQUAL( testName, test.getName() );
+}
+
+
+void 
+TestCaseTest::testTwoRun()
+{
+  MockTestCase test1( "mocktest1" );
+  test1.makeRunTestThrow();
+  m_testListener->setExpectedStartTestCall( 2 );
+  m_testListener->setExpectedAddFailureCall( 2 );
+  m_testListener->setExpectedEndTestCall( 2 );
+
+  test1.run( m_result );
+  test1.run( m_result );
+
+  m_testListener->verify();
+}
+
+
+void 
+TestCaseTest::testGetChildTestCount()
+{
+  CPPUNIT_NS::TestCase test( "test" );
+  CPPUNIT_ASSERT_EQUAL( 0, test.getChildTestCount() );
+}
+
+
+void 
+TestCaseTest::testGetChildTestAtThrow()
+{
+  CPPUNIT_NS::TestCase test( "test" );
+  test.getChildTestAt( 0 );
+}
+@
+
+
+1.5
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d13 1
+a13 1
+                                       CppUnitTest::coreSuiteName() );
+@
+
+
+1.4
+log
+@* Makefile.am: added examples/qt to tar ball release.
+
+* TODO: heavily updated.
+
+* contrib/msvc/CppUnit*.wwtpl: changed base class for unit test to TestFixture.
+
+* include/cppunit/Test.h: removed toString() method. Not used by the framework
+  and source of confusions with getName().
+  Added getChildTestCount() and getChildTestAt(), introducing the composite pattern
+  at top level. Added utility methods findTest() and findTestPath().
+
+* src/cppunit/Test.cpp: added. Implementation of new utility methods.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: inherits TestLeaf. Removed toString(), run(void) and
+  defaultResult(). Removed default constructor.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestSuite.cpp: fixed some includes that used "" instead of <>.
+
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: added. Common implementation of Test for composite
+  tests (TestSuite).
+
+* include/cppunit/TestFailure.h:
+* src/cppunit/TestFailure.cpp: removed toString().
+
+* include/cppunit/TestLeaf.h:
+* src/cppunit/TestLeaf.cpp: added. Common implementation of Test for single test
+  (TestCase).
+
+* include/cppunit/TestListener.h: added TimingListener example to documentation.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: added. List of test traversed to access a test in the
+  test hierarchy.
+
+* include/cppunit/TestRunner.h: added. Generic TestRunner.
+
+* src/cppunit/TestRunner.cpp: moved to TextTestRunner.cpp. Added new implementation
+  of includecppunit/TestRunner.h.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: inherits TestComposite and implements new Test
+  interface. Removed toString().
+
+* src/cppunit/TextTestRunner.cpp: moved from TestRunner.cpp. Implementation of
+  include/cppunit/ui/text/TestRunner.h.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* src/cppunit/RepeatedTest.cpp: removed toString().
+
+* include/cppunit/extensions/TestDecorator.h: inherits TestLeaf.
+  Removed toString()
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h: XML outputter now escape node content.
+  Add unit test for that bug (#540944). Added style sheet support. Modified
+  XML structure: failure message as its own element.
+
+* src/msvc/testrunner/TestRunnerModel.h:
+* src/msvc/testrunner/TestRunnerModel.cpp: used Test::findTest() to find a test
+  by name instead of using RTTI. Added toAnsiString() for convertion when
+  compiling as UNICODE.
+
+* src/msvc/testrunner/TreeHierarchyDlg.h:
+* src/msvc/testrunner/TreeHierarchyDlg.cpp: used new composite interface of Test
+  to explorer the test hierarchy instead of RTTI.
+
+* examples/cppunittest/TestPathTest.h:
+* examples/cppunittest/TestPathTest.cpp: added, unit tests for TestPath.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: added test for TestLeaf.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: added test for TestComposite and
+  new Test interface.
+@
+text
+@d30 1
+a30 1
+  m_result = new CppUnit::TestResult();
+d110 1
+a110 1
+  CppUnit::TestCase test;
+d118 1
+a118 1
+  CppUnit::TestCase test;
+d127 1
+a127 1
+  CppUnit::TestCase test( testName );
+d151 1
+a151 1
+  CppUnit::TestCase test( "test" );
+d159 1
+a159 1
+  CppUnit::TestCase test( "test" );
+@
+
+
+1.3
+log
+@* NEW: updated and restructured.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp:
+updated against TestResultChange. Changed TestResult to TestResultCollector.
+
+* include/cppunit/extensions/HelperMacros.h: minor documentation fix.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all Outputter.
+
+* include/cppunit/Portability.h: made the fix on OStringStream suggested by
+Bob Summerwill to remove level 4 warning with VC++.
+
+* include/cppunit/TestAssert.h: added macro CPPUNIT_ASSERT_EQUAL_MESSAGE.
+
+* src/cppunit/TestFailure.cpp:
+* include/cppunit/TestFailure.h: added method clone() to duplicate a failure. Made
+all method virtual.
+
+* include/cppunit/TestListener.h: changed signature of addFailure() to
+addFailure( const TestFailure &failure ). Failure is now only a temporary object.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all outputter. Used
+by TextTestRunner.
+
+* include/cppunit/SynchronizedObject.h:
+* src/cppunit/SynchronizedObject.cpp: added. Class extracted from TestResult.
+Base class for objects that can be accessed from different threads.
+
+* include/cppunit/TestResult.h: TestFailure.h is no longer included.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: extracted all methods related to keeping track
+of the result to the new TestResultCollector class which is a TestListener.
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: added. TestListener which kept track
+of the result of the test run. All failure/error, and tests are tracked.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: added. TestListener extracted from
+TestResult. Is responsible for wasSucessful().
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: reindented.
+
+* include/cppunit/TextOutputter.h:
+* src/cppunit/TextOutputter.cpp: added. Copied from the deprecated
+TextTestResult and modified to act as an Ouputter.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: Copied from the deprecated
+TextTestResult and modified to print the dot while the test are running.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: updated against TestResult change.
+No compatiblity break. Deprecated.
+
+* include/cppunit/TextTestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to work with the new TestResult.
+Use TextTestProgressListener and TextOutputter instead of TextTestResult.
+Any outputter with interface Outputter can be used to print the test result
+(CompilerOutputter, XmlOutputter, TextOutputter...)
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against TestResultChange.
+Changed TestResult to TestResultCollector.
+
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/TestRunnerDlg.cpp: fixed the 'fullrowselect' feature of the list view.
+The dialog is a TestListener itself, it no longer use the GUITestResult class.
+
+* src/msvc6/TestRunner.rc: moved the "autorun test button" in such a way that it
+did not overlap the progress bar anymore.
+
+* src/msvc6/MfcSynchronizationObject.h: added. Generic SynchronizedObject
+lock for MFC.
+
+* src/msvc6/GUITestResult.h :
+* src/msvc6/GUITestResult.cpp : removed.
+
+* src/qttestrunner/TestRunnerModel.h:
+* src/qttestrunner/TestRunnerModel.cpp: changed addFailure() signature to reflect
+change on TestListener.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use the new Outputter
+abstraction and TextTestRunner facilities.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.cpp: removed. Replaced by MockTestCase.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.h:
+
+* examples/cppunittest/HelperMacrosTest.h:
+* examples/cppunittest/HelperMacrosTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/MockTestListener.h:
+* examples/cppunittest/MockTestListener.cpp: the class now behave like a mock
+object.
+
+* examples/cppunittest/MockTestCase.h:
+* examples/cppunittest/MockTestCase.cpp: added. Mock TestCase object.
+
+* examples/cppunittest/OrthodoxTest.h:
+* examples/cppunittest/OrthodoxTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/SynchronizedTestResult.h: Updated against TestResult
+change.
+
+* examples/cppunittest/TestCallerTest.h:
+* examples/cppunittest/TestCallerTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: Updated against TestResult change.
+Use MockTestListener and MockTestCase instead of FailingTestCase and TestResult.
+
+* examples/cppunittest/TestDecoratorTest.h:
+* examples/cppunittest/TestDecoratorTest.cpp: Updated against TestResult change.
+Use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/TestListenerTest.h:
+* examples/cppunittest/TestListenerTest.cpp: removed. Those unit tests have been
+rewrote and moved to TestResultTest.
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: Updated to test the new interface.
+Tests from TestListenerTest have been moved here.
+
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp: added. Tests for the class
+that been extracted from TestResult.
+
+* examples/cppunittest/TestSetUpTest.h:
+* examples/cppunittest/TestSetUpTest.cpp: renamed SetUp inner class to MockSetUp.
+Changed interface to be more akin to a Mock object.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: Updated against TestResult change,
+and rewrote to use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: Updated against TestResult change.
+Added some utility methods to make the update easier.
+@
+text
+@a132 13
+TestCaseTest::testDefaultRun()
+{
+  MockTestCase test( "mocktest" );
+  test.setExpectedSetUpCall();
+  test.setExpectedRunTestCall();
+  test.setExpectedTearDownCall();
+
+  std::auto_ptr<CppUnit::TestResult> result( test.run() );
+  test.verify();
+}
+
+
+void 
+d145 16
+@
+
+
+1.2
+log
+@* include/cppunit/extensions/TestFactoryRegistry.h
+* src/cppunit/TestFactoryRegistry.cpp : fixed memory leaks that
+occured when a TestFactoryRegistry was registered into another
+TestFactoryRegistry.
+
+* include/cppunit/extensions/AutoRegisterSuite.h : updated doc.
+
+* include/cppunit/extensions/HelperMacros.h : added macro
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION to register a suite into
+a named suite. Updated doc.
+
+* examples/cppunittest/CoreSuite.h:
+* examples/cppunittest/ExtensionSuite.h:
+* examples/cppunittest/HelperSuite.h: added, declaration of suite for
+use with CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/makefile.am : added HelperSuite.h, CoreSuite.h,
+ExtensionSuite.h, CppUnitTestSuite.h and CppUnitTestSuite.cpp.
+
+* examples/cppunittest/CppUnitTestSuite.*: added.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/TestAssertTest.cpp:
+* examples/cppunittest/TestCaseTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestListenerTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/TestSuiteTest.cpp: moved into named suite
+"Core" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/OrthodoxTest.cpp:
+* examples/cppunittest/RepeatedTest.cpp:
+* examples/cppunittest/TestDecoratorTest.cpp:
+* examples/cppunittest/TestSetUpTest.cpp: moved into named suite
+"Extension" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/HelperMacrosTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp: moved into named suite
+"Helper" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/CppUnitTest.dsp :
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp : added
+Makefile.am, HelperSuite.h, CoreSuite.h, ExtensionSuite.h,
+CppUnitTestSuite.h and CppUnitTestSuite.cpp.
+@
+text
+@d2 2
+a4 1
+#include "FailingTestCase.h"
+d29 1
+d31 1
+d39 1
+d85 14
+a98 3
+    FailingTestCase test( failSetUp, failRunTest, failTearDown );
+    test.run( m_result );
+    test.verify( !failSetUp, !failSetUp );
+d102 1
+a102 1
+    CPPUNIT_ASSERT_MESSAGE( "exception should have been catched", false );
+d135 5
+a139 1
+  CppUnit::TestCase test;
+d141 1
+a141 2
+
+  checkResult( 0, 0, 1, result.get() );
+d148 6
+a153 1
+  FailingTestCase test1( false, true, false );
+a155 3
+  
+  FailingTestCase test2( false, false, false );
+  test2.run( m_result );
+d157 1
+a157 13
+  checkResult( 2, 0, 1, m_result );
+}
+
+
+void 
+TestCaseTest::checkResult( int failures,
+                           int errors,
+                           int testsRun,
+                           CppUnit::TestResult *result )
+{
+  CPPUNIT_ASSERT_EQUAL( testsRun, result->runTests() );
+  CPPUNIT_ASSERT_EQUAL( errors, result->testErrors() );
+  CPPUNIT_ASSERT_EQUAL( failures, result->testFailures() );
+@
+
+
+1.1
+log
+@* examples/cppunittest/TestResultTest.*: renamed TestListenerTest.*
+
+* examples/cppunittest/*: added unit tests for:
+HelperMacros, TestAssert, TestCaller, TestCase, TestFailure,
+TestResult, TestSuite, TestDecoratorTest, TestSetUp, RepeatedTestTest,
+Orthodox, Exception.
+@
+text
+@d1 1
+d11 2
+a12 1
+CPPUNIT_TEST_SUITE_REGISTRATION( TestCaseTest );
+@
+

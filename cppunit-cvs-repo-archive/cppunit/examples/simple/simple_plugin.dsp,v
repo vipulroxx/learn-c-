@@ -1,0 +1,370 @@
+head	1.6;
+access;
+symbols
+	REL_1_12_1:1.6
+	REL_1_11_6:1.6
+	REL_1_11_4:1.6
+	REL_1_11_0:1.5
+	TG_CPPUNIT_NO_STREAM_AFTER:1.5
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.5
+	REL_1_10_2:1.5
+	REL_1_10_0:1.4
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2
+	REL_1_9_4:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.6
+date	2005.10.13.20.35.51;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.06.17.19.25.26;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.06.16.19.02.41;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.07.03.07.02.48;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.20.21.51.33;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.19.14.11.38;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@* removed most warning when compiling with vc++ 6sp6.
+@
+text
+@# Microsoft Developer Studio Project File - Name="simple_plugin" - Package Owner=<4>
+# Microsoft Developer Studio Generated Build File, Format Version 6.00
+# ** DO NOT EDIT **
+
+# TARGTYPE "Win32 (x86) Dynamic-Link Library" 0x0102
+
+CFG=simple_plugin - Win32 Debug
+!MESSAGE This is not a valid makefile. To build this project using NMAKE,
+!MESSAGE use the Export Makefile command and run
+!MESSAGE 
+!MESSAGE NMAKE /f "simple_plugin.mak".
+!MESSAGE 
+!MESSAGE You can specify a configuration when running NMAKE
+!MESSAGE by defining the macro CFG on the command line. For example:
+!MESSAGE 
+!MESSAGE NMAKE /f "simple_plugin.mak" CFG="simple_plugin - Win32 Debug"
+!MESSAGE 
+!MESSAGE Possible choices for configuration are:
+!MESSAGE 
+!MESSAGE "simple_plugin - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "simple_plugin - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE 
+
+# Begin Project
+# PROP AllowPerConfigDependencies 0
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
+CPP=cl.exe
+MTL=midl.exe
+RSC=rc.exe
+
+!IF  "$(CFG)" == "simple_plugin - Win32 Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "simple_plugin___Win32_Release"
+# PROP BASE Intermediate_Dir "simple_plugin___Win32_Release"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "ReleasePlugIn"
+# PROP Intermediate_Dir "ReleasePlugIn"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMPLE_PLUGIN_EXPORTS" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /Zd /O2 /I "../../include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMPLE_PLUGIN_EXPORTS" /D "CPPUNIT_DLL" /FD /c
+# SUBTRACT CPP /YX
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x40c /d "NDEBUG"
+# ADD RSC /l 0x40c /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib cppunit_dll.lib /nologo /dll /machine:I386 /libpath:"../../lib/"
+# SUBTRACT LINK32 /incremental:yes
+# Begin Special Build Tool
+TargetPath=.\ReleasePlugIn\simple_plugin.dll
+SOURCE="$(InputPath)"
+PostBuild_Desc=Running tests...
+PostBuild_Cmds=..\..\lib\DllPlugInTester_dll.exe "$(TargetPath)"
+# End Special Build Tool
+
+!ELSEIF  "$(CFG)" == "simple_plugin - Win32 Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "simple_plugin___Win32_Debug"
+# PROP BASE Intermediate_Dir "simple_plugin___Win32_Debug"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "DebugPlugIn"
+# PROP Intermediate_Dir "DebugPlugIn"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMPLE_PLUGIN_EXPORTS" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "../../include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMPLE_PLUGIN_EXPORTS" /D "CPPUNIT_DLL" /FD /GZ /c
+# SUBTRACT CPP /YX
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x40c /d "_DEBUG"
+# ADD RSC /l 0x40c /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib cppunitd_dll.lib /nologo /dll /incremental:no /debug /machine:I386 /out:"DebugPlugIn/simple_plugind.dll" /pdbtype:sept /libpath:"../../lib/"
+# Begin Special Build Tool
+TargetPath=.\DebugPlugIn\simple_plugind.dll
+SOURCE="$(InputPath)"
+PostBuild_Desc=Running tests...
+PostBuild_Cmds=..\..\lib\DllPlugInTesterd_dll.exe -b --xml tests.xml -c "$(TargetPath)"
+# End Special Build Tool
+
+!ENDIF 
+
+# Begin Target
+
+# Name "simple_plugin - Win32 Release"
+# Name "simple_plugin - Win32 Debug"
+# Begin Source File
+
+SOURCE=.\ExampleTestCase.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ExampleTestCase.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SimplePlugIn.cpp
+# End Source File
+# End Target
+# End Project
+@
+
+
+1.5
+log
+@* src/*/*.dsp: bug #933154, post build fail in directory with spaces.
+@
+text
+@d43 1
+a43 1
+# PROP Ignore_Export_Lib 1
+d46 1
+a46 1
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "../../include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMPLE_PLUGIN_EXPORTS" /D "CPPUNIT_DLL" /FD /c
+d58 1
+d77 1
+a77 1
+# PROP Ignore_Export_Lib 1
+d80 1
+a80 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../../include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMPLE_PLUGIN_EXPORTS" /D "CPPUNIT_DLL" /FD /GZ /c
+d91 1
+a91 1
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib cppunitd_dll.lib /nologo /dll /debug /machine:I386 /out:"DebugPlugIn/simple_plugind.dll" /pdbtype:sept /libpath:"../../lib/"
+@
+
+
+1.4
+log
+@* fixing project compilation settings (rtti not always enabled)
+@
+text
+@d62 1
+a62 1
+PostBuild_Cmds=..\..\lib\DllPlugInTester_dll.exe $(TargetPath)
+d95 1
+a95 1
+PostBuild_Cmds=..\..\lib\DllPlugInTesterd_dll.exe -b --xml tests.xml -c $(TargetPath)
+@
+
+
+1.3
+log
+@* include/cppunit/XmlOutputter.h: fixed XmlOutputter constructed default
+  value initializatino which caused compilation error with BC5.
+
+* src/cppunit/PlugInManager.cpp: added missing CPPUNIT_NO_TESTPLUGIN guard.
+
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp:
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h: applied Steven Mitter
+  patch to fix bug #530426 (conflict between TestRunner and host application
+  resources). Adapted patch to compile work with Unicode.
+
+* src/msvc6/testrunner/ResourceLoaders.h:
+* src/msvc6/testrunner/ResourceLoaders.cpp:
+* src/msvc6/testrunner/Change-Diary-ResourceBugFix.txt: added, from
+  Steven Mitter's patch. Simplified loadCString() to compile with Unicode.
+
+* src/cppunit/cppunit.dsp:
+* src/cppunit/cppunit_dll.dsp:
+* src/DllPlugInTester/DllPlugInTester.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: all lib, dll and exe are
+  now created in the intermediate directory. A post-build rule is used to
+  copy them to the lib/ directory.
+@
+text
+@d46 1
+a46 1
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "../../include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMPLE_PLUGIN_EXPORTS" /D "CPPUNIT_DLL" /FD /c
+@
+
+
+1.2
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@d43 1
+a43 1
+# PROP Ignore_Export_Lib 0
+d76 1
+a76 1
+# PROP Ignore_Export_Lib 0
+d79 1
+a79 1
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMPLE_PLUGIN_EXPORTS" /D "CPPUNIT_DLL" /FD /GZ /c
+@
+
+
+1.1
+log
+@* src/cppunit/PlugInManager.cpp: fixed bug in unload().
+
+* include/cppunit/TypeInfoHelper.h:
+* src/cppunit/TypeInfoHelper.cpp: Implementation is now always available
+  is CPPUNIT_HAVE_RTTI is not 0. This removes the need to use
+  different libraries. CPPUNIT_USE_TYPEINFO_NAME can be set on a
+  case by case basis for HelperMacros.
+
+* src/cppunit/TestFactoryRegistry.cpp: removed unused include of
+  TypeInfoHelper.h.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: used endTest() instead
+  of done() to finalize.
+
+* src/msvc6/TestPlugInRunner/TestPlugIn.h:
+* src/msvc6/TestPlugInRunner/TestPlugIn.cpp: updated to use the
+  new test plug-in system.
+
+* examples/simple/SimplePlugIn.cpp:
+* examples/simple/simple_plugin.dsp: crossplatform test plug-in
+  example using 'simple'.
+
+* examples/msvc6/EasyTestPlugIn/*: projects replaced with the
+  crossplatform projecct examples/simple/simple_plugin.dsp.
+@
+text
+@d78 2
+a79 2
+# ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMPLE_PLUGIN_EXPORTS" /YX /FD /GZ  /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMPLE_PLUGIN_EXPORTS" /D "CPPUNIT_DLL" /FD /GZ  /c
+d95 1
+a95 1
+PostBuild_Cmds=..\..\lib\DllPlugInTesterd_dll.exe $(TargetPath)
+@
+

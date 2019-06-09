@@ -1,0 +1,165 @@
+head	1.5;
+access;
+symbols
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.4
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.3
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.5
+date	2005.02.28.21.36.19;	author blep;	state dead;
+branches;
+next	1.4;
+
+1.4
+date	2005.02.27.10.15.41;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.02.23.21.43.44;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.11.15.08.28.51;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.29;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.29;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* moved cpput/typehelper.h to cpptl/typename.h
+* renamed helper functions: getObjectTypeName(), getTypeName() and demangleTypeInfoName()
+* With mingw, typeinfo name is correctly extracted (skip initial digits)
+* added automatic detection of the presence of RTTI with msvc.
+@
+text
+@#ifndef CPPUT_TYPEHELPER_H_INCLUDED
+# define CPPUT_TYPEHELPER_H_INCLUDED
+
+# include <cpput/config.h>
+# include <string>
+# include <typeinfo>
+
+/// @@todo Some plateform such as embedded VC++ 4 do not provide std::type_info.
+
+namespace CppUT {
+
+   namespace Impl {
+      inline CppTL::ConstString CPPUT_API extractTypeId( const std::type_info &type,
+                                                         const char *hint )
+      {
+   // VC6 define the macro _CPPRTTI when RTTI is enabled. Is that standard & portable ?
+
+         CppTL::ConstString typeName( type.name() );
+         const int classKeywordLength = 6;
+         if ( typeName.substr( 0, classKeywordLength ) == "class " )
+            return typeName.substr( classKeywordLength );
+         return typeName;
+      }
+   } // namespace Impl
+
+   template<class AType>
+   CppTL::ConstString extractType( CppTL::Type<AType>, 
+                                   const char *hint )
+   {
+      return Impl::extractTypeId( typeid( AType ), hint );
+   }
+
+   template<typename Object>
+   CppTL::ConstString extractObjectType( const Object &object,
+                                         const char *hint )
+   {
+      return Impl::extractTypeId( typeid(object), hint );
+   }
+
+} // namespace CppUT
+
+
+#endif // CPPUT_TYPEHELPER_H_INCLUDED
+@
+
+
+1.4
+log
+@* use CppTL::ConstString instead of std::string for thread-safety
+@
+text
+@@
+
+
+1.3
+log
+@* reindented
+@
+text
+@d13 2
+a14 2
+      inline std::string CPPUT_API extractTypeId( const std::type_info &type,
+                                                  const char *hint )
+d18 1
+a18 1
+         std::string typeName( type.name() );
+d27 2
+a28 2
+   std::string extractType( CppTL::Type<AType>, 
+                            const char *hint )
+d34 2
+a35 2
+   std::string extractObjectType( const Object &object,
+                                  const char *hint )
+@
+
+
+1.2
+log
+@* added preprocessor macro to indicate if fixture suite name should be deduced through RTTI or macro expansion: CPPUT_USE_RTTI_TO_NAME_SUITE
+* fixed typehelper to work on VC++ 6 (linker bug caused all the templated function to resolve into the same function).
+@
+text
+@d14 1
+a14 1
+                                                const char *hint )
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d8 1
+d27 2
+a28 1
+   std::string extractType( const char *hint )
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

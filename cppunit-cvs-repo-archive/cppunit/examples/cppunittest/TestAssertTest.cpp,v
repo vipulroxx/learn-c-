@@ -1,0 +1,882 @@
+head	1.15;
+access;
+symbols
+	REL_1_12_1:1.15
+	REL_1_11_6:1.9
+	REL_1_11_4:1.9
+	REL_1_11_0:1.9
+	TG_CPPUNIT_NO_STREAM_AFTER:1.8
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.8
+	REL_1_10_2:1.8
+	REL_1_10_0:1.8
+	REL_1_9_14:1.8
+	REL_1_9_12:1.6
+	BRANCH_1_9_12:1.6.0.2
+	TG_BRANCH_1_9_12:1.6
+	TG_BEFORE_HPUX_PLUGIN:1.6
+	TG_BEFORE_SUN4_PORT:1.6
+	REL_1_9_10:1.6
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	REL_1_9_6:1.4
+	REL_1_9_4:1.4
+	REL_1_9_0:1.4
+	REL_1_8_0:1.4
+	REL_1_7_8:1.4
+	REL_1_7_3:1.4
+	REL_1_7_1:1.4
+	REL_1_6_2:1.2
+	BRANCH_1_6:1.2.0.2
+	REL_1_6_1:1.2
+	REL_1_6_0:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.15
+date	2007.02.25.08.49.12;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2007.02.24.21.13.04;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2007.01.31.05.27.07;	author smr99;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2007.01.27.15.50.11;	author smr99;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2007.01.27.05.46.30;	author smr99;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2007.01.12.05.49.43;	author smr99;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2004.11.05.22.47.21;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2004.03.13.13.42.42;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2004.03.13.12.52.57;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.07.14.19.48.31;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.07.13.10.33.49;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.10.02.20.43.55;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.10.02.06.49.27;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.07.13.04.32.16;	author smr99;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.11.19.56.23;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.15
+log
+@- removed wrong comment.
+@
+text
+@#include "CoreSuite.h"
+#include "TestAssertTest.h"
+#include <cppunit/portability/FloatingPoint.h>
+#include <algorithm>
+#include <limits>
+
+/*
+ Note:
+ - tests need to be added to test asserEquals() template function and
+ use of assertion traits. Some check may need to be added to check
+ the message content in Exception.
+ - code need to be refactored with the use of a test caller that expect
+ an exception.
+ */
+
+
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( TestAssertTest,
+                                       coreSuiteName() );
+
+
+TestAssertTest::TestAssertTest()
+{
+}
+
+
+TestAssertTest::~TestAssertTest()
+{
+}
+
+
+void 
+TestAssertTest::setUp()
+{
+}
+
+
+void 
+TestAssertTest::tearDown()
+{
+}
+
+
+void 
+TestAssertTest::testAssertThrow()
+{
+   CPPUNIT_ASSERT_THROW( throw std::string(), std::string );
+
+   try
+   {
+      int x;
+      CPPUNIT_ASSERT_THROW( x = 1234, std::string );
+   }
+   catch ( CPPUNIT_NS::Exception & )
+   {
+      return;
+   }
+
+   throw std::exception();
+}
+
+
+void 
+TestAssertTest::testAssertNoThrow()
+{
+   int x;
+   CPPUNIT_ASSERT_NO_THROW( x = 1234 );
+
+   try
+   {
+      CPPUNIT_ASSERT_NO_THROW( throw std::exception() );
+   }
+   catch ( CPPUNIT_NS::Exception & )
+   {
+      return;
+   }
+   throw std::exception();
+}
+
+
+void 
+TestAssertTest::testAssertAssertionFail()
+{
+   CPPUNIT_ASSERT_ASSERTION_FAIL( throw CPPUNIT_NS::Exception() );
+
+   try
+   {
+      int x;
+      CPPUNIT_ASSERT_ASSERTION_FAIL( x = 1234 );
+   }
+   catch ( CPPUNIT_NS::Exception & )
+   {
+      return;
+   }
+
+   throw std::exception();
+}
+
+
+void 
+TestAssertTest::testAssertAssertionPass()
+{
+   int x;
+   CPPUNIT_ASSERT_ASSERTION_PASS( x = 1234 );
+
+   try
+   {
+      CPPUNIT_ASSERT_ASSERTION_PASS( throw CPPUNIT_NS::Exception() );
+   }
+   catch ( CPPUNIT_NS::Exception & )
+   {
+      return;
+   }
+
+   throw std::exception();
+}
+
+
+void 
+TestAssertTest::testAssert()
+{
+  CPPUNIT_ASSERT_ASSERTION_PASS( CPPUNIT_ASSERT( true ) );
+  
+  CPPUNIT_ASSERT_ASSERTION_FAIL( CPPUNIT_ASSERT( false ) );
+}
+
+
+static int foo() { return 1; }
+
+
+void 
+TestAssertTest::testAssertEqual()
+{
+  CPPUNIT_ASSERT_ASSERTION_PASS( CPPUNIT_ASSERT_EQUAL( 1, 1 ) );
+  CPPUNIT_ASSERT_ASSERTION_PASS( CPPUNIT_ASSERT_EQUAL( 1, foo() ) );
+  CPPUNIT_ASSERT_ASSERTION_PASS( CPPUNIT_ASSERT_EQUAL( 12345678, 12345678 ) );
+
+  CPPUNIT_ASSERT_ASSERTION_FAIL( CPPUNIT_ASSERT_EQUAL( 1, 2 ) );
+}
+
+void 
+TestAssertTest::testAssertMessageTrue()
+{
+  CPPUNIT_ASSERT_ASSERTION_PASS( 
+     CPPUNIT_ASSERT_MESSAGE( "This test should not failed", true ) );
+}
+
+
+void 
+TestAssertTest::testAssertMessageFalse()
+{
+  bool exceptionCaught = false;
+  std::string message( "This test message should not be seen" );
+  try
+  {
+    CPPUNIT_ASSERT_MESSAGE( message, 2==3 );
+  }
+  catch( CPPUNIT_NS::Exception &e )
+  {
+    exceptionCaught = true; // ok, we were expecting an exception.
+    checkMessageContains( &e, message );
+  }
+
+  CPPUNIT_ASSERT( exceptionCaught );
+}
+
+
+void 
+TestAssertTest::testAssertDoubleEquals()
+{
+  CPPUNIT_ASSERT_ASSERTION_PASS( CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.1, 1.2, 0.101 ) );
+  CPPUNIT_ASSERT_ASSERTION_PASS( CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2, 1.1, 0.101 ) );
+
+  CPPUNIT_ASSERT_ASSERTION_FAIL( CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.1, 1.2, 0.09 ) );
+  CPPUNIT_ASSERT_ASSERTION_FAIL( CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2, 1.1, 0.09 ) );
+}
+
+/*
+ * Test that the error message from CPPUNIT_ASSERT_DOUBLES_EQUAL() 
+ * has more than the default 6 digits of precision.
+ */
+void 
+TestAssertTest::testAssertDoubleEqualsPrecision()
+{
+  std::string failure( "2.000000001" );
+  try
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, 2.000000001, 1 );
+  }
+  catch( CPPUNIT_NS::Exception &e )
+  {
+    checkMessageContains( &e, failure );
+    return;
+  }
+  CPPUNIT_FAIL( "Expected assertion failure" );
+}
+
+
+void 
+TestAssertTest::testAssertDoubleNonFinite()
+{
+  double inf = std::numeric_limits<double>::infinity();
+  double nan = std::numeric_limits<double>::quiet_NaN();
+  // test our portable floating-point primitives that detect NaN values
+  CPPUNIT_ASSERT( CPPUNIT_NS::floatingPointIsUnordered( nan ) );
+  CPPUNIT_ASSERT( !CPPUNIT_NS::floatingPointIsUnordered( inf ) );
+  CPPUNIT_ASSERT( !CPPUNIT_NS::floatingPointIsUnordered( -inf ) );
+  CPPUNIT_ASSERT( !CPPUNIT_NS::floatingPointIsUnordered( 1.0 ) );
+  CPPUNIT_ASSERT( !CPPUNIT_NS::floatingPointIsUnordered( 1.5 ) );
+  CPPUNIT_ASSERT( !CPPUNIT_NS::floatingPointIsUnordered( 2.0 ) );
+  CPPUNIT_ASSERT( !CPPUNIT_NS::floatingPointIsUnordered( 2.5 ) );
+  CPPUNIT_ASSERT( !CPPUNIT_NS::floatingPointIsUnordered( 0.0 ) );
+  CPPUNIT_ASSERT( !CPPUNIT_NS::floatingPointIsUnordered( -1.0 ) );
+  CPPUNIT_ASSERT( !CPPUNIT_NS::floatingPointIsUnordered( -2.0 ) );
+  // test our portable floating-point primitives that detect finite values
+  CPPUNIT_ASSERT( CPPUNIT_NS::floatingPointIsFinite( 0.0 ) );
+  CPPUNIT_ASSERT( CPPUNIT_NS::floatingPointIsFinite( 0.5 ) );
+  CPPUNIT_ASSERT( CPPUNIT_NS::floatingPointIsFinite( 1.0 ) );
+  CPPUNIT_ASSERT( CPPUNIT_NS::floatingPointIsFinite( 1.5 ) );
+  CPPUNIT_ASSERT( CPPUNIT_NS::floatingPointIsFinite( 2.0 ) );
+  CPPUNIT_ASSERT( CPPUNIT_NS::floatingPointIsFinite( 2.5 ) );
+  CPPUNIT_ASSERT( CPPUNIT_NS::floatingPointIsFinite( -1.5 ) );
+  CPPUNIT_ASSERT( !CPPUNIT_NS::floatingPointIsFinite( nan ) );
+  CPPUNIT_ASSERT( !CPPUNIT_NS::floatingPointIsFinite( inf ) );
+  CPPUNIT_ASSERT( !CPPUNIT_NS::floatingPointIsFinite( -inf ) );
+  // Infinity tests
+  CPPUNIT_ASSERT( inf == inf );
+  CPPUNIT_ASSERT( -inf == -inf );
+  CPPUNIT_ASSERT( -inf != inf );
+  CPPUNIT_ASSERT( -inf < inf );
+  CPPUNIT_ASSERT( inf > -inf );
+  CPPUNIT_ASSERT_ASSERTION_FAIL( CPPUNIT_ASSERT_DOUBLES_EQUAL( inf, 0.0, 1.0 ) );
+  CPPUNIT_ASSERT_ASSERTION_FAIL( CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, inf, 1.0 ) );
+  CPPUNIT_ASSERT_ASSERTION_PASS( CPPUNIT_ASSERT_DOUBLES_EQUAL( inf, inf, 1.0 ) );
+  // NaN tests 
+  CPPUNIT_ASSERT_ASSERTION_FAIL( CPPUNIT_ASSERT_DOUBLES_EQUAL( nan, 0.0, 1.0 ) );
+  CPPUNIT_ASSERT_ASSERTION_FAIL( CPPUNIT_ASSERT_DOUBLES_EQUAL( nan, nan, 1.0 ) );
+  CPPUNIT_ASSERT_ASSERTION_FAIL( CPPUNIT_ASSERT_DOUBLES_EQUAL( nan, inf, 1.0 ) );
+  CPPUNIT_ASSERT_ASSERTION_FAIL( CPPUNIT_ASSERT_DOUBLES_EQUAL( inf, nan, 1.0 ) );
+}
+
+
+void 
+TestAssertTest::testFail()
+{
+  bool exceptionCaught = false;
+  std::string failure( "FailureMessage" );
+  try
+  {
+    CPPUNIT_FAIL( failure );
+  }
+  catch( CPPUNIT_NS::Exception &e )
+  {
+    exceptionCaught = true;
+    checkMessageContains( &e, failure );
+  }
+  CPPUNIT_ASSERT( exceptionCaught );
+}
+
+
+void 
+TestAssertTest::checkMessageContains( CPPUNIT_NS::Exception *e,
+                                      std::string expected )
+{
+  std::string actual = e->what();
+  CPPUNIT_ASSERT_MESSAGE( "Expected message not found: " + expected +
+                          ", was: " + actual,
+      std::search( actual.begin(), actual.end(), 
+                   expected.begin(), expected.end() ) != actual.end() );
+}
+@
+
+
+1.14
+log
+@* src/cppunit/TestAssert.cpp (assertDoubleEquals): Moved finite & NaN
+  tests to include/cppunit/portability/FloatingPoint.h. Changed
+  implementation assertDoubleEquals to explicitly test for NaN
+  in case of non-finite values to force equality failure in the
+  presence of NaN. Previous implementation failed on Microsoft
+  Visual Studio 6 (on this platform: NaN == NaN).
+* examples/cppunittest/TestAssertTest.cpp: Add more unit tests to
+  test the portable floating-point primitive. Added missing
+  include <limits>.
+
+* include/cppunit/portability/Makefile.am:
+* include/cppunit/portability/FloatingPoint.h: Added file. Extracted
+  isfinite() from TestAssert.cpp.
+
+* include/cppunit/config-evc4:
+* include/cppunit/config-msvc6: Added support for _finite().
+@
+text
+@d235 1
+a235 1
+  CPPUNIT_ASSERT_ASSERTION_FAIL( CPPUNIT_ASSERT_DOUBLES_EQUAL( nan, 0.0, 1.0 ) ); // this one fails
+@
+
+
+1.13
+log
+@Add tests of the precision generated by
+assertion_traits<double>::toString().
+@
+text
+@d3 1
+d5 1
+d197 1
+d202 29
+d234 2
+a235 3
+
+  double nan = std::numeric_limits<double>::quiet_NaN();
+  CPPUNIT_ASSERT_ASSERTION_FAIL( CPPUNIT_ASSERT_DOUBLES_EQUAL( nan, 0.0, 1.0 ) );
+@
+
+
+1.12
+log
+@	* examples/cppunittest/TestAssertTest.cpp:
+	* examples/cppunittest/TestAssertTest.h: Remove declaration of
+	unimplemented functions testAssertDoubleNotEquals1 and
+	testAssertDoubleNotEquals2.  Factor new method
+	testAssertDoubleNonFinite out of existing testAssertDoubleEquals.
+@
+text
+@a137 1
+
+d175 20
+@
+
+
+1.11
+log
+@Add unit tests for CPPUNIT_ASSERT_DOUBLES_EQUAL() that test with
+non-finite values.
+@
+text
+@d174 1
+d176 3
+@
+
+
+1.10
+log
+@Put a C++ statement in the first argument of CPPUNIT_ASSERT_THROW()
+and CPPUNIT_ASSERT_NO_THROW().
+@
+text
+@d174 11
+@
+
+
+1.9
+log
+@* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: integrated Neil Ferguson patch for missing
+  _MESSAGE assertion variants. Also enhanced the failure message of a
+  few assertions.
+@
+text
+@d48 2
+a49 1
+      CPPUNIT_ASSERT_THROW( 1234, std::string );
+d63 2
+a64 1
+   CPPUNIT_ASSERT_NO_THROW( 1234 );
+d85 2
+a86 1
+      CPPUNIT_ASSERT_ASSERTION_FAIL( 1234 );
+d100 2
+a101 1
+   CPPUNIT_ASSERT_ASSERTION_PASS( 1234 );
+@
+
+
+1.8
+log
+@* removed usage of std::exception ctor with a string (gcc 2.95 issue)
+@
+text
+@d44 1
+a44 1
+   CPPUNIT_ASSERT_THROW( throw std::exception(), std::exception );
+d48 1
+a48 1
+      CPPUNIT_ASSERT_THROW( 1234, std::exception );
+@
+
+
+1.7
+log
+@* examples/cppunittest/TestAssertTest.h:
+* examples/cppunittest/TestAssertTest.cpp:
+* examples/cppunittest/XmlUniformiserTest.h:
+* examples/cppunittest/XmlUniformiserTest.cpp:
+* include/cppunit/TestAssert.h: add the exception assertion macros
+  from cppunit 2: CPPUNIT_ASSERT_THROW, CPPUNIT_ASSERT_NO_THROW,
+  CPPUNIT_ASSERT_ASSERTION_FAIL, CPPUNIT_ASSERT_ASSERTION_PASS.
+  Updated unit test to use and test the new macros.
+
+* include/cppunit/extensions/HelperMacros.h: deprecated the
+  test case factory that check for exception (CPPUNIT_TEST_FAIL &
+  CPPUNIT_TEST_EXCEPTION).
+@
+text
+@d44 1
+a44 1
+   CPPUNIT_ASSERT_THROW( throw std::exception( "dummy" ), std::exception );
+d55 1
+a55 1
+   throw std::exception( "CPPUT_ASSERT_THROW( 1234, std::exception ) did not fail." );
+d66 1
+a66 1
+      CPPUNIT_ASSERT_NO_THROW( throw std::exception( "dummy" ) );
+d72 1
+a72 1
+   throw std::exception( "CPPUT_ASSERT_NO_THROW( throw std::exception( \"dummy\" ) ) did not fail." );
+d90 1
+a90 1
+   throw std::exception( "CPPUNIT_ASSERT_ASSERTION_FAIL( 1234 ) did not fail." );
+d108 1
+a108 1
+   throw std::exception( "CPPUNIT_ASSERT_ASSERTION_PASS did not fail." );
+@
+
+
+1.6
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d42 1
+a42 1
+TestAssertTest::testAssertTrue()
+d44 65
+a108 1
+  CPPUNIT_ASSERT( true );
+d113 1
+a113 1
+TestAssertTest::testAssertFalse()
+d115 3
+a117 1
+  CPPUNIT_ASSERT( false );
+d127 5
+a131 2
+  CPPUNIT_ASSERT_EQUAL( 1, 1 );
+  CPPUNIT_ASSERT_EQUAL( 1, foo() );
+d138 2
+a139 1
+  CPPUNIT_ASSERT_MESSAGE( "This test should not failed", true );
+d165 2
+a166 3
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.1, 1.2, 0.101 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2, 1.1, 0.101 );
+}
+d168 2
+a169 26
+
+void 
+TestAssertTest::testAssertDoubleNotEquals1()
+{
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.1, 1.2, 0.09 );
+}
+
+
+void 
+TestAssertTest::testAssertDoubleNotEquals2()
+{
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.2, 1.1, 0.09 );
+}
+
+
+void 
+TestAssertTest::testAssertLongEquals()
+{
+  CPPUNIT_ASSERT_EQUAL( 12345678, 12345678 );
+}
+
+
+void 
+TestAssertTest::testAssertLongNotEquals()
+{
+  CPPUNIT_ASSERT_EQUAL( 1, 2 );
+@
+
+
+1.5
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d16 1
+a16 1
+                                       CppUnitTest::coreSuiteName() );
+@
+
+
+1.4
+log
+@* include/cppunit/extensions/TestFactoryRegistry.h
+* src/cppunit/TestFactoryRegistry.cpp : fixed memory leaks that
+occured when a TestFactoryRegistry was registered into another
+TestFactoryRegistry.
+
+* include/cppunit/extensions/AutoRegisterSuite.h : updated doc.
+
+* include/cppunit/extensions/HelperMacros.h : added macro
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION to register a suite into
+a named suite. Updated doc.
+
+* examples/cppunittest/CoreSuite.h:
+* examples/cppunittest/ExtensionSuite.h:
+* examples/cppunittest/HelperSuite.h: added, declaration of suite for
+use with CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/makefile.am : added HelperSuite.h, CoreSuite.h,
+ExtensionSuite.h, CppUnitTestSuite.h and CppUnitTestSuite.cpp.
+
+* examples/cppunittest/CppUnitTestSuite.*: added.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/TestAssertTest.cpp:
+* examples/cppunittest/TestCaseTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestListenerTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/TestSuiteTest.cpp: moved into named suite
+"Core" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/OrthodoxTest.cpp:
+* examples/cppunittest/RepeatedTest.cpp:
+* examples/cppunittest/TestDecoratorTest.cpp:
+* examples/cppunittest/TestSetUpTest.cpp: moved into named suite
+"Extension" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/HelperMacrosTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp: moved into named suite
+"Helper" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/CppUnitTest.dsp :
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp : added
+Makefile.am, HelperSuite.h, CoreSuite.h, ExtensionSuite.h,
+CppUnitTestSuite.h and CppUnitTestSuite.cpp.
+@
+text
+@d82 1
+a82 1
+  catch( CppUnit::Exception &e )
+d137 1
+a137 1
+  catch( CppUnit::Exception &e )
+d147 1
+a147 1
+TestAssertTest::checkMessageContains( CppUnit::Exception *e,
+@
+
+
+1.3
+log
+@* NEWS : updated.
+
+* doc/other_documentation.dox : added all the authors to the list of
+authors.
+
+* examples/cppunittest/HelperMacrosTest.*: added unit tests for
+CPPUNIT_TEST_FAIL & CPPUNIT_TEST_EXCEPTION.
+
+* examples/cppunittest/TestAssertTest.*: added unit tests for
+CPPUNIT_FAIL. Corrected spelling error. Relaxed constraint on message
+produced by CPPUNIT_ASSERT_MESSAGE. Refactored some tests.
+
+* include/cppunit/extensions/HelperMacros.h : added macro
+CPPUNIT_TEST_EXCEPTION to create a test case for the specified method
+that must throw an exception of the specified type.
+
+* include/cppunit/extensions/TestSuiteBuilder.h : made makeTestName() public.
+Added addTestCallerForException() to add a test case expecting an exception of
+the specified type to be caught.
+
+* include/cppunit/TestAssert.h : added macro CPPUNIT_FAIL as a
+shortcut for CPPUNIT_ASSERT_MESSAGE( message, false ).
+@
+text
+@d1 1
+d15 2
+a16 1
+CPPUNIT_TEST_SUITE_REGISTRATION( TestAssertTest );
+@
+
+
+1.2
+log
+@Add tests for CPPUNIT_ASSERT_EQUAL.
+@
+text
+@d2 1
+d38 1
+d49 1
+a49 11
+  bool exceptionCatched = false;
+  try
+  {
+    CPPUNIT_ASSERT( false );
+  }
+  catch( CppUnit::Exception & )
+  {
+    exceptionCatched = true; // ok, we were expecting an exception.
+  }
+
+  CPPUNIT_ASSERT( exceptionCatched );
+d59 2
+a60 2
+    CPPUNIT_ASSERT_EQUAL(1,1);
+    CPPUNIT_ASSERT_EQUAL( 1, foo() );
+d74 1
+a74 1
+  bool exceptionCatched = false;
+d78 1
+a78 1
+    CPPUNIT_ASSERT_MESSAGE( message, false );
+d82 2
+a83 2
+    CPPUNIT_ASSERT_EQUAL( message, std::string( e.what() ) );
+    exceptionCatched = true; // ok, we were expecting an exception.
+d86 1
+a86 1
+  CPPUNIT_ASSERT( exceptionCatched );
+d99 1
+a99 1
+TestAssertTest::testAssertDoubleNotEquals()
+d101 1
+a101 2
+  checkDoubleNotEquals( 1.1, 1.2, 0.09 );
+  checkDoubleNotEquals( 1.2, 1.1, 0.09 );
+d106 1
+a106 3
+TestAssertTest::checkDoubleNotEquals( double expected, 
+                                      double actual, 
+                                      double delta )
+d108 1
+a108 11
+  bool exceptionCatched = false;
+  try
+  {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( expected, actual, delta );
+  }
+  catch( CppUnit::Exception & )
+  {
+    exceptionCatched = true; // ok, we were expecting an exception.
+  }
+
+  CPPUNIT_ASSERT( exceptionCatched );
+d122 9
+a130 1
+  bool exceptionCatched = false;
+d133 1
+a133 1
+    CPPUNIT_ASSERT_EQUAL( 1, 2 );
+d135 1
+a135 1
+  catch( CppUnit::Exception & )
+d137 2
+a138 1
+    exceptionCatched = true; // ok, we were expecting an exception.
+d140 3
+d144 9
+a152 1
+  CPPUNIT_ASSERT( exceptionCatched );
+@
+
+
+1.1
+log
+@* examples/cppunittest/TestResultTest.*: renamed TestListenerTest.*
+
+* examples/cppunittest/*: added unit tests for:
+HelperMacros, TestAssert, TestCaller, TestCase, TestFailure,
+TestResult, TestSuite, TestDecoratorTest, TestSetUp, RepeatedTestTest,
+Orthodox, Exception.
+@
+text
+@d61 11
+@
+

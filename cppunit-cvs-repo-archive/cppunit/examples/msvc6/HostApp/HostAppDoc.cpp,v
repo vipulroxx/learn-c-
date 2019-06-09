@@ -1,0 +1,204 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.3
+	REL_1_9_4:1.3
+	REL_1_9_0:1.3
+	REL_1_8_0:1.3
+	REL_1_7_8:1.3
+	REL_1_7_3:1.2
+	REL_1_7_1:1.2
+	REL_1_6_2:1.2
+	BRANCH_1_6:1.2.0.2
+	REL_1_6_1:1.2
+	REL_1_6_0:1.2
+	REL_1_5_5:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.3
+date	2002.03.25.07.15.06;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.28.14.27.24;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* INSTALL-WIN32.txt: updated for MFC Unicode TestRunner.
+
+* src/msvc6/testrunner/TestRunner.dsp: added Unicode configurations.
+
+* src/msvc6/testrunner/ListCtrlSetter.cpp:
+* src/msvc6/testrunner/ListCtrlSetter.h: replaced usage of std::string by
+CString for easier ansi/unicode switch.
+
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: made changes to compile with
+either ANSI and UNICODE support.
+
+* examples/msvc6/HostApp/HostApp.cpp:
+* examples/msvc6/HostApp/HostApp.h:
+* examples/msvc6/HostApp/HostAppDoc.cpp:
+* examples/msvc6/HostApp/HostAppDoc.h: moved TestRunner execution to
+HostApp::RunUnitTests() and removed the MainFrame application window.
+
+* examples/msvc6/HostApp/HostApp.dsp: added Unicode configurations.
+@
+text
+@// HostAppDoc.cpp : implementation of the CHostAppDoc class
+//
+
+#include "stdafx.h"
+#include "HostApp.h"
+
+#include "HostAppDoc.h"
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+// CHostAppDoc
+
+IMPLEMENT_DYNCREATE(CHostAppDoc, CDocument)
+
+BEGIN_MESSAGE_MAP(CHostAppDoc, CDocument)
+    //{{AFX_MSG_MAP(CHostAppDoc)
+	//}}AFX_MSG_MAP
+END_MESSAGE_MAP()
+
+/////////////////////////////////////////////////////////////////////////////
+// CHostAppDoc construction/destruction
+
+CHostAppDoc::CHostAppDoc()
+{
+    // TODO: add one-time construction code here
+}
+
+CHostAppDoc::~CHostAppDoc()
+{
+}
+
+
+
+BOOL CHostAppDoc::OnNewDocument()
+{
+    if (!CDocument::OnNewDocument())
+        return FALSE;
+
+    return TRUE;
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+// CHostAppDoc serialization
+
+void CHostAppDoc::Serialize(CArchive& ar)
+{
+    if (ar.IsStoring())
+    {
+        // TODO: add storing code here
+    }
+    else
+    {
+        // TODO: add loading code here
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// CHostAppDoc diagnostics
+
+#ifdef _DEBUG
+void CHostAppDoc::AssertValid() const
+{
+    CDocument::AssertValid();
+}
+
+void CHostAppDoc::Dump(CDumpContext& dc) const
+{
+    CDocument::Dump(dc);
+}
+#endif //_DEBUG
+
+/////////////////////////////////////////////////////////////////////////////
+// CHostAppDoc commands
+@
+
+
+1.2
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@a7 2
+#include <msvc6/testrunner/TestRunner.h>
+#include <cppunit/extensions/TestFactoryRegistry.h>
+a42 5
+
+    TestRunner  runner;
+    runner.addTest ( CppUnit::TestFactoryRegistry::getRegistry().makeTest() );
+
+    runner.run ();    
+@
+
+
+1.1
+log
+@Merged msvc6 specific TestRunner and example adapted from Michael Feathers
+version by Baptiste Lepilleur.
+@
+text
+@d8 2
+a9 2
+#include <testrunner/TestRunnerDlg.h>
+#include "ExampleTestCase.h"
+a32 1
+
+d47 1
+a47 1
+    runner.addTest (ExampleTestCase::suite ());
+@
+

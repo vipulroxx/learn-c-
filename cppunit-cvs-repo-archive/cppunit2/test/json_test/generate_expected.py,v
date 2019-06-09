@@ -1,0 +1,35 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2006.03.07.23.02.11;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* added end to end json tests
+@
+text
+@import glob
+import os.path
+for path in glob.glob( '*.json' ):
+    text = file(path,'rt').read()
+    target = os.path.splitext(path)[0] + '.expected'
+    if os.path.exists( target ):
+        print 'skipping:', target
+    else:
+        print 'creating:', target
+        file(target,'wt').write(text)
+
+@

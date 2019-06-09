@@ -1,0 +1,258 @@
+head	1.3;
+access;
+symbols
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.2
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.2
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@# @;
+
+
+1.3
+date	2005.09.06.07.45.56;	author blep;	state dead;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.14.23.31.26;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* moved project files to cppunit2/makefiles/vs71
+@
+text
+@# Microsoft Developer Studio Project File - Name="cpputtest" - Package Owner=<4>
+# Microsoft Developer Studio Generated Build File, Format Version 6.00
+# ** DO NOT EDIT **
+
+# TARGTYPE "Win32 (x86) Console Application" 0x0103
+
+CFG=cpputtest - Win32 Debug
+!MESSAGE This is not a valid makefile. To build this project using NMAKE,
+!MESSAGE use the Export Makefile command and run
+!MESSAGE 
+!MESSAGE NMAKE /f "cpputtest.mak".
+!MESSAGE 
+!MESSAGE You can specify a configuration when running NMAKE
+!MESSAGE by defining the macro CFG on the command line. For example:
+!MESSAGE 
+!MESSAGE NMAKE /f "cpputtest.mak" CFG="cpputtest - Win32 Debug"
+!MESSAGE 
+!MESSAGE Possible choices for configuration are:
+!MESSAGE 
+!MESSAGE "cpputtest - Win32 Release" (based on "Win32 (x86) Console Application")
+!MESSAGE "cpputtest - Win32 Debug" (based on "Win32 (x86) Console Application")
+!MESSAGE 
+
+# Begin Project
+# PROP AllowPerConfigDependencies 0
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
+CPP=cl.exe
+RSC=rc.exe
+
+!IF  "$(CFG)" == "cpputtest - Win32 Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "Release"
+# PROP BASE Intermediate_Dir "Release"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "..\..\build\cpputtest\release"
+# PROP Intermediate_Dir "..\..\build\cpputtest\release"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "..\..\include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
+# ADD BASE RSC /l 0x40c /d "NDEBUG"
+# ADD RSC /l 0x40c /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /libpath:"..\..\build\cpput\release"
+# Begin Special Build Tool
+TargetPath=\prg\vc\Lib\cppunit2\build\cpputtest\release\cpputtest.exe
+SOURCE="$(InputPath)"
+PostBuild_Desc=Testing cpput library...
+PostBuild_Cmds=$(TargetPath)
+# End Special Build Tool
+
+!ELSEIF  "$(CFG)" == "cpputtest - Win32 Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "Debug"
+# PROP BASE Intermediate_Dir "Debug"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "..\..\build\cpputtest\debug"
+# PROP Intermediate_Dir "..\..\build\cpputtest\debug"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "..\..\include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
+# ADD BASE RSC /l 0x40c /d "_DEBUG"
+# ADD RSC /l 0x40c /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"..\..\build\cpput\debug"
+# Begin Special Build Tool
+TargetPath=\prg\vc\Lib\cppunit2\build\cpputtest\debug\cpputtest.exe
+SOURCE="$(InputPath)"
+PostBuild_Desc=Testing cpput library...
+PostBuild_Cmds=$(TargetPath)
+# End Special Build Tool
+
+!ENDIF 
+
+# Begin Target
+
+# Name "cpputtest - Win32 Release"
+# Name "cpputtest - Win32 Debug"
+# Begin Source File
+
+SOURCE=.\assertenumtest.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\assertenumtest.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\assertstringtest.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\assertstringtest.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\commandlineoptions.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\commandlineoptions.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\enumeratortest.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\enumeratortest.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\main.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\mocktestlistener.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\mocktestvisitor.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\registrytest.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\registrytest.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\testbasicassertion.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\testfixturetest.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\testfixturetest.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\testfunctor.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\testresult.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\testtestcase.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\testtestcontext.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\testtestsuite.cpp
+# End Source File
+# End Target
+# End Project
+@
+
+
+1.2
+log
+@* adding cpputtools library, command line options among other thing (for test runners). In progress.
+@
+text
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d54 1
+a54 1
+TargetPath=\prg\vc\Lib\CppUT\build\cpputtest\release\cpputtest.exe
+d84 1
+a84 1
+TargetPath=\prg\vc\Lib\CppUT\build\cpputtest\debug\cpputtest.exe
+d114 8
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

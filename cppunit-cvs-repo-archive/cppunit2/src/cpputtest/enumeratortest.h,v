@@ -1,0 +1,249 @@
+head	1.4;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.4
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.3
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.3
+	TG_AFTER_REMOVING_TESTCONTEXT:1.3
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.3
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.3
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.4
+date	2005.11.13.10.12.01;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.10.22.06.20.07;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.02.01.16.12.56;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@- renamed include/cpput/assert.h to include/cpput/assertcommon.h. This avoid clash with include <assert.h> in doxygen documentation
+- most Impl namespaces are now hidden from documentation using \cond and \endcond.
+@
+text
+@#ifndef CPPUT_ENUMERATORTEST_H
+# define CPPUT_ENUMERATORTEST_H
+
+# include <cpput/assertcommon.h>
+# include <cpput/testfixture.h>
+# include <cpptl/enumerator.h>
+# include <deque>
+# include <list>
+# include <map>
+# include <set>
+# include <vector>
+
+class EnumeratorTest : public CppUT::TestFixture
+{
+   CPPUT_TESTSUITE_BEGIN( EnumeratorTest );
+   CPPUT_TEST( testEmptyEnumerator );
+   CPPUT_TEST( testEmptyAnyEnumerator );
+   CPPUT_TEST( testForwardItEnumerator );
+   CPPUT_TEST( testTransformForwardItEnumerator );
+   CPPUT_TEST( testContainerEnumerator );
+   CPPUT_TEST( testMapKeysEnumerator );
+   CPPUT_TEST( testMapValuesEnumerator );
+   CPPUT_TEST( testTransformEnumerator );
+   CPPUT_TEST( testFilterEnumerator );
+   CPPUT_TEST( testSliceEnumerator );
+   CPPUT_TEST( testSugarEnumerator );
+   CPPUT_TESTSUITE_END();
+
+public:
+   EnumeratorTest();
+
+   virtual ~EnumeratorTest();
+
+   void setUp();
+   void tearDown();
+
+   void testEmptyEnumerator();
+   void testEmptyAnyEnumerator();
+   void testForwardItEnumerator();
+   void testTransformForwardItEnumerator();
+   void testContainerEnumerator();
+   void testMapKeysEnumerator();
+   void testMapValuesEnumerator();
+   void testTransformEnumerator();
+   void testFilterEnumerator();
+   void testSliceEnumerator();
+   void testSugarEnumerator();
+
+
+/*
+   void testStlEnumerator();
+   void testStlRangeEnumerator();
+
+   void testStlEnumConstructAdapator();
+
+   void testStlMapKeysEnumerator();
+   void testStlMapValuesEnumerator();
+   void testSliceEnumerator();
+*/
+private:
+   typedef CppTL::AnyEnumerator<int> IntEnum;
+   typedef CppTL::AnyEnumerator<char> CharEnum;
+
+   typedef std::deque<int> IntDeque;
+   IntDeque deque1_;
+
+   typedef std::vector<int> IntVector;
+   IntVector vector1_;
+
+   typedef std::set<int> IntSet;
+   IntSet set1_;
+
+   typedef std::list<int> IntList;
+   IntList list1_;
+
+   typedef std::map<int,std::string> IntStringMap;
+   IntStringMap map1_;
+
+   typedef CppTL::AnyEnumerator<IntDeque> IntDequeEnum;
+   typedef std::map<std::string,int> StringIntMap;
+   typedef CppTL::AnyEnumerator<std::string> StringEnum;
+   typedef CppTL::AnyEnumerator<std::string> StringIntMapFirstEnum;
+   typedef CppTL::AnyEnumerator<int> StringIntMapSecondEnum;
+};
+
+
+#endif  // CPPUT_ENUMERATORTEST_H
+
+@
+
+
+1.3
+log
+@* Replaced the EnumerationSugar strangely curring template  with a macro (compiler was too stressed)
+* Fixed Internal compiler error on Keys
+* Added sugar() enumeration for custom enumerator
+* Test cases for all enumerator
+@
+text
+@d4 1
+a4 1
+# include <cpput/assert.h>
+@
+
+
+1.2
+log
+@* added /Za setting to project to force conformance to ANSI C++
+* fixed issues related to ANSI C++ conformance
+* fixed bug in SliceEnumerator copy constructor & added test
+@
+text
+@d6 1
+a6 1
+# include <cpput/enumerator.h>
+d8 1
+d16 9
+a24 6
+   CPPUT_TEST( testNullEnumerator );
+   CPPUT_TEST( testStlEnumerator );
+   CPPUT_TEST( testStlRangeEnumerator );
+   CPPUT_TEST( testStlEnumConstructAdapator );
+   CPPUT_TEST( testStlMapKeysEnumerator );
+   CPPUT_TEST( testStlMapValuesEnumerator );
+d26 1
+d37 14
+a50 1
+   void testNullEnumerator();
+d59 1
+a59 1
+
+d61 2
+a62 2
+   typedef CppUT::Enumerator<int> IntEnum;
+   typedef CppUT::Enumerator<char> CharEnum;
+d73 7
+a79 1
+   typedef CppUT::Enumerator<IntDeque> IntDequeEnum;
+d81 3
+a83 3
+   typedef CppUT::Enumerator<std::string> StringEnum;
+   typedef CppUT::Enumerator<StringIntMap::value_type::first_type> StringIntMapFirstEnum;
+   typedef CppUT::Enumerator<StringIntMap::value_type::second_type> StringIntMapSecondEnum;
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a45 36
+   template<typename EnumeratorType>
+   void checkHasNoMoreElements( EnumeratorType &e )
+   {
+	  CppUT::checkFalse( e.hasNext(), "Enumerated should not have anymore elements." );
+      CPPUT_ASSERT_THROW( e.getNext(), CppUT::EnumeratorError );
+   }
+
+   template<typename EnumeratorType>
+   void checkContent( EnumeratorType &e )
+   {  
+      CPPUT_ASSERT_EQUAL( 12, e.getNext() );
+      CPPUT_ASSERT_EQUAL( 23, e.getNext() );
+      CPPUT_ASSERT_EQUAL( 34, e.getNext() );
+      checkHasNoMoreElements( e );
+   }
+
+   template<typename EnumeratorType>
+   void checkRangesContent( EnumeratorType &e1, EnumeratorType &e2 )
+   {  
+      CPPUT_ASSERT_EQUAL( 12, e1.getNext() );
+      CPPUT_ASSERT_EQUAL( 23, e1.getNext() );
+      checkHasNoMoreElements( e1 );
+
+      CPPUT_ASSERT_EQUAL( 23, e2.getNext() );
+      CPPUT_ASSERT_EQUAL( 34, e2.getNext() );
+      checkHasNoMoreElements( e2 );
+   }
+
+   template<typename SequenceContainer>
+   void fillStringSequence( SequenceContainer &sequence )
+   {
+      sequence.push_back( "abc" );
+      sequence.push_back( "def" );
+      sequence.push_back( "ghi" );
+   }
+
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

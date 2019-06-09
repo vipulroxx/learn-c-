@@ -1,0 +1,301 @@
+head	1.5;
+access;
+symbols
+	REL_1_12_1:1.5
+	REL_1_11_6:1.5
+	REL_1_11_4:1.5
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.5
+date	2005.11.06.16.58.21;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.10.13.20.13.15;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.09.16.20.12.14;	author esche;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.06.13.18.17.42;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.17.22.27.28;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* include/cppunit/config/SourcePrefix.h: disable warning #4996
+(sprintf is deprecated) for visual studio 2005.
+
+* include/cppunit/TestAssert.h: use sprintf_s instead of sprintf for
+visual studio 2005.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp
+* examples/DumperPlugIn/DumperPlugIn.cpp: use SourcePrefix.h. Fixed
+wrong macro usage to implement DllMain.
+
+* examples/msvc6/HostApp/ExamplesTestCase.h
+* examples/msvc6/HostApp/ExamplesTestCase.cpp
+* examples/simple/ExamplesTestCase.h
+* examples/simple/ExamplesTestCase.cpp: removed divideByZero test case
+as it cause some crash on some platforms.
+@
+text
+@#include <cppunit/config/SourcePrefix.h>
+#include "ExampleTestCase.h"
+
+CPPUNIT_TEST_SUITE_REGISTRATION( ExampleTestCase );
+
+void ExampleTestCase::example()
+{
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, 1.1, 0.05 );
+  CPPUNIT_ASSERT( 1 == 0 );
+  CPPUNIT_ASSERT( 1 == 1 );
+}
+
+
+void ExampleTestCase::anotherExample()
+{
+  CPPUNIT_ASSERT (1 == 2);
+}
+
+void ExampleTestCase::setUp()
+{
+  m_value1 = 2.0;
+  m_value2 = 3.0;
+}
+
+void ExampleTestCase::testAdd()
+{
+  double result = m_value1 + m_value2;
+  CPPUNIT_ASSERT( result == 6.0 );
+}
+
+
+void ExampleTestCase::testEquals()
+{
+  long* l1 = new long(12);
+  long* l2 = new long(12);
+
+  CPPUNIT_ASSERT_EQUAL( 12, 12 );
+  CPPUNIT_ASSERT_EQUAL( 12L, 12L );
+  CPPUNIT_ASSERT_EQUAL( *l1, *l2 );
+
+  delete l1;
+  delete l2;
+
+  CPPUNIT_ASSERT( 12L == 12L );
+  CPPUNIT_ASSERT_EQUAL( 12, 13 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 12.0, 11.99, 0.5 );
+}
+@
+
+
+1.4
+log
+@* removed most warning when compiling with vc++ 6sp6.
+@
+text
+@a31 7
+void ExampleTestCase::testDivideByZero()
+{
+  int zero = 0;
+  int result = 8 / zero;
+}
+
+
+@
+
+
+1.3
+log
+@small changes to get simple to work
+@
+text
+@d1 1
+@
+
+
+1.2
+log
+@* include/cppunit/NotEqualException.h:
+* src/cppunit/NotEqualException.cpp: removed.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: removed 'type' related stuffs.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: delegate printing to TextOutputter.
+
+* examples/simple/ExampleTestCase.h:
+* examples/simple/ExampleTestCase.cpp: reindented.
+
+* src/qttestrunner/build:
+* src/qttestrunner/qttestrunner.pro:
+* src/qttestrunner/TestBrowserDlgImpl.h:
+* src/qttestrunner/TestRunnerModel.h: applied Thomas Neidhart's patch,
+  'Some minor fixes to compile QTTestrunner under Linux.'.
+@
+text
+@d40 2
+a41 2
+  std::auto_ptr<long> l1( new long (12) );
+  std::auto_ptr<long> l2( new long (12) );
+d46 4
+a49 1
+  
+@
+
+
+1.1
+log
+@* bumped version to 1.9.3
+
+* FAQ: added question about 4786 warning on VC++.
+
+* NEWS: updated.
+
+* contrib/msvc/readme.txt: moved to contrib/readme.txt.
+
+* contrib/xml-xsl/report.xsl: added XML style sheet contributed by
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for
+  startTestRun()/endTestRun().
+
+* examples/simple/*: added. A simple example.
+
+* include/cppunit/BriefTestProgressListener.h:
+* src/cppunit/BriefTestProgressListener.cpp: added. Verbose progess listener
+  that print the test name before running the test.
+
+* include/cppunit/TestListener.h: added startTestRun()/endTestRun().
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: added runTest(), to be called to run
+  a test by test runner.
+
+* src/cppunit/TextTestRunner.cpp:
+* src/cppunit/TestRunner.cpp: updated to use TestResult::runTest().
+
+* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added. Managers for all loaded plug-ins.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: renamed TestPlugInAdapter. All
+  implementations are empty.
+
+* include/cppunit/plugin/TestPlugInSuite.h: removed.
+* src/cppunit/TestPlugInSuite.cpp: removed. Replaced by PlugInManager.
+
+* include/cppunit/plugin/TestPlugIn.h: rewrote the plug-in interface to
+  provide more versatility. updated macros to match new interface.
+
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestFactoryRegistry.cpp: Added unregisterFactory().
+  Added convenience method addRegistry(). Rewrote registry life cycle
+  management. AutoRegisterSuite can now detect that the registry has been
+  destroy and not call to it to unregister its test factory.
+
+* include/cppunit/extensions/AutoRegisterTest.h: on destruction, the registered
+  factory is unregistered from the registry.
+
+* include/cppunit/extensions/HelperMacros.h: added macros
+  CPPUNIT_REGISTRY_ADD_TO_DEFAULT and CPPUNIT_REGISTRY_ADD to help
+  build test suite hierarchy.
+
+* src/cppunit/msvc/DllPlugInTester/*: moved to src/cppunit/DllPlugInTester/.
+
+* src/cppunit/DllPlugInTester/DllPlugInTester.cpp: removed UNICODE stuffs. Use
+  the PlugInManager instead of PlugInTestSuite. Simplified: only one test on
+  command line, but many DLL can be specified. Added configurations to link
+  against cppunit dll, those are now the default configuration (static linking
+  don't make much sense for plug-in).
+@
+text
+@d5 1
+a5 1
+void ExampleTestCase::example ()
+d7 3
+a9 3
+	CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, 1.1, 0.05);
+	CPPUNIT_ASSERT (1 == 0);
+	CPPUNIT_ASSERT (1 == 1);
+d13 1
+a13 1
+void ExampleTestCase::anotherExample ()
+d15 1
+a15 1
+	CPPUNIT_ASSERT (1 == 2);
+d18 1
+a18 1
+void ExampleTestCase::setUp ()
+d20 2
+a21 2
+	m_value1 = 2.0;
+	m_value2 = 3.0;
+d24 1
+a24 1
+void ExampleTestCase::testAdd ()
+d26 2
+a27 2
+	double result = m_value1 + m_value2;
+	CPPUNIT_ASSERT (result == 6.0);
+d31 1
+a31 1
+void ExampleTestCase::testDivideByZero ()
+d33 2
+a34 2
+	int	zero	= 0;
+	int result	= 8 / zero;
+d38 1
+a38 1
+void ExampleTestCase::testEquals ()
+d40 2
+a41 2
+    std::auto_ptr<long>	l1 (new long (12));
+    std::auto_ptr<long>	l2 (new long (12));
+d43 7
+a49 7
+    CPPUNIT_ASSERT_EQUAL (12, 12);
+    CPPUNIT_ASSERT_EQUAL (12L, 12L);
+    CPPUNIT_ASSERT_EQUAL (*l1, *l2);
+    
+	CPPUNIT_ASSERT (12L == 12L);
+	CPPUNIT_ASSERT_EQUAL (12, 13);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL (12.0, 11.99, 0.5);
+@
+

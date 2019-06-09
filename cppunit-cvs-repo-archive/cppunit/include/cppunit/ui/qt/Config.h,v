@@ -1,0 +1,96 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.2
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2006.10.26.07.21.13;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.10.15.21.24;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@- fixed some compilation issues for QtTestRunner.
+@
+text
+@#ifndef CPPUNIT_QTUI_CONFIG_H
+#define CPPUNIT_QTUI_CONFIG_H
+
+/*! Macro to export symbol to DLL with VC++.
+ *
+ * - QTTESTRUNNER_DLL_BUILD must be defined when building the DLL.
+ * - QTTESTRUNNER_DLL must be defined if linking against the DLL.
+ * - If none of the above are defined then you are building or linking against
+ *   the static library.
+ */
+
+#if defined( QTTESTRUNNER_DLL_BUILD )
+#  define QTTESTRUNNER_API __declspec(dllexport)
+#elif defined ( QTTESTRUNNER_DLL )
+#  define QTTESTRUNNER_API __declspec(dllimport)
+#else
+#  define QTTESTRUNNER_API
+#endif
+
+
+#endif // CPPUNIT_QTUI_CONFIG_H
+@
+
+
+1.1
+log
+@* include/cppunitui/: moved to include/cppunit/ui (fix unix install problem).
+
+* doc/cookbook.dox:
+* examples/cppunittest/CppUnitTestMain.cpp:
+* examples/msvc/CppUnitTestApp/HostApp.cpp:
+* examples/msvc/HostApp/HostApp.cpp:
+* examples/qt/Main.Cpp:
+* examples/src/cppunit/TestRunner.cpp:
+* examples/src/msvc6/TestRunner/TestRunner.cpp:
+* examples/src/qttestrunner/TestRunner.cpp: updated to use <cppunit/ui/...>
+instead of <cppunitui/...> in include directives.
+
+* doc/CppUnit-win.dox: generated documentation give the include path at the
+bottom of the page for each class.
+
+* NEWS: added compatibility break for 1.7.10 users.
+@
+text
+@d21 1
+a21 1
+#endif // CPPUNIT_QTUI_CONFIG_H@
+

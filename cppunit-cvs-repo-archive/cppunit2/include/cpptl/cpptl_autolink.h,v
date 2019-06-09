@@ -1,0 +1,37 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2005.12.11.17.16.08;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* rough sketch of a working OpenTest driver with CppUT adaptor for TestRunner.
+@
+text
+@#ifndef CPPTL_AUTOLINK_H_INCLUDED
+# define CPPTL_AUTOLINK_H_INCLUDED
+
+# if !defined(CPPTL_NO_AUTOLINK)  &&  !defined(CPPTL_DLL_BUILD)
+#  define CPPTL_AUTOLINK_NAME "cpptl"
+#  undef CPPTL_AUTOLINK_DLL
+#  ifdef CPPTL_DLL
+#   define CPPTL_AUTOLINK_DLL
+#  endif
+#  include "autolink.h"
+# endif
+
+#endif // CPPTL_AUTOLINK_H_INCLUDED
+@

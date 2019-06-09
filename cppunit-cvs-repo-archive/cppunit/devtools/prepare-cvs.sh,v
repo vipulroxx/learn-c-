@@ -1,0 +1,54 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2005.07.15.20.17.39;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.07.15.19.31.09;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@convert msvc project using dos eol
+@
+text
+@#! /bin/sh
+set -e
+
+perl -pi -e 's/\n/\r\n/g' `find $1 -name '*.ds?'` \
+		$1/contrib/msvc/*			  \
+		$1/INSTALL-WIN32.txt
+
+(cd $1 && rm -rf `find . -name CVS`)
+
+tar cf $1.tar $1
+gzip -9 $1.tar
+@
+
+
+1.1
+log
+@release 1.11.0
+@
+text
+@d4 4
+d9 1
+@
+

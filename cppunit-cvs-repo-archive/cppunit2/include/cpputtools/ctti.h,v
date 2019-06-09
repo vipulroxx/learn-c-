@@ -1,0 +1,180 @@
+head	1.2;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.2
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.2
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.2
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2004.06.15.00.45.52;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.06.14.23.31.24;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* fixed compilation issue related to changing OptionValue into the new Value library
+@
+text
+@#ifndef CPPUTTOOLS_CONFIGURATION_CTTI_H_INCUDED
+# define CPPUTTOOLS_CONFIGURATION_CTTI_H_INCUDED
+
+#include <string>
+
+// /////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////
+// CTTI using std::type_info & typeid
+// /////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////
+# ifndef CPPUTTOOLS_CTTI_NO_TYPEINFO
+
+#  include <typeinfo>
+
+namespace CppUTTools {
+
+class TypeId
+{
+public:
+   TypeId( const std::type_info &typeId )
+      : type_( typeId )
+   {
+   }
+
+   bool operator ==( const TypeId &other ) const
+   {
+      return type_ == other.type_;
+   }
+
+   bool operator !=( const TypeId &other ) const
+   {
+      return !( *this == other );
+   }
+
+   bool operator <( const TypeId &other ) const
+   {
+      return type_.before( other.type_ );
+   }
+private:
+   const std::type_info &type_;
+};
+
+
+// Compile Time Type Information functions
+// //////////////////////////////////////////////////////////////////
+
+template<class Type>
+TypeId typeId()
+{
+   return typeid( Type );
+}
+
+
+} // namespace CommandLineOptions
+
+
+
+// /////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////
+// CTTI using hande-made mecanism (template overload)
+// /////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////
+# else // ifndef CPPUTTOOLS_CTTI_NO_TYPEINFO
+
+class TypeId
+{
+public:
+   TypeId( const char *type )
+      : type_( type )
+   {
+   }
+
+   bool operator <( const TypeId &other ) const
+   {
+      return strcmp( type_, other.type_) < 0;
+   }
+
+   bool operator ==( const TypeId &other ) const
+   {
+      return strcmp( type_, other.type_ ) == 0;
+   }
+
+   bool operator !=( const TypeId &other ) const
+   {
+      return !( *this == other );
+   }
+
+private:
+   const char *type_;
+};
+
+template<class Type>
+TypeId typeId<Type>()
+{
+   return __error__typeId_function_not_overloaded;
+}
+
+#define CPPUTTOOLS_DECLARE_CTTI( type )   \
+   template<>                             \
+   TypeId typeId<type>()                  \
+   {                                      \
+      return TypeId( #type );             \
+   }
+
+
+CPPUTTOOLS_DECLARE_CTTI( char );
+CPPUTTOOLS_DECLARE_CTTI( signed char );
+CPPUTTOOLS_DECLARE_CTTI( unsigned char );
+CPPUTTOOLS_DECLARE_CTTI( short );
+CPPUTTOOLS_DECLARE_CTTI( unsigned short );
+CPPUTTOOLS_DECLARE_CTTI( int );
+CPPUTTOOLS_DECLARE_CTTI( unsigned int );
+CPPUTTOOLS_DECLARE_CTTI( long );
+CPPUTTOOLS_DECLARE_CTTI( unsigned long );
+CPPUTTOOLS_DECLARE_CTTI( float );
+CPPUTTOOLS_DECLARE_CTTI( double );
+CPPUTTOOLS_DECLARE_CTTI( long double );
+CPPUTTOOLS_DECLARE_CTTI( const char * );
+CPPUTTOOLS_DECLARE_CTTI( const wchar_t * );
+CPPUTTOOLS_DECLARE_CTTI( std::string );
+CPPUTTOOLS_DECLARE_CTTI( std::wstring );
+
+
+# endif
+
+
+
+
+#endif // CPPUTTOOLS_CONFIGURATION_CTTI_H_INCUDED
+@
+
+
+1.1
+log
+@* adding cpputtools library, command line options among other thing (for test runners). In progress.
+@
+text
+@a43 4
+template<class Type>
+TypeId typeId<Type>();
+
+
+d48 1
+a48 1
+TypeId typeId<Type>()
+@
+

@@ -1,0 +1,236 @@
+head	1.10;
+access;
+symbols
+	REL_1_12_1:1.10
+	REL_1_11_6:1.9
+	REL_1_11_4:1.9
+	REL_1_11_0:1.9
+	TG_CPPUNIT_NO_STREAM_AFTER:1.9
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.9
+	REL_1_10_2:1.9
+	REL_1_10_0:1.9
+	REL_1_9_14:1.9
+	REL_1_9_12:1.9
+	BRANCH_1_9_12:1.9.0.2
+	TG_BRANCH_1_9_12:1.9
+	TG_BEFORE_HPUX_PLUGIN:1.8
+	TG_BEFORE_SUN4_PORT:1.8
+	REL_1_9_10:1.8
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.8
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.8
+	REL_1_9_6:1.8
+	REL_1_9_4:1.7
+	REL_1_9_0:1.7
+	REL_1_8_0:1.7
+	REL_1_7_8:1.7
+	REL_1_7_3:1.7
+	REL_1_7_1:1.7
+	REL_1_6_2:1.7
+	BRANCH_1_6:1.7.0.2
+	REL_1_6_1:1.7
+	REL_1_6_0:1.7
+	REL_1_5_5:1.5
+	REL_1_5_4:1.3;
+locks; strict;
+comment	@# @;
+
+
+1.10
+date	2007.01.12.05.27.05;	author smr99;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2003.05.07.20.07.16;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2002.04.20.22.26.56;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.07.06.00.31.23;	author smr99;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.05.17.20.24.46;	author bastiaan;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.04.28.18.23.32;	author bastiaan;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.04.19.20.47.22;	author bastiaan;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.04.14.00.17.36;	author bastiaan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.04.13.16.44.48;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2000.10.11.18.56.09;	author e-s;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.10
+log
+@Fix examples/hierarchy to actually return the result of the tests.
+It is expected to fail, so mark it using XFAIL_TESTS in Makefile.am.
+@
+text
+@EXTRA_DIST = hierarchy.dsw hierarchy.dsp
+
+TESTS = hierarchy
+XFAIL_TESTS = hierarchy
+
+check_PROGRAMS = $(TESTS)
+
+INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include
+
+hierarchy_SOURCES= BoardGame.cpp \
+                   Chess.cpp \
+                   main.cpp \
+                   BoardGame.h \
+                   Chess.h \
+                   BoardGameTest.h \
+                   ChessTest.h
+
+hierarchy_LDADD= \
+  $(top_builddir)/src/cppunit/libcppunit.la 
+
+hierarchy_LDFLAGS = $(LIBADD_DL)
+@
+
+
+1.9
+log
+@* Makefile.am
+* configure.in
+* config/ac_dll.m4
+* examples/cppunittest/Makefile.am
+* examples/hierarchy/Makefile.am
+* examples/money/Makefile.am
+* examples/simple/Makefile.am
+* include/cppunit/config/SelectDllLoader.h
+* include/cppunit/plugin/TestPlugIn.h
+* include/cppunit/tools/Algorithm.h
+* src/DllPlugInTester/Makefile.am
+* src/cppunit/Makefile.am
+* src/cppunit/TestDecorator.cpp
+* src/cppunit/ShlDynamicLibraryManager.cpp
+* src/cppunit/UnixDynamicLibraryManager.cpp
+* src/cppunit/Win32DynamicLibraryManager.cpp: applied patch from
+  Abdessattar Sassi <abdesassi@@users.sourceforge.net> to add support
+  for plug-in to hp-ux.
+@
+text
+@d4 2
+@
+
+
+1.8
+log
+@* fixed makefile
+@
+text
+@d19 1
+a19 1
+hierarchy_LDFLAGS = -ldl
+@
+
+
+1.7
+log
+@Fix configure and include bugs.
+@
+text
+@d19 1
+@
+
+
+1.6
+log
+@Merged fixes for distcheck target, contributed by Steve M. Robbins  <steve@@nyongwa.montreal.qc.ca>.
+@
+text
+@d6 1
+a6 1
+INCLUDES = -I$(top_srcdir)/include
+@
+
+
+1.5
+log
+@Moved files in subdir cppunit to src/cppunit.
+@
+text
+@d4 1
+d6 1
+a6 3
+noinst_PROGRAMS = hierarchy
+
+INCLUDES= -I$(top_srcdir) 
+@
+
+
+1.4
+log
+@Added *.dsw and *.dsp files to EXTRA_DIST.
+@
+text
+@d18 1
+a18 1
+  $(top_builddir)/cppunit/libcppunit.la 
+@
+
+
+1.3
+log
+@Added *.h files to dist tar ball.
+@
+text
+@d1 2
+@
+
+
+1.2
+log
+@Merged patch #403542 by Tim Jansen <timj@@systembureau.com>.
+Fixes bug #220207: "const" problem with countTestCases.
+Fixes 'TestSuite::deleteContent() clear vector'
+Fixes 'Fix: TestCaller registered Fixture' (see patch #403541).
+Fixes bug #415219: example did not test anything.
+@
+text
+@d9 5
+a13 1
+                   main.cpp
+@
+
+
+1.1
+log
+@added main function and Makefile
+@
+text
+@d1 2
+@
+

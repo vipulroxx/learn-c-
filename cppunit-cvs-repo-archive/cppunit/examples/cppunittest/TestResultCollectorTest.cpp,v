@@ -1,0 +1,831 @@
+head	1.6;
+access;
+symbols
+	REL_1_12_1:1.6
+	REL_1_11_6:1.6
+	REL_1_11_4:1.6
+	REL_1_11_0:1.6
+	TG_CPPUNIT_NO_STREAM_AFTER:1.6
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.6
+	REL_1_10_2:1.6
+	REL_1_10_0:1.6
+	REL_1_9_14:1.6
+	REL_1_9_12:1.6
+	BRANCH_1_9_12:1.6.0.2
+	TG_BRANCH_1_9_12:1.6
+	TG_BEFORE_HPUX_PLUGIN:1.6
+	TG_BEFORE_SUN4_PORT:1.6
+	REL_1_9_10:1.6
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	REL_1_9_6:1.3
+	REL_1_9_4:1.3
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.6
+date	2002.07.14.19.48.31;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.07.13.10.33.49;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.06.13.15.31.01;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.15.15.17.58;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.14.10.08.37;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.02.28.10.49.20;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@#include "CoreSuite.h"
+#include "TestResultCollectorTest.h"
+
+
+
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( TestResultCollectorTest,
+                                       coreSuiteName() );
+
+
+TestResultCollectorTest::TestResultCollectorTest()
+{
+}
+
+
+TestResultCollectorTest::~TestResultCollectorTest()
+{
+}
+
+
+void 
+TestResultCollectorTest::setUp()
+{
+  m_lockCount = 0;
+  m_unlockCount = 0;
+  m_result = new CPPUNIT_NS::TestResultCollector();
+  m_synchronizedResult = new SynchronizedTestResult( this );  
+  m_test = new CPPUNIT_NS::TestCase();
+  m_test2 = new CPPUNIT_NS::TestCase();
+}
+
+
+void 
+TestResultCollectorTest::tearDown()
+{
+  delete m_test2;
+  delete m_test;
+  delete m_synchronizedResult;
+  delete m_result;
+}
+
+
+void 
+TestResultCollectorTest::testConstructor()
+{
+  checkResult( 0, 0, 0 );
+}
+
+
+void 
+TestResultCollectorTest::testAddTwoErrors()
+{
+  CPPUNIT_NS::Message errorMessage1( "First Error" );
+  CPPUNIT_NS::Message errorMessage2( "Second Error" );
+  {
+    CPPUNIT_NS::TestFailure failure1( m_test, 
+                                   new CPPUNIT_NS::Exception( errorMessage1 ),
+                                   true );
+    m_result->addFailure( failure1 );
+
+    CPPUNIT_NS::TestFailure failure2( m_test2, 
+                                   new CPPUNIT_NS::Exception( errorMessage2 ),
+                                   true );
+    m_result->addFailure( failure2 );
+  } // ensure that the test result duplicate the failures.
+
+  checkResult( 0, 2, 0 );
+  checkFailure( m_result->failures()[0],
+                errorMessage1,
+                m_test,
+                true );
+  checkFailure( m_result->failures()[1],
+                errorMessage2,
+                m_test2,
+                true );
+}
+
+
+void 
+TestResultCollectorTest::testAddTwoFailures()
+{
+  CPPUNIT_NS::Message errorMessage1( "First Failure" );
+  CPPUNIT_NS::Message errorMessage2( "Second Failure" );
+  {
+    CPPUNIT_NS::TestFailure failure1( m_test, 
+                                   new CPPUNIT_NS::Exception( errorMessage1 ),
+                                   false );
+    m_result->addFailure( failure1 );
+
+    CPPUNIT_NS::TestFailure failure2( m_test2, 
+                                   new CPPUNIT_NS::Exception( errorMessage2 ),
+                                   false );
+    m_result->addFailure( failure2 );
+  } // ensure that the test result duplicate the failures.
+  checkResult( 2, 0, 0 );
+  checkFailure( m_result->failures()[0],
+                errorMessage1,
+                m_test,
+                false );
+  checkFailure( m_result->failures()[1],
+                errorMessage2,
+                m_test2,
+                false );
+}
+
+
+void 
+TestResultCollectorTest::testStartTest()
+{
+  m_result->startTest( m_test );
+  m_result->startTest( m_test );
+  checkResult( 0, 0, 2 );
+}
+
+
+void 
+TestResultCollectorTest::testWasSuccessfulWithNoTest()
+{
+  checkWasSuccessful( true );
+}
+
+
+void 
+TestResultCollectorTest::testWasSuccessfulWithErrors()
+{
+  addError( "Error1" );
+  addError( "Error2" );
+  checkWasSuccessful( false );
+}
+
+
+void 
+TestResultCollectorTest::testWasSuccessfulWithFailures()
+{
+  addFailure( "Failure1" );
+  addFailure( "Failure2" );
+  checkWasSuccessful( false );
+}
+
+
+void 
+TestResultCollectorTest::testWasSuccessfulWithErrorsAndFailures()
+{
+  addError( "Error1" );
+  addFailure( "Failure2" );
+  checkWasSuccessful( false );
+}
+
+
+void 
+TestResultCollectorTest::testWasSuccessfulWithSuccessfulTest()
+{
+  m_result->startTest( m_test );
+  m_result->endTest( m_test );
+  m_result->startTest( m_test2 );
+  m_result->endTest( m_test2 );
+  checkWasSuccessful( true );
+}
+
+
+void 
+TestResultCollectorTest::testSynchronizationAddFailure()
+{
+  addFailure( "Failure1", m_test, false, m_synchronizedResult );
+  checkSynchronization();
+}
+
+
+void 
+TestResultCollectorTest::testSynchronizationStartTest()
+{
+  m_synchronizedResult->startTest( m_test );
+  checkSynchronization();
+}
+
+
+void 
+TestResultCollectorTest::testSynchronizationRunTests()
+{
+  m_synchronizedResult->runTests();
+  checkSynchronization();
+}
+
+
+void 
+TestResultCollectorTest::testSynchronizationTestErrors()
+{
+  m_synchronizedResult->testErrors();
+  checkSynchronization();
+}
+
+
+void 
+TestResultCollectorTest::testSynchronizationTestFailures()
+{
+  m_synchronizedResult->testFailures();
+  checkSynchronization();
+}
+
+
+void 
+TestResultCollectorTest::testSynchronizationFailures()
+{
+  m_synchronizedResult->failures();
+  checkSynchronization();
+}
+
+
+void 
+TestResultCollectorTest::testSynchronizationWasSuccessful()
+{
+  m_synchronizedResult->wasSuccessful();
+  checkSynchronization();
+}
+
+
+void 
+TestResultCollectorTest::checkResult( int failures,
+                             int errors,
+                             int testsRun )
+{
+  CPPUNIT_ASSERT_EQUAL( testsRun, m_result->runTests() );
+  CPPUNIT_ASSERT_EQUAL( errors, m_result->testErrors() );
+  CPPUNIT_ASSERT_EQUAL( failures, m_result->testFailures() );
+  CPPUNIT_ASSERT_EQUAL( errors + failures, 
+                        m_result->testFailuresTotal() );
+}
+
+
+void
+TestResultCollectorTest::checkFailure( CPPUNIT_NS::TestFailure *failure,
+                                       CPPUNIT_NS::Message expectedMessage,
+                                       CPPUNIT_NS::Test *expectedTest,
+                                       bool expectedIsError )
+{
+  CPPUNIT_NS::Message actualMessage( failure->thrownException()->message() );
+  CPPUNIT_ASSERT( expectedMessage == actualMessage );
+  CPPUNIT_ASSERT_EQUAL( expectedTest, failure->failedTest() );
+  CPPUNIT_ASSERT_EQUAL( expectedIsError, failure->isError() );
+}
+
+
+void 
+TestResultCollectorTest::checkWasSuccessful( bool shouldBeSuccessful )
+{
+  CPPUNIT_ASSERT_EQUAL( shouldBeSuccessful, m_result->wasSuccessful() );
+}
+
+
+void 
+TestResultCollectorTest::locked()
+{
+  CPPUNIT_ASSERT_EQUAL( m_lockCount, m_unlockCount );
+  ++m_lockCount;
+}
+
+
+void 
+TestResultCollectorTest::unlocked()
+{
+  ++m_unlockCount;
+  CPPUNIT_ASSERT_EQUAL( m_lockCount, m_unlockCount );
+}
+
+
+void 
+TestResultCollectorTest::checkSynchronization()
+{
+  CPPUNIT_ASSERT_EQUAL( m_lockCount, m_unlockCount );
+  CPPUNIT_ASSERT( m_lockCount > 0 );
+}
+
+
+void 
+TestResultCollectorTest::addFailure( std::string message )
+{
+  addFailure( message, m_test, false, m_result );
+}
+
+
+void 
+TestResultCollectorTest::addError( std::string message )
+{
+  addFailure( message, m_test, true, m_result );
+}
+
+
+void 
+TestResultCollectorTest::addFailure( std::string message, 
+                                     CPPUNIT_NS::Test *failedTest, 
+                                     bool isError,
+                                     CPPUNIT_NS::TestResultCollector *result )
+{
+  CPPUNIT_NS::TestFailure failure( failedTest, 
+                                new CPPUNIT_NS::Exception( CPPUNIT_NS::Message( message ) ), 
+                                isError );
+  result->addFailure( failure );
+}
+@
+
+
+1.5
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d7 1
+a7 1
+                                       CppUnitTest::coreSuiteName() );
+@
+
+
+1.4
+log
+@* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: added functions that take a Message as a
+  parameter. Existing function have a short description indicating
+  an assertion failure.
+
+* include/cppunit/CompilerOuputter.h:
+* src/cppunit/CompilerOuputter.cpp: removed printNotEqualMessage() and
+  printDefaultMessage(). Updated to use Message.
+
+* include/cppunit/Message.h:
+* src/cppunit/Message.cpp: added. Represents a message associated to an
+  Exception.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: the message associated to the exception is now
+  stored as a Message instead of a string.
+
+* include/cppunit/NotEqualException.cpp: constructs a Message instead of a
+  string.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: updated to use Asserter functions that
+  take a message when pertinent (CPPUNIT_FAIL...).
+
+* include/cppunit/TestCaller.h:
+* src/cppunit/TestCaller.cpp: exception not caught failure has a better
+  short description.
+
+* src/cppunit/TestCase.cpp: better short description when setUp() or
+  tearDown() fail.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replace '\n' in failure message
+  with space.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/NotEqualExceptionTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated to use Exception/Message.
+
+* examples/cppunittest/MessageTest.h:
+* examples/cppunittest/MessageTest.cpp: added. Unit test for Message.
+@
+text
+@d25 1
+a25 1
+  m_result = new CppUnit::TestResultCollector();
+d27 2
+a28 2
+  m_test = new CppUnit::TestCase();
+  m_test2 = new CppUnit::TestCase();
+d52 2
+a53 2
+  CppUnit::Message errorMessage1( "First Error" );
+  CppUnit::Message errorMessage2( "Second Error" );
+d55 2
+a56 2
+    CppUnit::TestFailure failure1( m_test, 
+                                   new CppUnit::Exception( errorMessage1 ),
+d60 2
+a61 2
+    CppUnit::TestFailure failure2( m_test2, 
+                                   new CppUnit::Exception( errorMessage2 ),
+d81 2
+a82 2
+  CppUnit::Message errorMessage1( "First Failure" );
+  CppUnit::Message errorMessage2( "Second Failure" );
+d84 2
+a85 2
+    CppUnit::TestFailure failure1( m_test, 
+                                   new CppUnit::Exception( errorMessage1 ),
+d89 2
+a90 2
+    CppUnit::TestFailure failure2( m_test2, 
+                                   new CppUnit::Exception( errorMessage2 ),
+d230 3
+a232 3
+TestResultCollectorTest::checkFailure( CppUnit::TestFailure *failure,
+                                       CppUnit::Message expectedMessage,
+                                       CppUnit::Test *expectedTest,
+d235 1
+a235 1
+  CppUnit::Message actualMessage( failure->thrownException()->message() );
+d289 1
+a289 1
+                                     CppUnit::Test *failedTest, 
+d291 1
+a291 1
+                                     CppUnit::TestResultCollector *result )
+d293 2
+a294 2
+  CppUnit::TestFailure failure( failedTest, 
+                                new CppUnit::Exception( CppUnit::Message( message ) ), 
+@
+
+
+1.3
+log
+@* NEWS: updated.
+
+* configure.in: added include/cppunit/config/Makefile and
+  include/cppunit/plugin/Makefile to the list of target.
+
+* doc/CppUnit-win.dox: enabled generation of HTML Help documentation.
+
+* include/cppunit/config/Makefile.am:
+* include/cppunit/plugin/Makefile.am: added.
+
+* include/cppunit/config-bcb5.h:
+* include/cppunit/config-msvc6.h:
+* include/cppunit/config-mac.h: moved to include/cppunit/config/.
+
+* include/cppunit/Portability.h: updated config files location. Added macros
+  CPPUNIT_STRINGIZE and CPPUNIT_JOIN (implementation adapted from boost.org).
+  Added macro CPPUNIT_MAKE_UNIQUE_NAME.
+
+* include/cppunit/Test.h: modified methods order.
+
+* include/cppunit/extensions/HelperMacros.h: renamed macro
+  __CPPUNIT_MAKE_UNIQUE_NAME to CPPUNIT_MAKE_UNIQUE_NAME and moved its
+  definition to include/cppunit/Portability.h.
+
+* include/cppunit/extensions/TestDecorator.h: Inherits Test instead of TestLeaf.
+
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* src/cppunit/DynamicLibraryManager.cpp: added. DLL manager (load & lookup
+  symbol).
+
+* src/cppunit/BeOsDynamicLibraryManager.cpp:
+* src/cppunit/UnixDynamicLibraryManager.cpp:
+* src/cppunit/Win32DynamicLibraryManager.cpp: added. Implementation of
+  platform dependent methods of DynamicLibraryManager.
+
+* include/cppunit/plugin/DynamicLibraryManagerException.h:
+* src/cppunit/DynamicLibraryManagerException.cpp: added. Exception thrown
+  by DynamicLibraryManager.
+
+* include/cppunit/plugin/TestPlugIn.h: added. CppUnitTestPlugIn interface
+  definition. Helper macros to implements plug-in.
+
+* include/cppunit/plugin/TestPlugInSuite.h:
+* src/cppunit/plugin/TestPlugInSuite.cpp: added. A suite to wrap a test
+  plug-in.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: added. A default implementation
+  of the test plug-in interface.
+
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp: updated to use the
+  new TestPlugIn.
+
+* examples/cppunittest/TestResultCollectorTest.cpp: fixed typo.
+@
+text
+@d52 2
+a53 2
+  std::string errorMessage1( "First Error" );
+  std::string errorMessage2( "Second Error" );
+d81 2
+a82 2
+  std::string errorMessage1( "First Failure" );
+  std::string errorMessage2( "Second Failure" );
+d231 1
+a231 1
+                                       std::string expectedMessage,
+d235 2
+a236 2
+  std::string actualMessage( failure->thrownException()->what() );
+  CPPUNIT_ASSERT_EQUAL( expectedMessage, actualMessage );
+d294 1
+a294 1
+                                new CppUnit::Exception( message ), 
+@
+
+
+1.2
+log
+@* NEWS: updated.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: renamed TestSuccessListener
+
+* doc/cookbook.dox:
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* src/cppunit/CompilerOutputter.cpp: fixed 'success' typo (was misspelled
+'sucess').
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: updated (renaming of
+  TestSucessListener).
+
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp: Changed SucessfulTests tag to
+SucessfulTests.
+@
+text
+@d150 1
+a150 1
+TestResultCollectorTest::testWasSuccessfulWithSucecssfulTest()
+@
+
+
+1.1
+log
+@* NEW: updated and restructured.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp:
+updated against TestResultChange. Changed TestResult to TestResultCollector.
+
+* include/cppunit/extensions/HelperMacros.h: minor documentation fix.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all Outputter.
+
+* include/cppunit/Portability.h: made the fix on OStringStream suggested by
+Bob Summerwill to remove level 4 warning with VC++.
+
+* include/cppunit/TestAssert.h: added macro CPPUNIT_ASSERT_EQUAL_MESSAGE.
+
+* src/cppunit/TestFailure.cpp:
+* include/cppunit/TestFailure.h: added method clone() to duplicate a failure. Made
+all method virtual.
+
+* include/cppunit/TestListener.h: changed signature of addFailure() to
+addFailure( const TestFailure &failure ). Failure is now only a temporary object.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all outputter. Used
+by TextTestRunner.
+
+* include/cppunit/SynchronizedObject.h:
+* src/cppunit/SynchronizedObject.cpp: added. Class extracted from TestResult.
+Base class for objects that can be accessed from different threads.
+
+* include/cppunit/TestResult.h: TestFailure.h is no longer included.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: extracted all methods related to keeping track
+of the result to the new TestResultCollector class which is a TestListener.
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: added. TestListener which kept track
+of the result of the test run. All failure/error, and tests are tracked.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: added. TestListener extracted from
+TestResult. Is responsible for wasSucessful().
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: reindented.
+
+* include/cppunit/TextOutputter.h:
+* src/cppunit/TextOutputter.cpp: added. Copied from the deprecated
+TextTestResult and modified to act as an Ouputter.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: Copied from the deprecated
+TextTestResult and modified to print the dot while the test are running.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: updated against TestResult change.
+No compatiblity break. Deprecated.
+
+* include/cppunit/TextTestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to work with the new TestResult.
+Use TextTestProgressListener and TextOutputter instead of TextTestResult.
+Any outputter with interface Outputter can be used to print the test result
+(CompilerOutputter, XmlOutputter, TextOutputter...)
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against TestResultChange.
+Changed TestResult to TestResultCollector.
+
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/TestRunnerDlg.cpp: fixed the 'fullrowselect' feature of the list view.
+The dialog is a TestListener itself, it no longer use the GUITestResult class.
+
+* src/msvc6/TestRunner.rc: moved the "autorun test button" in such a way that it
+did not overlap the progress bar anymore.
+
+* src/msvc6/MfcSynchronizationObject.h: added. Generic SynchronizedObject
+lock for MFC.
+
+* src/msvc6/GUITestResult.h :
+* src/msvc6/GUITestResult.cpp : removed.
+
+* src/qttestrunner/TestRunnerModel.h:
+* src/qttestrunner/TestRunnerModel.cpp: changed addFailure() signature to reflect
+change on TestListener.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use the new Outputter
+abstraction and TextTestRunner facilities.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.cpp: removed. Replaced by MockTestCase.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.h:
+
+* examples/cppunittest/HelperMacrosTest.h:
+* examples/cppunittest/HelperMacrosTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/MockTestListener.h:
+* examples/cppunittest/MockTestListener.cpp: the class now behave like a mock
+object.
+
+* examples/cppunittest/MockTestCase.h:
+* examples/cppunittest/MockTestCase.cpp: added. Mock TestCase object.
+
+* examples/cppunittest/OrthodoxTest.h:
+* examples/cppunittest/OrthodoxTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/SynchronizedTestResult.h: Updated against TestResult
+change.
+
+* examples/cppunittest/TestCallerTest.h:
+* examples/cppunittest/TestCallerTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: Updated against TestResult change.
+Use MockTestListener and MockTestCase instead of FailingTestCase and TestResult.
+
+* examples/cppunittest/TestDecoratorTest.h:
+* examples/cppunittest/TestDecoratorTest.cpp: Updated against TestResult change.
+Use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/TestListenerTest.h:
+* examples/cppunittest/TestListenerTest.cpp: removed. Those unit tests have been
+rewrote and moved to TestResultTest.
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: Updated to test the new interface.
+Tests from TestListenerTest have been moved here.
+
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp: added. Tests for the class
+that been extracted from TestResult.
+
+* examples/cppunittest/TestSetUpTest.h:
+* examples/cppunittest/TestSetUpTest.cpp: renamed SetUp inner class to MockSetUp.
+Changed interface to be more akin to a Mock object.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: Updated against TestResult change,
+and rewrote to use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: Updated against TestResult change.
+Added some utility methods to make the update easier.
+@
+text
+@d150 1
+a150 1
+TestResultCollectorTest::testWasSuccessfulWithSucessfulTest()
+@
+

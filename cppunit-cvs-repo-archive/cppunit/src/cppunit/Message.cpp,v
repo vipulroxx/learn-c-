@@ -1,0 +1,324 @@
+head	1.4;
+access;
+symbols
+	REL_1_12_1:1.4
+	REL_1_11_6:1.4
+	REL_1_11_4:1.4
+	REL_1_11_0:1.4
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.4
+date	2004.11.19.20.00.44;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.06.16.18.05.49;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.06.13.15.31.01;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* added specific copy constructor implementatin to ensure string buffer are detached during copy (therefore providing thread-safe copy constructor for non thread-safe std::string copy constructor implementation).
+@
+text
+@#include <cppunit/Message.h>
+#include <stdexcept>
+
+
+CPPUNIT_NS_BEGIN
+
+
+Message::Message()
+{
+}
+
+Message::Message( const Message &other )
+{
+   *this = other;
+}
+
+
+Message::Message( const std::string &shortDescription )
+    : m_shortDescription( shortDescription )
+{
+}
+
+
+Message::Message( const std::string &shortDescription,
+                  const std::string &detail1 )
+    : m_shortDescription( shortDescription )
+{
+  addDetail( detail1 );
+}
+
+
+Message::Message( const std::string &shortDescription,
+                  const std::string &detail1,
+                  const std::string &detail2 )
+    : m_shortDescription( shortDescription )
+{
+  addDetail( detail1, detail2 );
+}
+
+
+Message::Message( const std::string &shortDescription,
+                  const std::string &detail1,
+                  const std::string &detail2,
+                  const std::string &detail3 )
+    : m_shortDescription( shortDescription )
+{
+  addDetail( detail1, detail2, detail3 );
+}
+
+Message &
+Message::operator =( const Message &other )
+{
+   if ( this != &other )
+   {
+      m_shortDescription = other.m_shortDescription.c_str();
+      m_details.clear();
+      Details::const_iterator it = other.m_details.begin();
+      Details::const_iterator itEnd = other.m_details.end();
+      while ( it != itEnd )
+         m_details.push_back( (*it++).c_str() );
+   }
+
+   return *this;
+}
+
+
+const std::string &
+Message::shortDescription() const
+{
+  return m_shortDescription;
+}
+
+
+int 
+Message::detailCount() const
+{
+  return m_details.size();
+}
+
+
+std::string 
+Message::detailAt( int index ) const
+{
+  if ( index < 0  ||  index >= detailCount() )
+    throw std::invalid_argument( "Message::detailAt() : invalid index" );
+
+  return m_details[ index ];
+}
+
+
+std::string 
+Message::details() const
+{
+  std::string details;
+  for ( Details::const_iterator it = m_details.begin(); it != m_details.end(); ++it )
+  {
+    details += "- ";
+    details += *it;
+    details += '\n';
+  }
+  return details;
+}
+
+
+void 
+Message::clearDetails()
+{
+  m_details.clear();
+}
+
+
+void 
+Message::addDetail( const std::string &detail )
+{
+  m_details.push_back( detail );
+}
+
+
+void 
+Message::addDetail( const std::string &detail1,
+                    const std::string &detail2 )
+{
+  addDetail( detail1 );
+  addDetail( detail2 );
+}
+
+
+void 
+Message::addDetail( const std::string &detail1,
+                    const std::string &detail2,
+                    const std::string &detail3 )
+{
+  addDetail( detail1, detail2 );
+  addDetail( detail3 );
+}
+
+
+void 
+Message::addDetail( const Message &message )
+{
+  m_details.insert( m_details.end(), 
+                    message.m_details.begin(), 
+                    message.m_details.end() );
+}
+
+
+void 
+Message::setShortDescription( const std::string &shortDescription )
+{
+  m_shortDescription = shortDescription;
+}
+
+
+bool 
+Message::operator ==( const Message &other ) const
+{
+  return m_shortDescription == other.m_shortDescription  &&
+         m_details == other.m_details;
+}
+
+
+bool 
+Message::operator !=( const Message &other ) const
+{
+  return !( *this == other );
+}
+
+
+CPPUNIT_NS_END
+
+@
+
+
+1.3
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d12 5
+d50 16
+@
+
+
+1.2
+log
+@* src/cppunit/Message.cpp:
+* src/cppunit/XmlElement.cpp: added missing include <stdexcept>
+@
+text
+@d5 1
+a5 2
+namespace CppUnit
+{
+d148 1
+a148 2
+
+} //  namespace CppUnit
+@
+
+
+1.1
+log
+@* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: added functions that take a Message as a
+  parameter. Existing function have a short description indicating
+  an assertion failure.
+
+* include/cppunit/CompilerOuputter.h:
+* src/cppunit/CompilerOuputter.cpp: removed printNotEqualMessage() and
+  printDefaultMessage(). Updated to use Message.
+
+* include/cppunit/Message.h:
+* src/cppunit/Message.cpp: added. Represents a message associated to an
+  Exception.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: the message associated to the exception is now
+  stored as a Message instead of a string.
+
+* include/cppunit/NotEqualException.cpp: constructs a Message instead of a
+  string.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: updated to use Asserter functions that
+  take a message when pertinent (CPPUNIT_FAIL...).
+
+* include/cppunit/TestCaller.h:
+* src/cppunit/TestCaller.cpp: exception not caught failure has a better
+  short description.
+
+* src/cppunit/TestCase.cpp: better short description when setUp() or
+  tearDown() fail.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replace '\n' in failure message
+  with space.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/NotEqualExceptionTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated to use Exception/Message.
+
+* examples/cppunittest/MessageTest.h:
+* examples/cppunittest/MessageTest.cpp: added. Unit test for Message.
+@
+text
+@d2 1
+@
+

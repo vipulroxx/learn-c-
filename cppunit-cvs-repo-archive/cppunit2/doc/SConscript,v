@@ -1,0 +1,90 @@
+head	1.3;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.3
+date	2007.08.14.17.42.14;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2007.03.16.22.41.38;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2006.09.01.20.12.11;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@- worked-around scons installation of doxygen without testing its existence.
+@
+text
+@Import( 'env' )
+import os.path
+
+if env['HAS_DOXYGEN']:
+    doc_topdir = env['ROOTBUILD_DIR']
+    env['DOXYGEN_DOC_TOP_DIR'] = doc_topdir
+    env['DOXYGEN_HTML_DIR'] = env.Dir( 'cppunit2-doc-html-' + env['CPPUNIT_VERSION'] )
+    doxyfile = env.SubstInFile( '#doc/doxyfile', 'doxyfile.in',
+                                SUBST_DICT = {
+                                    '%CPPUNIT_VERSION%' : env['CPPUNIT_VERSION'],
+                                    '%TOPDIR%' : env.Dir('#').abspath,
+                                    '%DOC_TOPDIR%' : str(doc_topdir),
+                                    '%HTML_OUTPUT%' : str(env['DOXYGEN_HTML_DIR']) } )
+    doc_cmd = env.Doxygen( doxyfile )
+    env.Alias('doc', doc_cmd)
+    env.AlwaysBuild(doc_cmd)
+##
+##    for dir in doc_cmd:
+##        filename = os.path.split(dir.path)[1]
+##        targz_path = os.path.join( env['DIST_DIR'], '%s.tar.gz' % filename )
+##        zip_doc_cmd = env.TarGz( targz_path, [env.Dir(dir)],
+##                                 TARGZ_BASEDIR = doc_topdir )
+##        env.Alias( 'doc-dist', zip_doc_cmd )
+@
+
+
+1.2
+log
+@- made doxygen generation more robust: no longer attempt to manage dependencies.
+@
+text
+@d4 1
+a4 1
+if 'doxygen' in env['TOOLS']:
+@
+
+
+1.1
+log
+@- added missing sconscript.
+@
+text
+@d6 2
+d12 2
+a13 1
+                                    '%DOC_TOPDIR%' : str(doc_topdir) } )
+d17 7
+a23 7
+
+    for dir in doc_cmd:
+        filename = os.path.split(dir.path)[1]
+        targz_path = os.path.join( env['DIST_DIR'], '%s.tar.gz' % filename )
+        zip_doc_cmd = env.TarGz( targz_path, [env.Dir(dir)],
+                                 TARGZ_BASEDIR = doc_topdir )
+        env.Alias( 'doc-dist', zip_doc_cmd )
+@
+

@@ -1,0 +1,387 @@
+head	1.11;
+access;
+symbols
+	REL_1_12_1:1.11
+	REL_1_11_6:1.11
+	REL_1_11_4:1.11
+	REL_1_11_0:1.11
+	TG_CPPUNIT_NO_STREAM_AFTER:1.11
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.10
+	REL_1_10_2:1.10
+	REL_1_10_0:1.10
+	REL_1_9_14:1.10
+	REL_1_9_12:1.10
+	BRANCH_1_9_12:1.10.0.2
+	TG_BRANCH_1_9_12:1.10
+	TG_BEFORE_HPUX_PLUGIN:1.9
+	TG_BEFORE_SUN4_PORT:1.9
+	REL_1_9_10:1.9
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.7
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.7
+	REL_1_9_6:1.7
+	REL_1_9_4:1.7
+	REL_1_9_0:1.6
+	REL_1_8_0:1.6
+	REL_1_7_8:1.6
+	REL_1_7_3:1.5
+	REL_1_7_1:1.5
+	REL_1_6_2:1.5
+	BRANCH_1_6:1.5.0.2
+	REL_1_6_1:1.5
+	REL_1_6_0:1.5;
+locks; strict;
+comment	@ * @;
+
+
+1.11
+date	2004.06.25.10.41.27;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2004.02.18.20.45.44;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2002.08.29.07.36.50;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2002.04.19.14.11.38;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.03.24.19.39.55;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.07.06.01.31.25;	author smr99;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.06.17.16.59.07;	author bastiaan;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.06.02.22.29.52;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.06.02.19.53.06;	author smr99;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.05.18.19.32.42;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.11
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@#ifndef CPPUNIT_TYPEINFOHELPER_H
+#define CPPUNIT_TYPEINFOHELPER_H
+
+#include <cppunit/Portability.h>
+
+#if CPPUNIT_HAVE_RTTI
+
+#include <typeinfo>
+#include <string>
+
+CPPUNIT_NS_BEGIN
+
+
+  /**! \brief Helper to use type_info.
+   */
+  class CPPUNIT_API TypeInfoHelper
+  {
+  public:
+    /*! \brief Get the class name of the specified type_info.
+     * \param info Info which the class name is extracted from.
+     * \return The string returned by type_info::name() without
+     *         the "class" prefix. If the name is not prefixed
+     *         by "class", it is returned as this.
+     */
+    static std::string getClassName( const std::type_info &info );
+  };
+
+
+CPPUNIT_NS_END
+
+#endif  // CPPUNIT_HAVE_RTTI
+
+#endif  // CPPUNIT_TYPEINFOHELPER_H
+@
+
+
+1.10
+log
+@* configure.in:
+* config/ax_cxx_gcc_abi_demangle.m4:
+* src/cppunit/TypeInfoHelper.cpp: added patch from
+Neil Ferguson <nferguso@@eso.org> to use gcc c++ abi to demangle typeinfo
+name when available.
+@
+text
+@d9 1
+@
+
+
+1.9
+log
+@* include/cppunit/Asserter.h:
+* include/cppunit/Message.h:
+* include/cppunit/extensions/TestNamer.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/tools/XmlDocument.h:
+* include/cppunit/tools/XmlElement.h: Fixed a few documentation bug.
+@
+text
+@a9 1
+
+@
+
+
+1.8
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d14 1
+a14 1
+  /** Helper to use type_info.
+d19 1
+a19 1
+    /** Get the class name of the specified type_info.
+@
+
+
+1.7
+log
+@* src/cppunit/PlugInManager.cpp: fixed bug in unload().
+
+* include/cppunit/TypeInfoHelper.h:
+* src/cppunit/TypeInfoHelper.cpp: Implementation is now always available
+  is CPPUNIT_HAVE_RTTI is not 0. This removes the need to use
+  different libraries. CPPUNIT_USE_TYPEINFO_NAME can be set on a
+  case by case basis for HelperMacros.
+
+* src/cppunit/TestFactoryRegistry.cpp: removed unused include of
+  TypeInfoHelper.h.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: used endTest() instead
+  of done() to finalize.
+
+* src/msvc6/TestPlugInRunner/TestPlugIn.h:
+* src/msvc6/TestPlugInRunner/TestPlugIn.cpp: updated to use the
+  new test plug-in system.
+
+* examples/simple/SimplePlugIn.cpp:
+* examples/simple/simple_plugin.dsp: crossplatform test plug-in
+  example using 'simple'.
+
+* examples/msvc6/EasyTestPlugIn/*: projects replaced with the
+  crossplatform projecct examples/simple/simple_plugin.dsp.
+@
+text
+@d11 2
+a12 1
+namespace CppUnit {
+d28 2
+a29 1
+}  // namespace CppUnit
+@
+
+
+1.6
+log
+@* INSTALL-WIN32.txt: added some info to build cppunit as a DLL.
+
+* include/cppunit/config-msvc6.h: added definition of macro CPPUNIT_API when
+building or linking DLL. Defined CPPUNIT_BUILD_DLL when building, and
+CPPUNIT_DLL when linking.
+
+* include/cppunit/Portability.h: added empty definition of macro CPPUNIT_API
+when not building or using CppUnit as a DLL. When any of those symbol is defined,
+the symbol CPPUNIT_NEED_DLL_DECL is set to 1.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* include/cppunit/extensions/TestDecorator.h:
+* include/cppunit/extensions/TestSetUp.h:
+* include/cppunit/TestCaller.h
+* include/cppunit/extensions/TestFactory.h
+* include/cppunit/extensions/TestFactoryRegistry.h
+* include/cppunit/extensions/TypeInfoHelper.h
+* include/cppunit/Asserter.h
+* include/cppunit/Exception.h
+* include/cppunit/NotEqualException.h
+* include/cppunit/SourceLine.h
+* include/cppunit/SynchronizedObject.h
+* include/cppunit/Test.h
+* include/cppunit/TestAssert.h
+* include/cppunit/TestCase.h
+* include/cppunit/TestFailure.h
+* include/cppunit/TestListener.h
+* include/cppunit/TestResult.h
+* include/cppunit/TestSuite.h
+* include/cppunit/CompilerOutputter.h
+* include/cppunit/Outputter.h
+* include/cppunit/TestResultCollector.h
+* include/cppunit/TestSuccessListener.h
+* include/cppunit/TextOutputter.h
+* include/cppunit/TextTestProgressListener.h
+* include/cppunit/TextTestResult.h
+* include/cppunit/TextTestRunner.h
+* include/cppunit/XmlOutputter.h: added CPPUNIT_API for DLL export.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: reindented
+
+* include/cppunit/extensions/TestSetUp.h:
+* src/cppunit/TestSetUp.cpp: added .cpp. extracted inline method and moved them
+to cpp file.
+@
+text
+@d6 1
+a6 1
+#if CPPUNIT_USE_TYPEINFO_NAME
+d29 1
+a29 1
+#endif
+@
+
+
+1.5
+log
+@Change from CPPUNIT_USE_TYPEINFO to CPPUNIT_USE_TYPEINFO_NAME
+@
+text
+@d15 1
+a15 1
+  class TypeInfoHelper
+@
+
+
+1.4
+log
+@replaced #include of <config.h> with <cppunit/Portability.h>
+@
+text
+@d6 1
+a6 1
+#if CPPUNIT_USE_TYPEINFO
+d29 1
+a29 1
+#endif // CPPUNIT_USE_TYPEINFO
+@
+
+
+1.3
+log
+@Change to templatized TestAssert::assertEquals() and the new CPPUNIT_ASSERT* macros
+@
+text
+@d4 1
+a4 1
+#include <cppunit/config.h>
+@
+
+
+1.2
+log
+@Replace CU_ by CPPUNIT_.
+@
+text
+@d4 3
+a6 1
+#ifdef CPPUNIT_USE_TYPEINFO
+@
+
+
+1.1
+log
+@  * Symbol CU_USE_TYPEINFO must be defined instead of USE_TYPEINFO to
+    compile RTTI.
+  * Added back default constructor to TestSuiteBuilder which use RTTI.
+    It is available only if CU_USE_TYPEINFO is defined.
+  * Moved TypeInfoHelper.h from src/cppunit to include/cppunit/extensions.
+  * Macro CU_TEST_SUITE in HelperMacros.h now use TestSuiteBuilder default
+    constructor if CU_USE_TYPEINFO is defined, otherwise it use the
+    type name given to the CU_TEST_SUITE macro.
+  * TestFactoryRegistry::registerFactory(factory) now generate a dummy
+    name based on a serial number instead of using RTTI. The macro
+    CU_TEST_SUITE_REGISTRATION and class AutoRegisterSuite can now
+    when CU_USE_TYPEINFO is not defined.
+  * Added a new Configuration named "Debug Without CU_USE_TYPEINFO" to
+    msvc6 projects. The flag CU_USE_TYPEINFO is not defined in that
+    configuration.
+@
+text
+@d4 1
+a4 1
+#ifdef CU_USE_TYPEINFO
+d27 1
+a27 1
+#endif // CU_USE_TYPEINFO
+@
+

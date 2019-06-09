@@ -1,0 +1,43 @@
+head     1.1;
+branch   1.1.1;
+access   ;
+symbols  initial:1.1.1.1 cppunit:1.1.1;
+locks    ; strict;
+comment  @# @;
+
+
+1.1
+date     2002.04.18.23.10.55;  author blep;  state Exp;
+branches 1.1.1.1;
+next     ;
+
+1.1.1.1
+date     2002.04.18.23.10.55;  author blep;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+
+1.1
+log
+@Initial revision
+@
+text
+@[MSDNIntegrator]
+Chi=CppUnit\index.chi
+Chm=CppUnit\index.chm
+Title=CppUnit Documentation
+GUID={68C68CCA-7255-464c-B420-4F6CE00AAC01}
+@
+
+
+1.1.1.1
+log
+@Initial import
+@
+text
+@@

@@ -1,0 +1,29 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2005.02.28.20.48.56;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* added input based test
+@
+text
+@*.plg
+*.old
+*.WW
+*.old
+
+@

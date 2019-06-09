@@ -1,0 +1,1179 @@
+head	1.22;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.20
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.8
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.7
+	TG_AFTER_REMOVING_TESTCONTEXT:1.6
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.22
+date	2008.07.13.08.19.18;	author blep;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2007.08.14.17.30.52;	author blep;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2005.11.13.23.02.16;	author blep;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2005.11.12.20.55.46;	author blep;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2005.11.11.20.54.15;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2005.11.09.20.04.06;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2005.11.08.21.44.54;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2005.11.08.20.25.49;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2005.08.11.07.18.24;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2005.08.10.21.34.29;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2005.08.10.07.42.52;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2005.08.08.22.10.20;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2005.07.02.20.27.35;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.03.01.19.36.51;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.02.27.10.15.41;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2004.11.21.22.22.24;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.11.20.15.47.15;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.11.20.15.06.59;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.11.20.12.17.50;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.11.19.23.05.20;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.11.19.21.39.13;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.11.18.09.20.34;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.22
+log
+@- Added core framework for resource handling to test case, resource registry and test info. Not integrated with the test runner and no unit tests yet.
+@
+text
+@#ifndef CPPUT_TESTINFO_H_INCLUDED
+# define CPPUT_TESTINFO_H_INCLUDED
+
+# include <cpput/forwards.h>
+# include <cpput/message.h>
+# include <cpptl/intrusiveptr.h>
+# include <json/value.h>
+# include <stdexcept>
+
+namespace CppUT {
+
+
+   /*! \brief Exception thrown when an aborting assertion fails.
+    * @@todo It would probably be better for those exception not to subclass
+    *       std::exception (avoid this exception beeing caught by the test).
+    */
+   class CPPUT_API AbortingAssertionException : public std::runtime_error
+   {
+   public:
+      AbortingAssertionException( const std::string &message )
+         : std::runtime_error( "AbortingAssertionException:\n" + message )
+      {
+      }
+
+      virtual ~AbortingAssertionException() throw()
+      {
+      }
+   };
+
+
+   /*! \brief Exception thrown to skip the current test.
+    * @@todo It would probably be better for those exception not to subclass
+    *       std::exception (avoid this exception beeing caught by the test).
+    */
+   class CPPUT_API SkipTestException : public std::runtime_error
+   {
+   public:
+      SkipTestException()
+         : std::runtime_error( "SkipTestException" )
+      {
+      }
+
+      virtual ~SkipTestException() throw()
+      {
+      }
+   };
+
+
+   /*! \brief Exception thrown when attempting to obtain an undeclared resource.
+    * @@todo It would probably be better for those exception not to subclass
+    *       std::exception (avoid this exception beeing caught by the test).
+    */
+   class CPPUT_API UndeclaredResourceException : public std::runtime_error
+   {
+   public:
+      UndeclaredResourceException( const std::string &resourceName )
+         : std::runtime_error( "UndeclaredResourceException: " + resourceName )
+      {
+      }
+
+      virtual ~UndeclaredResourceException() throw()
+      {
+      }
+   };
+
+   /*! \brief Represents the location of an assertion in the source code.
+    */
+   class SourceLocation
+   {
+   public:
+      SourceLocation( const char *file = 0,
+                      unsigned int line =0 )
+         : file_( file )
+         , line_( line )
+      {
+      }
+
+      void clear()
+      {
+         file_ = 0;
+         line_ = 0;
+      }
+
+      bool isValid() const
+      {
+         return file_ != 0;
+      }
+
+      const char *file_;
+      unsigned int line_;
+   };
+
+   /*! \brief Represents a failed assertion.
+    * \ingroup group_custom_assertions
+    */
+   class CPPUT_API Assertion
+   {
+   public:
+      enum Kind
+      {
+         fault = 1,
+         assertion = 2
+      };
+
+      Assertion( Kind kind = assertion,
+                 const SourceLocation &sourceLocation = SourceLocation() );
+
+      void setLocation( const SourceLocation &location );
+      const SourceLocation &location() const;
+
+      void setKind( Kind kind_ );
+      Kind kind() const;
+
+      void setIgnoredFailure();
+      bool isIgnoredFailure() const;
+
+      void setMessages( const Message &messages );
+      const Message &messages() const;
+
+      void setTestDataType( const std::string &type );
+      std::string testDataType() const;
+
+      void setTestData( const std::string &name,
+                        const Json::Value &value,
+                        const std::string &type = "basic" );
+
+      const Json::Value &testData() const;
+
+      std::string toString() const;
+
+   private:
+      Message messages_;
+      Json::Value testData_;
+      CppTL::ConstString testDataType_;
+      SourceLocation location_;
+      Kind kind_;
+      bool isIgnoredFailure_;
+   };
+
+
+   /*! \brief Represents the status of the current test.
+    * \ingroup group_custom_assertions
+    */
+   class CPPUT_API TestStatus
+   {
+   public:
+      enum Status
+      {
+         passed = 1,
+         skipped,
+         failed
+      };
+
+      TestStatus( Status status = passed );
+
+      void setStatus( Status status );
+
+      Status status() const;
+
+      bool hasFailed() const;
+      bool hasPassed() const;
+      bool wasSkipped() const;
+
+      void setStatistics( const std::string &name,
+                          const Json::Value &value );
+      //Json::Value getStatistics( const std::string &name );
+
+      void addSpecific( const std::string &type,
+                        const Json::Value &value );
+
+      int assertionCount() const;
+      int failedAssertionCount() const;
+      int ignoredFailureCount() const;
+
+      void increaseAssertionCount( int delta = 1 );
+      void increaseFailedAssertionCount( int delta = 1 );
+      void increaseIgnoredFailureCount( int delta = 1 );
+   private:
+      Json::Value statistics_;
+      Json::Value specifics_;
+      Status status_;
+      unsigned int assertionCount_;
+      unsigned int failedAssertionCount_;
+      unsigned int ignoredFailureCount_;
+   };
+
+
+   /// All checker functions used in assert and check macro should returns an object of this type.
+   class CheckerResult
+   {
+   public:
+      CheckerResult()
+         : status_( TestStatus::passed )
+         , message_( "" )
+      {
+      }
+
+      void setFailed()
+      {
+         status_ = TestStatus::failed;
+      }
+
+      /// Compose current result with another once. Used to chain checker functions.
+      /// If other status is skipped, then current status become skipped;
+      /// otherwise if other status is failed, then current status become failed;
+      /// otherwise current status remained unchanged.
+      /// \c other message is appended at the end of the current message.
+      void compose( const CheckerResult &other )
+      {
+         switch ( status_ )
+         {
+         case TestStatus::failed:
+         case TestStatus::passed:
+            if ( other.status_ != TestStatus::passed )
+               status_ = other.status_;
+            break;
+         case TestStatus::skipped:
+            break;
+         default:
+            CPPTL_DEBUG_ASSERT_UNREACHABLE;
+         }
+         message_.extend( other.message_ );
+      }
+
+      TestStatus::Status status_;
+      Message message_;
+   };
+   
+   namespace Impl {
+
+      /// Implementation detail of CPPUT_BEGIN_ASSERTION_MACRO() & CPPUT_BEGIN_CHECKING_MACRO().
+      class CheckerLineLocation
+      {
+      public:
+         const CheckerResult *result_;
+         unsigned long line_;
+      };
+
+      struct FileLocationMarker {};
+
+
+      /// Implementation detail of CPPUT_BEGIN_ASSERTION_MACRO() & CPPUT_BEGIN_CHECKING_MACRO().
+      class CheckerFileLocation
+      {
+      public:
+         const CheckerLineLocation *lineData_;
+         const char *file_;
+      };
+
+      /// Implementation detail of CPPUT_BEGIN_ASSERTION_MACRO() & CPPUT_BEGIN_CHECKING_MACRO().
+      class AssertionTrigger
+      {
+      public:
+         static AssertionTrigger aborting;
+         static AssertionTrigger checking;
+
+         AssertionTrigger &operator +=( const CheckerFileLocation &fileLocation );
+      };
+
+   } // end of namespace Impl
+
+
+   /*! Starts an aborting assertion macro (throw an exception on assertion failure).
+    * \ingroup group_custom_assertions
+    * This macro provides the following properties for assertion:
+    * - condition is evaluated first to ease debugging of unit tests
+    * - assertion can take a variable number of parameters (typicaly an optional message).
+    *
+    * Typically, as little code as possible is put in assertion macro code to ease debugging.
+    * Usually, an assertion macro just start a function call:
+    * \code
+    * #define CPPUT_ASSERT_IS_EVEN \
+    *    CPPUT_BEGIN_ASSERTION_MACRO() checkIsEven
+    * #define CPPUT_ASSERT_IS_EVEN \
+    *    CPPUT_BEGIN_CHECKING_MACRO() checkIsEven
+    *
+    * CheckerResult checkIsEven( int x, const char *message = "" )
+    * {
+    *    CheckerResult result;
+    *    if ( x % 2 != 0 )
+    *    {
+    *       result.setFailed();
+    *       result.message_.add( message );
+    *    }
+    *    return result;
+    * }
+    * void someTest() 
+    * {
+    *    CPPUT_CHECK_IS_EVEN( 1 );
+    *    CPPUT_CHECK_IS_EVEN( 2 );
+    * }
+    * \endcode
+    *
+    * In the example above, both a checking and asserting macro have been implemented. The code to
+    * check the assertion is factorized in a single function than can take a variable number of parameters
+    * and be easily debugged.
+    *
+    * Implementation notes:
+    *
+    * This is achieved using a trick based on operator evaluation order described below:
+    * Basicaly an assertion has the following form:
+    * AssertionTrigger::aborting += __FILE__ + __LINE__ / checkCondition( condition expression );
+    * For simplicity, we will use the following compact form for reference :
+    * x += f + l / checkCond( condition ); 
+    * checkCond must returns an CheckerResult which as overloaded operator /.
+    * operator = evaluate right to left
+    * operator + evaluate left to right
+    * operator / evaluate left to right and as priority over +.
+    * So 'condition expression' is evaluted first, then checkCond(condition) is evaluated. 
+    * Then 'l / checkCond(condition)' is evaluated,
+    * followed by f + l/ checkCond(condition) which yield to an CheckerFileLocation. Finally, 
+    * x += f + l / checkCond( condition ) is evaluated, basically calling AssertionTrigger 
+    * overloaded operator += with the final CheckerFileLocation that contains details about the assertion, 
+    * as well as file/line location.
+    * \see CPPUT_BEGIN_CHECKING_MACRO.
+    */
+   # define CPPUT_BEGIN_ASSERTION_MACRO() \
+      CppUT::Impl::AssertionTrigger::aborting += (const CppUT::Impl::FileLocationMarker *)__FILE__ + __LINE__ / 
+
+   /*! Starts a checking assertion macro (continue test execution even on failure).
+    * \ingroup group_custom_assertions
+    * \see CPPUT_BEGIN_ASSERTION_MACRO() for example and implementation notes.
+    */
+   # define CPPUT_BEGIN_CHECKING_MACRO() \
+      CppUT::Impl::AssertionTrigger::checking += (const CppUT::Impl::FileLocationMarker *)__FILE__ + __LINE__ / 
+
+
+
+   /*! \brief Provides notification of failed assertions and log events.
+    */
+   class CPPUT_API TestResultUpdater : public CppTL::IntrusiveCount
+   {
+   public:
+      virtual ~TestResultUpdater()
+      {
+      }
+
+      virtual void addResultLog( const Json::Value &log ) = 0;
+
+      virtual void addResultAssertion( const Assertion &assertion ) = 0;
+   };
+
+   /*! \brief Indiciates if on failure the assertion it will abort the current test.
+    * \ingroup group_custom_assertions
+    */
+   enum AssertionType
+   {
+      abortingAssertion = 1,   ///< The assertion will abort the test on failure
+      checkingAssertion        ///< The test will continue on assertion failure
+   };
+
+   /*! \brief Indicates if AbortingAssertionException contains detail about the failed assertion.
+    * Used by CppUnit 2 to test itself without relying on TestResultUpdater.
+    */
+   enum AbortingAssertionMode
+   {
+      fastAbortingAssertion = 1,
+      richAbortingAssertion
+   };
+
+   /*! \brief Heart of the test system: hold current test status and the state of the current assertion.
+    * \ingroup group_custom_assertions
+    * \todo find a away to integrate context with multiple thread.
+    */
+   class TestInfo : public CppTL::IntrusiveCount
+      // @@todo inherit CppTL::NonCopyable
+   {
+   public:
+      class CPPUT_API ScopedContextOverride
+      {
+      public:
+         ScopedContextOverride();
+
+         ~ScopedContextOverride();
+
+      protected:
+         TestInfoPtr context_;
+      };
+
+      class CPPUT_API IgnoreFailureScopedContextOverride : public ScopedContextOverride
+                                                         , private TestResultUpdater
+      {
+      public:
+         IgnoreFailureScopedContextOverride( bool &assertionFailed );
+
+         ~IgnoreFailureScopedContextOverride();
+
+      private: // overridden from TestResultUpdater
+         virtual void addResultLog( const Json::Value &log );
+
+         virtual void addResultAssertion( const Assertion &assertion );
+
+      private:
+         Assertion *assertion_;
+         bool &assertionFailed_;
+      };
+
+      friend class IgnoreFailureScopedContextOverride;
+
+
+      /*! Returns the TestInfo instance for the current thread.
+       * Notes: one TestInfo instance is created per thread to guaranty
+       * thread-safety.
+       */
+      static TestInfo &threadInstance();
+
+      TestInfo();
+
+      void setTestResultUpdater( TestResultUpdater &updater );
+      void removeTestResultUpdater();
+
+      /*! \brief Must be called at the beginning of each test case.
+       * Set test status to 'passed', and assertion type to abortingAssertion.
+       */
+      void startNewTest();
+
+      /*! \brief Set a resource required by the test case.
+       * startNewTest() must have been called before this member function.
+       */
+      void addResource( const AcquiredResourceHandlePtr &resource );
+
+      /*! \brief Must be called at the end of each test case.
+       * Releases resource acquired by the test case.
+       */
+      void discardTestResources();
+
+      /*! \brief Obtains the instance of the resource required by the test case.
+       * \param name Name of the resource to obtains. This resource must have been
+       *             declared in the list of resource required by the test case.
+       * \warning This function may only be called inside a test case (setUp, run or tearDown).
+       * \see AbstractTestCase::requireResource, ResourceHandlerRegistry.
+       */
+      Resource &getResource( const ResourceName &name );
+
+      TestStatus &testStatus();
+
+      void handleAssertion( const char *file, 
+                            unsigned int line, 
+                            const CheckerResult &result,
+                            bool isAbortingAssertion );
+
+      void handleUnexpectedException( const Assertion &fault );
+
+      void setAbortingAssertionMode( AbortingAssertionMode mode );
+
+      void log( const Json::Value &log );
+
+   private:
+      typedef std::map<ResourceName,AcquiredResourceHandlePtr> Resources;
+      Resources resources_;
+      TestStatus testStatus_;
+      Assertion currentAssertion_;
+      AssertionType assertionType_;
+      AbortingAssertionMode abortingAssertionMode_;
+      TestResultUpdater *updater_;
+   };
+
+   /*! \brief Obtains the instance of the resource required by the test case.
+    *
+    * \param name Name of the resource to obtains. This resource must have been
+    *             declared in the list of resource required by the test case.
+    * \warning This function may only be called inside a test case (setUp, run or tearDown).
+    * \see AbstractTestCase::requireResource, ResourceHandlerRegistry.
+    */
+   Resource &CPPUT_API getResource( const ResourceName &name );
+
+   /*! \brief Log an event.
+    * \sa TestInfo
+    */
+   void CPPUT_API log( const Json::Value &log );
+
+   /*! \brief Log an event.
+    * \sa TestInfo
+    */
+   void CPPUT_API log( const std::string &log );
+
+   /*! \brief Log an event.
+    * \sa TestInfo
+    */
+   void CPPUT_API log( const char *log );
+
+   /*! \brief Log an event.
+    * \sa TestInfo
+    */
+   void CPPUT_API log( const CppTL::ConstString &log );
+
+} // namespace CppUT
+
+
+inline CppUT::Impl::CheckerLineLocation operator /( unsigned long line, const CppUT::CheckerResult &result )
+{
+   CppUT::Impl::CheckerLineLocation lineData;
+   lineData.result_ = &result;
+   lineData.line_ = line;
+   return lineData;
+}
+
+
+inline CppUT::Impl::CheckerFileLocation operator +( const CppUT::Impl::FileLocationMarker *file, const CppUT::Impl::CheckerLineLocation &lineData )
+{
+   CppUT::Impl::CheckerFileLocation fileData;
+   fileData.file_ = (const char *)file;
+   fileData.lineData_ = &lineData;
+   return fileData;
+}
+
+
+
+#endif // CPPUT_TESTINFO_H_INCLUDED
+@
+
+
+1.21
+log
+@   Modified assertion implementation to force evaluation of user
+condition expression first, while preserving delegation to
+function, overloading and optional parameters feature.
+   See CPPUT_BEGIN_ASSERTION_MACRO() documentation in testinfo.h for an example
+to update your custom assertion code.
+
+   New implementation rely on operator evaluation order and operator overloading. The trick is documented in CPPUT_BEGIN_ASSERTION_MACRO().
+@
+text
+@d14 2
+d30 1
+d32 2
+d48 18
+d366 1
+d401 4
+d412 3
+d417 18
+d449 2
+a450 1
+      TestResultUpdater *updater_;
+d455 1
+d458 9
+@
+
+
+1.20
+log
+@- added fake_stl so that doxygen can figure out that runtime_error is in std namespace
+- improved documentation
+@
+text
+@d12 1
+d49 1
+a49 2
+                      unsigned int line =0,
+                      const char *function = 0 )
+a51 1
+         , function_( function )
+a57 1
+         function_ = 0;
+a66 1
+      const char *function_;
+d165 141
+d388 4
+a391 8
+      void newAssertion( AssertionType type,
+                         const char *fileName,
+                         unsigned int lineNumber,
+                         const char *functionName = 0 );
+   
+      Assertion &currentAssertion();
+
+      void realizeAssertion();
+a406 20
+   /*! \brief Returns the current assertion.
+    * \ingroup group_custom_assertions
+    * \sa TestInfo
+    */
+   Assertion &CPPUT_API currentAssertion();
+
+   /*! \brief Realizes the current assertion.
+    * \ingroup group_custom_assertions
+    * Pass the current assertion to the TestResultUpdater and set the test status to
+    * TestStatus::failed.
+    *
+    * If the current assertion type is abortingAssertion then an AbortingAssertionException
+    * is thrown. 
+    *
+    * @@exception AbortingAssertionException If assertionType was set to
+    *             abortingAssertion.
+    * \sa TestInfo
+    */
+   void CPPUT_API realizeAssertion();
+
+d430 18
+@
+
+
+1.19
+log
+@- added some documentation
+- fixed tabs display in html output.
+@
+text
+@d21 4
+d36 4
+@
+
+
+1.18
+log
+@- added unit tests for TestInfo
+- fixed bug in CPPUT_IGNORE_FAILURE and exception guard.
+- added 'isIgnoredFailure' to Assertion.
+- lighttestrunner now print ignored failure and skipped tests.
+@
+text
+@a9 2
+/// @@todo find a away to integrate context with multiple thread.
+
+d12 2
+d23 2
+d34 2
+d65 3
+d113 3
+a115 1
+
+d160 2
+a161 1
+
+d174 3
+d179 2
+a180 2
+      abortingAssertion = 1,
+      checkingAssertion
+d183 3
+d192 4
+d265 4
+a268 1
+
+d271 12
+a282 4
+   /// Realize the current assertion.
+   /// Add data about the current assertion to the test result.
+   /// @@exception AbortingAssertionException If assertionType was set to
+   ///            abortingAssertion.
+d285 3
+d290 3
+d295 3
+d300 3
+a302 1
+   // This overload allows usage of StringConcatenator...
+@
+
+
+1.17
+log
+@- added CPPUT_SKIP_TEST to skip the current test
+- added CPPUT_IGNORE_FAILURE( assertion ) to ignore a failure caused by an assertion, but count the failed assertion
+@
+text
+@d79 3
+d102 1
+d133 8
+d145 3
+d186 17
+d204 2
+a205 1
+         TestInfoPtr context_;
+d208 2
+d216 1
+d220 1
+a220 1
+      TestStatus &getUpdatedTestStatus();
+a234 2
+      void ignoredFailure();
+
+a242 3
+      unsigned int assertionCount_;
+      unsigned int failedAssertionCount_;
+      unsigned int ignoredAssertionCount_;
+a245 5
+   //void CPPUT_API newAssertion( AssertionType type,
+   //                              const char *fileName,
+   //                              unsigned int lineNumber,
+   //                              const char *functionName = 0 );
+
+d258 2
+@
+
+
+1.16
+log
+@- changed most interface to use std::string instead of CppTL::ConstString
+- CppTL::ConstString is now an implementation detail and is used to store string in objects as it is thread-safe.
+@
+text
+@d8 1
+d23 9
+d120 2
+d199 2
+d211 1
+@
+
+
+1.15
+log
+@* replaced include/opentest/properties.h with include/json/value.h
+* replaced all occurrences of OpenTest::Value and OpenTest::Properties with Json::Value.
+@
+text
+@d72 2
+a73 2
+      void setTestDataType( const CppTL::ConstString &type );
+      const CppTL::ConstString &testDataType() const;
+d75 1
+a75 1
+      void setTestData( const CppTL::ConstString &name,
+d77 1
+a77 1
+                        const CppTL::ConstString &type = "basic" );
+d81 1
+a81 1
+      CppTL::ConstString toString() const;
+d111 1
+a111 1
+      void setStatistics( const CppTL::ConstString &name,
+d113 1
+a113 1
+      //Json::Value getStatistics( const CppTL::ConstString &name );
+d115 1
+a115 1
+      void addSpecific( const CppTL::ConstString &type,
+d215 2
+@
+
+
+1.14
+log
+@* Added log support in test result output
+* Removed unsued method in TestResultUpdater
+* Added CppUT::log demo example.
+@
+text
+@d7 1
+a7 1
+# include <opentest/properties.h>
+d76 1
+a76 1
+                        const OpenTest::Value &value,
+d79 1
+a79 1
+      const OpenTest::Properties &testData() const;
+d85 1
+a85 1
+      OpenTest::Properties testData_;
+d112 2
+a113 2
+                          const OpenTest::Value &value );
+      //OpenTest::Value getStatistics( const CppTL::ConstString &name );
+d116 1
+a116 1
+                        const OpenTest::Value &value );
+d118 2
+a119 2
+      OpenTest::Properties statistics_;
+      OpenTest::Properties specifics_;
+d132 1
+a132 1
+      virtual void addResultLog( const OpenTest::Value &log ) = 0;
+d187 1
+a187 1
+      void log( const OpenTest::Value &log );
+d213 1
+a213 1
+   void CPPUT_API log( const OpenTest::Value &log );
+@
+
+
+1.13
+log
+@* Replaced function in namespace TestInfo by exposing the TestInfoData class and renaming it TestInfo. TestInfo in now an exposed per thread singleton.
+* startNewTest() is now called from TestCase::runTest() instead of being the test runner responsability. There still a few call to this method in cpput bootstrap test (which use assertion without run a test case).
+@
+text
+@a134 2
+
+      virtual void setTestStatus( const TestStatus &status ) = 0;
+d215 3
+@
+
+
+1.12
+log
+@Made context related function private.
+@
+text
+@d6 1
+d125 1
+a125 1
+   class CPPUT_API TestResultUpdater
+d151 3
+a153 1
+   namespace TestInfo {
+d162 1
+a162 1
+         TestInfoDataPtr context_;
+d166 1
+d168 1
+a168 1
+      void CPPUT_API setTestResultUpdater( TestResultUpdater &updater );
+d170 1
+a170 1
+      void CPPUT_API startNewTest();
+d172 1
+a172 1
+      TestStatus &CPPUT_API getUpdatedTestStatus();
+d174 1
+a174 4
+      void CPPUT_API newAssertion( AssertionType type,
+                                   const char *fileName,
+                                   unsigned int lineNumber,
+                                   const char *functionName = 0 );
+d176 6
+a181 1
+      Assertion &CPPUT_API currentAssertion();
+d183 1
+a183 5
+      /// Realize the current assertion.
+      /// Add data about the current assertion to the test result.
+      /// @@exception AbortingAssertionException If assertionType was set to
+      ///            abortingAssertion.
+      void CPPUT_API realizeAssertion();
+d185 1
+a185 1
+      void CPPUT_API handleUnexpectedException( const Assertion &fault );
+d187 1
+a187 1
+      void CPPUT_API log( const OpenTest::Value &log );
+d189 25
+a213 2
+      /// Only for using for unit test of the framework itself
+      void setAbortingAssertionMode( AbortingAssertionMode mode );
+d215 1
+a215 1
+   } // namespace TestInfo
+@
+
+
+1.11
+log
+@Rewrote failure reporting during test. It now provides more structure while still providing some flexibility.
+@
+text
+@d168 2
+a176 2
+      void CPPUT_API handleUnexpectedException( const Assertion &fault );
+
+d183 1
+a183 1
+      TestStatus &CPPUT_API getUpdatedTestStatus();
+a187 6
+      TestInfoDataPtr CPPUT_API saveAndResetContext();
+
+      /// Only for using for unit test of the framework itself
+      void CPPUT_API restoreContext( const TestInfoDataPtr &oldContext );
+
+      /// Only for using for unit test of the framework itself
+@
+
+
+1.10
+log
+@* Added a simple test runner that does not rely on the open test framework to run cppunit2 tests.
+* added CppTL::ConstCharView to wrapper const char *strings.
+* added CppTL::quoteMultiLineString()
+* string assertion output actual and expected using quoteMultiLineString().
+* added serialize unit test for basic Properties
+* opentest tests now use the LightTestRunner.
+@
+text
+@d5 1
+d21 103
+d131 1
+a131 1
+      virtual void mergeInResult( const OpenTest::Properties &result ) = 0;
+d133 1
+a133 2
+      virtual void mergeInResult( const OpenTest::PropertyPath &path,
+                                  const OpenTest::Value &value ) = 0;
+d135 1
+a135 2
+      virtual void appendToResult( const OpenTest::PropertyPath &path,
+                                   const OpenTest::Value &value ) = 0;
+d162 2
+a167 5
+      // Flush test statistics
+      void CPPUT_API updateTestStatistics();
+
+      OpenTest::PropertiesAccessor CPPUT_API result();
+
+d173 1
+a173 3
+      void CPPUT_API setAssertionType( AssertionType type );
+
+      AssertionType CPPUT_API assertionType();
+d175 1
+a175 3
+      OpenTest::Properties &CPPUT_API currentAssertion();
+      OpenTest::Properties &CPPUT_API currentAssertionActual();
+      OpenTest::Properties &CPPUT_API currentAssertionExpected();
+d183 1
+a183 20
+      /// Returns the number of assertions done by the test
+      unsigned int CPPUT_API assertionCount();
+
+      /// Returns the number of assertions that failed done by the test
+      unsigned int CPPUT_API failedAssertionCount();
+
+      /// Returns the number of faults that occurred
+      unsigned int CPPUT_API faultCount();
+
+      /// Returns true if an assertion failed or a fault occured.
+      bool CPPUT_API testHasFailed();
+
+      void CPPUT_API log( const CppTL::ConstString &text );
+
+      void CPPUT_API appendFaultToResult( const OpenTest::Properties &fault );
+
+      void CPPUT_API mergeInResult( const OpenTest::Properties &result );
+
+      void CPPUT_API mergeInResult( const OpenTest::PropertyPath &path,
+                                    const OpenTest::Value &value );
+d185 1
+a185 2
+      void CPPUT_API appendToResult( const OpenTest::PropertyPath &path,
+                                     const OpenTest::Value &value );
+@
+
+
+1.9
+log
+@* newAssertion() now takes the assertion type and location as parameter
+* added checking assertion macros
+@
+text
+@d60 1
+a60 1
+      void CPPUT_API setTestResultUpdater( const TestResultUpdaterPtr &updater );
+@
+
+
+1.8
+log
+@* use CppTL::ConstString instead of std::string for thread-safety
+@
+text
+@d69 4
+a72 1
+      void CPPUT_API newAssertion();
+a77 4
+      void CPPUT_API setAssertionLocation( const char *fileName,
+                                           unsigned int lineNumber,
+                                           const char *functionName = 0 );
+
+@
+
+
+1.7
+log
+@* added api for logging
+@
+text
+@d101 1
+a101 1
+      void CPPUT_API log( const std::string &text );
+@
+
+
+1.6
+log
+@* added quick accessor for actual/expected
+@
+text
+@d101 2
+@
+
+
+1.5
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@d7 2
+d80 2
+@
+
+
+1.4
+log
+@* moved the assertion implementation to using TestInfo.
+* added assertion (tested/failed) counter to TestInfo.
+@
+text
+@d62 3
+d91 8
+@
+
+
+1.3
+log
+@* added aborting assertion mode to optional carry a string containing the properties in the exception.
+@
+text
+@d47 11
+d82 6
+@
+
+
+1.2
+log
+@* modified TestRunner/TestDriver protocol to allow incremental result properties update.
+@
+text
+@d40 6
+d85 3
+@
+
+
+1.1
+log
+@* started implementing assertion support for both checking and aborting assertion
+* TestInfo to send incremental update on the test result to the test driver (logging...)
+@
+text
+@d25 3
+a27 1
+      virtual void mergeInResult( const std::string &path,
+d30 1
+a30 1
+      virtual void appendToResult( const std::string &path,
+d65 3
+a67 1
+      void CPPUT_API mergeInResult( const std::string &path,
+d70 1
+a70 1
+      void CPPUT_API appendToResult( const std::string &path,
+@
+

@@ -1,0 +1,96 @@
+head	1.2;
+access;
+symbols
+	REL_1_5_4:1.1.1.1
+	initial:1.1.1.1
+	e-s:1.1.1;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2001.04.15.12.53.46;	author bastiaan;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2000.10.05.18.37.27;	author e-s;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2000.10.05.18.37.27;	author e-s;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@Set CONFIG_AUX_DIR to config and moved corresponding files from . to config.
+@
+text
+@#! /bin/sh
+# mkinstalldirs --- make directory hierarchy
+# Author: Noah Friedman <friedman@@prep.ai.mit.edu>
+# Created: 1993-05-16
+# Public domain
+
+# $Id: mkinstalldirs,v 1.1 2000/10/05 18:37:27 e-s Exp $
+
+errstatus=0
+
+for file
+do
+   set fnord `echo ":$file" | sed -ne 's/^:\//#/;s/^://;s/\// /g;s/^#/\//;p'`
+   shift
+
+   pathcomp=
+   for d
+   do
+     pathcomp="$pathcomp$d"
+     case "$pathcomp" in
+       -* ) pathcomp=./$pathcomp ;;
+     esac
+
+     if test ! -d "$pathcomp"; then
+        echo "mkdir $pathcomp" 1>&2
+
+        mkdir "$pathcomp" || lasterr=$?
+
+        if test ! -d "$pathcomp"; then
+  	  errstatus=$lasterr
+        fi
+     fi
+
+     pathcomp="$pathcomp/"
+   done
+done
+
+exit $errstatus
+
+# mkinstalldirs ends here
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d7 1
+a7 1
+# $Id: mkinstalldirs,v 1.3 2000/03/28 16:36:06 jeh Exp $
+@
+
+
+1.1.1.1
+log
+@initial check in.
+@
+text
+@@

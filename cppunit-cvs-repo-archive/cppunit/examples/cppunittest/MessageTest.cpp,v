@@ -1,0 +1,532 @@
+head	1.5;
+access;
+symbols
+	REL_1_12_1:1.5
+	REL_1_11_6:1.5
+	REL_1_11_4:1.5
+	REL_1_11_0:1.5
+	TG_CPPUNIT_NO_STREAM_AFTER:1.5
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.5
+	REL_1_10_2:1.5
+	REL_1_10_0:1.5
+	REL_1_9_14:1.5
+	REL_1_9_12:1.5
+	BRANCH_1_9_12:1.5.0.2
+	TG_BRANCH_1_9_12:1.5
+	TG_BEFORE_HPUX_PLUGIN:1.5
+	TG_BEFORE_SUN4_PORT:1.5
+	REL_1_9_10:1.5
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.5
+date	2002.07.14.19.48.31;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.07.13.10.33.49;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.07.03.07.02.48;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.06.16.18.35.46;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.06.13.15.31.01;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@#include "CoreSuite.h"
+#include "MessageTest.h"
+
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( MessageTest,
+                                       coreSuiteName() );
+
+
+MessageTest::MessageTest()
+{
+}
+
+
+MessageTest::~MessageTest()
+{
+}
+
+
+void 
+MessageTest::setUp()
+{
+  m_message = new CPPUNIT_NS::Message();
+}
+
+
+void 
+MessageTest::tearDown()
+{
+  delete m_message;
+}
+
+
+void 
+MessageTest::testDefaultConstructor()
+{
+  std::string empty;
+  CPPUNIT_ASSERT_EQUAL( empty, m_message->shortDescription() );
+  CPPUNIT_ASSERT_EQUAL( 0, m_message->detailCount() );
+}
+
+
+void 
+MessageTest::testDetailAtThrowIfBadIndex()
+{
+  m_message->detailAt( -1 );
+}
+
+
+
+void 
+MessageTest::testDetailAtThrowIfBadIndex2()
+{
+  m_message->detailAt( 0 );
+}
+
+
+void 
+MessageTest::testAddDetail()
+{
+  std::string expected( "first" );
+  m_message->addDetail( expected );
+  CPPUNIT_ASSERT_EQUAL( 1, m_message->detailCount() );
+  CPPUNIT_ASSERT_EQUAL( expected, m_message->detailAt(0) );
+}
+
+
+void 
+MessageTest::testAddDetail2()
+{
+  std::string expected1( "first" );
+  std::string expected2( "second" );
+  m_message->addDetail( expected1, expected2 );
+  CPPUNIT_ASSERT_EQUAL( 2, m_message->detailCount() );
+  CPPUNIT_ASSERT_EQUAL( expected1, m_message->detailAt(0) );
+  CPPUNIT_ASSERT_EQUAL( expected2, m_message->detailAt(1) );
+}
+
+
+void 
+MessageTest::testAddDetail3()
+{
+  std::string expected1( "first" );
+  std::string expected2( "second" );
+  std::string expected3( "third" );
+  m_message->addDetail( expected1, expected2, expected3 );
+  CPPUNIT_ASSERT_EQUAL( 3, m_message->detailCount() );
+  CPPUNIT_ASSERT_EQUAL( expected1, m_message->detailAt(0) );
+  CPPUNIT_ASSERT_EQUAL( expected2, m_message->detailAt(1) );
+  CPPUNIT_ASSERT_EQUAL( expected3, m_message->detailAt(2) );
+}
+
+
+void 
+MessageTest::testAddDetailEmptyMessage()
+{
+  m_message->addDetail( CPPUNIT_NS::Message() );
+  CPPUNIT_ASSERT_EQUAL( 0, m_message->detailCount() );
+}
+
+
+void 
+MessageTest::testAddDetailMessage()
+{
+  std::string expected1( "first" );
+  std::string expected2( "second" );
+  m_message->addDetail( CPPUNIT_NS::Message( "shortDesc", expected1, expected2 ) );
+  CPPUNIT_ASSERT_EQUAL( 2, m_message->detailCount() );
+  CPPUNIT_ASSERT_EQUAL( expected1, m_message->detailAt(0) );
+  CPPUNIT_ASSERT_EQUAL( expected2, m_message->detailAt(1) );
+}
+
+
+void 
+MessageTest::testSetShortDescription()
+{
+  std::string expected( "shortDesc" );
+  m_message->setShortDescription( expected );
+  CPPUNIT_ASSERT_EQUAL( expected, m_message->shortDescription() );
+}
+
+
+void 
+MessageTest::testClearDetails()
+{
+  m_message->addDetail( "detail1" );
+  m_message->clearDetails();
+  CPPUNIT_ASSERT_EQUAL( 0, m_message->detailCount() );
+}
+
+
+void 
+MessageTest::testConstructor()
+{
+  std::string expected( "short" );
+  CPPUNIT_NS::Message message( expected );
+  
+  CPPUNIT_ASSERT_EQUAL( expected, message.shortDescription() );
+  CPPUNIT_ASSERT_EQUAL( 0, message.detailCount() );
+}
+
+
+void 
+MessageTest::testConstructorDetail1()
+{
+  std::string expected( "short" );
+  std::string expected1( "detail-1" );
+  CPPUNIT_NS::Message message( expected, expected1 );
+  
+  CPPUNIT_ASSERT_EQUAL( expected, message.shortDescription() );
+  CPPUNIT_ASSERT_EQUAL( 1, message.detailCount() );
+  CPPUNIT_ASSERT_EQUAL( expected1, message.detailAt(0) );
+}
+
+
+void 
+MessageTest::testConstructorDetail2()
+{
+  std::string expected( "short" );
+  std::string expected1( "detail-1" );
+  std::string expected2( "detail-2" );
+  CPPUNIT_NS::Message message( expected, expected1, expected2 );
+  
+  CPPUNIT_ASSERT_EQUAL( expected, message.shortDescription() );
+  CPPUNIT_ASSERT_EQUAL( 2, message.detailCount() );
+  CPPUNIT_ASSERT_EQUAL( expected1, message.detailAt(0) );
+  CPPUNIT_ASSERT_EQUAL( expected2, message.detailAt(1) );
+}
+
+
+void 
+MessageTest::testConstructorDetail3()
+{
+  std::string expected( "short" );
+  std::string expected1( "detail-1" );
+  std::string expected2( "detail-2" );
+  std::string expected3( "detail-3" );
+  CPPUNIT_NS::Message message( expected, expected1, expected2, expected3 );
+  
+  CPPUNIT_ASSERT_EQUAL( expected, message.shortDescription() );
+  CPPUNIT_ASSERT_EQUAL( 3, message.detailCount() );
+  CPPUNIT_ASSERT_EQUAL( expected1, message.detailAt(0) );
+  CPPUNIT_ASSERT_EQUAL( expected2, message.detailAt(1) );
+  CPPUNIT_ASSERT_EQUAL( expected3, message.detailAt(2) );
+}
+
+
+void 
+MessageTest::testDetailsNone()
+{
+  CPPUNIT_ASSERT_MESSAGE("012345678901234",true);
+  std::string empty;
+  CPPUNIT_ASSERT_EQUAL( empty, m_message->details() );
+}
+
+
+void 
+MessageTest::testDetailsSome()
+{
+  m_message->addDetail( "Expected: 1", "Actual:   7", "Info: number" );
+  std::string expected( "- Expected: 1\n- Actual:   7\n- Info: number\n" );
+  std::string actual = m_message->details();
+  CPPUNIT_ASSERT_EQUAL( expected, actual );
+}
+
+
+void 
+MessageTest::testEqual()
+{
+  CPPUNIT_ASSERT( *m_message == CPPUNIT_NS::Message() );
+  
+  CPPUNIT_NS::Message message1( "short", "det1", "det2", "det3" );
+  CPPUNIT_NS::Message message2( message1 );
+  CPPUNIT_ASSERT( message1 == message2 );
+
+  CPPUNIT_ASSERT( !(*m_message == message1) );
+
+  CPPUNIT_NS::Message message3( "short" );
+  CPPUNIT_ASSERT( !(message3 == message1) );
+
+  CPPUNIT_NS::Message message4( "long" );
+  CPPUNIT_ASSERT( !(message3 == message4) );
+
+  CPPUNIT_NS::Message message5( "short", "det1", "det-2", "det3" );
+  CPPUNIT_ASSERT( !(message1 == message5) );
+}
+
+
+void 
+MessageTest::testNotEqual()
+{
+  CPPUNIT_NS::Message message1( "short", "det1", "det2", "det3" );
+  CPPUNIT_NS::Message message2( "short", "det1", "det-2", "det3" );
+  CPPUNIT_ASSERT( message1 != message2 );
+  CPPUNIT_ASSERT( !(message1 != message1) );
+}
+@
+
+
+1.4
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d5 1
+a5 1
+                                       CppUnitTest::coreSuiteName() );
+@
+
+
+1.3
+log
+@* include/cppunit/XmlOutputter.h: fixed XmlOutputter constructed default
+  value initializatino which caused compilation error with BC5.
+
+* src/cppunit/PlugInManager.cpp: added missing CPPUNIT_NO_TESTPLUGIN guard.
+
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp:
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h: applied Steven Mitter
+  patch to fix bug #530426 (conflict between TestRunner and host application
+  resources). Adapted patch to compile work with Unicode.
+
+* src/msvc6/testrunner/ResourceLoaders.h:
+* src/msvc6/testrunner/ResourceLoaders.cpp:
+* src/msvc6/testrunner/Change-Diary-ResourceBugFix.txt: added, from
+  Steven Mitter's patch. Simplified loadCString() to compile with Unicode.
+
+* src/cppunit/cppunit.dsp:
+* src/cppunit/cppunit_dll.dsp:
+* src/DllPlugInTester/DllPlugInTester.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: all lib, dll and exe are
+  now created in the intermediate directory. A post-build rule is used to
+  copy them to the lib/ directory.
+@
+text
+@d21 1
+a21 1
+  m_message = new CppUnit::Message();
+d95 1
+a95 1
+  m_message->addDetail( CppUnit::Message() );
+d105 1
+a105 1
+  m_message->addDetail( CppUnit::Message( "shortDesc", expected1, expected2 ) );
+d134 1
+a134 1
+  CppUnit::Message message( expected );
+d146 1
+a146 1
+  CppUnit::Message message( expected, expected1 );
+d160 1
+a160 1
+  CppUnit::Message message( expected, expected1, expected2 );
+d176 1
+a176 1
+  CppUnit::Message message( expected, expected1, expected2, expected3 );
+d208 1
+a208 1
+  CPPUNIT_ASSERT( *m_message == CppUnit::Message() );
+d210 2
+a211 2
+  CppUnit::Message message1( "short", "det1", "det2", "det3" );
+  CppUnit::Message message2( message1 );
+d216 1
+a216 1
+  CppUnit::Message message3( "short" );
+d219 1
+a219 1
+  CppUnit::Message message4( "long" );
+d222 1
+a222 1
+  CppUnit::Message message5( "short", "det1", "det-2", "det3" );
+d230 2
+a231 2
+  CppUnit::Message message1( "short", "det1", "det2", "det3" );
+  CppUnit::Message message2( "short", "det1", "det-2", "det3" );
+@
+
+
+1.2
+log
+@* examples/cppunittest/MessageTest.cpp: removed std::string() from
+  assertion. Somehow gcc can't parse it. Added missing include <stdexcept>.
+@
+text
+@d189 1
+@
+
+
+1.1
+log
+@* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: added functions that take a Message as a
+  parameter. Existing function have a short description indicating
+  an assertion failure.
+
+* include/cppunit/CompilerOuputter.h:
+* src/cppunit/CompilerOuputter.cpp: removed printNotEqualMessage() and
+  printDefaultMessage(). Updated to use Message.
+
+* include/cppunit/Message.h:
+* src/cppunit/Message.cpp: added. Represents a message associated to an
+  Exception.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: the message associated to the exception is now
+  stored as a Message instead of a string.
+
+* include/cppunit/NotEqualException.cpp: constructs a Message instead of a
+  string.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: updated to use Asserter functions that
+  take a message when pertinent (CPPUNIT_FAIL...).
+
+* include/cppunit/TestCaller.h:
+* src/cppunit/TestCaller.cpp: exception not caught failure has a better
+  short description.
+
+* src/cppunit/TestCase.cpp: better short description when setUp() or
+  tearDown() fail.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replace '\n' in failure message
+  with space.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/NotEqualExceptionTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated to use Exception/Message.
+
+* examples/cppunittest/MessageTest.h:
+* examples/cppunittest/MessageTest.cpp: added. Unit test for Message.
+@
+text
+@d35 2
+a36 1
+  CPPUNIT_ASSERT_EQUAL( std::string(), m_message->shortDescription() );
+d189 2
+a190 1
+  CPPUNIT_ASSERT_EQUAL( std::string(), m_message->details() );
+@
+

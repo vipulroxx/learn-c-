@@ -1,0 +1,55 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2007.08.19.20.13.24;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@In progress of adding CppTL::Value to replace CppTL::Any in table fixture and input based fixture. Value allows optionaly comparison, conversion to other type, conversion to string...
+@
+text
+@#ifndef CPPUT_VALUETEST_H
+# define CPPUT_VALUETEST_H
+
+# include <cpput/assertcommon.h>
+# include <cpput/testfixture.h>
+# include <cpptl/value.h>
+
+class ValueTest : public CppUT::TestFixture
+{
+   CPPUT_TESTSUITE_BEGIN( ValueTest );
+   CPPUT_TEST( testLifeCycle );
+   CPPUT_TEST( testNone );
+   CPPUT_TESTSUITE_END();
+
+public:
+   ValueTest();
+
+   virtual ~ValueTest();
+
+   void setUp();
+   void tearDown();
+
+   void testNone();
+   void testLifeCycle();
+private:
+   const int maxInt_;
+   const int minInt_;
+};
+
+
+#endif  // CPPUT_VALUETEST_H
+
+@

@@ -1,0 +1,710 @@
+head	1.21;
+access;
+symbols
+	REL_1_12_1:1.21
+	REL_1_11_6:1.20
+	REL_1_11_4:1.20
+	REL_1_11_0:1.19
+	TG_CPPUNIT_NO_STREAM_AFTER:1.18
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.18
+	REL_1_10_2:1.18
+	REL_1_10_0:1.18
+	REL_1_9_14:1.18
+	REL_1_9_12:1.18
+	BRANCH_1_9_12:1.18.0.2
+	TG_BRANCH_1_9_12:1.18
+	TG_BEFORE_HPUX_PLUGIN:1.17
+	TG_BEFORE_SUN4_PORT:1.17
+	REL_1_9_10:1.17
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.13
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.12
+	REL_1_9_6:1.10
+	REL_1_9_4:1.8
+	REL_1_9_0:1.8
+	REL_1_8_0:1.8
+	REL_1_7_8:1.8
+	REL_1_7_3:1.7
+	REL_1_7_1:1.6
+	REL_1_6_2:1.6
+	BRANCH_1_6:1.6.0.2
+	REL_1_6_1:1.6
+	REL_1_6_0:1.5;
+locks; strict;
+comment	@# @;
+
+
+1.21
+date	2007.01.24.03.09.52;	author smr99;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2005.07.30.06.55.21;	author blep;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2004.09.10.07.54.42;	author blep;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2003.05.07.20.28.50;	author blep;	state Exp;
+branches
+	1.18.2.1;
+next	1.17;
+
+1.17
+date	2002.08.03.15.47.44;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2002.07.03.07.02.40;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2002.06.16.17.55.52;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2002.06.13.23.25.55;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2002.06.13.18.17.39;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2002.05.22.17.27.23;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2002.05.07.21.54.58;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2002.04.21.10.57.52;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2002.04.20.21.51.29;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2002.03.26.08.29.59;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.10.24.20.03.29;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.09.30.07.02.01;	author smr99;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.09.19.04.18.00;	author smr99;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.09.14.19.27.58;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.05.17.19.48.09;	author bastiaan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.05.16.09.07.09;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.05.15.22.24.52;	author bastiaan;	state Exp;
+branches;
+next	;
+
+1.18.2.1
+date	2004.02.19.08.20.13;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.21
+log
+@Update email address of Steve M. Robbins
+@
+text
+@Tim Jansen <timj@@systembureau.com>
+Christian Leutloff <leutloff@@debian.org>
+Steve M. Robbins <smr@@sumost.ca>
+Patrick Berny <PPBerny@@web.de>
+Patrick Hartling
+Peer Sommerlund
+Duane Murphy <duanem@@users.sourceforge.net>
+Gigi Sayfan <gigi@@morphink.com>
+Armin "bored" Michel <bored@@sourceforge.net>
+Jeffrey Morgan <kuzman@@zoominternet.net>
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+Phil Verghese <philv@@users.sourceforge.net>
+Lavoie Philippe <lavoie@@yukon.genie.uottawa.ca>
+Pavel Zabelin
+Marco Welti <Welti@@GretagMacbeth.ch>
+Thomas Neidhart
+Hans Bühler <hans.buehler@@topmail.de> (Dynamic Window library used by MFC UI)
+John Sisson
+Steven Mitter <smitter@@iicm.tu-graz.ac.at>
+Stephan Stapel <stephan.stapel@@web.de>
+Abdessattar Sassi <abdesassi@@users.sourceforge.net> (hp-ux plug-in support)
+Max Quatember and Andreas Pfaffenbichler (VC++ 7 MFC TestRunner go to source line)
+Vincent Rivière
+@
+
+
+1.20
+log
+@* include/cppunit/config/config-msvc6.h: auto-detect if RTTI are enabled
+  the _CPPRTTI macro (defined by the compiler when enabling RTTI).
+
+* src/cppunit/TestResultCollector.cpp: fixed memory leak in destructor.
+@
+text
+@d3 1
+a3 1
+Steve M. Robbins <steven.robbins@@videotron.ca>
+@
+
+
+1.19
+log
+@* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.h: integrated go to source line
+  features on double click contributed by Max Quatember and
+  Andreas Pfaffenbichler.
+@
+text
+@d22 2
+a23 1
+Max Quatember and Andreas Pfaffenbichler (VC++ 7 MFC TestRunner go to source line)@
+
+
+1.18
+log
+@* Makefile.am
+* configure.in
+* config/ac_dll.m4
+* examples/cppunittest/Makefile.am
+* examples/hierarchy/Makefile.am
+* examples/money/Makefile.am
+* examples/simple/Makefile.am
+* include/cppunit/config/SelectDllLoader.h
+* include/cppunit/plugin/TestPlugIn.h
+* include/cppunit/tools/Algorithm.h
+* src/DllPlugInTester/Makefile.am
+* src/cppunit/Makefile.am
+* src/cppunit/TestDecorator.cpp
+* src/cppunit/ShlDynamicLibraryManager.cpp
+* src/cppunit/UnixDynamicLibraryManager.cpp
+* src/cppunit/Win32DynamicLibraryManager.cpp: applied patch from
+  Abdessattar Sassi <abdesassi@@users.sourceforge.net> to add support
+  for plug-in to hp-ux (patch #721546).
+@
+text
+@d21 2
+a22 1
+Abdessattar Sassi <abdesassi@@users.sourceforge.net> (hp-ux plug-in support)@
+
+
+1.18.2.1
+log
+@* removed xml input stuff
+@
+text
+@d21 1
+a21 2
+Abdessattar Sassi <abdesassi@@users.sourceforge.net> (hp-ux plug-in support)
+Neil Ferguson <nferguso@@eso.org> (gcc abi for TypeInfoHelper)
+@
+
+
+1.17
+log
+@* include/cppunit/Exception.h:
+* src/cppunit/Exception.h: added setMessage().
+
+* include/cppunit/Protector.h:
+* src/cppunit/Protector.cpp: added class ProtectorGuard. Change the
+  reportXXX() method to support Exception passing and SourceLine.
+
+* include/cppunit/TestCaller.h: removed 'expect exception' features.
+  It is now handled by ExceptionTestCaseDecorator and TestCaller no
+  longer need default template argument support.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/extensions/TestCaller.h: runTest() is now public
+  instead of protected, so that it can be decorated.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.h: added pushProtector() and popProtector()
+  methods. This allow user to specify their own exception trap when
+  running test case.
+
+* include/cppunit/extensions/TestDecorator.h:
+* src/cppunit/TestDecorator.cpp: added. Extracted from TestDecorator.h.
+  The test passed to the constructor is now owned by the decorator.
+
+* include/cppunit/extensions/TestCaseDecorator.h:
+* src/cppunit/TestCaseDecorator.cpp: added. Decorator for TestCase
+  setUp(), tearDown() and runTest().
+
+* include/cppunit/extensions/ExceptionTestCaseDecorator.h: added.
+  TestCaseDecorator to expect that a specific exception is thrown.
+
+* include/cppunit/extensions/HelperMacros.h: updated against TestCaller
+  change.
+
+* src/cppunit/DefaultFunctor.h: fixed bug (did not return underlying
+  test return code).
+
+* src/cppunit/ProtectorChain.cpp: fixed bug in chaing return code.
+
+* src/cppunit/DefaultFunctor.h: fixed bug.
+
+* src/msvc6/testrunner/ActiveTest.h:
+* src/msvc6/testrunner/ActiveTest.cpp: updated against
+  TestCaseDecorator ownership policy change. Moved inline functions
+  to .cpp.
+
+* examples/cppunittest/TestSetUpTest.cpp: updated to use MockTestCase
+  and against the new ownership policy.
+
+* examples/cppunittest/TestDecoratorTest.cpp:
+* examples/cppunittest/RepeatedTestTest.cpp: updated against
+  TestDecorator ownership policy change.
+
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.h:
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.cpp: added. Unit
+  tests for ExceptionTestCaseDecoratorTest.
+@
+text
+@d20 2
+a21 1
+Stephan Stapel <stephan.stapel@@web.de>@
+
+
+1.16
+log
+@* include/cppunit/XmlOutputter.h: fixed XmlOutputter constructed default
+  value initializatino which caused compilation error with BC5.
+
+* src/cppunit/PlugInManager.cpp: added missing CPPUNIT_NO_TESTPLUGIN guard.
+
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp:
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h: applied Steven Mitter
+  patch to fix bug #530426 (conflict between TestRunner and host application
+  resources). Adapted patch to compile work with Unicode.
+
+* src/msvc6/testrunner/ResourceLoaders.h:
+* src/msvc6/testrunner/ResourceLoaders.cpp:
+* src/msvc6/testrunner/Change-Diary-ResourceBugFix.txt: added, from
+  Steven Mitter's patch. Simplified loadCString() to compile with Unicode.
+
+* src/cppunit/cppunit.dsp:
+* src/cppunit/cppunit_dll.dsp:
+* src/DllPlugInTester/DllPlugInTester.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: all lib, dll and exe are
+  now created in the intermediate directory. A post-build rule is used to
+  copy them to the lib/ directory.
+@
+text
+@d19 2
+a20 1
+Steven Mitter <smitter@@iicm.tu-graz.ac.at>@
+
+
+1.15
+log
+@* release 1.9.8
+
+* include/cppunit/plugin/TestPlugIn.h: updated documentation.
+
+* include/cppunit/tools/XmlDocument.h: updated documentation.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/StringTools.cpp: added split() and wrap() functions.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp: extracted wrap() and
+  splitMessageIntoLines() to StringTools.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: removed rooNode parameter from
+  beginDocument() and endDocument(). It can be retreive from document.
+  Renamed 'node' occurences to 'element'.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against
+  XmlOutputterHook changes. Renamed 'node' occurences to 'element'.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: updated against
+  XmlOutputterHook changes.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: Renamed 'node' occurences
+  to 'element'.
+
+* examples/cppunittest/XmlOutputterTest.cpp: updated against
+  XmlOutputterHook changes.
+
+* examples/cppunittest/StringToolsTest.h:
+* examples/cppunittest/StringToolsTest.cpp: added. Unit tests for
+  StringTools. Turn out that VC++ dismiss empty lines in tools output,
+  which is the reason why empty lines where not printed in
+  CompilerOutputter.
+@
+text
+@d19 1
+@
+
+
+1.14
+log
+@* src/cppunit/CompilerOutputter.cpp: fixed bug #549762 (line wrap).
+
+* src/msvc6/testrunner/DynamicWindow/*: added. Dynamic Window library
+  from Hans Bühler (hans.buehler@@topmail.de) to resize window.
+
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TestRunnerModel.cpp: removed dialog bounds from
+  settings. Added public registry keys for cppunit, main dialog, and
+  browse dialog.
+
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: dialog is now resizable.
+  Window placement is stored and restored.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replaced dialog resizing code
+  by usage of Hans Bühler's Dynamic Window library. Dialog placement
+  is stored/restored by that library. ProgressBar is now a child window.
+  Added edit field to see the details of the failure. List on show
+  the short description of the failure.
+
+* src/msvc6/testrunner/ProgressBar.h:
+* src/msvc6/testrunner/ProgressBar.cpp: is now a CWnd.
+
+* src/msvc6/testrunner/TestRunner.rc: named all static fill ID for resizing.
+  Added an invisble static field for progress bar placement.
+@
+text
+@d17 2
+a18 1
+Hans Bühler <hans.buehler@@topmail.de> (Dynamic Window library used by MFC UI)@
+
+
+1.13
+log
+@* include/cppunit/NotEqualException.h:
+* src/cppunit/NotEqualException.cpp: removed.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: removed 'type' related stuffs.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: delegate printing to TextOutputter.
+
+* examples/simple/ExampleTestCase.h:
+* examples/simple/ExampleTestCase.cpp: reindented.
+
+* src/qttestrunner/build:
+* src/qttestrunner/qttestrunner.pro:
+* src/qttestrunner/TestBrowserDlgImpl.h:
+* src/qttestrunner/TestRunnerModel.h: applied Thomas Neidhart's patch,
+  'Some minor fixes to compile QTTestrunner under Linux.'.
+@
+text
+@d17 1
+@
+
+
+1.12
+log
+@* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/Resource.h:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerModel.cpp: integrated patch from
+Marco Welti (Welti@@GretagMacbeth.ch) with a few clean up.
+Display the name of the test being run during above the progress bar. Allow the
+VC++ add-ins to works with TestPlugInRunner (COM init). DLL name can be specified
+on the command line after flag '-testsuite'. Display wait cursor, clear and reload
+history when reloading DLL.
+
+* THANKS: added Marco Welti to the list.
+@
+text
+@d15 2
+a16 1
+Marco Welti <Welti@@GretagMacbeth.ch>@
+
+
+1.11
+log
+@* src/DllPlugInTester/CommandLineParser.cpp: fixed compilation issue.
+
+* src/msvc6/TestRunner/ActiveTest.h:
+* src/msvc6/TestRunner/ActiveTest.cpp: reindented. bugfix: thread handle
+  resource leak (bug #553424).
+@
+text
+@d14 2
+a15 1
+Pavel Zabelin@
+
+
+1.10
+log
+@* src/DllPlugInTester/makefile.am: removed ld.so from LDADD flags.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: rewrote, fixed problem
+  with double quotes in command line...
+
+* src/DllPlugInTester/CommandLineParserTest.h:
+* src/DllPlugInTester/CommandLineParserTest.cpp:
+* src/DllPlugInTester/DllPlugInTesterTest.cpp: added, unit tests for
+  CommandLineParser.
+
+* src/msvc6/TestPlugIn/*: removed.
+@
+text
+@d12 3
+a14 1
+Phil Verghese <philv@@users.sourceforge.net>@
+
+
+1.9
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@d11 2
+a12 1
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)@
+
+
+1.8
+log
+@* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: fixed release configuration.
+@
+text
+@d10 2
+@
+
+
+1.7
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+* examples/msvc6/HostApp/HostApp.dsp: use custom file build instead
+of post-build/pre-link step to copy the TestRunner DLL to the
+Release/Debug directory.
+
+* src/msvc6/ProgressBar.cpp:
+* src/msvc6/ProgressBar.h:
+* src/msvc6/TestRunner.rc:
+* src/msvc6/TestRunnerDlg.cpp:
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/testRunner.dsp:
+* src/msvc6/TestRunnerModel.cpp:
+* src/msvc6/TestRunnerModel.h: included Gigi Sayfan (gigi@@morphink.com)
+patch. The dialog can now be resized, and list view columns and dialog
+sizes are saved.
+
+* src/msvc6/ProgressBar.cpp:
+* src/msvc6/ProgressBar.h: Minor refactoring.
+
+* THANKS: added Gigi Sayfan to the list.
+@
+text
+@d8 2
+a9 1
+Gigi Sayfan <gigi@@morphink.com>@
+
+
+1.6
+log
+@Documentation tweaks.  Add config-mac.h
+@
+text
+@d8 1
+@
+
+
+1.5
+log
+@Changes in response to bug reports.
+@
+text
+@d7 1
+@
+
+
+1.4
+log
+@* src/msvc6/testrunner/TestRunner.dsp: fixed release configuration.
+
+* src/msvc6/testrunner/TestRunner.dsw: added DSPlugIn.dsp. TestRunner
+depends on DSPlugIn.
+
+* src/msvc6/testrunner/TestRunner.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/DSPlugIn/*: integrated patch from
+Patrick Berny (PPBerny@@web.de). An add-ins for VC++. Double-cliking
+a failed test in the TestRunner, VC++ will open the source file and
+go to the failure location.
+
+* src/cppunit/Exception.cpp:
+* include/cppunit/Exception.h: compile fix, call to overrided
+operator = of parent class failed. Using typedef to the parent
+class fix that.
+
+* src/cppunit/cppunit.dsp: added TestFixture.h
+
+* src/cppunit/TestFactoryRegistry.cpp: removed <utility> which isn't
+needed any more.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/extensions/TestFactoryRegistry.h: added
+include <Portability.h> before any other includes to remove warning
+with VC++.
+
+* include/cppunit/Portability.h: moved platform specific includes at
+the beginning of the header. fixed CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION
+declaration.
+
+* include/cppunit/config-msvc6.h: removed pragma once (useless, should
+be put in each header to have an effect).
+@
+text
+@d4 3
+a6 1
+Patrick Berny <PPBerny@@web.de>@
+
+
+1.3
+log
+@Added .cvsignore files contributed by Steve M. Robbins" <steven.robbins@@videotron.ca>.
+@
+text
+@d4 1
+@
+
+
+1.2
+log
+@Added debian packaging support by Christian Leutloff <leutloff@@debian.org>.
+Use 'make debian' to build.
+Since Christians files were for 1.5.4, they problably need to be resynced.
+@
+text
+@d2 2
+a3 1
+Christian Leutloff <leutloff@@debian.org>@
+
+
+1.1
+log
+@Added acknowledgements for Baptiste, Tim and myself.
+@
+text
+@d2 1
+@
+

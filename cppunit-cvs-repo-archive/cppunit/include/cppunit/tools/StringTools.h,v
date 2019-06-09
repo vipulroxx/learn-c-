@@ -1,0 +1,308 @@
+head	1.4;
+access;
+symbols
+	REL_1_12_1:1.4
+	REL_1_11_6:1.4
+	REL_1_11_4:1.4
+	REL_1_11_0:1.4
+	TG_CPPUNIT_NO_STREAM_AFTER:1.4
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.4
+	REL_1_10_2:1.4
+	REL_1_10_0:1.4
+	REL_1_9_14:1.4
+	REL_1_9_12:1.4
+	BRANCH_1_9_12:1.4.0.2
+	TG_BRANCH_1_9_12:1.4
+	TG_BEFORE_HPUX_PLUGIN:1.4
+	TG_BEFORE_SUN4_PORT:1.4
+	REL_1_9_10:1.4;
+locks; strict;
+comment	@ * @;
+
+
+1.4
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.06.16.17.55.58;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.06.14.20.21.00;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@#ifndef CPPUNIT_TOOLS_STRINGTOOLS_H
+#define CPPUNIT_TOOLS_STRINGTOOLS_H
+
+#include <cppunit/Portability.h>
+#include <string>
+#include <cppunit/portability/CppUnitVector.h>
+
+
+CPPUNIT_NS_BEGIN
+
+
+/*! \brief Tool functions to manipulate string.
+ */
+struct StringTools
+{
+
+  typedef CppUnitVector<std::string> Strings;
+
+  static std::string CPPUNIT_API toString( int value );
+
+  static std::string CPPUNIT_API toString( double value );
+
+  static Strings CPPUNIT_API split( const std::string &text, 
+                                    char separator );
+
+  static std::string CPPUNIT_API wrap( const std::string &text,
+                                       int wrapColumn = CPPUNIT_WRAP_COLUMN );
+
+};
+
+
+CPPUNIT_NS_END
+
+#endif  // CPPUNIT_TOOLS_STRINGTOOLS_H
+@
+
+
+1.3
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d6 1
+a6 1
+#include <vector>
+d17 1
+a17 1
+  typedef std::vector<std::string> Strings;
+@
+
+
+1.2
+log
+@* release 1.9.8
+
+* include/cppunit/plugin/TestPlugIn.h: updated documentation.
+
+* include/cppunit/tools/XmlDocument.h: updated documentation.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/StringTools.cpp: added split() and wrap() functions.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp: extracted wrap() and
+  splitMessageIntoLines() to StringTools.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: removed rooNode parameter from
+  beginDocument() and endDocument(). It can be retreive from document.
+  Renamed 'node' occurences to 'element'.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against
+  XmlOutputterHook changes. Renamed 'node' occurences to 'element'.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: updated against
+  XmlOutputterHook changes.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: Renamed 'node' occurences
+  to 'element'.
+
+* examples/cppunittest/XmlOutputterTest.cpp: updated against
+  XmlOutputterHook changes.
+
+* examples/cppunittest/StringToolsTest.h:
+* examples/cppunittest/StringToolsTest.cpp: added. Unit tests for
+  StringTools. Turn out that VC++ dismiss empty lines in tools output,
+  which is the reason why empty lines where not printed in
+  CompilerOutputter.
+@
+text
+@d9 2
+a10 2
+namespace CppUnit
+{
+d14 1
+a14 1
+namespace StringTools
+d19 1
+a19 3
+  std::string CPPUNIT_API toString( int value );
+
+  std::string CPPUNIT_API toString( double value );
+d21 1
+a21 2
+  Strings CPPUNIT_API split( const std::string &text, 
+                             char separator );
+d23 2
+a24 2
+  std::string CPPUNIT_API wrap( const std::string &text,
+                                int wrapColumn = 79 );
+d26 2
+a27 1
+} // namespace StringTools
+d29 1
+a30 1
+} //  namespace CppUnit
+d32 1
+@
+
+
+1.1
+log
+@* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added two methods to use the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugIn.h: added two methods to the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugInAdapter.h:
+* src/cppunit/plugin/TestPlugInAdapter.cpp: renamed TestPlugInDefaultImpl.
+  Added empty implementation for Xml outputter hook methods.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/tools/StringTools.cpp: added. Functions to manipulate string
+  (conversion, wrapping...)
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/XmlElement.cpp: renamed addNode() to addElement(). Added
+  methods to walk and modify XmlElement (for hook). Added documentation.
+  Use StringTools.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: added hook calls & management.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: added. Hook to customize XML output.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: call plug-in XmlOutputterHook
+  when writing XML output. Modified so that memory is freed before
+  unloading the test plug-in (caused crash when freeing the XmlDocument).
+
+* examples/ReadMe.txt:
+* examples/ClockerPlugIn/ReadMe.txt: added details about the plug-in
+  (usage, xml content...)
+
+* examples/ClockerPlugIn/ClockerModel.h:
+* examples/ClockerPlugIn/ClockerModel.cpp: extracted from ClockerListener.
+  Represents the test hierarchy and tracked time for each test.
+
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/ClockerListener.cpp: extracted test hierarchy
+  tracking to ClockerModel. Replaced the 'flat' view option with a 'text'
+  option to print the timed test tree to stdout.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp: updated to hook the XML
+  output and use the new classes.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: added. XmlOutputterHook to
+  includes the timed test hierarchy and test timing in the XML output.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added new test cases.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: added tests for
+  XmlOutputterHook.
+@
+text
+@d6 1
+d17 2
+d23 5
+@
+

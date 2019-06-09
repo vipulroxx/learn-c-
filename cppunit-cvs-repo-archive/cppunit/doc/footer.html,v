@@ -1,0 +1,140 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.4
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.3
+	REL_1_9_4:1.3
+	REL_1_9_0:1.3
+	REL_1_8_0:1.3
+	REL_1_7_8:1.3
+	REL_1_7_3:1.3
+	REL_1_7_1:1.3
+	REL_1_6_2:1.3
+	BRANCH_1_6:1.3.0.2
+	REL_1_6_1:1.3
+	REL_1_6_0:1.2
+	REL_1_5_5:1.1.1.1
+	REL_1_5_4:1.1.1.1
+	initial:1.1.1.1
+	e-s:1.1.1;
+locks; strict;
+comment	@# @;
+
+
+1.3
+date	2001.09.30.22.36.08;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.09.23.06.09.15;	author smr99;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2000.10.05.18.37.28;	author e-s;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2000.10.05.18.37.28;	author e-s;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@Tweak the HTML docs.  Link to FAQ.
+@
+text
+@<hr>
+<table width="100%">
+  <tr>
+    <td width="10%" align="left" valign="center">
+      <a href="http://sourceforge.net"> 
+      <img
+      src="http://sourceforge.net/sflogo.php?group_id=11795"
+      width="88" height="31" border="0" alt="SourceForge Logo"></a>
+    </td>
+    <td width="20%" align="left" valign="center">
+      hosts this site.
+    </td>
+    <td>
+    </td>
+    <td align="right" valign="center">
+      Send comments to:<br>
+      <a href="mailto:cppunit-devel@@lists.sourceforge.net">CppUnit Developers</a>
+    </td>
+  </tr>
+</table>
+
+</body> 
+</html>
+@
+
+
+1.2
+log
+@Polishing for 1.6.0 release.
+@
+text
+@d6 3
+a8 3
+        <img
+            src="http://sourceforge.net/sflogo.php?group_id=11795"
+            width="88" height="31" border="0" alt="SourceForge Logo"></a>
+d10 2
+a11 4
+    <td width="10%" align="left" valign="center">
+        <font size="-2">
+          hosts this site.
+        </font>
+d15 3
+a17 5
+    <td width="20%" align="right" valign="center">
+      <font size="-2">
+        Send comments to:<br>
+        <a href="mailto:cppunit-devel@@lists.sourceforge.net">CppUnit Developers</a>
+      </font>
+d21 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d20 1
+a20 1
+        <a href="mailto:sommerlade@@gmx.net">Eric Sommerlade</a>
+@
+
+
+1.1.1.1
+log
+@initial check in.
+@
+text
+@@

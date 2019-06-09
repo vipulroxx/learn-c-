@@ -1,0 +1,229 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2002.07.14.19.48.31;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.20.21.51.32;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@// //////////////////////////////////////////////////////////////////////////
+// Header file DumperListener.h for class DumperListener
+// (c)Copyright 2000, Baptiste Lepilleur.
+// Created: 2002/04/19
+// //////////////////////////////////////////////////////////////////////////
+#ifndef DUMPERLISTENER_H
+#define DUMPERLISTENER_H
+
+#include <cppunit/portability/CppUnitStack.h>
+#include <cppunit/TestListener.h>
+#include <cppunit/TestPath.h>
+
+
+/// TestListener that prints a flatten or hierarchical view of the test tree.
+class DumperListener : public CPPUNIT_NS::TestListener
+{
+public:
+  DumperListener( bool flatten );
+
+  virtual ~DumperListener();
+
+  void startTest( CPPUNIT_NS::Test *test );
+
+  void endTest( CPPUNIT_NS::Test *test );
+
+  void startSuite( CPPUNIT_NS::Test *suite );
+
+  void endSuite( CPPUNIT_NS::Test *suite );
+
+  void endTestRun( CPPUNIT_NS::Test *test, 
+                   CPPUNIT_NS::TestResult *eventManager );
+
+private:
+  /// Prevents the use of the copy constructor.
+  DumperListener( const DumperListener &other );
+
+  /// Prevents the use of the copy operator.
+  void operator =( const DumperListener &other );
+
+  void printPath( CPPUNIT_NS::Test *test, 
+                  bool isSuite );
+
+  void printFlattenedPath( bool isSuite );
+
+  void printIndentedPathChild();
+
+  std::string makeIndentString( int indentLevel );
+
+private:
+  bool m_flatten;
+  CPPUNIT_NS::TestPath m_path;
+  
+  int m_suiteCount;
+  int m_testCount;
+  int m_suiteWithTestCount;
+
+  CppUnitStack<bool> m_suiteHasTest;
+};
+
+
+
+// Inlines methods for DumperListener:
+// -----------------------------------
+
+
+
+#endif  // DUMPERLISTENER_H
+@
+
+
+1.1
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@d9 1
+a11 1
+#include <stack>
+d15 1
+a15 1
+class DumperListener : public CppUnit::TestListener
+d22 1
+a22 1
+  void startTest( CppUnit::Test *test );
+d24 1
+a24 1
+  void endTest( CppUnit::Test *test );
+d26 1
+a26 1
+  void startSuite( CppUnit::Test *suite );
+d28 1
+a28 1
+  void endSuite( CppUnit::Test *suite );
+d30 2
+a31 2
+  void endTestRun( CppUnit::Test *test, 
+                   CppUnit::TestResult *eventManager );
+d40 1
+a40 1
+  void printPath( CppUnit::Test *test, 
+d51 1
+a51 1
+  CppUnit::TestPath m_path;
+d57 1
+a57 1
+  std::stack<bool> m_suiteHasTest;
+@
+

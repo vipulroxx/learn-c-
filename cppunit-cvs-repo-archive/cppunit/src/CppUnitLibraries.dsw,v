@@ -1,0 +1,334 @@
+head	1.4;
+access;
+symbols
+	REL_1_12_1:1.4
+	REL_1_11_6:1.4
+	REL_1_11_4:1.4
+	REL_1_11_0:1.4
+	TG_CPPUNIT_NO_STREAM_AFTER:1.4
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.4
+	REL_1_10_2:1.4
+	REL_1_10_0:1.4
+	REL_1_9_14:1.4
+	REL_1_9_12:1.4
+	BRANCH_1_9_12:1.4.0.2
+	TG_BRANCH_1_9_12:1.4
+	TG_BEFORE_HPUX_PLUGIN:1.4
+	TG_BEFORE_SUN4_PORT:1.4
+	REL_1_9_10:1.4
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.3
+	REL_1_9_4:1.2
+	REL_1_9_0:1.2
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.4
+date	2002.07.03.07.02.48;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.21.12.32.12;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.13.15.12.54;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.03.24.19.39.55;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* include/cppunit/XmlOutputter.h: fixed XmlOutputter constructed default
+  value initializatino which caused compilation error with BC5.
+
+* src/cppunit/PlugInManager.cpp: added missing CPPUNIT_NO_TESTPLUGIN guard.
+
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp:
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h: applied Steven Mitter
+  patch to fix bug #530426 (conflict between TestRunner and host application
+  resources). Adapted patch to compile work with Unicode.
+
+* src/msvc6/testrunner/ResourceLoaders.h:
+* src/msvc6/testrunner/ResourceLoaders.cpp:
+* src/msvc6/testrunner/Change-Diary-ResourceBugFix.txt: added, from
+  Steven Mitter's patch. Simplified loadCString() to compile with Unicode.
+
+* src/cppunit/cppunit.dsp:
+* src/cppunit/cppunit_dll.dsp:
+* src/DllPlugInTester/DllPlugInTester.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: all lib, dll and exe are
+  now created in the intermediate directory. A post-build rule is used to
+  copy them to the lib/ directory.
+@
+text
+@Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "DSPlugIn"=.\msvc6\DSPlugIn\DSPlugIn.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "DllPlugInTester"=.\DllPlugInTester\DllPlugInTester.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name cppunit
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name cppunit_dll
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "TestPlugInRunner"=.\msvc6\testpluginrunner\TestPlugInRunner.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TestRunner
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name cppunit_dll
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "TestRunner"=.\msvc6\testrunner\TestRunner.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name cppunit
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "cppunit"=.\cppunit\cppunit.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "cppunit_dll"=.\cppunit\cppunit_dll.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+
+@
+
+
+1.3
+log
+@* contrib/bc5/bcc-makefile.zip: updated, generic makefile for
+  Borland 5.5, contributed by project cuppa.
+
+* examples/cppunittest/*Suite.h: integrated Jeffrey Morgan's patch,
+  to remove warning with gcc.
+@
+text
+@a13 3
+    Begin Project Dependency
+    Project_Dep_Name cppunit
+    End Project Dependency
+@
+
+
+1.2
+log
+@* NEWS: updated
+
+* doc/other_documentation.dox: addded new module for test plug-in.
+
+* include/msvc6/DSPlugin/TestRunnerDSPlugin.h:
+* include/msvc6/DSPlugin/TestRunnerDSPlugin_i.c: added. Those file are
+  generated by project src/msvc/DSPlugin. They are provided to allow
+  compilation of TestRunner without compiling DSPlugIn which does not
+  build on VC++ 7.
+
+* examples/examples.dsw: removed DSPlugIn for workspace (fail to build
+  with VC++ 7). Added DllPlugInTester.dsp to workspace.
+
+* examples/msvc6/TestPlugIn/TestPlugIn.dsp: added post-build unit testing
+  using the new DllPlugInTester.
+
+* examples/msvc6/EasyTestPlugIn/*: a new project that
+  demonstrates the use of CPPUNIT_TESTPLUGIN_IMPL to create a test plug-in.
+
+* src/cppunit/cppunit.dsw:
+* src/TestPlugInRunner.dsw:
+* src/TestRunner.dsw: removed. Should use src/CppUnitLibraries.dsw instead.
+
+* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: removed findTestName() method. Replaced
+  by Test::findTest().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp:
+* src/msvc6/DSPlugIn/DSAddIn.h: changed include for add-in. MIDL generates
+  files in sub-directory ToAddToDistribution. Generated file should be
+  copied to include/msvc6/DSPlugin when modified. This remove the dependecy
+  of MfcTestRunner on DSPlugIn.
+
+* src/msvc6/testrunner/ListCtrlFormatter.h:
+* src/msvc6/testrunner/ListCtrlFormatter.cpp: added GetNextColumnIndex().
+
+* src/msvc6/testrunner/src/TestRunnerDlg.h:
+* src/msvc6/testrunner/src/TestRunnerDlg.cpp: set column number in
+  MsDevCallerListCtrl when initializing the list.
+
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.cpp: column indexes for
+  file and line number are no longer static. Added methods to set those
+  indexes. Changed DSPlugIn header name.
+
+* include/msvc6/testrunner/TestPlugInInterface.h: fixed inclusion of
+  windows header for WINAPI. Added macro CPPUNIT_TESTPLUGIN_IMPL to
+  automatically implements a test plug-in.
+
+* src/msvc6/DllPlugInTester/*: added new project. A application to test DLL
+  and report using CompilerOutputter. Target for post-build testing and
+  debugging of DLL.
+@
+text
+@d21 1
+a21 1
+Project: "DllPlugInTester"=.\MSVC6\DllPlugInTester\DllPlugInTester.dsp - Package Owner=<4>
+d32 3
+d51 1
+a51 1
+    Project_Dep_Name cppunit
+@
+
+
+1.1
+log
+@* INSTALL-WIN32.txt: added some info to build cppunit as a DLL.
+
+* include/cppunit/config-msvc6.h: added definition of macro CPPUNIT_API when
+building or linking DLL. Defined CPPUNIT_BUILD_DLL when building, and
+CPPUNIT_DLL when linking.
+
+* include/cppunit/Portability.h: added empty definition of macro CPPUNIT_API
+when not building or using CppUnit as a DLL. When any of those symbol is defined,
+the symbol CPPUNIT_NEED_DLL_DECL is set to 1.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* include/cppunit/extensions/TestDecorator.h:
+* include/cppunit/extensions/TestSetUp.h:
+* include/cppunit/TestCaller.h
+* include/cppunit/extensions/TestFactory.h
+* include/cppunit/extensions/TestFactoryRegistry.h
+* include/cppunit/extensions/TypeInfoHelper.h
+* include/cppunit/Asserter.h
+* include/cppunit/Exception.h
+* include/cppunit/NotEqualException.h
+* include/cppunit/SourceLine.h
+* include/cppunit/SynchronizedObject.h
+* include/cppunit/Test.h
+* include/cppunit/TestAssert.h
+* include/cppunit/TestCase.h
+* include/cppunit/TestFailure.h
+* include/cppunit/TestListener.h
+* include/cppunit/TestResult.h
+* include/cppunit/TestSuite.h
+* include/cppunit/CompilerOutputter.h
+* include/cppunit/Outputter.h
+* include/cppunit/TestResultCollector.h
+* include/cppunit/TestSuccessListener.h
+* include/cppunit/TextOutputter.h
+* include/cppunit/TextTestProgressListener.h
+* include/cppunit/TextTestResult.h
+* include/cppunit/TextTestRunner.h
+* include/cppunit/XmlOutputter.h: added CPPUNIT_API for DLL export.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: reindented
+
+* include/cppunit/extensions/TestSetUp.h:
+* src/cppunit/TestSetUp.cpp: added .cpp. extracted inline method and moved them
+to cpp file.
+@
+text
+@d21 15
+a63 3
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DSPlugIn
+@
+

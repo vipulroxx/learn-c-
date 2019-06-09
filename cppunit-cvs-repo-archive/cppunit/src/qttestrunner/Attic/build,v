@@ -1,0 +1,71 @@
+head	1.2;
+access;
+symbols
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.2
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2005.12.12.07.40.09;	author blep;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2002.06.13.18.17.42;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* integrated Ernst patch for QtTestRunner and Qt 3.x.
+* upgrade QtTestRunner to Qt 3.x
+* enhanced qmake project files to handle multiple build configuration
+@
+text
+@tmake qttestrunner.pro -o makefile
+export INTERFACE_DECL_PATH=. && make
+@
+
+
+1.1
+log
+@* include/cppunit/NotEqualException.h:
+* src/cppunit/NotEqualException.cpp: removed.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: removed 'type' related stuffs.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: delegate printing to TextOutputter.
+
+* examples/simple/ExampleTestCase.h:
+* examples/simple/ExampleTestCase.cpp: reindented.
+
+* src/qttestrunner/build:
+* src/qttestrunner/qttestrunner.pro:
+* src/qttestrunner/TestBrowserDlgImpl.h:
+* src/qttestrunner/TestRunnerModel.h: applied Thomas Neidhart's patch,
+  'Some minor fixes to compile QTTestrunner under Linux.'.
+@
+text
+@@
+

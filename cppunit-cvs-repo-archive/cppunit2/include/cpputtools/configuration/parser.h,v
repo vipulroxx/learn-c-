@@ -1,0 +1,285 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.1
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.1
+	TG_AFTER_REMOVING_TESTCONTEXT:1.1
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.1
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2004.06.14.23.31.25;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* adding cpputtools library, command line options among other thing (for test runners). In progress.
+@
+text
+@#ifndef CPPUTTOOLS_CONFIGURATION_PARSER_H_INCUDED
+# define CPPUTTOOLS_CONFIGURATION_PARSER_H_INCUDED
+
+# include "values.h"
+
+# include <algorithm>
+# include <iterator>
+# include <vector>
+
+
+namespace CppUTTools { namespace CommandLineOptions {
+
+
+bool parseCommandLine( int argc, 
+                       const Char *argv[],
+                       const OptionsDescription &description,
+                       OptionsValues &values );
+
+
+
+class CommandLineParser
+{
+public:
+   enum ParseState {
+      parseNewOption = 1,
+      nextParameter
+   };
+
+   enum OptionStyle {
+      noOptionStyle = 0,
+      shortOption,
+      longOption
+   };
+
+   CommandLineParser( const std::vector<String> &arguments,
+                      const OptionsDescription &description )
+      : arguments_( arguments )
+      , parseState_( parseNewOption )
+      , tokenIndex_( 0 )
+      , description_( description )
+      , currentOption_( 0 )
+   {
+   }
+
+   // @@exception CommandLineParseError if invalid option name
+   OptionsValues parse();
+
+   void processToken();
+
+   String currentToken() const;
+
+   void consumeToken();
+
+   bool hasMoreToken() const;
+
+   OptionStyle optionStyle( const std::string &token ) const;
+
+   // @@exception CommandLineParseError if invalid option name
+   void checkOptionNameIsValid( const std::string &optionName,
+                                const std::string &optionToken ) const;
+
+private:
+   void setOptionAliases();
+
+   typedef std::vector<String> Arguments;
+   Arguments arguments_;
+   OptionsValues values_;
+   const OptionsDescription &description_;
+   ParseState parseState_;
+   int tokenIndex_;
+   const OptionDescription *currentOption_;
+};
+
+
+// Function parseCommandLine
+// //////////////////////////////////////////////////////////////////
+
+inline bool 
+parseCommandLine( int argc, 
+                  const Char *argv[],
+                  const OptionsDescription &description,
+                  OptionsValues &values )
+{
+   std::vector<String> args;
+   if ( argc > 0 )
+      std::copy( argv+1, argv+argc, std::back_inserter( args ) );
+   
+   CommandLineParser parser( args, description );
+   values = parser.parse();
+   return true;
+}
+
+
+// class CommandLineParser
+// //////////////////////////////////////////////////////////////////
+
+inline OptionsValues 
+CommandLineParser::parse()
+{
+   setOptionAliases();
+
+   while ( hasMoreToken() )
+      processToken();
+
+   return values_;
+}
+
+
+inline void 
+CommandLineParser::processToken()
+{
+   String token = currentToken();
+   switch ( parseState_ )
+   {
+   case parseNewOption:
+      {
+         switch ( optionStyle( token ) )
+         {
+         case shortOption:
+            {
+               String name = token.substr(1,1);
+               String shortOptionKey = "-" + name;
+               checkOptionNameIsValid( shortOptionKey, token );
+               consumeToken();
+
+               const OptionDescription &option = description_.description( shortOptionKey );
+               values_.setOption( option.name() );
+               if ( option.hasNoParameter() )
+                  break;
+//               if ( option.mayHaveParameter() 
+//                    &&  optionStyle( currentToken() ) != noOption )
+//                  break;
+
+               std::string parameter = token.substr(2);
+               if ( !parameter.empty() )
+                  values_.addOptionParameter( option.name(), parameter );
+               else
+               {
+                  parseState_ = nextParameter;
+                  currentOption_ = &option;
+               }
+//               if ( parameter.empty()  &&  option.hasDefaultValue() )
+//                  option.applyDefaultValue( values_[ optionKey ] );
+            }
+            break;
+         case longOption:
+            {
+               String name = token.substr(2);
+               String parameter;
+               int equalPos = name.find( '=' );
+               if ( equalPos != String::npos )
+               {
+                  parameter = name.substr( equalPos + 1 );
+                  name = name.substr(0,equalPos);
+               }
+
+               checkOptionNameIsValid( name, token );
+               values_.setOption( name );
+               consumeToken();
+
+               const OptionDescription &option = description_.description( name );
+               if ( option.hasNoParameter() )
+                  break;
+
+               if ( equalPos != String::npos )
+                  values_.addOptionParameter( name, parameter );
+               else
+               {
+                  parseState_ = nextParameter;
+                  currentOption_ = &option;
+               }
+            }
+            break;
+         default:
+            throw CommandLineParseError( CommandLineParseError::syntaxError, token );
+            break;
+         }
+      }
+      break;
+   case nextParameter:
+      {
+         if ( optionStyle( token ) == noOptionStyle )
+         {
+            values_.addOptionParameter( currentOption_->name(), token );
+            consumeToken();
+         }
+         parseState_ = parseNewOption;
+      }
+      break;
+   default:
+      throw CommandLineParseError( CommandLineParseError::syntaxError, token );
+   }
+}
+
+
+inline void 
+CommandLineParser::checkOptionNameIsValid( const std::string &optionName,
+                                           const std::string &optionToken ) const
+{
+   if ( !description_.hasOption( optionName ) )
+      throw CommandLineParseError( CommandLineParseError::invalidOptionName, optionToken );
+}
+
+
+inline std::string 
+CommandLineParser::currentToken() const
+{
+   return tokenIndex_ < arguments_.size() ? arguments_[tokenIndex_] 
+                                          : std::string();
+}
+
+
+inline void 
+CommandLineParser::consumeToken()
+{
+   ++tokenIndex_;
+}
+
+
+inline bool 
+CommandLineParser::hasMoreToken() const
+{
+   return tokenIndex_ < arguments_.size();
+}
+
+
+inline CommandLineParser::OptionStyle 
+CommandLineParser::optionStyle( const std::string &token ) const
+{
+   if ( token.substr(0,2) == "--"  &&  token.length() > 2 )
+      return longOption;
+   if ( token.substr(0,1) == "-"  &&  token.length() > 1 )
+      return shortOption;
+   return noOptionStyle;
+}
+
+
+inline void 
+CommandLineParser::setOptionAliases()
+{
+   std::set<String> optionNames = description_.optionNames();
+   std::set<String>::iterator it = optionNames.begin();
+   for ( ; it != optionNames.end(); ++it )
+   {
+      const OptionDescription &description = description_.description( *it );
+      String optionKey = description.name();
+      values_.setOptionAlias( optionKey, optionKey );
+      if ( description.hasLongName()  &&  description.hasShortName() )
+         values_.setOptionAlias( "-" + description.shortName(), optionKey );
+   }
+}
+
+
+} } // namespace CommandLineOptions
+
+#endif // CPPUTTOOLS_CONFIGURATION_PARSER_H_INCUDED
+@

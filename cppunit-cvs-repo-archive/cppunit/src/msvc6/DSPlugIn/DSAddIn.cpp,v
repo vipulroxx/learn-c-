@@ -1,0 +1,197 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.4
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.1
+date	2001.09.14.19.27.58;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* src/msvc6/testrunner/TestRunner.dsp: fixed release configuration.
+
+* src/msvc6/testrunner/TestRunner.dsw: added DSPlugIn.dsp. TestRunner
+depends on DSPlugIn.
+
+* src/msvc6/testrunner/TestRunner.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/DSPlugIn/*: integrated patch from
+Patrick Berny (PPBerny@@web.de). An add-ins for VC++. Double-cliking
+a failed test in the TestRunner, VC++ will open the source file and
+go to the failure location.
+
+* src/cppunit/Exception.cpp:
+* include/cppunit/Exception.h: compile fix, call to overrided
+operator = of parent class failed. Using typedef to the parent
+class fix that.
+
+* src/cppunit/cppunit.dsp: added TestFixture.h
+
+* src/cppunit/TestFactoryRegistry.cpp: removed <utility> which isn't
+needed any more.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/extensions/TestFactoryRegistry.h: added
+include <Portability.h> before any other includes to remove warning
+with VC++.
+
+* include/cppunit/Portability.h: moved platform specific includes at
+the beginning of the header. fixed CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION
+declaration.
+
+* include/cppunit/config-msvc6.h: removed pragma once (useless, should
+be put in each header to have an effect).
+@
+text
+@// AddInMod.cpp : implementation file
+//
+
+#include "stdafx.h"
+
+#include "DSPlugIn.h"
+#include "COMHelper.h"
+#include "DSAddIn.h"
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+
+COMUtility::COMExceptionThrower CDSAddIn::cex_;
+
+CDSAddIn::~CDSAddIn( void)
+{
+}
+
+// This is called when the user first loads the add-in, and on start-up
+//  of each subsequent Developer Studio session
+STDMETHODIMP CDSAddIn::OnConnection(IApplication* pApp, VARIANT_BOOL bFirstTime,
+		long dwCookie, VARIANT_BOOL* OnConnection)
+{
+  HRESULT result = S_OK;
+
+  try
+  {
+    CComPtr< IUnknown> pIUnk;
+
+	  AFX_MANAGE_STATE(AfxGetStaticModuleState());
+
+    cex_ = _Module.GetClassObject( GetObjectCLSID(), IID_IUnknown, reinterpret_cast<void**>(&pIUnk));
+
+    cex_ = CoRegisterClassObject( 
+      GetObjectCLSID(),
+      pIUnk,
+      CLSCTX_LOCAL_SERVER,
+      REGCLS_MULTIPLEUSE,
+      &classRegistrationId_
+      );
+
+    pIApp_ = pApp;
+
+    m_dwCookie = dwCookie;
+    *OnConnection = VARIANT_TRUE;
+  }
+  catch( const std::bad_cast&)
+  {
+    *OnConnection = VARIANT_FALSE;
+  }
+  catch( const _com_error&)
+  {
+    *OnConnection = VARIANT_FALSE;
+  }
+
+  return result;
+}
+
+// This is called on shut-down, and also when the user unloads the add-in
+STDMETHODIMP CDSAddIn::OnDisconnection(VARIANT_BOOL bLastTime)
+{
+  pIApp_.Release();
+  CoRevokeClassObject( classRegistrationId_);
+
+	return S_OK;
+}
+
+
+// ITestRunnerDSPlugin
+STDMETHODIMP CDSAddIn::goToLineInSourceCode( BSTR fileName, int lineNumber)
+{
+  HRESULT result = S_OK;
+
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+
+  try
+  {
+    CComPtr< IDispatch> tmp;
+    CComPtr< IDocuments> pIDocuments;
+    CComPtr< ITextDocument> pITextDocu;
+    CComPtr< ITextSelection> pITextSel;
+
+    cex_ = pIApp_->get_Documents( &tmp);
+    pIDocuments.Attach( COMUtility::interface_cast<IDocuments>( tmp.p));
+    tmp.Release();
+    cex_ = pIDocuments->Open( fileName,
+                             CComVariant(),
+                             CComVariant(),
+                             &tmp);
+    pITextDocu.Attach( COMUtility::interface_cast< ITextDocument>( tmp.p));
+    tmp.Release();
+    cex_ = pITextDocu->get_Selection( &tmp);
+    pITextSel.Attach( COMUtility::interface_cast< ITextSelection>( tmp.p));
+    cex_ = pITextSel->GoToLine( lineNumber, CComVariant( 1));
+  }
+  catch( const std::bad_cast&)
+  {
+    result = E_FAIL;
+  }
+  catch( const _com_error&)
+  {
+    result = E_FAIL;
+  }
+  
+  return result;
+}
+@

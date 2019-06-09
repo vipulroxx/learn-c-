@@ -1,0 +1,159 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.3
+date	2003.03.11.20.06.30;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.06.14.20.21.00;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.05.23.18.38.39;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* include/cppunit/tools/Algorithm.h:
+* src/cppunit/TestResult.cpp:
+* src/msvc6/testrunner/TestRunnerModel.cpp: added removeFromSequence
+algorithm in Algorithm.h to fix STLPort compatibility issue
+(std::remove use the one of cstdio instead of algorithm). Bug #694971.
+
+* include/cppunit/extensions/TestNamer.h: fixed bug #662666 (missing include
+for typeinfo).
+
+* src/cppunit/TestResult.cpp: TestFailure are no longer passed as temporary,
+but explicitely instantiated on the stack. Work around AIX compiler bug.
+@
+text
+@libcppunitincludedir = $(includedir)/cppunit/tools
+
+libcppunitinclude_HEADERS = \
+	Algorithm.h		\
+	StringTools.h \
+	XmlElement.h \
+	XmlDocument.h@
+
+
+1.2
+log
+@* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added two methods to use the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugIn.h: added two methods to the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugInAdapter.h:
+* src/cppunit/plugin/TestPlugInAdapter.cpp: renamed TestPlugInDefaultImpl.
+  Added empty implementation for Xml outputter hook methods.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/tools/StringTools.cpp: added. Functions to manipulate string
+  (conversion, wrapping...)
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/XmlElement.cpp: renamed addNode() to addElement(). Added
+  methods to walk and modify XmlElement (for hook). Added documentation.
+  Use StringTools.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: added hook calls & management.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: added. Hook to customize XML output.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: call plug-in XmlOutputterHook
+  when writing XML output. Modified so that memory is freed before
+  unloading the test plug-in (caused crash when freeing the XmlDocument).
+
+* examples/ReadMe.txt:
+* examples/ClockerPlugIn/ReadMe.txt: added details about the plug-in
+  (usage, xml content...)
+
+* examples/ClockerPlugIn/ClockerModel.h:
+* examples/ClockerPlugIn/ClockerModel.cpp: extracted from ClockerListener.
+  Represents the test hierarchy and tracked time for each test.
+
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/ClockerListener.cpp: extracted test hierarchy
+  tracking to ClockerModel. Replaced the 'flat' view option with a 'text'
+  option to print the timed test tree to stdout.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp: updated to hook the XML
+  output and use the new classes.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: added. XmlOutputterHook to
+  includes the timed test hierarchy and test timing in the XML output.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added new test cases.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: added tests for
+  XmlOutputterHook.
+@
+text
+@d4 1
+@
+
+
+1.1
+log
+@* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: extracted class XmlOutputter::Node to
+XmlElement. Extracted xml 'prolog' generation to XmlDocument.
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/tools/XmlElement.cpp: added, extracted from XmlOutputter::Node.
+
+* include/cppunit/tools/XmlDocument.h:
+* src/cppunit/tools/XmlDocument.cpp: added, extracted from XmlOutputter. Handle
+XML document prolog (encoding & style-sheet) and manage the root element.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: bug fix, flag --xsl was ignored.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated for XmlOuputter changes.
+extracted tests for XmlOutputter::Node to XmlElementTest
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added, tests extracted from
+XmlOutputterTest.
+@
+text
+@d4 1
+@
+

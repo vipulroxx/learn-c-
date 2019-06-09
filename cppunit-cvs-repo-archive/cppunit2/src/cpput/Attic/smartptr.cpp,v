@@ -1,0 +1,124 @@
+head	1.2;
+access;
+symbols
+	arelease:1.1.1.1 avendor:1.1.1;
+locks; strict;
+comment	@// @;
+
+
+1.2
+date	2004.01.27.23.37.22;	author blep;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.35;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.35;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* SmartPtr now subclass boost::shared_ptr to make templated function
+  overloading easier.
+* Added our own smart pointer implementation
+* Added AtomicCounter as implementation detail.
+  Can use boost::detail::atomic_counter.
+@
+text
+@#include <cpput/smartptr.h>
+
+# ifndef CPPUT_USE_BOOST_SHARED_PTR
+
+# include <windows.h>
+
+class Win32AtomicCounter : public AtomicCounter
+{
+public:
+	Win32AtomicCounter( long count )
+		: count_( count )
+	{
+	}
+
+   /// Increments the count and returns the incremented count
+   long increment()
+   {
+	   return long( InterlockedIncrement( &count_ ) );
+   }
+
+   long decrement()
+   {
+	   return long( InterlockedDecrement( &count_ ) );
+   }
+
+   long count()
+   {
+	   return long(count_);
+   }
+
+private:
+	volatile LONG count_;
+};
+
+class NotThreadSafeAtomicCounter : public AtomicCounter
+{
+public:
+	NotThreadSafeAtomicCounter( long count )
+		: count_( count )
+	{
+	}
+
+   /// Increments the count and returns the incremented count
+   long increment()
+   {
+	   return ++count_;
+   }
+
+   long decrement()
+   {
+	   return --count_;
+   }
+
+   long count()
+   {
+	   return count_;
+   }
+
+private:
+	long count_;
+};
+
+
+
+AtomicCounter *makeAtomicCounter( long initialValue )
+{
+	return new Win32AtomicCounter( initialValue );
+}
+
+# endif@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

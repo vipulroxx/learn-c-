@@ -1,0 +1,1146 @@
+head	1.23;
+access;
+symbols
+	REL_1_12_1:1.22
+	REL_1_11_6:1.22
+	REL_1_11_4:1.22
+	REL_1_11_0:1.21
+	TG_CPPUNIT_NO_STREAM_AFTER:1.21
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.21
+	REL_1_10_2:1.21
+	REL_1_10_0:1.21
+	REL_1_9_14:1.21
+	REL_1_9_12:1.21
+	BRANCH_1_9_12:1.21.0.2
+	TG_BRANCH_1_9_12:1.21
+	TG_BEFORE_HPUX_PLUGIN:1.21
+	TG_BEFORE_SUN4_PORT:1.20
+	REL_1_9_10:1.20
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.17
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.17
+	REL_1_9_6:1.17
+	REL_1_9_4:1.17
+	REL_1_9_0:1.15
+	REL_1_8_0:1.15
+	REL_1_7_8:1.14
+	REL_1_7_3:1.14
+	REL_1_7_1:1.14
+	REL_1_6_2:1.13
+	BRANCH_1_6:1.13.0.2
+	REL_1_6_1:1.13
+	REL_1_6_0:1.13
+	REL_1_5_5:1.4;
+locks; strict;
+comment	@// @;
+
+
+1.23
+date	2008.02.21.03.10.06;	author smr99;	state Exp;
+branches;
+next	1.22;
+
+1.22
+date	2005.10.13.20.13.15;	author blep;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2002.09.16.18.21.20;	author esche;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2002.07.14.19.48.32;	author blep;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2002.04.19.14.11.38;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2002.04.17.22.27.28;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2002.03.28.15.47.08;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2001.10.02.20.43.55;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2001.09.14.19.27.58;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2001.07.07.16.07.50;	author smr99;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2001.07.07.16.05.47;	author smr99;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2001.07.06.01.31.25;	author smr99;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2001.06.17.16.59.07;	author bastiaan;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2001.06.12.19.08.57;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.06.02.22.29.52;	author smr99;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.06.02.19.53.06;	author smr99;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.05.18.19.32.42;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.05.06.18.19.04;	author bastiaan;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.05.06.17.21.31;	author bastiaan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.05.05.23.34.50;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.23
+log
+@Changes to suppress warnings of gcc -Wall -W -ansi, mainly from patch [1898225].
+@
+text
+@#include <cppunit/config/SourcePrefix.h>
+#include <cppunit/extensions/TestFactoryRegistry.h>
+#include <cppunit/portability/CppUnitMap.h>
+#include <cppunit/TestSuite.h>
+#include <assert.h>
+
+
+CPPUNIT_NS_BEGIN
+
+/*! \brief (INTERNAL) List of all TestFactoryRegistry.
+ */
+class TestFactoryRegistryList
+{
+private:
+  typedef CppUnitMap<std::string, TestFactoryRegistry *, std::less<std::string> > Registries;
+  Registries m_registries;
+
+  enum State {
+    doNotChange =0,
+    notCreated,
+    exist,
+    destroyed
+  };
+
+  static State stateFlag( State newState = doNotChange )
+  {
+    static State state = notCreated;
+    if ( newState != doNotChange )
+      state = newState;
+    return state;
+  }
+
+  static TestFactoryRegistryList *getInstance()
+  {
+    static TestFactoryRegistryList list;
+    return &list;
+  }
+
+  TestFactoryRegistry *getInternalRegistry( const std::string &name )
+  {
+    Registries::const_iterator foundIt = m_registries.find( name );
+    if ( foundIt == m_registries.end() )
+    {
+      TestFactoryRegistry *factory = new TestFactoryRegistry( name );
+      m_registries.insert( std::pair<const std::string, TestFactoryRegistry*>( name, factory ) );
+      return factory;
+    }
+    return (*foundIt).second;
+  }
+
+public:
+  TestFactoryRegistryList()
+  {
+    stateFlag( exist );
+  }
+
+  ~TestFactoryRegistryList()
+  {
+    for ( Registries::iterator it = m_registries.begin(); it != m_registries.end(); ++it )
+      delete (*it).second;
+
+    stateFlag( destroyed );
+  }
+
+  static TestFactoryRegistry *getRegistry( const std::string &name )
+  {
+    // If the following assertion failed, then TestFactoryRegistry::getRegistry() 
+    // was called during static variable destruction without checking the registry 
+    // validity beforehand using TestFactoryRegistry::isValid() beforehand.
+    assert( isValid() );
+    if ( !isValid() )         // release mode
+      return NULL;            // => force CRASH
+
+    return getInstance()->getInternalRegistry( name );
+  }
+
+  static bool isValid()
+  {
+    return stateFlag() != destroyed;
+  }
+};
+
+
+
+TestFactoryRegistry::TestFactoryRegistry( std::string name ) :
+    m_name( name )
+{
+}
+
+
+TestFactoryRegistry::~TestFactoryRegistry()
+{
+}
+
+
+TestFactoryRegistry &
+TestFactoryRegistry::getRegistry( const std::string &name )
+{
+  return *TestFactoryRegistryList::getRegistry( name );
+}
+
+
+void 
+TestFactoryRegistry::registerFactory( const std::string &,
+                                      TestFactory *factory )
+{
+  registerFactory( factory );
+}
+
+
+void 
+TestFactoryRegistry::registerFactory( TestFactory *factory )
+{
+  m_factories.insert( factory );
+}
+
+
+void 
+TestFactoryRegistry::unregisterFactory( TestFactory *factory )
+{
+  m_factories.erase( factory );
+}
+
+
+void 
+TestFactoryRegistry::addRegistry( const std::string &name )
+{
+  registerFactory( &getRegistry( name ) );
+}
+
+
+Test *
+TestFactoryRegistry::makeTest()
+{
+  TestSuite *suite = new TestSuite( m_name );
+  addTestToSuite( suite );
+  return suite;
+}
+
+
+void 
+TestFactoryRegistry::addTestToSuite( TestSuite *suite )
+{
+  for ( Factories::iterator it = m_factories.begin(); 
+        it != m_factories.end(); 
+        ++it )
+  {
+    TestFactory *factory = *it;
+    suite->addTest( factory->makeTest() );
+  }
+}
+
+
+bool 
+TestFactoryRegistry::isValid()
+{
+  return TestFactoryRegistryList::isValid();
+}
+
+
+CPPUNIT_NS_END
+@
+
+
+1.22
+log
+@* removed most warning when compiling with vc++ 6sp6.
+@
+text
+@d104 1
+a104 1
+TestFactoryRegistry::registerFactory( const std::string &name,
+@
+
+
+1.21
+log
+@map needs comparator, make_pair to pair, and map dereference fix (SUN4)
+@
+text
+@d1 1
+@
+
+
+1.20
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d14 1
+a14 1
+  typedef CppUnitMap<std::string, TestFactoryRegistry *> Registries;
+d44 1
+a44 1
+      m_registries.insert( std::make_pair( name, factory ) );
+d47 1
+a47 1
+    return foundIt->second;
+d59 1
+a59 1
+      delete it->second;
+@
+
+
+1.19
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d2 1
+a3 1
+#include <map>
+d14 1
+a14 1
+  typedef std::map<std::string, TestFactoryRegistry *> Registries;
+@
+
+
+1.18
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d9 2
+a10 1
+
+@
+
+
+1.17
+log
+@* src/cppunit/PlugInManager.cpp: fixed bug in unload().
+
+* include/cppunit/TypeInfoHelper.h:
+* src/cppunit/TypeInfoHelper.cpp: Implementation is now always available
+  is CPPUNIT_HAVE_RTTI is not 0. This removes the need to use
+  different libraries. CPPUNIT_USE_TYPEINFO_NAME can be set on a
+  case by case basis for HelperMacros.
+
+* src/cppunit/TestFactoryRegistry.cpp: removed unused include of
+  TypeInfoHelper.h.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: used endTest() instead
+  of done() to finalize.
+
+* src/msvc6/TestPlugInRunner/TestPlugIn.h:
+* src/msvc6/TestPlugInRunner/TestPlugIn.cpp: updated to use the
+  new test plug-in system.
+
+* examples/simple/SimplePlugIn.cpp:
+* examples/simple/simple_plugin.dsp: crossplatform test plug-in
+  example using 'simple'.
+
+* examples/msvc6/EasyTestPlugIn/*: projects replaced with the
+  crossplatform projecct examples/simple/simple_plugin.dsp.
+@
+text
+@d7 1
+a7 1
+namespace CppUnit {
+d159 1
+a159 1
+}  // namespace CppUnit
+@
+
+
+1.16
+log
+@* bumped version to 1.9.3
+
+* FAQ: added question about 4786 warning on VC++.
+
+* NEWS: updated.
+
+* contrib/msvc/readme.txt: moved to contrib/readme.txt.
+
+* contrib/xml-xsl/report.xsl: added XML style sheet contributed by
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for
+  startTestRun()/endTestRun().
+
+* examples/simple/*: added. A simple example.
+
+* include/cppunit/BriefTestProgressListener.h:
+* src/cppunit/BriefTestProgressListener.cpp: added. Verbose progess listener
+  that print the test name before running the test.
+
+* include/cppunit/TestListener.h: added startTestRun()/endTestRun().
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: added runTest(), to be called to run
+  a test by test runner.
+
+* src/cppunit/TextTestRunner.cpp:
+* src/cppunit/TestRunner.cpp: updated to use TestResult::runTest().
+
+* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added. Managers for all loaded plug-ins.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: renamed TestPlugInAdapter. All
+  implementations are empty.
+
+* include/cppunit/plugin/TestPlugInSuite.h: removed.
+* src/cppunit/TestPlugInSuite.cpp: removed. Replaced by PlugInManager.
+
+* include/cppunit/plugin/TestPlugIn.h: rewrote the plug-in interface to
+  provide more versatility. updated macros to match new interface.
+
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestFactoryRegistry.cpp: Added unregisterFactory().
+  Added convenience method addRegistry(). Rewrote registry life cycle
+  management. AutoRegisterSuite can now detect that the registry has been
+  destroy and not call to it to unregister its test factory.
+
+* include/cppunit/extensions/AutoRegisterTest.h: on destruction, the registered
+  factory is unregistered from the registry.
+
+* include/cppunit/extensions/HelperMacros.h: added macros
+  CPPUNIT_REGISTRY_ADD_TO_DEFAULT and CPPUNIT_REGISTRY_ADD to help
+  build test suite hierarchy.
+
+* src/cppunit/msvc/DllPlugInTester/*: moved to src/cppunit/DllPlugInTester/.
+
+* src/cppunit/DllPlugInTester/DllPlugInTester.cpp: removed UNICODE stuffs. Use
+  the PlugInManager instead of PlugInTestSuite. Simplified: only one test on
+  command line, but many DLL can be specified. Added configurations to link
+  against cppunit dll, those are now the default configuration (static linking
+  don't make much sense for plug-in).
+@
+text
+@a5 4
+#if CPPUNIT_USE_TYPEINFO_NAME
+#  include "cppunit/extensions/TypeInfoHelper.h"
+#endif
+
+@
+
+
+1.15
+log
+@* doc/cookbook.html: removed. Replaced by cookbook.doc.
+
+* doc/cookbook.dox: added, conversion of cookbook.html to Doxygen format.
+
+* doc/other_documentation.dox: added groups definition.
+
+* doc/Makefile.am: replaced cookbook.html by cookbook.dox
+
+* doc/Doxyfile.in: added predefined CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION.
+Replaced cookbook.html by cookbook.dox.
+
+* include/cppunitui/mfc/TestRunner.h: added, extracted from
+include/msvc6/testrunner/TestRunner.h. Moved class TestRunner to namespace
+CppUnit::MfcUi.
+
+* include/msvc6/testrunner/TestRunner.h: deprecated. A simple typedef to
+CppUnit::MfcUi::TestRunner.
+
+* include/textui/TestRuner.h: added, extracted from
+include/cppunit/TextTestRunner.h.
+
+* src/cppunit/TextTestRunner.cpp: renamed TestRunner.cpp. Moved into
+namespace CppUnit::TextUi.
+
+* src/msvc6/testruner/TestRunner.cpp: moved into namespace CppUnit::MfcUi.
+
+* src/cppunit/CompilerOutputter.cpp: removed printing "- " before
+NotEqualException addional message, for consistency between different
+TestRunner (Mfc,Text...)
+
+* include/cppunit/Asserter.h:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/Outputter.h:
+* include/cppunit/SourceLine.h:
+* include/cppunit/TestAssert.h:
+* include/cppunit/TestCaller.h:
+* include/cppunit/TestFailure.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: doc update. organization
+in groups.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.cpp:
+* examples/msvc6/HostApp/HostApp.cpp: updated to use
+CppUnit::MfcUi::TestRunner.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use
+CppUnit::TextUi::TestRunner.
+@
+text
+@d3 2
+a4 2
+#include <set>
+
+d13 2
+a14 10
+/** (Implementation) This class manages all the TestFactoryRegistry.
+ *
+ * Responsible for the life-cycle of the TestFactoryRegistry.
+ * 
+ * TestFactory registry must call wasDestroyed() to indicate that
+ * a given TestRegistry was destroyed, and needDestroy() to
+ * know if a given TestFactory need to be destroyed (was not already
+ * destroyed by another TestFactoryRegistry).
+ */
+class NamedRegistries
+a15 11
+public:
+  ~NamedRegistries();
+
+  static NamedRegistries &getInstance();
+
+  TestFactoryRegistry &getRegistry( std::string name );
+
+  void wasDestroyed( TestFactory *factory );
+
+  bool needDestroy( TestFactory *factory );
+
+d20 6
+a25 4
+  typedef std::set<TestFactory *> Factories;
+  Factories m_factoriesToDestroy;
+  Factories m_destroyedFactories;
+};
+d27 7
+d35 1
+a35 4
+NamedRegistries::~NamedRegistries()
+{
+  Registries::iterator it = m_registries.begin();
+  while ( it != m_registries.end() )
+d37 2
+a38 3
+    TestFactoryRegistry *registry = (it++)->second;
+    if ( needDestroy( registry ) )
+      delete registry;
+a39 1
+}
+d41 11
+d53 5
+a57 6
+NamedRegistries &
+NamedRegistries::getInstance()
+{
+  static NamedRegistries namedRegistries;
+  return namedRegistries;
+}
+d59 4
+d64 1
+a64 10
+TestFactoryRegistry &
+NamedRegistries::getRegistry( std::string name )
+{
+  Registries::const_iterator foundIt = m_registries.find( name );
+  if ( foundIt == m_registries.end() )
+  {
+    TestFactoryRegistry *factory = new TestFactoryRegistry( name );
+    m_registries.insert( std::make_pair( name, factory ) );
+    m_factoriesToDestroy.insert( factory );
+    return *factory;
+a65 2
+  return *foundIt->second;
+}
+d67 8
+d76 2
+a77 6
+void 
+NamedRegistries::wasDestroyed( TestFactory *factory )
+{
+  m_factoriesToDestroy.erase( factory );
+  m_destroyedFactories.insert( factory );
+}
+d79 5
+a83 6
+
+bool 
+NamedRegistries::needDestroy( TestFactory *factory )
+{
+  return m_destroyedFactories.count( factory ) == 0;
+}
+a94 13
+  // The wasDestroyed() and needDestroy() is used to prevent
+  // a double destruction of a factory registry.
+  // registerFactory( "All Tests", getRegistry( "Unit Tests" ) );
+  // => the TestFactoryRegistry "Unit Tests" is owned by both
+  // the "All Tests" registry and the NamedRegistries...
+  NamedRegistries::getInstance().wasDestroyed( this );
+
+  for ( Factories::iterator it = m_factories.begin(); it != m_factories.end(); ++it )
+  {
+    TestFactory *factory = it->second;
+    if ( NamedRegistries::getInstance().needDestroy( factory ) )
+      delete factory;
+  }
+d99 1
+a99 1
+TestFactoryRegistry::getRegistry()
+d101 1
+a101 1
+  return getRegistry( "All Tests" );
+d105 3
+a107 2
+TestFactoryRegistry &
+TestFactoryRegistry::getRegistry( const std::string &name )
+d109 1
+a109 1
+  return NamedRegistries::getInstance().getRegistry( name );
+d114 1
+a114 2
+TestFactoryRegistry::registerFactory( const std::string &name,
+                                      TestFactory *factory )
+d116 1
+a116 1
+  m_factories[name] = factory;
+d121 1
+a121 1
+TestFactoryRegistry::registerFactory( TestFactory *factory )
+d123 2
+a124 1
+    static int serialNumber = 1;
+a125 2
+    OStringStream ost;
+    ost << "@@Dummy@@" << serialNumber++;
+d127 4
+a130 1
+    registerFactory( ost.str(), factory );
+d150 1
+a150 1
+    TestFactory *factory = (*it).second;
+d153 7
+@
+
+
+1.14
+log
+@* include/cppunit/extensions/TestFactoryRegistry.h
+* src/cppunit/TestFactoryRegistry.cpp : fixed memory leaks that
+occured when a TestFactoryRegistry was registered into another
+TestFactoryRegistry.
+
+* include/cppunit/extensions/AutoRegisterSuite.h : updated doc.
+
+* include/cppunit/extensions/HelperMacros.h : added macro
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION to register a suite into
+a named suite. Updated doc.
+
+* examples/cppunittest/CoreSuite.h:
+* examples/cppunittest/ExtensionSuite.h:
+* examples/cppunittest/HelperSuite.h: added, declaration of suite for
+use with CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/makefile.am : added HelperSuite.h, CoreSuite.h,
+ExtensionSuite.h, CppUnitTestSuite.h and CppUnitTestSuite.cpp.
+
+* examples/cppunittest/CppUnitTestSuite.*: added.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/TestAssertTest.cpp:
+* examples/cppunittest/TestCaseTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestListenerTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/TestSuiteTest.cpp: moved into named suite
+"Core" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/OrthodoxTest.cpp:
+* examples/cppunittest/RepeatedTest.cpp:
+* examples/cppunittest/TestDecoratorTest.cpp:
+* examples/cppunittest/TestSetUpTest.cpp: moved into named suite
+"Extension" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/HelperMacrosTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp: moved into named suite
+"Helper" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/CppUnitTest.dsp :
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp : added
+Makefile.am, HelperSuite.h, CoreSuite.h, ExtensionSuite.h,
+CppUnitTestSuite.h and CppUnitTestSuite.cpp.
+@
+text
+@d13 1
+a13 1
+/** This class manages all the TestFactoryRegistry.
+@
+
+
+1.13
+log
+@* src/msvc6/testrunner/TestRunner.dsp: fixed release configuration.
+
+* src/msvc6/testrunner/TestRunner.dsw: added DSPlugIn.dsp. TestRunner
+depends on DSPlugIn.
+
+* src/msvc6/testrunner/TestRunner.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/DSPlugIn/*: integrated patch from
+Patrick Berny (PPBerny@@web.de). An add-ins for VC++. Double-cliking
+a failed test in the TestRunner, VC++ will open the source file and
+go to the failure location.
+
+* src/cppunit/Exception.cpp:
+* include/cppunit/Exception.h: compile fix, call to overrided
+operator = of parent class failed. Using typedef to the parent
+class fix that.
+
+* src/cppunit/cppunit.dsp: added TestFixture.h
+
+* src/cppunit/TestFactoryRegistry.cpp: removed <utility> which isn't
+needed any more.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/extensions/TestFactoryRegistry.h: added
+include <Portability.h> before any other includes to remove warning
+with VC++.
+
+* include/cppunit/Portability.h: moved platform specific includes at
+the beginning of the header. fixed CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION
+declaration.
+
+* include/cppunit/config-msvc6.h: removed pragma once (useless, should
+be put in each header to have an effect).
+@
+text
+@d3 2
+d13 83
+d101 1
+d104 7
+d114 2
+a115 1
+    delete factory;
+d123 1
+a123 2
+  static TestFactoryRegistry registry;
+  return registry;
+d130 1
+a130 16
+// No clean-up at the current time => memory leaks.
+// Need to find a way to solve the folowing issue:
+// getRegistry().registryFactory( "Functionnal", 
+//                                getRegistry( "Functionnal" ) );
+// => the test factory registry "Functionnal" would be
+// destroyed twice: once by the map below, once by the getRegistry() factory.
+  static NamedRegistries registries;
+
+  NamedRegistries::const_iterator foundIt = registries.find( name );
+  if ( foundIt == registries.end() )
+  {
+    TestFactoryRegistry *factory = new TestFactoryRegistry( name );
+    registries.insert( std::make_pair( name, factory ) );
+    return *factory;
+  }
+  return *foundIt->second;
+d152 1
+@
+
+
+1.12
+log
+@*** empty log message ***
+@
+text
+@d1 1
+a1 3
+#include <utility>
+
+#include <cppunit/Portability.h>
+a2 1
+#include <cppunit/extensions/TestFactoryRegistry.h>
+@
+
+
+1.11
+log
+@Use strstream if stringstream unavailable.
+@
+text
+@d70 1
+a70 1
+  static int serialNumber = 1;
+@
+
+
+1.10
+log
+@Change from CPPUNIT_USE_TYPEINFO to CPPUNIT_USE_TYPEINFO_NAME
+@
+text
+@d1 2
+a3 2
+#include <sstream>
+#include <utility>
+a69 1
+  std::ostringstream stream;
+a70 2
+  stream << "@@Dummy@@"  <<  serialNumber++;
+  std::string name( stream.str() );
+d72 4
+a75 1
+  registerFactory( name, factory );
+@
+
+
+1.9
+log
+@replaced #include of <config.h> with <cppunit/Portability.h>
+@
+text
+@d4 2
+a5 2
+#include "cppunit/TestSuite.h"
+#include "cppunit/extensions/TestFactoryRegistry.h"
+d7 1
+a7 1
+#if CPPUNIT_USE_TYPEINFO
+@
+
+
+1.8
+log
+@* src/cppunit/TestFactoryRegistry.cpp: fixed makeTest(). It did not use m_name for
+naming the suite.
+@
+text
+@d1 1
+a1 5
+#if _MSC_VER > 1000     // VC++
+#pragma once
+#pragma warning( disable : 4786 )   // disable warning debug symbol > 255...
+#endif // _MSC_VER > 1000
+
+a3 1
+#include "cppunit/config.h"
+@
+
+
+1.7
+log
+@Change to templatized TestAssert::assertEquals() and the new CPPUNIT_ASSERT* macros
+@
+text
+@d86 1
+a86 1
+  TestSuite *suite = new TestSuite( "All Tests" );
+@
+
+
+1.6
+log
+@Replace CU_ by CPPUNIT_.
+@
+text
+@d8 1
+d12 4
+a15 3
+#ifdef CPPUNIT_USE_TYPEINFO
+#include "cppunit/extensions/TypeInfoHelper.h"
+#endif // CPPUNIT_USE_TYPEINFO
+@
+
+
+1.5
+log
+@  * Symbol CU_USE_TYPEINFO must be defined instead of USE_TYPEINFO to
+    compile RTTI.
+  * Added back default constructor to TestSuiteBuilder which use RTTI.
+    It is available only if CU_USE_TYPEINFO is defined.
+  * Moved TypeInfoHelper.h from src/cppunit to include/cppunit/extensions.
+  * Macro CU_TEST_SUITE in HelperMacros.h now use TestSuiteBuilder default
+    constructor if CU_USE_TYPEINFO is defined, otherwise it use the
+    type name given to the CU_TEST_SUITE macro.
+  * TestFactoryRegistry::registerFactory(factory) now generate a dummy
+    name based on a serial number instead of using RTTI. The macro
+    CU_TEST_SUITE_REGISTRATION and class AutoRegisterSuite can now
+    when CU_USE_TYPEINFO is not defined.
+  * Added a new Configuration named "Debug Without CU_USE_TYPEINFO" to
+    msvc6 projects. The flag CU_USE_TYPEINFO is not defined in that
+    configuration.
+@
+text
+@d11 1
+a11 1
+#ifdef CU_USE_TYPEINFO
+d13 1
+a13 1
+#endif // CU_USE_TYPEINFO
+@
+
+
+1.4
+log
+@Renamed AbstractTestFactory to TestFactory.
+@
+text
+@d6 1
+d11 3
+a13 3
+#ifdef USE_TYPEINFO
+#include "TypeInfoHelper.h"
+#endif // USE_TYPEINFO
+a69 1
+#ifdef USE_TYPEINFO
+d73 5
+a77 1
+  std::string name = TypeInfoHelper::getClassName( typeid( *factory ) );
+a79 1
+#endif // USE_TYPEINFO
+@
+
+
+1.3
+log
+@Removed unnecessary #include's of TestSuiteBuilder.h
+Removed RTTI dependent stuff from TestSuite and TestSuiteBuilder.
+@
+text
+@d25 1
+a25 1
+    AbstractTestFactory *factory = it->second;
+d63 1
+a63 1
+                                      AbstractTestFactory *factory )
+d71 1
+a71 1
+TestFactoryRegistry::registerFactory( AbstractTestFactory *factory )
+d94 1
+a94 1
+    AbstractTestFactory *factory = (*it).second;
+@
+
+
+1.2
+log
+@Merge of CppUnitW 1.2 phase 2.
+@
+text
+@a8 1
+#include "cppunit/extensions/TestSuiteBuilder.h"
+a19 1
+
+@
+
+
+1.1
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@d12 1
+a12 1
+#include "../TypeInfoHelper.h"
+d25 5
+d44 6
+d52 6
+a57 3
+  TestFactoryRegistry*& registryPointer = registries[ name ];
+  if (NULL == registryPointer) {
+    registryPointer = new TestFactoryRegistry( name );
+d59 1
+a59 2
+  
+  return *registryPointer;
+@
+

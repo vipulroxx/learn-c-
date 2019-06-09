@@ -1,0 +1,59 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.4
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1
+	REL_1_5_5:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.1
+date	2001.04.28.14.27.24;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Merged msvc6 specific TestRunner and example adapted from Michael Feathers
+version by Baptiste Lepilleur.
+@
+text
+@// stdafx.cpp : source file that includes just the standard includes
+//  TestRunner.pch will be the pre-compiled header
+//  stdafx.obj will contain the pre-compiled type information
+
+#include "stdafx.h"
+
+@

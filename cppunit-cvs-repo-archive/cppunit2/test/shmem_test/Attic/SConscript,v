@@ -1,0 +1,43 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2006.09.01.19.27.59;	author blep;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2006.03.07.23.02.58;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@- opentest library has been moved to its own project: http://www.sf.net/projects/opentest/
+@
+text
+@Import( 'env_testing buildCppUnitExample' )
+
+buildCppUnitExample( env_testing, Split( """
+    main.cpp
+     """ ),
+    'w32shmem_test' )
+@
+
+
+1.1
+log
+@* added end to end test for shared memory transport.
+@
+text
+@@
+

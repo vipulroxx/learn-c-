@@ -1,0 +1,120 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2007.08.15.17.48.29;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@   Added support for light test fixture (a la CppUnitLite).
+See lightfixture.h and example/light_fixture.
+   Added support for direct declaration and registration of test in plain C
+function. See testfunction.h and example/test_function.
+@
+text
+@#ifndef CPPUT_TESTFUNCTION_H_INCLUDED
+# define CPPUT_TESTFUNCTION_H_INCLUDED
+
+# include "forwards.h"
+# include "extendeddata.h"
+# include "testcase.h"
+# include "registry.h"
+
+
+namespace CppUT 
+{
+   class TestFunctionFactory
+   {
+   public:
+      typedef TestPtr result_type; // Functor return type
+
+      typedef void (*TestFn)();
+
+      TestFunctionFactory( TestFn test, const char *name )
+         : test_( test )
+         , name_( name )
+      {
+      }
+
+      TestPtr operator()() const
+      {
+         return makeTestCase( test_, name_ );
+      }
+
+      TestFn test_;
+      const char *name_;
+   };
+} // end namespace CppUT
+
+/*! \brief Make the specified C function a test case and register it in the default Registry suite.
+ * \code
+ * static void myTest1() {
+ *   CPPUT_ASSERT_TRUE( false );
+ * }
+ * CPPUT_REGISTER_TEST_FUNCTION( myTest1 );
+ * \endcode
+ */
+#define CPPUT_REGISTER_TEST_FUNCTION( testFunction )                                \
+   CPPUT_REGISTER_TESTFACTORY_TO_DEFAULT(                                           \
+   ::CppTL::fn0r( ::CppUT::TestFunctionFactory( &testFunction, #testFunction ) ) )
+
+/*! \brief Make the specified C function a test case and register it in the specified Registry suite.
+ * \code
+ * static void myTest1() {
+ *   CPPUT_ASSERT_TRUE( false );
+ * }
+ * CPPUT_REGISTER_TEST_FUNCTION_IN( myTest1, "BoolTest" );
+ * \endcode
+ */
+#define CPPUT_REGISTER_TEST_FUNCTION_IN( testFunction, parentSuiteName )            \
+   CPPUT_REGISTER_TESTFACTORY_IN(                                                   \
+   ::CppTL::fn0r( ::CppUT::TestFunctionFactory( &testFunction, #testFunction )),    \
+      parentSuiteName )
+
+/*! \brief Declare and register a simple test case in the default Registry suite.
+ * The function is declared as a static void testFunction().
+ * \code
+ * CPPUT_TEST_FUNCTION( myTest1 ) {
+ *   CPPUT_ASSERT_TRUE( false );
+ * }
+ * \endcode
+ */
+#define CPPUT_TEST_FUNCTION( testFunctionName )       \
+   static void testFunctionName();                    \
+   CPPUT_REGISTER_TEST_FUNCTION( testFunctionName );  \
+   static void testFunctionName()
+
+/*! \brief Declare and register a simple test case in the specified Registry suite.
+ * The function is declared as a static void testFunction().
+ * \code
+ * CPPUT_TEST_FUNCTION_IN( myTest1, "BoolTests" ) {
+ *   CPPUT_ASSERT_TRUE( false );
+ * }
+ * \endcode
+ */
+#define CPPUT_TEST_FUNCTION_IN( testFunctionName, parentSuiteName )       \
+   static void testFunctionName();                                        \
+   CPPUT_REGISTER_TEST_FUNCTION_IN( testFunctionName, parentSuiteName );  \
+   static void testFunctionName()
+
+/* @@todo support for extended test data
+CPPUT_REGISTER_TEST_FUNCTION_IN_DEFAULT_WITH_SPECIFICS( 
+            myTest, 
+            (timeOut(0.2), 
+            describe("Always fails")) )
+*/
+
+
+#endif // CPPUT_TESTFUNCTION_H_INCLUDED
+@

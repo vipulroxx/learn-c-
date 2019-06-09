@@ -1,0 +1,123 @@
+head	1.5;
+access;
+symbols
+	REL_1_12_1:1.5
+	REL_1_11_6:1.5
+	REL_1_11_4:1.5
+	REL_1_11_0:1.5
+	TG_CPPUNIT_NO_STREAM_AFTER:1.5
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.5
+	REL_1_10_2:1.5
+	REL_1_10_0:1.5
+	REL_1_9_14:1.5
+	REL_1_9_12:1.5
+	BRANCH_1_9_12:1.5.0.2
+	TG_BRANCH_1_9_12:1.5
+	TG_BEFORE_HPUX_PLUGIN:1.4
+	TG_BEFORE_SUN4_PORT:1.4
+	REL_1_9_10:1.4
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	REL_1_9_6:1.4
+	REL_1_9_4:1.4
+	REL_1_9_0:1.4
+	REL_1_8_0:1.4
+	REL_1_7_8:1.4
+	REL_1_7_3:1.4
+	REL_1_7_1:1.4
+	REL_1_6_2:1.4
+	BRANCH_1_6:1.4.0.2
+	REL_1_6_1:1.4
+	REL_1_6_0:1.4;
+locks; strict;
+comment	@# @;
+
+
+1.5
+date	2003.05.07.21.10.16;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.08.07.15.48.10;	author smr99;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.06.20.14.17.56;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.05.29.04.11.42;	author smr99;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.05.17.19.48.09;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* added to .cvsignore:
+SunWS_cache
+ir.out
+@
+text
+@config.guess
+config.sub
+ltmain.sh
+config.h.in config.h
+stamp-h.in stamp-h
+stamp-h1
+SunWS_cache
+ir.out
+@
+
+
+1.4
+log
+@Fixes to allow building with SGI MIPSpro 7.30 compiler.
+The testsuite file examples/cppunittest/SubclassedTestCase.cpp
+causes the compiler to dump core, so that and HelperMacrosTest
+were not tested.  The rest of the test suite passes.
+@
+text
+@d7 2
+@
+
+
+1.3
+log
+@Improve .cvsignore
+@
+text
+@a0 1
+Makefile.in Makefile
+d6 1
+@
+
+
+1.2
+log
+@Add to .cvsignore
+@
+text
+@d5 2
+@
+
+
+1.1
+log
+@Added .cvsignore files contributed by Steve M. Robbins" <steven.robbins@@videotron.ca>.
+@
+text
+@d2 3
+@
+

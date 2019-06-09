@@ -1,0 +1,649 @@
+head	1.7;
+access;
+symbols
+	REL_1_12_1:1.7
+	REL_1_11_6:1.7
+	REL_1_11_4:1.7
+	REL_1_11_0:1.7
+	TG_CPPUNIT_NO_STREAM_AFTER:1.7
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.7
+	REL_1_10_2:1.7
+	REL_1_10_0:1.7
+	REL_1_9_14:1.7
+	REL_1_9_12:1.7
+	BRANCH_1_9_12:1.7.0.2
+	TG_BRANCH_1_9_12:1.7
+	TG_BEFORE_HPUX_PLUGIN:1.7
+	TG_BEFORE_SUN4_PORT:1.7
+	REL_1_9_10:1.7
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.2
+	REL_1_9_4:1.2
+	REL_1_9_0:1.2
+	REL_1_8_0:1.2
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.7
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.07.03.07.02.49;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.06.13.18.17.42;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.06.13.15.31.01;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.03.27.19.04.02;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.10.05.22.27.14;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@#include <cppunit/Asserter.h>
+#include <cppunit/Exception.h>
+#include <cppunit/Message.h>
+
+
+CPPUNIT_NS_BEGIN
+
+
+void 
+Asserter::fail( std::string message, 
+                const SourceLine &sourceLine )
+{
+  fail( Message( "assertion failed", message ), sourceLine );
+}
+
+
+void 
+Asserter::fail( const Message &message, 
+                const SourceLine &sourceLine )
+{
+  throw Exception( message, sourceLine );
+}
+
+
+void 
+Asserter::failIf( bool shouldFail, 
+                  const Message &message, 
+                  const SourceLine &sourceLine )
+{
+  if ( shouldFail )
+    fail( message, sourceLine );
+}
+
+
+void 
+Asserter::failIf( bool shouldFail, 
+                  std::string message, 
+                  const SourceLine &sourceLine )
+{
+  failIf( shouldFail, Message( "assertion failed", message ), sourceLine );
+}
+
+
+std::string 
+Asserter::makeExpected( const std::string &expectedValue )
+{
+  return "Expected: " + expectedValue;
+}
+
+
+std::string 
+Asserter::makeActual( const std::string &actualValue )
+{
+  return "Actual  : " + actualValue;
+}
+
+
+Message 
+Asserter::makeNotEqualMessage( const std::string &expectedValue,
+                               const std::string &actualValue,
+                               const AdditionalMessage &additionalMessage,
+                               const std::string &shortDescription )
+{
+  Message message( shortDescription,
+                   makeExpected( expectedValue ),
+                   makeActual( actualValue ) );
+  message.addDetail( additionalMessage );
+
+  return message;
+}
+
+
+void 
+Asserter::failNotEqual( std::string expected, 
+                        std::string actual, 
+                        const SourceLine &sourceLine,
+                        const AdditionalMessage &additionalMessage,
+                        std::string shortDescription )
+{
+  fail( makeNotEqualMessage( expected,
+                             actual,
+                             additionalMessage,
+                             shortDescription ), 
+        sourceLine );
+}
+
+
+void 
+Asserter::failNotEqualIf( bool shouldFail,
+                          std::string expected, 
+                          std::string actual, 
+                          const SourceLine &sourceLine,
+                          const AdditionalMessage &additionalMessage,
+                          std::string shortDescription )
+{
+  if ( shouldFail )
+    failNotEqual( expected, actual, sourceLine, additionalMessage, shortDescription );
+}
+
+
+CPPUNIT_NS_END
+@
+
+
+1.6
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@a8 3
+namespace Asserter
+{
+
+d10 2
+a11 2
+fail( std::string message, 
+      const SourceLine &sourceLine )
+d18 2
+a19 2
+fail( const Message &message, 
+      const SourceLine &sourceLine )
+d26 3
+a28 3
+failIf( bool shouldFail, 
+        const Message &message, 
+        const SourceLine &sourceLine )
+d36 3
+a38 3
+failIf( bool shouldFail, 
+        std::string message, 
+        const SourceLine &sourceLine )
+d45 1
+a45 1
+makeExpected( const std::string &expectedValue )
+d52 1
+a52 1
+makeActual( const std::string &actualValue )
+d59 4
+a62 4
+makeNotEqualMessage( const std::string &expectedValue,
+                     const std::string &actualValue,
+                     const AdditionalMessage &additionalMessage,
+                     const std::string &shortDescription )
+d74 5
+a78 5
+failNotEqual( std::string expected, 
+              std::string actual, 
+              const SourceLine &sourceLine,
+              const AdditionalMessage &additionalMessage,
+              std::string shortDescription )
+d89 6
+a94 6
+failNotEqualIf( bool shouldFail,
+                std::string expected, 
+                std::string actual, 
+                const SourceLine &sourceLine,
+                const AdditionalMessage &additionalMessage,
+                std::string shortDescription )
+a100 1
+} // namespace Asserter
+@
+
+
+1.5
+log
+@* include/cppunit/XmlOutputter.h: fixed XmlOutputter constructed default
+  value initializatino which caused compilation error with BC5.
+
+* src/cppunit/PlugInManager.cpp: added missing CPPUNIT_NO_TESTPLUGIN guard.
+
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp:
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h: applied Steven Mitter
+  patch to fix bug #530426 (conflict between TestRunner and host application
+  resources). Adapted patch to compile work with Unicode.
+
+* src/msvc6/testrunner/ResourceLoaders.h:
+* src/msvc6/testrunner/ResourceLoaders.cpp:
+* src/msvc6/testrunner/Change-Diary-ResourceBugFix.txt: added, from
+  Steven Mitter's patch. Simplified loadCString() to compile with Unicode.
+
+* src/cppunit/cppunit.dsp:
+* src/cppunit/cppunit_dll.dsp:
+* src/DllPlugInTester/DllPlugInTester.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: all lib, dll and exe are
+  now created in the intermediate directory. A post-build rule is used to
+  copy them to the lib/ directory.
+@
+text
+@d6 1
+a6 2
+namespace CppUnit
+{
+d105 1
+a105 1
+} // namespace CppUnit
+@
+
+
+1.4
+log
+@* include/cppunit/NotEqualException.h:
+* src/cppunit/NotEqualException.cpp: removed.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: removed 'type' related stuffs.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: delegate printing to TextOutputter.
+
+* examples/simple/ExampleTestCase.h:
+* examples/simple/ExampleTestCase.cpp: reindented.
+
+* src/qttestrunner/build:
+* src/qttestrunner/qttestrunner.pro:
+* src/qttestrunner/TestBrowserDlgImpl.h:
+* src/qttestrunner/TestRunnerModel.h: applied Thomas Neidhart's patch,
+  'Some minor fixes to compile QTTestrunner under Linux.'.
+@
+text
+@a12 1
+
+d48 9
+a56 6
+void 
+failNotEqual( std::string expected, 
+              std::string actual, 
+              const SourceLine &sourceLine,
+              const Message &additionalMessage,
+              std::string shortDescription )
+d58 1
+a58 5
+  Message message( shortDescription,
+                   "Expected: " + expected,
+                   "Actual  : " + actual );
+  message.addDetail( additionalMessage );
+  fail( message, sourceLine );
+d62 5
+a66 7
+void 
+failNotEqualIf( bool shouldFail,
+                std::string expected, 
+                std::string actual, 
+                const SourceLine &sourceLine,
+                const Message &additionalMessage,
+                std::string shortDescription )
+d68 6
+a73 2
+  if ( shouldFail )
+    failNotEqual( expected, actual, sourceLine, additionalMessage, shortDescription );
+d81 2
+a82 1
+              std::string additionalMessage )
+d84 5
+a88 4
+  Message message;
+  if ( !additionalMessage.empty() )
+    message.addDetail( additionalMessage );
+  failNotEqual( expected, actual, sourceLine, message );
+d97 2
+a98 1
+                std::string additionalMessage )
+d101 1
+a101 1
+    failNotEqual( expected, actual, sourceLine, additionalMessage );
+@
+
+
+1.3
+log
+@* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: added functions that take a Message as a
+  parameter. Existing function have a short description indicating
+  an assertion failure.
+
+* include/cppunit/CompilerOuputter.h:
+* src/cppunit/CompilerOuputter.cpp: removed printNotEqualMessage() and
+  printDefaultMessage(). Updated to use Message.
+
+* include/cppunit/Message.h:
+* src/cppunit/Message.cpp: added. Represents a message associated to an
+  Exception.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: the message associated to the exception is now
+  stored as a Message instead of a string.
+
+* include/cppunit/NotEqualException.cpp: constructs a Message instead of a
+  string.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: updated to use Asserter functions that
+  take a message when pertinent (CPPUNIT_FAIL...).
+
+* include/cppunit/TestCaller.h:
+* src/cppunit/TestCaller.cpp: exception not caught failure has a better
+  short description.
+
+* src/cppunit/TestCase.cpp: better short description when setUp() or
+  tearDown() fail.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replace '\n' in failure message
+  with space.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/NotEqualExceptionTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated to use Exception/Message.
+
+* examples/cppunittest/MessageTest.h:
+* examples/cppunittest/MessageTest.cpp: added. Unit test for Message.
+@
+text
+@d2 1
+a3 1
+#include <cppunit/NotEqualException.h>
+d48 1
+a48 1
+/* @@@@fixme Need to take NotEqualException down before including that change.
+d53 2
+a54 1
+              const Message &additionalMessage )
+d56 1
+a56 1
+  Message message( "equality assertion failed",
+d62 14
+a75 1
+*/
+d83 4
+a86 4
+  throw NotEqualException( expected, 
+                           actual, 
+                           sourceLine, 
+                           additionalMessage );
+@
+
+
+1.2
+log
+@* include/msvc/testrunner/TestRunner.h: updated doc. reindented.
+
+* include/cppunit/Asserter.h:
+* include/cppunit/Asserter.cpp:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/SynchronizedObject.h:
+* include/cppunit/extensions/TestCaller.h: doc update.
+@
+text
+@d2 1
+d16 9
+a24 1
+      SourceLine sourceLine )
+d32 10
+d43 1
+a43 1
+        SourceLine location )
+d45 1
+a45 2
+  if ( shouldFail )
+    fail( message, location );
+d48 14
+d66 1
+a66 1
+              SourceLine sourceLine,
+d80 1
+a80 1
+                SourceLine sourceLine,
+@
+
+
+1.1
+log
+@* include/cppunit/Asserter.h :
+* src/cppunit/Asserter.cpp : added. Helper to create assertion macros.
+
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* include/cppunit/Makefile.am : added Asserter.h and Asserter.cpp.
+
+* include/cppunit/Exception.h :
+* src/cppunit/Exception.cpp : added constructor that take a
+SourceLine argument. Deprecated static constant and old constructor.
+Fixed some constness issues.
+
+* examples/cppunittest/ExceptionTest.cpp : Refactored.
+
+* NEWS : partially updated (need to be more detailed)
+
+* include/cppunit/NotEqualException.h :
+* src/cppunit/NotEqualException.cpp : added constructor that take a
+SourceLine argument. Deprecated old constructor. Added a third element
+to compose message.
+
+* examples/cppunittest/NotEqualExceptionTest.cpp : moved to "Core"
+suite. Added test for SourceLine() and additionalMessage().
+Refactored.
+
+* include/cppunit/SourceLine.h :
+* src/cppunit/SourceLine.cpp : added. Result of applying
+IntroduceParameterObject refactoring on filename & line number...
+
+* include/cppunit/TestAssert.h :
+* src/cppunit/TestAssert.cpp : deprecated old assert functions.
+added functions assertEquals() and assertDoubleEquals() which use
+SourceLine.
+
+* src/cppunit/TestCase.cpp : Modified for SourceLine.
+
+* include/cppunit/TestFailure.h :
+* src/cppunit/TestFailure.cpp : added failedTestName(), and
+sourceLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp : modified to use SourceLine.
+
+* include/cppunit/TextTestResult.h :
+* src/cppunit/TextTestResult.cpp : corrected include order and
+switched to angled brackets. Refactored. Don't print failure location
+if not available. Not equal failure dump additional message if
+available.
+
+* src/cppunit/TextTestRunner.cpp : run() now returns a boolean to
+indicate if the run was sucessful.
+
+* src/cppunit/XmlTestResultOutputter.cpp : replaced itoa() with
+OStringStream. Refactored.
+
+* examples/cppunittest/XmlUniformiser.h :
+* examples/cppunittest/XmlUniformiser.cpp :
+CPPUNITTEST_ASSERT_XML_EQUAL capture failure location. Refactored
+checkXmlEqual().
+
+* examples/cppunittest/XmlUniformiserTest.h :
+* examples/cppunittest/XmlUniformiserTest.cpp : added test for
+CPPUNITTEST_ASSERT_XML_EQUAL.
+
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/XmlTestResultOutputter.cpp : updated to use SourceLine.
+@
+text
+@a8 48
+/*! Asserter creates and throws failure exception.
+ *
+ * The following example show how to create an assertion that
+ * checks if two XML strings are equivalent (extract from
+ * XmlUniformiser.cpp of CppUnit test suite):
+ *
+ * \code
+ * // Asserts that two XML strings are equivalent.
+ * #define CPPUNITTEST_ASSERT_XML_EQUAL( expected, actual ) \
+ *     ::CppUnitTest::checkXmlEqual( expected, actual,      \
+ *                                  CPPUNIT_SOURCELINE() )
+ * void 
+ * checkXmlEqual( std::string expectedXml,
+ *                std::string actualXml,
+ *                CppUnit::SourceLine sourceLine )
+ * {
+ *   std::string expected = XmlUniformiser( expectedXml ).stripped();
+ *   std::string actual = XmlUniformiser( actualXml ).stripped();
+ * 
+ *   if ( expected == actual )
+ *     return;
+ * 
+ *   int index = notEqualIndex( expected, actual );
+ *   CppUnit::OStringStream message;
+ *   message  <<  "differ at index: "  <<  index  << "\n"
+ *           <<  "expected: "  <<  expected.substr(index) << "\n"
+ *           <<  "but was : "  <<  actual.substr( index );
+ *   ::CppUnit::Asserter::failNotEqual( expected,
+ *                                      actual,
+ *                                      sourceLine,
+ *                                      message.str() );
+ * }
+ *
+ *
+ * int 
+ * notEqualIndex( std::string expectedXml,
+ *                std::string actualXml )
+ * {
+ *   int index = 0;
+ *   while ( index < actualXml.length()  &&  
+ *           index < expectedXml.length()  &&
+ *           actualXml[index] == expectedXml[index] )
+ *     ++index;
+ * 
+ *   return index;
+ * }
+ * \endcode
+ */
+@
+

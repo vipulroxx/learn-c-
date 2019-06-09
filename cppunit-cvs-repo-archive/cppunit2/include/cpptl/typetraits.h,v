@@ -1,0 +1,173 @@
+head	1.3;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.2
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.1
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.1
+	TG_AFTER_REMOVING_TESTCONTEXT:1.1
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.1
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2008.07.08.20.42.00;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.02.28.20.36.34;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.10.21.17.23.23;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@- Fixed bug in Registry::remove() when a suite had multiple child suites.
+- Added Registry suite removal tests
+@
+text
+@#ifndef CPPTL_TYPETRAITS_H_INCLUDED
+# define CPPTL_TYPETRAITS_H_INCLUDED
+
+# include <cpptl/forwards.h>
+
+// @@todo move this to a header dedicated to basic generic programming technics
+
+
+namespace CppTL
+{
+
+   /** Remove const prefix of a type.
+    * \Warning Older compiler such as VC 6.0 do not allow implementation of
+    *          this feature. Const will not be removed on such platform.
+    */
+   template<class T>
+   struct RemoveConst
+   {
+      typedef T type;
+   };
+
+   #if !defined( CPPTL_NO_TEMPLATE_PARTIAL_SPECIALIZATION )
+
+   template<class T>
+   struct RemoveConst<const T>
+   {
+      typedef T type;
+   };
+
+   #endif
+
+
+
+
+
+
+   //@@todo BooleanType should be moved to a simple generic programming header.
+   template<const bool isTrue>
+   struct BooleanType
+   {
+   };
+
+   typedef BooleanType<false> FalseType;
+   typedef BooleanType<true> TrueType;
+
+
+
+
+#if !defined(CPPTL_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+   /** Returns type A if true, type B otherwise.
+    * \c true case, returns A
+    * \code
+    * CppTL::IfType< LargeTypePolicy,SmallTypePolicy,sizeof(T) > 128 >
+    * \endcode
+    */
+   template<typename A, typename B, const bool condition>
+   struct IfType
+   {
+      typedef A type;
+   };
+
+   /// Returns type A if true, type B otherwise.
+   /// \c false case, returns B
+   template<typename A, typename B>
+   struct IfType<A,B,false>
+   {
+      typedef B type;
+   };
+#else // work-around lack of template partial specialization using template member
+   /// Returns type A if true, type B otherwise
+   template<typename A, typename B, const bool condition>
+   struct IfType
+   {
+      template<const bool condition>
+      struct Selector
+      {
+         typedef A type;
+      };
+      template<>
+      struct Selector<false>
+      {
+         typedef B type;
+      };
+
+      typedef CPPTL_TYPENAME Selector<condition>::type type;
+   };
+#endif
+
+} // namespace CppTL
+
+#endif // CPPTL_TYPETRAITS_H_INCLUDED
+@
+
+
+1.2
+log
+@* includes forwards.h instead of config.h
+@
+text
+@d6 3
+d12 23
+a34 5
+template<class T>
+struct RemoveConst
+{
+   typedef T type;
+};
+a35 1
+#if !defined( CPPTL_NO_TEMPLATE_PARTIAL_SPECIALIZATION )
+d37 47
+a83 5
+template<class T>
+struct RemoveConst<const T>
+{
+   typedef T type;
+};
+d85 2
+a88 1
+
+@
+
+
+1.1
+log
+@* moving CppUTTools library to CppTL library & namespace
+* implemented new enumerator library providing both "any" enumerator and specific enumerator avoid virtual function cost
+* fixed NoType declaration
+@
+text
+@d4 1
+a4 1
+# include <cpptl/config.h>
+@
+

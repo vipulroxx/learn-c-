@@ -1,0 +1,267 @@
+head	1.2;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.2
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.2
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.2
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2004.06.15.00.45.52;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.06.14.23.31.25;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* fixed compilation issue related to changing OptionValue into the new Value library
+@
+text
+@#ifndef CPPUTTOOLS_CONFIGURATION_VALUES_H_INCUDED
+# define CPPUTTOOLS_CONFIGURATION_VALUES_H_INCUDED
+
+# include "description.h"
+
+namespace CppUTTools { namespace CommandLineOptions {
+
+
+class OptionsValues
+{
+public:
+   virtual ~OptionsValues();
+
+   const Value &operator[]( const String &name ) const;
+   Value &operator[]( const String &name );
+
+   const Value &optionValue( const String &name ) const;
+   Value &optionValue( const String &name );
+
+   bool hasOption( const String &name ) const;
+
+   void setOption( const String &optionKey );
+
+   void setOptionAlias( const String &alias,
+                        const String &optionKey );
+
+   const String &optionName( const String &name ) const;
+
+   Parameters optionParameters( const String &name ) const;
+
+   void addOptionParameter( const String &optionKey,
+                            const String &parameter );
+
+   void validate( const OptionsDescription &description );
+
+   void store( const OptionsDescription &description );
+
+private:
+
+   typedef std::map<String,Value> Values;
+   Values values_;
+
+   typedef std::map< String, std::deque<String> > OptionParameters;
+   OptionParameters parameters_;
+
+   typedef std::map<String, String> NameByAliases;
+   NameByAliases nameByAliases_;
+};
+
+
+
+// class OptionValues
+// ///////////////////////////////////////////////////////////////////
+
+inline
+OptionsValues::~OptionsValues()
+{
+}
+
+inline const Value &
+OptionsValues::operator[]( const String &name ) const
+{
+   return optionValue( name );
+}
+
+inline Value &
+OptionsValues::operator[]( const String &name )
+{
+   return optionValue( name );
+}
+
+inline const Value &
+OptionsValues::optionValue( const String &name ) const
+{
+   Values::const_iterator it = values_.find( optionName(name) );
+   if ( it == values_.end() )
+      throw std::invalid_argument( "No option named: " + name );
+   return it->second;
+}
+
+inline Value &
+OptionsValues::optionValue( const String &name )
+{
+   Values::iterator it = values_.find( optionName(name) );
+   if ( it == values_.end() )
+      throw std::invalid_argument( "No option named: " + name );
+   return it->second;
+}
+
+
+inline bool 
+OptionsValues::hasOption( const String &name ) const
+{
+   return parameters_.count( optionName(name) ) > 0;
+}
+
+
+inline void 
+OptionsValues::setOption( const String &optionKey )
+{
+   parameters_[ optionKey ];
+}
+
+
+inline void 
+OptionsValues::setOptionAlias( const String &alias,
+                               const String &optionKey )
+{
+   nameByAliases_.insert( NameByAliases::value_type( alias, optionKey ) );
+   
+}
+
+
+inline const std::string &
+OptionsValues::optionName( const String &name ) const
+{
+   NameByAliases::const_iterator it = nameByAliases_.find( name );
+   if ( it == nameByAliases_.end() )
+      throw std::invalid_argument( "OptionsValues::optionName: " + name + " is not an option." );
+   return it->second;
+}
+
+
+inline Parameters
+OptionsValues::optionParameters( const String &name ) const
+{
+   OptionParameters::const_iterator it = parameters_.find( optionName(name) );
+   if ( it == parameters_.end() )
+      return Parameters();
+   return it->second;
+}
+
+
+inline void 
+OptionsValues::addOptionParameter( const String &optionKey,
+                                   const String &parameter )
+{
+   parameters_[ optionKey ].push_back( parameter );
+}
+
+
+inline void 
+OptionsValues::validate( const OptionsDescription &description )
+{
+   OptionParameters::iterator it = parameters_.begin();
+   for ( ; it != parameters_.end(); ++it )
+   {
+      const String &name = it->first;
+      const OptionDescription &option = description.description( name );
+      try
+      {
+         /// @@todo real parameters stuff for sequence support
+         const Parameters &parameters = it->second;
+         Value value = option.validate( parameters );
+         values_[name] = value;
+      }
+      catch ( ValidatorError &e )
+      {
+         e.setOptionName( name );
+         throw;
+      }
+   }
+}
+
+
+inline void 
+OptionsValues::store( const OptionsDescription &description )
+{
+   Values::iterator it = values_.begin();
+   for ( ; it != values_.end(); ++it )
+   {
+      const String &name = it->first;
+      const OptionDescription &option = description.description( name );
+      const Value &value = it->second;
+      option.store( value );
+   }
+}
+
+
+} } // namespace CommandLineOptions
+
+#endif // CPPUTTOOLS_CONFIGURATION_VALUES_H_INCUDED
+@
+
+
+1.1
+log
+@* adding cpputtools library, command line options among other thing (for test runners). In progress.
+@
+text
+@d14 2
+a15 2
+   const OptionValue &operator[]( const String &name ) const;
+   OptionValue &operator[]( const String &name );
+d17 2
+a18 2
+   const OptionValue &optionValue( const String &name ) const;
+   OptionValue &optionValue( const String &name );
+d40 1
+a40 2
+   typedef std::map<String,OptionValue *> Values;
+   typedef Values::value_type Value;
+a57 3
+   Values::iterator it = values_.begin();
+   for ( ; it != values_.end(); ++it )
+      delete it->second;
+d60 1
+a60 1
+inline const OptionValue &
+d66 1
+a66 1
+inline OptionValue &
+d72 1
+a72 1
+inline const OptionValue &
+d78 1
+a78 1
+   return *(it->second);
+d81 1
+a81 1
+inline OptionValue &
+d87 1
+a87 1
+   return *(it->second);
+d152 3
+a154 3
+         OptionValue *value = option.validate( it->second );
+         if ( values_.count(name) )
+            delete values_[name];
+d174 1
+a174 1
+      OptionValue &value = *(it->second);
+@
+

@@ -1,0 +1,164 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.2
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.1
+date	2002.08.03.15.50.09;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* include/cppunit/Exception.h:
+* src/cppunit/Exception.h: added setMessage().
+
+* include/cppunit/Protector.h:
+* src/cppunit/Protector.cpp: added class ProtectorGuard. Change the
+  reportXXX() method to support Exception passing and SourceLine.
+
+* include/cppunit/TestCaller.h: removed 'expect exception' features.
+  It is now handled by ExceptionTestCaseDecorator and TestCaller no
+  longer need default template argument support.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/extensions/TestCaller.h: runTest() is now public
+  instead of protected, so that it can be decorated.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.h: added pushProtector() and popProtector()
+  methods. This allow user to specify their own exception trap when
+  running test case.
+
+* include/cppunit/extensions/TestDecorator.h:
+* src/cppunit/TestDecorator.cpp: added. Extracted from TestDecorator.h.
+  The test passed to the constructor is now owned by the decorator.
+
+* include/cppunit/extensions/TestCaseDecorator.h:
+* src/cppunit/TestCaseDecorator.cpp: added. Decorator for TestCase
+  setUp(), tearDown() and runTest().
+
+* include/cppunit/extensions/ExceptionTestCaseDecorator.h: added.
+  TestCaseDecorator to expect that a specific exception is thrown.
+
+* include/cppunit/extensions/HelperMacros.h: updated against TestCaller
+  change.
+
+* src/cppunit/DefaultFunctor.h: fixed bug (did not return underlying
+  test return code).
+
+* src/cppunit/ProtectorChain.cpp: fixed bug in chaing return code.
+
+* src/cppunit/DefaultFunctor.h: fixed bug.
+
+* src/msvc6/testrunner/ActiveTest.h:
+* src/msvc6/testrunner/ActiveTest.cpp: updated against
+  TestCaseDecorator ownership policy change. Moved inline functions
+  to .cpp.
+
+* examples/cppunittest/TestSetUpTest.cpp: updated to use MockTestCase
+  and against the new ownership policy.
+
+* examples/cppunittest/TestDecoratorTest.cpp:
+* examples/cppunittest/RepeatedTestTest.cpp: updated against
+  TestDecorator ownership policy change.
+
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.h:
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.cpp: added. Unit
+  tests for ExceptionTestCaseDecoratorTest.
+@
+text
+@// //////////////////////////////////////////////////////////////////////////
+// Implementation file ExceptionTestCaseDecoratorTest.cpp for class ExceptionTestCaseDecoratorTest
+// (c)Copyright 2000, Baptiste Lepilleur.
+// Created: 2002/08/03
+// //////////////////////////////////////////////////////////////////////////
+
+#include "ExtensionSuite.h"
+#include "ExceptionTestCaseDecoratorTest.h"
+
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( ExceptionTestCaseDecoratorTest,
+                                       extensionSuiteName() );
+
+
+ExceptionTestCaseDecoratorTest::ExceptionTestCaseDecoratorTest()
+{
+}
+
+
+ExceptionTestCaseDecoratorTest::~ExceptionTestCaseDecoratorTest()
+{
+}
+
+
+void 
+ExceptionTestCaseDecoratorTest::setUp()
+{
+  m_testListener = new MockTestListener( "mock-testlistener" );
+  m_result = new CPPUNIT_NS::TestResult();
+  m_result->addListener( m_testListener );
+
+  m_test = new MockTestCase( "mock-decorated-testcase" );
+  m_decorator = new FailureExceptionTestCase( m_test );
+}
+
+
+void 
+ExceptionTestCaseDecoratorTest::tearDown()
+{
+  delete m_decorator;
+  delete m_result;
+  delete m_testListener;
+}
+
+
+void 
+ExceptionTestCaseDecoratorTest::testNoExceptionThrownFailed()
+{
+  m_testListener->setExpectedAddFailureCall(1);
+  m_test->setExpectedSetUpCall();
+  m_test->setExpectedRunTestCall();
+  m_test->setExpectedTearDownCall();
+
+  m_decorator->run( m_result );
+
+  m_testListener->verify();
+}
+
+
+void 
+ExceptionTestCaseDecoratorTest::testExceptionThrownPass()
+{
+  m_testListener->setExpectNoFailure();
+  m_test->setExpectedSetUpCall();
+  m_test->setExpectedRunTestCall();
+  m_test->setExpectedTearDownCall();
+  m_test->makeRunTestThrow();
+
+  m_decorator->run( m_result );
+
+  m_testListener->verify();
+}
+@

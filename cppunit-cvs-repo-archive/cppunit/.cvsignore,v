@@ -1,0 +1,198 @@
+head	1.9;
+access;
+symbols
+	REL_1_12_1:1.8
+	REL_1_11_6:1.7
+	REL_1_11_4:1.7
+	REL_1_11_0:1.7
+	TG_CPPUNIT_NO_STREAM_AFTER:1.6
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.6
+	REL_1_10_2:1.6
+	REL_1_10_0:1.6
+	REL_1_9_14:1.6
+	REL_1_9_12:1.6
+	BRANCH_1_9_12:1.6.0.2
+	TG_BRANCH_1_9_12:1.6
+	TG_BEFORE_HPUX_PLUGIN:1.5
+	TG_BEFORE_SUN4_PORT:1.5
+	REL_1_9_10:1.5
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.5
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.5
+	REL_1_9_6:1.5
+	REL_1_9_4:1.5
+	REL_1_9_0:1.5
+	REL_1_8_0:1.5
+	REL_1_7_8:1.4
+	REL_1_7_3:1.4
+	REL_1_7_1:1.4
+	REL_1_6_2:1.4
+	BRANCH_1_6:1.4.0.2
+	REL_1_6_1:1.4
+	REL_1_6_0:1.4;
+locks; strict;
+comment	@# @;
+
+
+1.9
+date	2008.12.16.06.26.34;	author andydent;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2007.01.12.04.37.33;	author smr99;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.07.15.19.11.07;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2003.05.07.21.10.12;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.04.11.04.10.18;	author smr99;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.07.07.19.44.35;	author smr99;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.07.07.16.10.24;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.06.05.21.35.56;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.05.17.19.48.08;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.9
+log
+@Added updated project and instructions for building under Visual Studio.Net 2008
+@
+text
+@configure
+config.cache config.log config.status
+aclocal.m4
+Makefile.in Makefile
+libtool
+build-stamp
+cppunit.spec
+cppunit-config
+stamp-h
+autom4te.cache
+SunWS_cache
+ir.out
+cppunit.pc
+*.ncb
+*.opt
+*.suo
+*.ncb
+*.user@
+
+
+1.8
+log
+@Add cppunit.pc
+@
+text
+@d14 5
+@
+
+
+1.7
+log
+@* added empty lib directory required to build cppunit from cvs with msvc.
+@
+text
+@d13 1
+@
+
+
+1.6
+log
+@* added to .cvsignore:
+SunWS_cache
+ir.out
+@
+text
+@a8 1
+lib
+@
+
+
+1.5
+log
+@Fix up header rearrangement.
+@
+text
+@d12 2
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@d11 1
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@a9 1
+distcheck-out
+@
+
+
+1.2
+log
+@* src/cppunit/TypeInfoHelper.cpp: removed #include <config.h>, cppunit/config.h was already included.
+
+* src/cppunit/cppunit.dsp: removed TestAssert.cpp from project.
+
+* added/updated .cvsignore files for beter handling of windows projects.
+
+* added include/cppunit/config.h with a default configuration for VC++ 6.0.
+
+* include/cppunit/.cvsignore: removed config.h from the list of ignored file.
+
+* renamed VC++ configurations without RTTI from "Debug No CU_USE_TYPEINFO" to "Debug Crossplatform".
+
+* include/cppunit/TestAssert.h: added include <math.h> for fabs().
+@
+text
+@d9 3
+a11 1
+lib@
+
+
+1.1
+log
+@Added .cvsignore files contributed by Steve M. Robbins" <steven.robbins@@videotron.ca>.
+@
+text
+@d9 1
+@
+

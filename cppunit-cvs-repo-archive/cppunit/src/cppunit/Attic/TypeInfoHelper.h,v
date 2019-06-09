@@ -1,0 +1,86 @@
+head	1.2;
+access;
+symbols
+	REL_1_5_5:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2001.05.18.19.32.42;	author blep;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@  * Symbol CU_USE_TYPEINFO must be defined instead of USE_TYPEINFO to
+    compile RTTI.
+  * Added back default constructor to TestSuiteBuilder which use RTTI.
+    It is available only if CU_USE_TYPEINFO is defined.
+  * Moved TypeInfoHelper.h from src/cppunit to include/cppunit/extensions.
+  * Macro CU_TEST_SUITE in HelperMacros.h now use TestSuiteBuilder default
+    constructor if CU_USE_TYPEINFO is defined, otherwise it use the
+    type name given to the CU_TEST_SUITE macro.
+  * TestFactoryRegistry::registerFactory(factory) now generate a dummy
+    name based on a serial number instead of using RTTI. The macro
+    CU_TEST_SUITE_REGISTRATION and class AutoRegisterSuite can now
+    when CU_USE_TYPEINFO is not defined.
+  * Added a new Configuration named "Debug Without CU_USE_TYPEINFO" to
+    msvc6 projects. The flag CU_USE_TYPEINFO is not defined in that
+    configuration.
+@
+text
+@#ifndef CPPUNIT_TYPEINFOHELPER_H
+#define CPPUNIT_TYPEINFOHELPER_H
+
+#ifdef USE_TYPEINFO
+
+#include <typeinfo>
+
+
+namespace CppUnit {
+
+  /** Helper to use type_info.
+   */
+  class TypeInfoHelper
+  {
+  public:
+    /** Get the class name of the specified type_info.
+     * \param info Info which the class name is extracted from.
+     * \return The string returned by type_info::name() without
+     *         the "class" prefix. If the name is not prefixed
+     *         by "class", it is returned as this.
+     */
+    static std::string getClassName( const std::type_info &info );
+  };
+
+}  // namespace CppUnit
+
+#endif // USE_TYPEINFO
+
+#endif  // CPPUNIT_TYPEINFOHELPER_H
+@
+
+
+1.1
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@@
+

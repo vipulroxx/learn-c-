@@ -1,0 +1,46 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2005.11.13.23.02.16;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@- added fake_stl so that doxygen can figure out that runtime_error is in std namespace
+- improved documentation
+@
+text
+@#ifndef FAKESTL_STRING_INCLUDED
+# define FAKESTL_STRING_INCLUDED
+
+/// \cond fakestl
+namespace std {
+   template<typename T> class allocator;
+   template<typename T> class char_traits;
+
+   template< typename char_type, 
+             typename traits=char_traits<char_type>, 
+             typename alloc=allocator<char_type> >
+   class basic_string
+   {
+   };
+
+   typedef basic_string<char> string;
+
+} // namespace std
+/// \endcond
+
+#endif // FAKESTL_STRING_INCLUDED
+@

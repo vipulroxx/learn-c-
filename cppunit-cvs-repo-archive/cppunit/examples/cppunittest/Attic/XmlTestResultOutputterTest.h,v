@@ -1,0 +1,183 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2001.10.07.19.37.53;	author blep;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2001.10.05.08.06.28;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* include/cppunit/CompilerTestResultOutputter.h :
+renamed CompilerOutputter.h
+
+* src/cppunit/CompilerTestResultOutputter.cpp :
+renamed CompilerOutputter.cpp
+
+* include/cppunit/CompilerTestResultOutputter.h :
+* src/cppunit/CompilerTestResultOutputter.cpp : ajust max line length
+for wrapping. Added static factory method defaultOutputter(). Print
+the number of test runs on success.
+
+* include/cppunit/CompilerTestResultOutputter.h : renamed
+CompilerOutputter.h.
+
+* src/cppunit/CompilerTestResultOutputter.cpp : renamed
+CompilerOutputter.cpp.
+
+* examples/cppunittest/CppUnitTestMain.cpp : use factory method
+CompilerTestResultOutputter::defaultOutputter().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp : removed COM registration in
+post-build step. IT is automatically done by VC++ when the add-in is
+added. Caused build to failed if the add-in was used in VC++.
+
+* NEWS : updated.
+
+* src/cppunit/TestAssert.cpp : modified deprecated assert
+implementations to use Asserter.
+
+* examples/cppunittest/XmlTestResultOutputterTest.h :
+renamed XmlOutputterTest.h.
+
+* examples/cppunittest/XmlTestResultOutputterTest.cpp :
+renamed XmlOutputterTest.cpp.
+
+* NEWS :
+* examples/cppunittest/CppUnitTestMain.cpp :
+* examples/cppunittest/CppUnitTestMain.dsp :
+* examples/cppunittest/Makefile.am :
+* examples/cppunittest/XmlTestResultOutputterTest.h :
+* examples/cppunittest/XmlTestResultOutputterTest.cpp :
+* examples/msvc6/CppUniTestApp/CppUnitTestApp.dsp
+* include/cppunit/CompilerOutputter.h :
+* include/cppunit/Makefile.am :
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/CompilerOutputter.cpp :
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* src/cppunit/XmlTestResultOutputter.cpp : change due to renaming
+CompilerTestResultOutputter to CompilerOutputter,
+XmlTestResultOutputter to XmlOuputter, XmlTestResultOutputterTest
+to XmlOutputterTest.
+@
+text
+@#ifndef CPPUNITEST_XMLTESTRESULTOUTPUTTERTEST_H
+#define CPPUNITEST_XMLTESTRESULTOUTPUTTERTEST_H
+
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFailure.h>
+
+
+/*! \class XmlTestResultOutputterTest
+ * \brief Unit tests for XmlTestResultOutputter.
+ */
+class XmlTestResultOutputterTest : public CppUnit::TestCase
+{
+  CPPUNIT_TEST_SUITE( XmlTestResultOutputterTest );
+  CPPUNIT_TEST( testEmptyNodeToString );
+  CPPUNIT_TEST( testNodeWithAttributesToString );
+  CPPUNIT_TEST( testEscapedAttributeValueToString );
+  CPPUNIT_TEST( testNodeWithChildrenToString );
+  CPPUNIT_TEST( testNodeWithContentToString );
+  CPPUNIT_TEST( testNodeWithNumericContentToString );
+  CPPUNIT_TEST( testNodeWithContentAndChildToString );
+  CPPUNIT_TEST( testWriteXmlResultWithNoTest );
+  CPPUNIT_TEST( testWriteXmlResultWithOneFailure );
+  CPPUNIT_TEST( testWriteXmlResultWithOneError );
+  CPPUNIT_TEST( testWriteXmlResultWithOneSucess );
+  CPPUNIT_TEST( testWriteXmlResultWithThreeFailureTwoErrorsAndTwoSucess );
+  CPPUNIT_TEST_SUITE_END();
+
+public:
+  /*! Constructs a XmlTestResultOutputterTest object.
+   */
+  XmlTestResultOutputterTest();
+
+  /// Destructor.
+  virtual ~XmlTestResultOutputterTest();
+
+  void setUp();
+  void tearDown();
+
+  void testEmptyNodeToString();
+  void testNodeWithAttributesToString();
+  void testEscapedAttributeValueToString();
+  void testNodeWithChildrenToString();
+  void testNodeWithContentToString();
+  void testNodeWithNumericContentToString();
+  void testNodeWithContentAndChildToString();
+
+  void testWriteXmlResultWithNoTest();
+  void testWriteXmlResultWithOneFailure();
+  void testWriteXmlResultWithOneError();
+  void testWriteXmlResultWithOneSucess();
+  void testWriteXmlResultWithThreeFailureTwoErrorsAndTwoSucess();
+
+private:
+  /// Prevents the use of the copy constructor.
+  XmlTestResultOutputterTest( const XmlTestResultOutputterTest &copy );
+
+  /// Prevents the use of the copy operator.
+  void operator =( const XmlTestResultOutputterTest &copy );
+
+  std::string statistics( int tests, 
+                          int total, 
+                          int error, 
+                          int failure );
+
+private:
+};
+
+
+
+#endif  // CPPUNITEST_XMLTESTRESULTOUTPUTTERTEST_H
+@
+
+
+1.1
+log
+@* NEWS : updated.
+
+* include/cppunit/Exception.h : added include Portability.h.
+
+* include/cppunit/TestResult.* : changed TestFailures to a deque.
+added tests().
+
+* examples/cppunittest/CppUnitTest.dsp :
+* examples/cppunittest/MakeFile.am :
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp : Added
+XmlTestResultOutputterTest.*, XmlUniformiser.*, XmlUniformiserTest.*,
+UnitTestToolSuite.h, OutputSuite.h.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp : revised project
+folders structure. Added missing NoteEqualExceptionTest.*.
+
+* examples/cppunittest/CppUnitTestSuite.cpp : added 'Output' and
+'UnitTestTool' suites.
+
+* src/cppunit/cppunit.dsp: removed estring.h. Revised project folders
+structure. Removed TestRegistry.*. Added TestSetUp.h,
+XmlTestResultOutputter.*.
+
+* src/cppunit/MakeFile.am: added XmlTestResultOutputter.*.
+
+* src/testrunner/TestRunnerDlg.cpp: removed disabled code.
+@
+text
+@@
+

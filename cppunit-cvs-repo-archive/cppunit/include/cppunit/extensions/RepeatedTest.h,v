@@ -1,0 +1,433 @@
+head	1.8;
+access;
+symbols
+	REL_1_12_1:1.8
+	REL_1_11_6:1.8
+	REL_1_11_4:1.8
+	REL_1_11_0:1.8
+	TG_CPPUNIT_NO_STREAM_AFTER:1.8
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.8
+	REL_1_10_2:1.8
+	REL_1_10_0:1.8
+	REL_1_9_14:1.8
+	REL_1_9_12:1.8
+	BRANCH_1_9_12:1.8.0.2
+	TG_BRANCH_1_9_12:1.8
+	TG_BEFORE_HPUX_PLUGIN:1.8
+	TG_BEFORE_SUN4_PORT:1.8
+	REL_1_9_10:1.8
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.7
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.7
+	REL_1_9_6:1.7
+	REL_1_9_4:1.7
+	REL_1_9_0:1.7
+	REL_1_8_0:1.6
+	REL_1_7_8:1.6
+	REL_1_7_3:1.5
+	REL_1_7_1:1.5
+	REL_1_6_2:1.5
+	BRANCH_1_6:1.5.0.2
+	REL_1_6_1:1.5
+	REL_1_6_0:1.4
+	REL_1_5_5:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.8
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2002.04.12.19.28.47;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.03.24.19.39.55;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.09.30.17.21.56;	author smr99;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.07.15.04.18.06;	author smr99;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.06.11.20.00.08;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.05.06.16.19.32;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.22.23.09.57;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.8
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@#ifndef CPPUNIT_EXTENSIONS_REPEATEDTEST_H
+#define CPPUNIT_EXTENSIONS_REPEATEDTEST_H
+
+#include <cppunit/Portability.h>
+#include <cppunit/extensions/TestDecorator.h>
+
+CPPUNIT_NS_BEGIN
+
+
+class Test;
+class TestResult;
+
+
+/*! \brief Decorator that runs a test repeatedly.
+ *
+ * Does not assume ownership of the test it decorates
+ */
+class CPPUNIT_API RepeatedTest : public TestDecorator 
+{
+public:
+  RepeatedTest( Test *test, 
+                int timesRepeat ) : 
+      TestDecorator( test ), 
+      m_timesRepeat(timesRepeat) 
+  {
+  }
+
+  void run( TestResult *result );
+
+  int countTestCases() const;
+
+private:
+  RepeatedTest( const RepeatedTest & );
+  void operator=( const RepeatedTest & );
+
+  const int m_timesRepeat;
+};
+
+
+CPPUNIT_NS_END
+
+
+#endif // CPPUNIT_EXTENSIONS_REPEATEDTEST_H
+@
+
+
+1.7
+log
+@* Makefile.am: added examples/qt to tar ball release.
+
+* TODO: heavily updated.
+
+* contrib/msvc/CppUnit*.wwtpl: changed base class for unit test to TestFixture.
+
+* include/cppunit/Test.h: removed toString() method. Not used by the framework
+  and source of confusions with getName().
+  Added getChildTestCount() and getChildTestAt(), introducing the composite pattern
+  at top level. Added utility methods findTest() and findTestPath().
+
+* src/cppunit/Test.cpp: added. Implementation of new utility methods.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: inherits TestLeaf. Removed toString(), run(void) and
+  defaultResult(). Removed default constructor.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestSuite.cpp: fixed some includes that used "" instead of <>.
+
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: added. Common implementation of Test for composite
+  tests (TestSuite).
+
+* include/cppunit/TestFailure.h:
+* src/cppunit/TestFailure.cpp: removed toString().
+
+* include/cppunit/TestLeaf.h:
+* src/cppunit/TestLeaf.cpp: added. Common implementation of Test for single test
+  (TestCase).
+
+* include/cppunit/TestListener.h: added TimingListener example to documentation.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: added. List of test traversed to access a test in the
+  test hierarchy.
+
+* include/cppunit/TestRunner.h: added. Generic TestRunner.
+
+* src/cppunit/TestRunner.cpp: moved to TextTestRunner.cpp. Added new implementation
+  of includecppunit/TestRunner.h.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: inherits TestComposite and implements new Test
+  interface. Removed toString().
+
+* src/cppunit/TextTestRunner.cpp: moved from TestRunner.cpp. Implementation of
+  include/cppunit/ui/text/TestRunner.h.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* src/cppunit/RepeatedTest.cpp: removed toString().
+
+* include/cppunit/extensions/TestDecorator.h: inherits TestLeaf.
+  Removed toString()
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h: XML outputter now escape node content.
+  Add unit test for that bug (#540944). Added style sheet support. Modified
+  XML structure: failure message as its own element.
+
+* src/msvc/testrunner/TestRunnerModel.h:
+* src/msvc/testrunner/TestRunnerModel.cpp: used Test::findTest() to find a test
+  by name instead of using RTTI. Added toAnsiString() for convertion when
+  compiling as UNICODE.
+
+* src/msvc/testrunner/TreeHierarchyDlg.h:
+* src/msvc/testrunner/TreeHierarchyDlg.cpp: used new composite interface of Test
+  to explorer the test hierarchy instead of RTTI.
+
+* examples/cppunittest/TestPathTest.h:
+* examples/cppunittest/TestPathTest.cpp: added, unit tests for TestPath.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: added test for TestLeaf.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: added test for TestComposite and
+  new Test interface.
+@
+text
+@d7 2
+a8 1
+namespace CppUnit {
+d40 1
+a41 1
+} // namespace CppUnit
+@
+
+
+1.6
+log
+@* INSTALL-WIN32.txt: added some info to build cppunit as a DLL.
+
+* include/cppunit/config-msvc6.h: added definition of macro CPPUNIT_API when
+building or linking DLL. Defined CPPUNIT_BUILD_DLL when building, and
+CPPUNIT_DLL when linking.
+
+* include/cppunit/Portability.h: added empty definition of macro CPPUNIT_API
+when not building or using CppUnit as a DLL. When any of those symbol is defined,
+the symbol CPPUNIT_NEED_DLL_DECL is set to 1.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* include/cppunit/extensions/TestDecorator.h:
+* include/cppunit/extensions/TestSetUp.h:
+* include/cppunit/TestCaller.h
+* include/cppunit/extensions/TestFactory.h
+* include/cppunit/extensions/TestFactoryRegistry.h
+* include/cppunit/extensions/TypeInfoHelper.h
+* include/cppunit/Asserter.h
+* include/cppunit/Exception.h
+* include/cppunit/NotEqualException.h
+* include/cppunit/SourceLine.h
+* include/cppunit/SynchronizedObject.h
+* include/cppunit/Test.h
+* include/cppunit/TestAssert.h
+* include/cppunit/TestCase.h
+* include/cppunit/TestFailure.h
+* include/cppunit/TestListener.h
+* include/cppunit/TestResult.h
+* include/cppunit/TestSuite.h
+* include/cppunit/CompilerOutputter.h
+* include/cppunit/Outputter.h
+* include/cppunit/TestResultCollector.h
+* include/cppunit/TestSuccessListener.h
+* include/cppunit/TextOutputter.h
+* include/cppunit/TextTestProgressListener.h
+* include/cppunit/TextTestResult.h
+* include/cppunit/TextTestRunner.h
+* include/cppunit/XmlOutputter.h: added CPPUNIT_API for DLL export.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: reindented
+
+* include/cppunit/extensions/TestSetUp.h:
+* src/cppunit/TestSetUp.cpp: added .cpp. extracted inline method and moved them
+to cpp file.
+@
+text
+@d20 6
+a25 4
+    RepeatedTest( Test *test, 
+                  int timesRepeat ) : 
+        TestDecorator( test ), 
+        m_timesRepeat(timesRepeat) {}
+d27 3
+a29 3
+    void run( TestResult *result );
+    int countTestCases() const;
+    std::string toString() const;
+d32 2
+a33 2
+    RepeatedTest( const RepeatedTest & );
+    void operator=( const RepeatedTest & );
+d35 1
+a35 1
+    const int m_timesRepeat;
+@
+
+
+1.5
+log
+@Distribute contrib/msvc/*.
+Add const qualifier to countTestCases() and toString() of RepeatedTest.
+@
+text
+@d4 1
+d17 1
+a17 1
+class RepeatedTest : public TestDecorator 
+@
+
+
+1.4
+log
+@Added documentation.
+@
+text
+@d25 2
+a26 2
+    int countTestCases();
+    std::string toString();
+@
+
+
+1.3
+log
+@* include/cppunit/extensions/HelperMacros.h: static method suite()
+implemented by CPPUNIT_TEST_SUITE_END macro now returns a TestSuite
+instead of a Test.
+
+* include/cppunit/extensions/RepeatedTest.h: corrected countTestCases,
+operator = declaration.
+
+* include/cppunit/extensions/TestDecorator.h: removed const from run()
+method. Did not match run() declaration of Test class.
+
+* include/cppunit/extensions/TestFactory.h: fixed a comment.
+
+* include/cppunit/extensions/TestSetup.h: corrected run() method
+declaration. Methods setUp() and tearDown() were not declared virtual.
+
+* include/cppunit/extensions/TestSuiteBuilder.h: added a method
+addTestCaller() which take a pointer on a fixture.
+@
+text
+@d12 2
+a13 2
+/*
+ * A decorator that runs a test repeatedly.
+a14 1
+ *
+d24 1
+a26 1
+    void run( TestResult *result );
+@
+
+
+1.2
+log
+@Fixed #include's for cppunit headers.
+@
+text
+@a16 1
+
+d20 8
+a27 6
+                        RepeatedTest (Test *test, int timesRepeat)
+                            : TestDecorator (test), m_timesRepeat (timesRepeat) {}
+
+    int                 countTestCases ();
+    std::string         toString ();
+    void                run (TestResult *result);
+d31 1
+a31 1
+    void operator( const RepeatedTest & );
+d33 1
+a33 1
+    const int           m_timesRepeat;
+a34 20
+
+
+// Counts the number of test cases that will be run by this test.
+inline RepeatedTest::countTestCases ()
+{ return TestDecorator::countTestCases () * m_timesRepeat; }
+
+// Returns the name of the test instance. 
+inline std::string RepeatedTest::toString ()
+{ return TestDecorator::toString () + " (repeated)"; }
+
+// Runs a repeated test
+inline void RepeatedTest::run (TestResult *result)
+{
+    for (int n = 0; n < m_timesRepeat; n++) {
+        if (result->shouldStop ())
+            break;
+
+        TestDecorator::run (result);
+    }
+}
+@
+
+
+1.1
+log
+@Merged extension headers back in from Micheal Feathers version.
+@
+text
+@d1 2
+d4 1
+a4 6
+#ifndef CPPUNIT_REPEATEDTEST_H
+#define CPPUNIT_REPEATEDTEST_H
+
+#ifndef CPPUNIT_TESTDECORATOR_H
+#include "TestDecorator.h"
+#endif
+d59 1
+a59 1
+#endif@
+

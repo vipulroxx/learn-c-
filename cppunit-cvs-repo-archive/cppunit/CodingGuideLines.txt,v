@@ -1,0 +1,176 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.3
+date	2002.09.16.18.35.47;	author esche;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.08.27.21.51.05;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.07.14.19.48.23;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@updated coding style to support SUN 4.x compiler
+@
+text
+@CppUnit's coding guidelines for portability:
+--------------------------------------------
+
+- don't explicitly declare CppUnit namespace, instead use macro
+  CPPUNIT_NS_BEGIN and CPPUNIT_NS_END.
+
+- don't explicitly use 'CppUnit' to refer to class in CppUnit namespace,
+  instead use macro CPPUNIT_NS which expands to either 'CppUnit' or 
+  nothing depending on the configuration.
+
+- don't use the 'using directive', always use full qualification. For STL,
+  always use std::.
+
+- don't use C++ style cast directly, instead use CppUnit's cast macro
+  (CPPUNIT_CONST_CAST).
+
+- don't use the mutable keyword, instead do a const cast.
+
+- don't use the typename keyword in template declaration, instead use 'class'.
+
+- don't make use of RTTI (typeid) or dynamic_cast mandatory.
+
+- don't use STL container directly, instead use CppUnit's wrapper located
+  in include/cppunit/portability. This help support compilers that don't 
+  support default template parameter and require an allocator to be 
+  specified.
+
+- don't use default template parameters. If needed, use STLPort wrapper
+  technic (see include/cppunit/portability/).
+
+- don't use templatized member functions (template method declared inside a
+  class), instead declares them as simple template functions (even
+  mainstream compiler such as VC++ 6 as trouble with them).
+
+- don't use default parameter value in template function. Not supported
+  by all compiler (on OS/390 for instance).
+
+- don't use STL container at() method, instead use the array accessor [].
+  at() is not supported on some gcc versions.
+
+- dereferencing containers must be done by (*ref_ptr).data instead of
+  ref_ptr->data.
+
+In brief, it should be possible to compile CppUnit on a C++ compiler that do
+not have the following features:
+- C++ style cast
+- mutable and typename keyword
+- RTTI
+- template default parameters
+- templatized member functions (that is a template function declared within a
+  class).
+- namespace
+
+As such, usage of those features should always be optional.
+
+Following those guidelines should allow to compile on most compilers, as long
+as STL are available (in std namespace or not), with some form of strstream and
+iostream, as well as exception support.
+
+--
+Baptiste Lepilleur <gaiacrtn@@free.fr>
+@
+
+
+1.2
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d41 2
+@
+
+
+1.1
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d35 3
+@
+

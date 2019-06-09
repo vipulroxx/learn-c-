@@ -1,0 +1,29 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2007.08.15.17.35.40;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@   Added initial support for table fixture (still like cell value automatic
+conversion, but it is usable).
+@
+text
+@*.plg
+*.old
+*.WW
+*.old
+
+@

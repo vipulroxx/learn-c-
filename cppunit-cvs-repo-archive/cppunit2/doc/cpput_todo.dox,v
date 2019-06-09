@@ -1,0 +1,504 @@
+head	1.7;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.7
+date	2008.07.13.08.19.18;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2008.07.08.20.42.00;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2007.08.16.15.51.04;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2007.08.15.17.35.39;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2007.08.15.11.20.57;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2006.09.03.07.58.58;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2006.09.02.22.09.18;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@- Added core framework for resource handling to test case, resource registry and test info. Not integrated with the test runner and no unit tests yet.
+@
+text
+@/** \page cpput_todo Features Todo
+
+<hr>
+\section todo_input_driven_testing Input driven testing [working but still drafty]
+
+    Needs: provide testers with a way to add test cases without writing code.
+    
+    Existing practice: FIT acceptance testing http://fitnesse.org/, and http://fit.c2.com/.
+    
+    Input data are:
+    - name: name of the fixture to use to interpret the data
+    - data: a Json::Value that represents the input data. The interpretation of
+        it's structure depends on the fixture type.
+        
+    The following fixture types should at least be implemented:
+    - Column: 
+    
+        Table based fixture. The first row of the table describe the binding
+        of columns, and the following rows are test case instantiations.
+        
+        If a column name ends with '?' then it is a method call, otherwise
+        it is a data member binding. The framework will automatically compare
+        the actual returned value to the expected value. In case of failure,
+        the actual row is propagated with the test case status.
+        returned with the 'status'.
+        (
+        returned
+        
+        Example of input data in \json_ref:
+        \verbatim
+[ 
+    ["leftHandSide", "rightHandSide", "operation", "result?"],
+    [1,              2,               "add",               3],
+    [1,              2,         "substract",              -1]
+]
+        \endverbatim
+        
+        The code used to implement would be something like this (exact interface
+        for this feature needs to be defined):
+        \code
+class OperationFixture : public ColumnFixture
+{
+public:
+    CPPUT_INPUT_FIXTURE_BEGIN( OperationFixture )
+        CPPTL_REFLECT_METHOD_WITH_RETURN( operation_, "operation" )
+        CPPTL_REFLECT_RENAMED_ATTRIBUT( lhs_, "leftHandSide" )
+        CPPTL_REFLECT_RENAMED_ATTRIBUT( rhs_, "rightHandSide" )
+        CPPTL_REFLECT_METHOD( result )
+    CPPUT_INPUT_FIXTURE_END()
+    
+    int result()
+    {
+        if ( operation_ == "add" )
+            return lhs_ + rhs_;
+        return lhs_ - rhs_;
+    }
+    
+    int lhs_;
+    int rhs_;
+    std::string operation_;
+};
+        \endcode
+    - Custom:
+    
+        Only the binding of a fixture name to an implementation is done.
+        
+    Input fixture are registered by name. The framework provides a way to look-up
+    a fixture implementation by name.
+        
+    To study: should input fixture be a suite, a test case factory, and/or rely on
+    the decorator feature (see \ref todo_testdecorator).
+        
+    CppTL::Class, CppTL::Attribut, CppTL::Method can be used for implementation 
+    of this feature.
+
+<hr>
+\section todo_mt_testcase Multithreaded test case framework
+
+    Needs: provides support for test case that create threads doing assertions.
+    
+    Results of assertions made in the threads created by the test case 
+    needs to be propagated to the original test case thread. Information about
+    the test made available in the created threads needs to match those available
+    in the original test case thread.
+    
+    The framework is not responsible for starting/joining the threads (the user
+    has full control on this), on the other hand, it should provides the required
+    hook to provide the following features:
+    - associate thread test context to original test case thread test context
+    - unexpected exception handler in thread
+    - failure propagation to original test case thread
+
+<hr>
+\section todo_c_function_testcase Easy creation and registration of test case without fixture [DONE]
+
+    Needs: Using TestFixture is overkill when you need to write 
+        just a few simple tests. Therefore, the framework should provides a simple
+        to register plain C function and the more generic CppTL::Functor0.
+
+    Should allow usage of TestExtendedDataFactory (or alternate factory) to
+    provide test specifics data.
+    \code
+    void myTest() 
+    {
+        CPPUT_CHECK_TRUE( 1 == 0 );
+    }
+    CPPUT_REGISTER_TEST_FUNCTION_IN_DEFAULT( myTest )
+    // and alternative and more compact style:
+    CPPUT_TEST_FUNCTION_IN_DEFAULT( myTest )
+    {
+        CPPUT_CHECK_TRUE( 1 == 0 );
+    }
+    // also add registration in named suite...
+    // and support for extended test data:
+    CPPUT_REGISTER_TEST_FUNCTION_IN_DEFAULT_WITH_SPECIFICS( 
+            myTest, 
+            (timeOut(0.2), 
+            describe("Always fails")) )
+    \endcode
+        
+<hr>
+\section todo_light_unit_tests Lightweight unit test declarations [DONE]
+
+    Needs: provides an alternative mecanism to implement fixture with less code
+    for people that don't mind having code structure hidden behind macros
+    (class declarations, function declarations...).
+
+    Existing practice: CppUnitLite (http://c2.com/cgi/wiki?CppUnitLite)
+
+    Notes that fixture should be instantiated and destroyed on each execution of 
+    the test case (constructor/destructor match \testCaseSetup / \testCaseTearDown).
+        \code
+struct A    // The fixture
+{
+    A() 
+        : text_( "hello" )
+    {
+    }
+    std::string text_;
+};
+CPPUT_TEST_LIGHT_FIXTURE( A, testInit )     // Defines a test case for the fixture.
+{
+    CPPUT_CHECK_TRUE( text_ == "hello" );   // Directly access fixture members.
+}
+CPPUT_TEST_LIGHT_FIXTURE_WITH_SPECIFICS( A, testAdd, timeout(0.2) ) // Defines a test case with specific TestExtendedData.
+{
+    text_ += "1234";
+    CPPUT_CHECK_TRUE( text_ == "hello1234" );
+}
+CPPUT_REGISTER_LIGHT_FIXTURE_IN_DEFAULT( A )    // Registers fixture test case in the default suite.
+CPPUT_REGISTER_LIGHT_FIXTURE_IN( A, "MyTestSuite" ) // Registers fixture test case in the specified suite.
+        \endcode
+
+<hr>
+\section todo_table_based_testcase Table based test case factory [DONE]
+    Needs: It is frequent to have the needs to validate the result of a 
+        given sequence call against a set of input values. Resorting
+        to input test case when the need is simple is overkill. Therefore,
+        the framework should provides a simple way to do this.
+    
+    Existing practice: QTTest table based tests.
+    
+    Input values are stored in a table. For each row of the table a test case
+    is instantiated with the corresponding input values.
+    
+    The user should implements two methods:
+    - storage of input values in table.
+    - a function that execute the test case using a specific API to retreive input values 
+      of the current row.
+    
+    Below is an example of what user code could be like.
+    
+    \code
+class MyTableTest : public TestTableFixture
+{
+    CPPUT_TESTSUITE_BEGIN( MyTableTest );
+    CPPUT_TABLE_TEST( testSum );
+    CPPUT_TESTSUITE_END();
+    void setupTableTestSum()
+    {
+        table_.addColumn( "value1" );
+        table_.addColumn( "value2" );
+        table_.addColumn( "sum" );
+        table_.newTest("positive") << 1 << 2 << 3;
+        table_.newTest("negative") << -5 << -6 << -11;
+    }
+
+    void testSum()
+    {
+        CPPUT_TABLE_FIXTURE_FETCH( int, v1 );
+        CPPUT_TABLE_FIXTURE_FETCH( int, v2 );
+        CPPUT_TABLE_FIXTURE_FETCH( int, sum );
+        CPPUT_CHECK_TRUE( v1+v2 == sum );
+    }
+};
+    \endcode
+
+    Should use CppTL::any to allow storage of data of any types.
+
+<hr>
+\section todo_resources Shared resources between tests
+    Needs: Some test case needs a complex set-up to run, be it a database initialized
+        in a particular way, some file or a graphic user interface. This environment
+        can frequently be reuse by multiple test cases, but since it is costly (in time)
+        to initialize, it is preferable to initialize it only once and reuse it
+        for multiple test cases. To allow this, a particular setup is refered to as a
+        resource. A test case declare its dependencies on resources and can access them
+        through a specific API.
+        
+    A resource is identified by a name, and a registry keep track of all resource
+    factories. Resources are only instantiated when needed.
+    
+    Since test cases can be executed concurrently (either in multiple processes,
+    or multiple threads), there is a need for some resources to ensure that they
+    are used by a single test case at a given time. An exclusion scope is associated
+    to each resource to allow this.
+    
+    Each test cases must declare the list of resources it depends on. Just before the
+    execution of a test case, the framework ensures that it acquires exclusive
+    access according to each resource exclusion specification for all resources 
+    the test case depends on. Thoses locks are automatically released when the test
+    case execution is done. During its execution, the test case use a specific API
+    obtain the resource instance.
+
+    Resource exclusion scope can be as follow:
+    
+    - mt-safe/session: can be safely used concurrently by multiple test cases 
+        in the same process in a given test session.
+    - process/session: resource instance can only be used by a single test case in
+        a given test session within a process.
+    - process: resource instance can only be used by a single test case within a process.
+    - session: resource instance can only be used by a single test case within the test
+        session. Test session may be distributed over multiple process.
+    - global: resource instance can only be used by a single test case in the "whole world".
+    
+    The framework will not provide implementation for session or global lock level, but
+    will provide the required abstraction for implementation by the user
+    (those lock levels should be provided by the opentest framework).
+    
+    Idealy, the multi-threaded test runner should split-up the list of test cases 
+    to maximize concurrency.
+    
+    Resource factory should be a generic function (CppTL::Functor0R).
+
+    CppTL::any can be used to store resource instance.
+    
+    Below is an example of what user code could be like:
+    \code
+CppTL::any makeResourceDatabasePort()   // The resource factory function
+{
+    return CppTL::any( 1234 );  
+}
+
+CPPUT_RESOURCE( "dbport",                           // resource name
+                makeResourceDatabasePort,           // factory function
+                CppTL::multithreadSafeResource )    // lock level
+                
+// Fixture with a single test case dependending on the resource
+class MyTests : public CppTL::TestFixture
+{
+public:
+    CPPUT_TESTSUITE_BEGIN( MyTests );
+    CPPUT_TEST_WITH_SPECIFICS( testDatabase, resource("dbport") );  // declare resource dependency for that test case
+    CPPUT_TESTSUITE_END();
+    
+    void testDatabase()
+    {
+        int dabasePort = CppTL::any_cast( CPPUT_GET_RESOURCE("dbport"), CppTL::Type<int>() );
+        connectToDatabase( databasePort );
+    }
+};
+
+class MyOtherTests : public CppTL::TestFixture
+{
+public:
+    CPPUT_TESTSUITE_BEGIN( MyOtherTests );
+    CPPUT_TESTFIXTURE_RESOURCE( "dbport", databasePort_ );  // indicates that all test cases of the fixture depends on that resource.
+    CPPUT_TEST( testDatabase );  
+    CPPUT_TESTSUITE_END();
+    
+    void testDatabase() // The resource is automatically bound to databasePort_ before test case execution.
+    {
+        connectToDatabase( databasePort_ );
+    }
+    
+    int databasePort_;
+};
+    \endcode
+    
+
+<hr>
+\section todo_mt_testrunner Multi-threaded test runner
+    Needs: provides a way to execute run test cases concurrently as a cheap way to stress
+        multi-thread safety. Concurrent test case execution would also allow for shorter
+        test-run time (though this can be achieve in other way using opentest to 
+        parallelize execution in multiple processes).
+
+    Since the goal is to stress concurrent test execution, the framework also need to
+    provide data to help diagnozing failure, such as, for each test case execution,
+    the list of the test case that were running. This list should help figure out
+    which part of the code is not thread-safe.
+
+<hr>
+\section todo_dependencies Test inter-dependencies management in test runner
+    Needs: when a test case fails, it is common that all other test cases that
+        rely on the fonctionnality that was tested to also failed. In that case,
+        it is often difficult to figure out what is the 'real' failure that should
+        be examined. To avoid a test case failure to cascade, the framework should
+        allow to indicate that a given test case depends on other test cases,
+        some test suites, or some test groups. In case of test case failure, all test
+        cases that depends on it are automatically skipped.
+
+    Use CppUT::TestExtendedData to specify dependencies.
+    
+    When a test is automatically skipped, its status should indicates that it was
+    skipped because of a dependent failure.
+
+<hr>
+\section todo_extended_test_data_inheritance CppUT::TestExtendedData Inheritance
+    Needs: frequently, test cases within a test suite have common CppUT::TestExtendedData
+    (such as module id, timeout...). Therefore, the framework should help associate 
+    CppTL::TestExtendedData to multiple test cases at once.
+    
+    There is two way to reference multiple test cases:
+    - group
+    - suite
+    
+    The following priority when a CppUT::TestExtendedData is multiply defined for a test
+    case (from highest to lowest):
+    - test case specific
+    - group specific (test case specific group first, then suite groups, first group in
+        sequence get priority)
+    - suite specific
+    
+    If there is both CppUT::TestExtendedData associated with the test case (through
+    suite or group), and CppUT::TestExtendedData specificaly defined for the test case,
+    then the later override the other one.
+
+<hr>
+\section todo_testfunction_extendeddata Add support for TestExtendedData in test function.
+	Adds variant ..._WITH_SPECIFICS for all testfunction macros.
+
+\section todo_registry_default Handle orphan test suite in the Registry
+	Provides a feature to automatically parent orphan test suite in the Registry, to either
+	the default test suite or a specific test suite.
+
+\section todo_implicit_string_conversion Add support for type with implicit conversion to const char *
+	String assertion currently to not support type that can be implicitly converter
+	to const char * such as CppTL::Formatter.
+	Nice to have, need to figure out if it is possible to implement it.
+*/@
+
+
+1.6
+log
+@- Fixed bug in Registry::remove() when a suite had multiple child suites.
+- Added Registry suite removal tests
+@
+text
+@d8 1
+a8 1
+    Existing practice: FIT acceptance testing (http://fitnesse.org/, http://fit.c2.com/)
+d215 1
+a215 1
+    are used by a single test case at a given time. A exclusion scope is associated
+@
+
+
+1.5
+log
+@   Added initial support for column fixture supported by fitness. Still missing
+automatic type convertion and correct reporting of error with regard to
+originating cell.
+@
+text
+@d346 5
+@
+
+
+1.4
+log
+@   Added initial support for table fixture (still like cell value automatic
+conversion, but it is usable).
+@
+text
+@d4 1
+a4 1
+\section todo_input_driven_testing Input driven testing
+@
+
+
+1.3
+log
+@   Added support for light test fixture (a la CppUnitLite).
+See lightfixture.h and example/light_fixture.
+   Added support for direct declaration and registration of test in plain C
+function. See testfunction.h and example/test_function.
+@
+text
+@d94 1
+a94 1
+\section todo_c_function_testcase Easy creation and registration of test case without fixture
+d155 1
+a155 1
+\section todo_table_based_testcase Table based test case factory
+@
+
+
+1.2
+log
+@- clean-up
+@
+text
+@d122 1
+a122 1
+\section todo_light_unit_tests Lightweight unit test declarations
+d339 3
+d343 3
+@
+
+
+1.1
+log
+@- added a list of features todo.
+@
+text
+@a228 1
+        
+a230 1
+        
+a231 1
+    
+a233 1
+        
+d294 1
+a294 1
+        multi-thread safety. Concurrent test case execution would also allow for short
+a318 9
+\section todo_testdecorator Automatic TestDecorator factory
+    Provides a generic way to decorate an existing test. Typically involve doing as if its
+    meta-data are different (name, extended data, input for FIT tests...).
+    
+    Decoration should involve a generic algorithm that does not require specific programming. As 
+    input it receives a list of Json::Value and "test name", providing the required elements for
+    decoration.
+
+<hr>
+d328 7
+d339 1
+@
+

@@ -1,0 +1,281 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.4
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2
+	REL_1_9_4:1.2
+	REL_1_9_0:1.2
+	REL_1_8_0:1.2
+	REL_1_7_8:1.2
+	REL_1_7_3:1.2
+	REL_1_7_1:1.2
+	REL_1_6_2:1.2
+	BRANCH_1_6:1.2.0.2
+	REL_1_6_1:1.2
+	REL_1_6_0:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2001.09.21.19.20.04;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.09.14.19.27.58;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* include/cppunit/TestFailure.h : made destructor virtual.
+
+* INSTALL-WIN32.txt : added some more infos about DSPlugIn.
+
+* src/msvc6/DSPlugIn/DSPlugIn.rgs: added some registry data
+that where missing to register the COM object.
+
+* src/msvc6/DSPlugIn/DSPlugIn.rc: updated some dll version info.
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp: fixed the custom build step to
+register the DLL using regsvr32.exe. Added a post-build step to
+copy the dll to the lib/ directory. This prevent a blocking
+compilation error if the DLL is in use by VC++.
+@
+text
+@//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\DSPlugIn.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "1 TYPELIB ""TestRunnerDSPlugin.tlb""\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "GNU\0"
+            VALUE "FileDescription", "Cppunit.TestRunner Developer Studio Addin\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "DSPlugIn\0"
+            VALUE "LegalCopyright", "Copyright (C) 2001\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "TestRunnerDSPlugin.dll\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "TestRunnerDSPlugin Dynamic Link Library\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// REGISTRY
+//
+
+IDR_DSADDIN             REGISTRY DISCARDABLE    "DSPlugIn.rgs"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_DSPLUGIN_LONGNAME   "CppUnit Developer Studio Add-in"
+    IDS_DSPLUGIN_DESCRIPTION 
+                            "Allows TestRunner dialog of cppunit to invoke the line of code where assert occurred"
+    IDS_CMD_STRING          "\nDSPlugIn Sample Command\nDisplays a message box\nDSPlugIn Command"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\DSPlugIn.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+1 TYPELIB "TestRunnerDSPlugin.tlb"
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
+@
+
+
+1.1
+log
+@* src/msvc6/testrunner/TestRunner.dsp: fixed release configuration.
+
+* src/msvc6/testrunner/TestRunner.dsw: added DSPlugIn.dsp. TestRunner
+depends on DSPlugIn.
+
+* src/msvc6/testrunner/TestRunner.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/DSPlugIn/*: integrated patch from
+Patrick Berny (PPBerny@@web.de). An add-ins for VC++. Double-cliking
+a failed test in the TestRunner, VC++ will open the source file and
+go to the failure location.
+
+* src/cppunit/Exception.cpp:
+* include/cppunit/Exception.h: compile fix, call to overrided
+operator = of parent class failed. Using typedef to the parent
+class fix that.
+
+* src/cppunit/cppunit.dsp: added TestFixture.h
+
+* src/cppunit/TestFactoryRegistry.cpp: removed <utility> which isn't
+needed any more.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/extensions/TestFactoryRegistry.h: added
+include <Portability.h> before any other includes to remove warning
+with VC++.
+
+* include/cppunit/Portability.h: moved platform specific includes at
+the beginning of the header. fixed CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION
+declaration.
+
+* include/cppunit/config-msvc6.h: removed pragma once (useless, should
+be put in each header to have an effect).
+@
+text
+@d84 1
+a84 1
+        BLOCK "040904B0"
+d86 3
+a88 2
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "DSPlugIn DLL\0"
+d93 3
+a95 2
+            VALUE "OriginalFilename", "DSPlugIn.DLL\0"
+            VALUE "ProductName", "DSPlugIn Dynamic Link Library\0"
+d97 1
+@
+

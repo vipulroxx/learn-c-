@@ -1,0 +1,361 @@
+head	1.5;
+access;
+symbols
+	REL_1_12_1:1.5
+	REL_1_11_6:1.5
+	REL_1_11_4:1.5
+	REL_1_11_0:1.5
+	TG_CPPUNIT_NO_STREAM_AFTER:1.5
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.5
+	REL_1_10_2:1.5
+	REL_1_10_0:1.5
+	REL_1_9_14:1.5
+	REL_1_9_12:1.5
+	BRANCH_1_9_12:1.5.0.2
+	TG_BRANCH_1_9_12:1.5
+	TG_BEFORE_HPUX_PLUGIN:1.5
+	TG_BEFORE_SUN4_PORT:1.5
+	REL_1_9_10:1.5
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.3
+	REL_1_9_4:1.3
+	REL_1_9_0:1.3
+	REL_1_8_0:1.3
+	REL_1_7_8:1.3
+	REL_1_7_3:1.3
+	REL_1_7_1:1.3
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.5
+date	2002.07.14.19.48.31;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.07.13.10.33.49;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.10.03.21.16.12;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.10.02.20.43.55;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.11.19.56.23;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@#include "CoreSuite.h"
+#include "TestFailureTest.h"
+#include <cppunit/TestFailure.h>
+#include <cppunit/Exception.h>
+
+
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( TestFailureTest,
+                                       coreSuiteName() );
+
+
+TestFailureTest::TestFailureTest()
+{
+}
+
+
+TestFailureTest::~TestFailureTest()
+{
+}
+
+
+void 
+TestFailureTest::setUp()
+{
+  m_exceptionDestroyed = false;
+}
+
+
+void 
+TestFailureTest::tearDown()
+{
+}
+
+
+void 
+TestFailureTest::testConstructorAndGetters()
+{
+  CPPUNIT_NS::TestCase test;
+  CPPUNIT_NS::Exception *error = new ObservedException( this );
+  checkTestFailure( &test, error, false );
+  CPPUNIT_ASSERT( m_exceptionDestroyed );
+}
+
+
+void 
+TestFailureTest::testConstructorAndGettersForError()
+{
+  CPPUNIT_NS::TestCase test;
+  CPPUNIT_NS::Exception *error = new ObservedException( this );
+  checkTestFailure( &test, error, true );
+  CPPUNIT_ASSERT( m_exceptionDestroyed );
+}
+
+
+void 
+TestFailureTest::exceptionDestroyed()
+{
+  m_exceptionDestroyed = true;
+}
+
+
+void 
+TestFailureTest::checkTestFailure( CPPUNIT_NS::Test *test, 
+                                   CPPUNIT_NS::Exception *error,
+                                   bool isError )
+{
+  CPPUNIT_NS::TestFailure failure( test, error, isError );
+  CPPUNIT_ASSERT_EQUAL( test, failure.failedTest() );
+  CPPUNIT_ASSERT_EQUAL( error, failure.thrownException() );
+  CPPUNIT_ASSERT_EQUAL( isError, failure.isError() );
+}
+@
+
+
+1.4
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d8 1
+a8 1
+                                       CppUnitTest::coreSuiteName() );
+@
+
+
+1.3
+log
+@* include/cppunit/TestFailure.cpp :
+* include/cppunit/TestFailure.h : fixed some constness issues. Added
+argument to indicate the type of failure to constructor. Added
+isError().
+
+* include/cppunit/TestListener.h : removed addError(). addFailure()
+now take a TestFailure as argument.
+
+* include/cppunit/TestResult.h :
+* include/cppunit/TestResult.cpp : removed errors(). Refactored. Fixed
+some constness issues. Added typedef TestFailures for vector returned
+by failures(). failures() returns a const reference on the list of
+failure. added testFailuresTotal(). Constructor can take an optional
+synchronization object.
+
+* include/cppunit/TextTestResult.h :
+* include/cppunit/TextTestResult.cpp : removed printErrors().
+Refactored. Updated to suit new TestResult, errors and failures are
+reported in the same list.
+
+* examples/cppunittest/TestFailureTest.cpp :
+* examples/cppunittest/TestFailureTest.h : modified to use the new
+TestFailure constructor. Added one test.
+
+* examples/cppunittest/TestListenerTest.cpp: removed addError().
+Refactored to suit new TestListener.
+
+* examples/cppunittest/TestResultTest.h :
+* examples/cppunittest/TestResultTest.cpp : modified to suit the
+new TestResult.
+@
+text
+@d37 2
+a38 2
+  CppUnit::TestCase test;
+  CppUnit::Exception *error = new ObservedException( this );
+d47 2
+a48 2
+  CppUnit::TestCase test;
+  CppUnit::Exception *error = new ObservedException( this );
+d62 2
+a63 2
+TestFailureTest::checkTestFailure( CppUnit::Test *test, 
+                                   CppUnit::Exception *error,
+d66 1
+a66 1
+  CppUnit::TestFailure failure( test, error, isError );
+@
+
+
+1.2
+log
+@* include/cppunit/extensions/TestFactoryRegistry.h
+* src/cppunit/TestFactoryRegistry.cpp : fixed memory leaks that
+occured when a TestFactoryRegistry was registered into another
+TestFactoryRegistry.
+
+* include/cppunit/extensions/AutoRegisterSuite.h : updated doc.
+
+* include/cppunit/extensions/HelperMacros.h : added macro
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION to register a suite into
+a named suite. Updated doc.
+
+* examples/cppunittest/CoreSuite.h:
+* examples/cppunittest/ExtensionSuite.h:
+* examples/cppunittest/HelperSuite.h: added, declaration of suite for
+use with CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/makefile.am : added HelperSuite.h, CoreSuite.h,
+ExtensionSuite.h, CppUnitTestSuite.h and CppUnitTestSuite.cpp.
+
+* examples/cppunittest/CppUnitTestSuite.*: added.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/TestAssertTest.cpp:
+* examples/cppunittest/TestCaseTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestListenerTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/TestSuiteTest.cpp: moved into named suite
+"Core" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/OrthodoxTest.cpp:
+* examples/cppunittest/RepeatedTest.cpp:
+* examples/cppunittest/TestDecoratorTest.cpp:
+* examples/cppunittest/TestSetUpTest.cpp: moved into named suite
+"Extension" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/HelperMacrosTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp: moved into named suite
+"Helper" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/CppUnitTest.dsp :
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp : added
+Makefile.am, HelperSuite.h, CoreSuite.h, ExtensionSuite.h,
+CppUnitTestSuite.h and CppUnitTestSuite.cpp.
+@
+text
+@d39 11
+a49 1
+  checkTestFailure( &test, error );
+d63 2
+a64 1
+                                   CppUnit::Exception *error )
+d66 1
+a66 1
+  CppUnit::TestFailure failure( test, error );
+d69 1
+@
+
+
+1.1
+log
+@* examples/cppunittest/TestResultTest.*: renamed TestListenerTest.*
+
+* examples/cppunittest/*: added unit tests for:
+HelperMacros, TestAssert, TestCaller, TestCase, TestFailure,
+TestResult, TestSuite, TestDecoratorTest, TestSetUp, RepeatedTestTest,
+Orthodox, Exception.
+@
+text
+@d1 1
+d7 2
+a8 1
+CPPUNIT_TEST_SUITE_REGISTRATION( TestFailureTest );
+@
+

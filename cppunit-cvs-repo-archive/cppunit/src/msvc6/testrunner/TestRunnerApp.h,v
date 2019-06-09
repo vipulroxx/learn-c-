@@ -1,0 +1,76 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.4
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1
+	REL_1_5_5:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@// TestRunner.h : main header file for the TESTRUNNER application
+//
+
+#if !defined(AFX_TESTRUNNER_H)
+#define AFX_TESTRUNNER_H
+
+#if _MSC_VER >= 1000
+#pragma once
+#endif // _MSC_VER >= 1000
+
+#ifndef __AFXWIN_H__
+    #error include 'stdafx.h' before including this file for PCH
+#endif
+
+// Handle to the instance to retreive module resource.
+extern HINSTANCE g_testRunnerResource;
+
+
+#endif // !defined(AFX_TESTRUNNER_H)
+@

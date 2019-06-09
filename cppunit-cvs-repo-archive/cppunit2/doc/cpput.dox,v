@@ -1,0 +1,492 @@
+head	1.9;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.6;
+locks; strict;
+comment	@# @;
+
+
+1.9
+date	2007.08.16.15.51.04;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2007.08.15.17.35.39;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2007.08.15.11.20.57;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2006.09.07.22.45.50;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2006.09.02.22.08.48;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.12.11.17.16.08;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.11.13.23.02.16;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.11.12.20.55.46;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.11.11.23.23.48;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.9
+log
+@   Added initial support for column fixture supported by fitness. Still missing
+automatic type convertion and correct reporting of error with regard to
+originating cell.
+@
+text
+@/**
+\mainpage
+
+\ref cpput_todo.
+\ref coding_guidelines.
+
+\section _warning WARNING
+
+This is a *very early* documenation release and is very incomplete (including this page).
+
+<hr>
+\section section_toc Table of Contents
+
+- \ref section_intro
+- \ref section_features
+- \ref section_writing_test
+    - \ref section_instantiating_test
+    - \ref section_assertions
+    - \ref section_ignore_assertion_failure
+    - \ref section_logevent
+    - \ref section_skippingtest
+- \ref section_projectlinks
+- \ref section_license
+
+
+<hr>
+\section section_intro Introduction
+
+CppUnit 2 is a test framework for C++.
+
+<hr>
+\section section_features Features
+- support aborting and non-aborting assertions
+- rich collection of assertions
+- rich assertion diagnostic
+- customizable conversion to string for complex assertion (equal, not equal...)
+- customizable equality comparison
+- customizable convertion to std::string for string assertion
+- support to ignore a specific assertion failures
+- ...
+
+<hr>
+\section section_writing_test Writing tests
+
+\subsection section_instantiating_test Instantiating tests
+    A test case is exposed by instantiating a subclass of CppUT::AbstractTestCase. Each 
+time a test case is executed, the \link CppUT::AbstractTestCase::runTest() runTest()\endlink 
+method is called. This method calls the virtual methods \testCaseSetup, \testCaseRun 
+and \testCaseTearDown. 
+The \testCaseRun and \testCaseTearDown methods are only called if
+the \testCaseSetup method was successful (no assertion failure, no exception thrown). 
+Only the \testCaseRun method is required to be overridden. 
+It is possible to make assertions in any of those methods. If any exception is thrown 
+by the \testCaseSetup, \testCaseRun or tearDown() methods, 
+or if any of those methods makes an assertion that fails, the test case get a 'failed' 
+status; otherwise it get a 'sucessful' status. The skipped status is never set 
+automatically (see \ref section_skippingtest for detail).
+
+    There is mainly two ways to create test case:
+        - Subclassing CppUT::AbstractTestCase and overridding at least \testCaseRun.
+        - Instantiating CppUT::TestCase, which subclass CppUT::AbstractTestCase, and
+          passing the function to execute in the constructor.
+
+    A test case is usually created using CppUT::makeTestCase() that instantiate 
+CppUT::TestCase.
+
+	Notes that test case instantiation is usually only done when you need to create your own
+convenience test case macro or you are populating a TestSuite with parametrized TestCase.
+The framework provides severable way to create and register test case, see \ref section_lightfixture,
+\ref section_testfixture, \ref section_testfunction.
+ 
+\subsection section_assertions Making assertions
+    When writing unit test, you check that the tested code behave as expected using
+assertions. In CppUnit 2 each assertion is provides in two forms:
+- as an aborting assertion
+- as a non-aborting assertion (a.k.a. checking assertion)
+
+    The difference between aborting and non-aborting assertions is that if an aborting 
+assertion fails then the test is aborted, while if a non-aborting assertion failed, 
+then the assertion is logged and the test continue. In CppUnit 1 only aborting assertion 
+were provided.
+
+    When an aborting assertion failed, it throws the exception 
+CppUT::AbortingAssertionException to abort the test. You must ensure that your test
+let this exception pass through (notes that it subclasses std::runtime_error).
+
+    All assertions are macros (to capture source location). By convention, 
+the following naming prefix are used do distinguish aborting and non-aborting assertion:
+- CPPUT_ASSERT : aborting assertion
+- CPPUT_CHECK : non-arborting assertion
+
+    In the table below, all supported assertions without the above prefix will be listed.
+
+<table>
+<tr><td>Suffix</td> <td>Parameters</td> <td>Asserts that...</td>
+<tr><td></td> 
+    <td>\c expression, [\c message]</td> 
+    <td> \c expression is \c true </td>
+</tr>
+<tr><td>_EXPR</td> 
+    <td>\c expression</td> 
+    <td> \c expression is \c true </td>
+</tr>
+<tr><td>_FALSE</td> 
+    <td>\c expression, [\c message]</td> 
+    <td>\c expression is \c false</td>
+</tr>
+<tr><td>_EXPR_FALSE</td> 
+    <td>\c expression</td> 
+    <td>\c expression is \c false</td>
+</tr>
+<tr><td>_EQUAL</td> 
+    <td>\c expected_value, \c actual_value, [\c message]</td> 
+    <td>\c expected_value == \c actual_value</td>
+</tr>
+<tr><td>_NOT_EQUAL</td> 
+    <td>\c expected_value, \c actual_value, [\c message]</td> 
+    <td>\c expected_value != \c actual_value</td>
+</tr>
+<tr><td>_DOUBLE_EQUAL</td> 
+    <td>\c expected_value, \c actual_value, \c tolerance, [\c message]</td> 
+    <td>\c fabs(\c expected_value - \c actual_value) &lt;= \c tolerance</td>
+</tr>
+<tr><td>_THROW</td> 
+    <td>\c expression, \c ExpectedExceptionType</td> 
+    <td>\c expression throws an exception of type ExpectedExceptionType</td>
+</tr>
+<tr><td>_NO_THROW</td> 
+    <td>\c expression</td> 
+    <td>\c expression does not throw any exceptions</td>
+</tr>
+<tr><td>_ASSERTION_FAIL_MESSAGE</td> 
+    <td>\c assertion, \c message</td> 
+    <td>\c assertion fails</td>
+</tr>
+<tr><td>_ASSERTION_FAIL</td> 
+    <td>\c assertion</td> 
+    <td>\c assertion fails</td>
+</tr>
+<tr><td>_ASSERTION_PASS_MESSAGE</td> 
+    <td>\c assertion, \c message</td> 
+    <td>\c assertion passes</td>
+</tr>
+<tr><td>_ASSERTION_PASS</td> 
+    <td>\c assertion</td> 
+    <td>\c assertion passes</td>
+</tr>
+<tr><td>STR_START</td> 
+    <td>\c pattern, \c actual_string</td> 
+    <td>\c actual_string starts with \c pattern</td>
+</tr>
+<tr><td>STR_END</td> 
+    <td>\c pattern, \c actual_string</td> 
+    <td>\c actual_string ends with \c pattern</td>
+</tr>
+<tr><td>STR_END</td> 
+    <td>\c pattern, \c actual_string</td> 
+    <td>\c actual_string ends with \c pattern</td>
+</tr>
+<tr><td>STR_CONTAIN</td> 
+    <td>\c pattern, \c actual_string</td> 
+    <td>\c actual_string contains \c pattern</td>
+</tr>
+<tr><td>STR_EQUAL</td> 
+    <td>\c pattern, \c actual_string</td> 
+    <td>\c actual_string contains \c pattern</td>
+</tr>
+<tr><td>_SEQUENCE_EQUAL</td> 
+    <td>\c expected_ordered_sequence, \c actual_ordered_sequence</td> 
+    <td>\c expected_ordered_sequence and \c actual_ordered_sequence contains 
+        the same value in the same order.</td>
+</tr>
+<tr><td>_SET_EQUAL</td> 
+    <td>\c expected_unordered, \c actual_unordered_sequence</td> 
+    <td>\c expected_ordered_sequence and \c actual_ordered_sequence contains 
+        the same value regardless of the order.</td>
+</tr>
+<tr><td>_STL_SEQUENCE_EQUAL</td> 
+    <td>\c expected_ordered_sequence, \c actual_ordered_sequence</td> 
+    <td>\c expected_ordered_sequence and \c actual_ordered_sequence contains 
+        the same value in the same order.</td>
+</tr>
+<tr><td>_STL_SET_EQUAL</td> 
+    <td>\c expected_unordered, \c actual_unordered_sequence</td> 
+    <td>\c expected_ordered_sequence and \c actual_ordered_sequence contains 
+        the same value regardless of the order.</td>
+</tr>
+</table>
+
+    See module \ref group_assertions for the list of assertion macros.
+    
+    [[notes: add double brace warning about macro parameter]]
+
+\subsection section_ignore_assertion_failure Ignoring specific assertion failures
+
+    During a test, it is also possible to ignore an assertion failure. This is useful
+for example when doing some large refactoring that takes days and cause some test to break
+temporarily. With this feature, it is possible to indicate that some assertions are expected
+to fail and the test should not be considered to have failed. The assertion failure is
+still logged. 
+
+    Use CPPUT_IGNORE_FAILURE() to ignore an assertion failure. See ignore_failure_demo for
+an example.
+
+\subsection section_logevent Loggin events
+
+    Often the same set of assertions is used in a loop over some input data. If a failure
+occurs, it is not possible to know on which iteration the failure occurred (unless the 
+iteration was specified in the optional \c message parameter of the assertion).
+
+    CppUT::log() can be used to log a context. The list of log events and assertion failures
+is seen as a single test event sequence. See log_demo for an example.
+
+\subsection section_skippingtest Skipping a test
+
+    It is possible to force a test to be skipped using CPPUT_SKIP_TEST. The test status will
+be set to CppUT::TestStatus::skipped unless a failure occurred before. 
+
+    Notes that a SkipTestException exception (a subclass of std::runtime_error) is thrown
+to abort the test.
+
+\subsection section_testfixture Creating TestCase: TestFixture
+
+A TestFixture is a class that implements multiple test cases sharing the same setUp/tearDown steps.
+Test cases are implements as "void test()" member function and each test case has its own instance
+of the test fixture.
+
+A TestFixture support the following features:
+- TestFixture may be a template class
+- polymorphism: you can subclass a TestFixture and adds more test or override setUp/teardown 
+virtual member functions.
+- TestExtendedData can be specified for each test
+- TestFixture test cases are grouped within a TestSuite
+- macro usage is limited to a declaration of the test member function and is clearly separated 
+from code.
+
+\subsection section_lightfixture Creating TestCase: light Fixture
+
+A Light test fixture is similar to a TestFixture but does not support the following features:
+- templated test class
+- can not subclass a light test fixture and share common test cases
+- macro usage is intrusive and hides member function declaration.
+
+On the positive side, it is easier on the wrist.
+
+\subsection section_testfunction Creating TestCase: test functions
+
+A test case can be implemented as a plain C function "void test()".
+
+\subsection section_tablefixture Creating TestCase: using table fixture in test cases
+
+Sometimes when writing test cases, you need to repeat the same test with different 
+input values. Table fixture are a way to do this.
+
+\see CPPUT_TEST_TABLE(), CPPUT_REGISTER_TEST_FUNCTION_TABLE_IN(), CPPUT_TEST_FUNCTION_TABLE_IN().
+
+\subsection section_inputfixture Creating TestCase: input fixture
+
+Input fixture are intended to run functional test cases with externalized input data.
+
+They usually rely on a reflection mecanism for interaction between the input data and testing.
+
+Currently, only column based fixture is implemented. Data takes the form of a table. The
+header row indicates the role of each column. For each row, the same sequence of operation
+will be done:
+- if column name match an attribute name, then set the attribute value to the cell value
+- if column name match a method name, then invoke the method and pass the cell value
+- if column name ends with '?' then, if the column name match an attribute then get its value, 
+otherwise invoke the matching method name and retrieve its return value. Finally, compares the
+retrieved value for equality with the cell value.
+
+\see ColumnInputTest
+
+<hr>
+\section section_projectlinks Project links
+- <a HREF="http://cppunit.sourceforge.net">cppunit home</a>
+- <a HREF="http://www.sourceforge.net/projects/cppunit">cppunit sourceforge project</a>
+
+<hr>
+\section _rlinks Related links
+- <a HREF="http://www.json.org/">JSON</a> Specification and alternate language implementations.
+- <a HREF="http://www.yaml.org/">YAML</a> A data format designed for human readability.
+- <a HREF="http://www.cl.cam.ac.uk/~mgk25/unicode.html">UTF-8 and Unicode FAQ</a>.
+
+
+<hr>
+\section section_license License
+The CppTL library is in public domain.
+
+The CppUT and OpenTest library are under the LGPL with run-time exception.
+
+\author Baptiste Lepilleur <blep@@users.sourceforge.net>
+*/
+
+
+/*! \defgroup group_assertions Assertions
+ */
+
+/*! \defgroup group_custom_assertions Creating new assertions
+*/
+
+/*! \defgroup group_assertions_support Assertion support
+*/
+
+/*! \defgroup group_testcases Test case & test suite
+*/
+
+/*! \defgroup group_testfixture Test fixture
+*/
+
+/*! \defgroup group_testregistry Test registry
+*/
+
+@
+
+
+1.8
+log
+@   Added initial support for table fixture (still like cell value automatic
+conversion, but it is usable).
+@
+text
+@d257 16
+@
+
+
+1.7
+log
+@   Added support for light test fixture (a la CppUnitLite).
+See lightfixture.h and example/light_fixture.
+   Added support for direct declaration and registration of test in plain C
+function. See testfunction.h and example/test_function.
+@
+text
+@d250 6
+@
+
+
+1.6
+log
+@- started adding coding guidelines.
+@
+text
+@d66 5
+d222 30
+a256 2
+
+
+@
+
+
+1.5
+log
+@- added a list of features todo.
+@
+text
+@d5 1
+@
+
+
+1.4
+log
+@* rough sketch of a working OpenTest driver with CppUT adaptor for TestRunner.
+@
+text
+@d4 2
+d16 1
+d44 22
+@
+
+
+1.3
+log
+@- added fake_stl so that doxygen can figure out that runtime_error is in std namespace
+- improved documentation
+@
+text
+@d8 1
+d22 1
+d27 1
+d38 1
+d191 1
+d198 1
+d205 1
+@
+
+
+1.2
+log
+@- added some documentation
+- fixed tabs display in html output.
+@
+text
+@d8 14
+a21 1
+\section _intro Introduction
+d25 1
+a25 1
+\section _features Features
+d35 1
+d37 143
+d181 2
+d184 4
+a187 1
+\section _plinks Project links
+d191 2
+d198 2
+a199 2
+\section _license License
+This documentation is in public domain.
+d201 1
+d209 1
+a209 1
+*/
+@
+
+
+1.1
+log
+@Rough documentation: placed most function/class/macro in group.
+@
+text
+@d3 5
+d20 1
+d46 3
+@
+

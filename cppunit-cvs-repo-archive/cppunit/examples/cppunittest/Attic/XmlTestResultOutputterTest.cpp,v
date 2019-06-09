@@ -1,0 +1,517 @@
+head	1.3;
+access;
+symbols;
+locks; strict;
+comment	@// @;
+
+
+1.3
+date	2001.10.07.19.37.53;	author blep;	state dead;
+branches;
+next	1.2;
+
+1.2
+date	2001.10.05.22.27.14;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.10.05.08.06.28;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* include/cppunit/CompilerTestResultOutputter.h :
+renamed CompilerOutputter.h
+
+* src/cppunit/CompilerTestResultOutputter.cpp :
+renamed CompilerOutputter.cpp
+
+* include/cppunit/CompilerTestResultOutputter.h :
+* src/cppunit/CompilerTestResultOutputter.cpp : ajust max line length
+for wrapping. Added static factory method defaultOutputter(). Print
+the number of test runs on success.
+
+* include/cppunit/CompilerTestResultOutputter.h : renamed
+CompilerOutputter.h.
+
+* src/cppunit/CompilerTestResultOutputter.cpp : renamed
+CompilerOutputter.cpp.
+
+* examples/cppunittest/CppUnitTestMain.cpp : use factory method
+CompilerTestResultOutputter::defaultOutputter().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp : removed COM registration in
+post-build step. IT is automatically done by VC++ when the add-in is
+added. Caused build to failed if the add-in was used in VC++.
+
+* NEWS : updated.
+
+* src/cppunit/TestAssert.cpp : modified deprecated assert
+implementations to use Asserter.
+
+* examples/cppunittest/XmlTestResultOutputterTest.h :
+renamed XmlOutputterTest.h.
+
+* examples/cppunittest/XmlTestResultOutputterTest.cpp :
+renamed XmlOutputterTest.cpp.
+
+* NEWS :
+* examples/cppunittest/CppUnitTestMain.cpp :
+* examples/cppunittest/CppUnitTestMain.dsp :
+* examples/cppunittest/Makefile.am :
+* examples/cppunittest/XmlTestResultOutputterTest.h :
+* examples/cppunittest/XmlTestResultOutputterTest.cpp :
+* examples/msvc6/CppUniTestApp/CppUnitTestApp.dsp
+* include/cppunit/CompilerOutputter.h :
+* include/cppunit/Makefile.am :
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/CompilerOutputter.cpp :
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* src/cppunit/XmlTestResultOutputter.cpp : change due to renaming
+CompilerTestResultOutputter to CompilerOutputter,
+XmlTestResultOutputter to XmlOuputter, XmlTestResultOutputterTest
+to XmlOutputterTest.
+@
+text
+@#include <cppunit/TestResult.h>
+#include <cppunit/XmlTestResultOutputter.h>
+#include "OutputSuite.h"
+#include "XmlTestResultOutputterTest.h"
+#include "XmlUniformiser.h"
+
+
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( XmlTestResultOutputterTest, 
+                                       CppUnitTest::outputSuiteName() );
+
+
+XmlTestResultOutputterTest::XmlTestResultOutputterTest() : 
+    CppUnit::TestCase()
+{
+}
+
+
+XmlTestResultOutputterTest::~XmlTestResultOutputterTest()
+{
+}
+
+
+void 
+XmlTestResultOutputterTest::setUp()
+{
+}
+
+
+void 
+XmlTestResultOutputterTest::tearDown()
+{
+}
+
+
+void 
+XmlTestResultOutputterTest::testEmptyNodeToString()
+{
+  CppUnit::XmlTestResultOutputter::Node node( "element" );
+  std::string expectedXml = "<element></element>";
+  CPPUNITTEST_ASSERT_XML_EQUAL( expectedXml, node.toString() );
+}
+
+
+void 
+XmlTestResultOutputterTest::testNodeWithAttributesToString()
+{
+  CppUnit::XmlTestResultOutputter::Node node( "element" );
+  node.addAttribute( "id", 17 );
+  node.addAttribute( "date-format", "iso-8901" );
+  std::string expectedXml = "<element id=\"17\" "
+                            "date-format=\"iso-8901\">"
+                            "</element>";
+  CPPUNITTEST_ASSERT_XML_EQUAL( expectedXml, node.toString() );
+}
+
+
+void 
+XmlTestResultOutputterTest::testEscapedAttributeValueToString()
+{
+  CppUnit::XmlTestResultOutputter::Node node( "element" );
+  node.addAttribute( "escaped", "&<>\"'" );
+  std::string expectedXml = "<element escaped=\""
+                            "&amp;&lt;&gt;&quot;&apos;"
+                            "\"></element>";
+  CPPUNITTEST_ASSERT_XML_EQUAL( expectedXml, node.toString() );
+}
+
+
+void 
+XmlTestResultOutputterTest::testNodeWithChildrenToString()
+{
+  CppUnit::XmlTestResultOutputter::Node node( "element" );
+  node.addNode( new CppUnit::XmlTestResultOutputter::Node( "child1" ) );
+  node.addNode( new CppUnit::XmlTestResultOutputter::Node( "child2" ) );
+  std::string expectedXml = "<element><child1></child1>"
+                            "<child2></child2></element>";
+  CPPUNITTEST_ASSERT_XML_EQUAL( expectedXml, node.toString() );
+}
+
+
+void 
+XmlTestResultOutputterTest::testNodeWithContentToString()
+{
+  CppUnit::XmlTestResultOutputter::Node node( "element", "content\nline2" );
+  std::string expectedXml = "<element>content\nline2</element>";
+  CPPUNITTEST_ASSERT_XML_EQUAL( expectedXml, node.toString() );
+}
+
+
+void 
+XmlTestResultOutputterTest::testNodeWithNumericContentToString()
+{
+  CppUnit::XmlTestResultOutputter::Node node( "element", 123456789 );
+  std::string expectedXml = "<element>123456789</element>";
+  CPPUNITTEST_ASSERT_XML_EQUAL( expectedXml, node.toString() );
+}
+
+
+void 
+XmlTestResultOutputterTest::testNodeWithContentAndChildToString()
+{
+  CppUnit::XmlTestResultOutputter::Node node( "element", "content" );
+  node.addNode( new CppUnit::XmlTestResultOutputter::Node( "child1" ) );
+  std::string expectedXml = "<element><child1></child1>content</element>";
+  CPPUNITTEST_ASSERT_XML_EQUAL( expectedXml, node.toString() );
+}
+
+
+void 
+XmlTestResultOutputterTest::testWriteXmlResultWithNoTest()
+{
+  CppUnit::TestResult result;
+
+  CppUnit::OStringStream stream;
+  CppUnit::XmlTestResultOutputter outputter;
+  outputter.write( &result, stream );
+
+  std::string actualXml = stream.str();
+  std::string expectedXml = 
+    "<TestRun>"
+      "<FailedTests></FailedTests>"
+      "<SucessfulTests></SucessfulTests>"
+      "<Statistics>"
+        "<Tests>0</Tests>"
+        "<FailuresTotal>0</FailuresTotal>"
+        "<Errors>0</Errors>"
+        "<Failures>0</Failures>"
+      "</Statistics>"
+    "</TestRun>";
+  CPPUNITTEST_ASSERT_XML_EQUAL( expectedXml, actualXml );
+}
+
+
+void 
+XmlTestResultOutputterTest::testWriteXmlResultWithOneFailure()
+{
+  CppUnit::TestResult result;
+  CppUnit::TestCase test1( "test1" );
+  result.startTest( &test1 );
+  CppUnit::SourceLine sourceLine( "test.cpp", 3 );
+  result.addFailure( &test1, new CppUnit::Exception( "message failure1", 
+                                                     sourceLine ) );
+  result.endTest( &test1 );
+
+  CppUnit::OStringStream stream;
+  CppUnit::XmlTestResultOutputter outputter;
+  outputter.write( &result, stream );
+
+  std::string actualXml = stream.str();
+  std::string expectedXml = 
+    "<TestRun>"
+      "<FailedTests>"
+        "<FailedTest id=\"1\">"
+          "<Name>test1</Name>"
+          "<FailureType>Assertion</FailureType>"
+          "<Location>"
+            "<File>test.cpp</File>"
+            "<Line>3</Line>"
+          "</Location>"
+          "message failure1"
+        "</FailedTest>"
+      "</FailedTests>"
+      "<SucessfulTests></SucessfulTests>"
+      "<Statistics>"
+        "<Tests>1</Tests>"
+        "<FailuresTotal>1</FailuresTotal>"
+        "<Errors>0</Errors>"
+        "<Failures>1</Failures>"
+      "</Statistics>"
+    "</TestRun>";
+  CPPUNITTEST_ASSERT_XML_EQUAL( expectedXml, actualXml );
+}
+
+
+void 
+XmlTestResultOutputterTest::testWriteXmlResultWithOneError()
+{
+  CppUnit::TestResult result;
+  CppUnit::TestCase test1( "test1" );
+  result.startTest( &test1 );
+  result.addError( &test1, new CppUnit::Exception( "message error1" ) );
+  result.endTest( &test1 );
+
+  CppUnit::OStringStream stream;
+  CppUnit::XmlTestResultOutputter outputter;
+  outputter.write( &result, stream );
+
+  std::string actualXml = stream.str();
+  std::string expectedXml = 
+    "<TestRun>"
+      "<FailedTests>"
+        "<FailedTest id=\"1\">"
+          "<Name>test1</Name>"
+          "<FailureType>Error</FailureType>"
+          "message error1"
+        "</FailedTest>"
+      "</FailedTests>"
+      "<SucessfulTests></SucessfulTests>"
+      "<Statistics>"
+        "<Tests>1</Tests>"
+        "<FailuresTotal>1</FailuresTotal>"
+        "<Errors>1</Errors>"
+        "<Failures>0</Failures>"
+      "</Statistics>"
+    "</TestRun>";
+  CPPUNITTEST_ASSERT_XML_EQUAL( expectedXml, actualXml );
+}
+
+
+void 
+XmlTestResultOutputterTest::testWriteXmlResultWithOneSucess()
+{
+  CppUnit::TestResult result;
+  CppUnit::TestCase test1( "test1" );
+  result.startTest( &test1 );
+  result.endTest( &test1 );
+
+  CppUnit::OStringStream stream;
+  CppUnit::XmlTestResultOutputter outputter;
+  outputter.write( &result, stream );
+
+  std::string actualXml = stream.str();
+  std::string expectedXml = 
+    "<TestRun>"
+      "<FailedTests></FailedTests>"
+      "<SucessfulTests>"
+        "<Test id=\"1\">"
+          "<Name>test1</Name>"
+        "</Test>"
+      "</SucessfulTests>"
+      "<Statistics>"
+        "<Tests>1</Tests>"
+        "<FailuresTotal>0</FailuresTotal>"
+        "<Errors>0</Errors>"
+        "<Failures>0</Failures>"
+      "</Statistics>"
+    "</TestRun>";
+  CPPUNITTEST_ASSERT_XML_EQUAL( expectedXml, actualXml );
+}
+
+
+void 
+XmlTestResultOutputterTest::testWriteXmlResultWithThreeFailureTwoErrorsAndTwoSucess()
+{
+  CppUnit::TestCase test1( "test1" );
+  CppUnit::TestCase test2( "test2" );
+  CppUnit::TestCase test3( "test3" );
+  CppUnit::TestCase test4( "test4" );
+  CppUnit::TestCase test5( "test5" );
+  CppUnit::TestCase test6( "test6" );
+  CppUnit::TestCase test7( "test7" );
+  CppUnit::TestResult result;
+  result.startTest( &test1 );
+  result.addFailure( &test1, new CppUnit::Exception( "failure1" ) );
+  result.endTest( &test1 );
+  result.startTest( &test2 );
+  result.addError( &test2, new CppUnit::Exception( "error1" ) );
+  result.endTest( &test2 );
+  result.startTest( &test3 );
+  result.addFailure( &test3, new CppUnit::Exception( "failure2" ) );
+  result.endTest( &test3 );
+  result.startTest( &test4 );
+  result.addFailure( &test4, new CppUnit::Exception( "failure3" ) );
+  result.endTest( &test4 );
+  result.startTest( &test5 );
+  result.endTest( &test5 );
+  result.startTest( &test6 );
+  result.addError( &test6, new CppUnit::Exception( "error2" ) );
+  result.endTest( &test6 );
+  result.startTest( &test7 );
+  result.endTest( &test7 );
+
+  CppUnit::OStringStream stream;
+  CppUnit::XmlTestResultOutputter outputter;
+  outputter.write( &result, stream );
+
+  std::string actualXml = stream.str();
+  std::string expectedXml = 
+    "<TestRun>"
+       "<FailedTests>"
+        "<FailedTest id=\"1\">"
+          "<Name>test1</Name>"
+          "<FailureType>Assertion</FailureType>"
+          "failure1"
+        "</FailedTest>"
+        "<FailedTest id=\"2\">"
+          "<Name>test2</Name>"
+          "<FailureType>Error</FailureType>"
+          "error1"
+        "</FailedTest>"
+        "<FailedTest id=\"3\">"
+          "<Name>test3</Name>"
+          "<FailureType>Assertion</FailureType>"
+          "failure2"
+        "</FailedTest>"
+        "<FailedTest id=\"4\">"
+          "<Name>test4</Name>"
+          "<FailureType>Assertion</FailureType>"
+          "failure3"
+        "</FailedTest>"
+        "<FailedTest id=\"6\">"
+          "<Name>test6</Name>"
+          "<FailureType>Error</FailureType>"
+          "error2"
+        "</FailedTest>"
+      "</FailedTests>"
+     "<SucessfulTests>"
+        "<Test id=\"5\">"
+          "<Name>test5</Name>"
+        "</Test>"
+        "<Test id=\"7\">"
+          "<Name>test7</Name>"
+        "</Test>"
+      "</SucessfulTests>"
+      "<Statistics>"
+        "<Tests>7</Tests>"
+        "<FailuresTotal>5</FailuresTotal>"
+        "<Errors>2</Errors>"
+        "<Failures>3</Failures>"
+      "</Statistics>"
+    "</TestRun>";
+  CPPUNITTEST_ASSERT_XML_EQUAL( expectedXml, actualXml );
+}@
+
+
+1.2
+log
+@* include/cppunit/Asserter.h :
+* src/cppunit/Asserter.cpp : added. Helper to create assertion macros.
+
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* include/cppunit/Makefile.am : added Asserter.h and Asserter.cpp.
+
+* include/cppunit/Exception.h :
+* src/cppunit/Exception.cpp : added constructor that take a
+SourceLine argument. Deprecated static constant and old constructor.
+Fixed some constness issues.
+
+* examples/cppunittest/ExceptionTest.cpp : Refactored.
+
+* NEWS : partially updated (need to be more detailed)
+
+* include/cppunit/NotEqualException.h :
+* src/cppunit/NotEqualException.cpp : added constructor that take a
+SourceLine argument. Deprecated old constructor. Added a third element
+to compose message.
+
+* examples/cppunittest/NotEqualExceptionTest.cpp : moved to "Core"
+suite. Added test for SourceLine() and additionalMessage().
+Refactored.
+
+* include/cppunit/SourceLine.h :
+* src/cppunit/SourceLine.cpp : added. Result of applying
+IntroduceParameterObject refactoring on filename & line number...
+
+* include/cppunit/TestAssert.h :
+* src/cppunit/TestAssert.cpp : deprecated old assert functions.
+added functions assertEquals() and assertDoubleEquals() which use
+SourceLine.
+
+* src/cppunit/TestCase.cpp : Modified for SourceLine.
+
+* include/cppunit/TestFailure.h :
+* src/cppunit/TestFailure.cpp : added failedTestName(), and
+sourceLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp : modified to use SourceLine.
+
+* include/cppunit/TextTestResult.h :
+* src/cppunit/TextTestResult.cpp : corrected include order and
+switched to angled brackets. Refactored. Don't print failure location
+if not available. Not equal failure dump additional message if
+available.
+
+* src/cppunit/TextTestRunner.cpp : run() now returns a boolean to
+indicate if the run was sucessful.
+
+* src/cppunit/XmlTestResultOutputter.cpp : replaced itoa() with
+OStringStream. Refactored.
+
+* examples/cppunittest/XmlUniformiser.h :
+* examples/cppunittest/XmlUniformiser.cpp :
+CPPUNITTEST_ASSERT_XML_EQUAL capture failure location. Refactored
+checkXmlEqual().
+
+* examples/cppunittest/XmlUniformiserTest.h :
+* examples/cppunittest/XmlUniformiserTest.cpp : added test for
+CPPUNITTEST_ASSERT_XML_EQUAL.
+
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/XmlTestResultOutputter.cpp : updated to use SourceLine.
+@
+text
+@@
+
+
+1.1
+log
+@* NEWS : updated.
+
+* include/cppunit/Exception.h : added include Portability.h.
+
+* include/cppunit/TestResult.* : changed TestFailures to a deque.
+added tests().
+
+* examples/cppunittest/CppUnitTest.dsp :
+* examples/cppunittest/MakeFile.am :
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp : Added
+XmlTestResultOutputterTest.*, XmlUniformiser.*, XmlUniformiserTest.*,
+UnitTestToolSuite.h, OutputSuite.h.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp : revised project
+folders structure. Added missing NoteEqualExceptionTest.*.
+
+* examples/cppunittest/CppUnitTestSuite.cpp : added 'Output' and
+'UnitTestTool' suites.
+
+* src/cppunit/cppunit.dsp: removed estring.h. Revised project folders
+structure. Removed TestRegistry.*. Added TestSetUp.h,
+XmlTestResultOutputter.*.
+
+* src/cppunit/MakeFile.am: added XmlTestResultOutputter.*.
+
+* src/testrunner/TestRunnerDlg.cpp: removed disabled code.
+@
+text
+@d140 1
+d142 1
+a142 2
+                                                     3, 
+                                                     "test.cpp" ) );
+@
+

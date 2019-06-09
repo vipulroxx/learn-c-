@@ -1,0 +1,30 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2007.08.16.15.51.04;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@   Added initial support for column fixture supported by fitness. Still missing
+automatic type convertion and correct reporting of error with regard to
+originating cell.
+@
+text
+@*.plg
+*.old
+*.WW
+*.old
+
+@

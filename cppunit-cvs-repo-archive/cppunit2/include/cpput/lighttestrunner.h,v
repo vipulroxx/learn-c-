@@ -1,0 +1,201 @@
+head	1.6;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.6;
+locks; strict;
+comment	@ * @;
+
+
+1.6
+date	2005.11.11.20.54.15;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.11.08.20.25.49;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.08.11.07.18.24;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.08.08.22.10.20;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.07.20.21.06.49;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.07.02.20.27.35;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@- added unit tests for TestInfo
+- fixed bug in CPPUT_IGNORE_FAILURE and exception guard.
+- added 'isIgnoredFailure' to Assertion.
+- lighttestrunner now print ignored failure and skipped tests.
+@
+text
+@#ifndef CPPUT_LIGHTTESTRUNNER_H_INCLUDED
+# define CPPUT_LIGHTTESTRUNNER_H_INCLUDED
+
+# include <cpput/forwards.h>
+# include <cpput/testinfo.h>
+# include <cpptl/intrusiveptr.h>
+# include <deque>
+
+namespace CppUT {
+
+   /* Lightweight test runner intended for unit testing CppUnit itself 
+    * and the open test framework.
+    */
+   class LightTestRunner : private TestResultUpdater
+   {
+   public:
+      LightTestRunner();
+
+      virtual ~LightTestRunner();
+
+      void addTest( const TestPtr &test );
+
+      bool runAllTests();
+
+   private: // overridden from TestResultUpdater
+      virtual void addResultLog( const Json::Value &log );
+
+      virtual void addResultAssertion( const Assertion &assertion );
+
+   private:
+      void runTest( const TestPtr &test );
+      void runTestSuite( const TestSuitePtr &suite );
+      void runTestCase( const AbstractTestCasePtr &testCase );
+      CppTL::ConstString getTestPath() const;
+      void reportFailure( const Assertion &failure );
+      void reportLog( const Json::Value &log );
+
+      struct ResultElement
+      {
+         int index_;
+         bool isLog_;
+      };
+
+      typedef std::deque<TestPtr> Tests;
+      Tests tests_;
+      typedef std::deque<CppTL::ConstString> TestPath;
+      TestPath testPath_;
+      CppTL::StringBuffer report_;
+      typedef std::deque<Json::Value> Logs;
+      Logs logs_;
+      typedef std::deque<Assertion> Assertions;
+      Assertions assertions_;
+      typedef std::deque<ResultElement> ResultElements;
+      ResultElements results_;
+      unsigned int testRun_;
+      unsigned int testFailed_;
+      unsigned int testSkipped_;
+      unsigned int ignoredFailureCount_;
+   }; 
+
+} // namespace CppUT
+
+
+#endif // CPPUT_LIGHTTESTRUNNER_H_INCLUDED
+@
+
+
+1.5
+log
+@* replaced include/opentest/properties.h with include/json/value.h
+* replaced all occurrences of OpenTest::Value and OpenTest::Properties with Json::Value.
+@
+text
+@d57 2
+@
+
+
+1.4
+log
+@* Added log support in test result output
+* Removed unsued method in TestResultUpdater
+* Added CppUT::log demo example.
+@
+text
+@d26 1
+a26 1
+      virtual void addResultLog( const OpenTest::Value &log );
+d36 1
+a36 1
+      void reportLog( const OpenTest::Value &log );
+d49 1
+a49 1
+      typedef std::deque<OpenTest::Value> Logs;
+@
+
+
+1.3
+log
+@Rewrote failure reporting during test. It now provides more structure while still providing some flexibility.
+@
+text
+@a29 2
+      virtual void setTestStatus( const TestStatus &status );
+
+d36 7
+d49 2
+d53 2
+@
+
+
+1.2
+log
+@* Added IntrusivePtr, a reference counted smart-pointer
+* Changed Test hierarchy and TestFixture to use IntrusivePtr instead of SharedPtr (this allows simple upcasting).
+@
+text
+@d26 1
+a26 1
+      virtual void mergeInResult( const OpenTest::Properties &result );
+d28 1
+a28 2
+      virtual void mergeInResult( const OpenTest::PropertyPath &path,
+                                  const OpenTest::Value &value );
+d30 1
+a30 2
+      virtual void appendToResult( const OpenTest::PropertyPath &path,
+                                   const OpenTest::Value &value );
+d37 1
+a37 2
+      void reportFailure( const OpenTest::Properties &failure, 
+                          bool isAssertion );
+d44 2
+a45 1
+      OpenTest::Properties result_;
+@
+
+
+1.1
+log
+@* Added a simple test runner that does not rely on the open test framework to run cppunit2 tests.
+* added CppTL::ConstCharView to wrapper const char *strings.
+* added CppTL::quoteMultiLineString()
+* string assertion output actual and expected using quoteMultiLineString().
+* added serialize unit test for basic Properties
+* opentest tests now use the LightTestRunner.
+@
+text
+@d6 1
+@
+

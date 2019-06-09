@@ -1,0 +1,797 @@
+head	1.28;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.27
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.11
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.11
+	TG_AFTER_REMOVING_TESTCONTEXT:1.10
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.10
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.9
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@// @;
+
+
+1.28
+date	2007.08.19.20.13.24;	author blep;	state Exp;
+branches;
+next	1.27;
+
+1.27
+date	2006.06.05.12.02.56;	author blep;	state Exp;
+branches;
+next	1.26;
+
+1.26
+date	2005.11.11.20.54.15;	author blep;	state Exp;
+branches;
+next	1.25;
+
+1.25
+date	2005.11.08.23.25.31;	author blep;	state Exp;
+branches;
+next	1.24;
+
+1.24
+date	2005.11.08.19.54.38;	author blep;	state Exp;
+branches;
+next	1.23;
+
+1.23
+date	2005.09.06.07.31.42;	author blep;	state Exp;
+branches;
+next	1.22;
+
+1.22
+date	2005.08.07.08.42.15;	author blep;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2005.03.07.21.34.45;	author blep;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2005.03.06.21.12.39;	author blep;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2005.03.06.21.01.45;	author blep;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2005.03.05.12.55.50;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2005.03.03.08.15.54;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2005.02.27.17.42.32;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2005.02.27.16.30.28;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2005.02.27.16.12.07;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2005.02.27.15.27.09;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2005.02.27.14.38.28;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2005.02.26.11.40.58;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2004.11.17.21.47.10;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2004.11.17.08.59.34;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2004.11.15.08.39.20;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2004.08.04.21.21.56;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.08.03.22.36.15;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.08.03.22.20.03;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.08.03.22.05.14;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.06.15.00.45.50;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.14.23.31.26;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.28
+log
+@In progress of adding CppTL::Value to replace CppTL::Any in table fixture and input based fixture. Value allows optionaly comparison, conversion to other type, conversion to string...
+@
+text
+@#include <cpput/test.h>
+#include <cpput/testsuite.h>
+#include <stdio.h>
+#include "assertenumtest.h"
+#include "assertstringtest.h"
+#include "enumeratortest.h"
+#include "reflectiontest.h"
+#include "registrytest.h"
+#include "testfixturetest.h"
+#include "smallmaptest.h"
+#include "valuetest.h"
+//#include "formattest.h"
+
+#include <cpput/lighttestrunner.h>
+
+
+bool testBasicAssertions();
+bool testExceptionGuard();
+//bool testTestRunResult();
+bool testTestSuite();
+bool testTestCase();
+bool testFunctors();
+bool testTestInfo();
+
+
+static bool bootStrapTest()
+{
+   return testBasicAssertions()  &&
+          testFunctors()  &&
+          testTestInfo()  &&
+          testExceptionGuard()  &&
+//          testTestContext() &&
+          testTestSuite() &&
+          testTestCase();
+}
+
+
+static void displayConfiguration()
+{
+   CppTL::StringBuffer config;
+// Thread API
+#if CPPTL_HAS_THREAD
+   config += "Thread: Yes, API = ";
+# if CPPTL_USE_WIN32_THREAD
+   config += "win32";
+# elif CPPTL_USE_PTHREAD_THREAD
+   config += "pthread";
+# else
+   config += "???";
+# endif
+   config += "\n";
+#else
+   config += "Thread: No\n";
+#endif
+// Atomic counter implementation
+   config += "Atomic counter API: ";
+#if CPPTL_HAS_THREAD_SAFE_ATOMIC_COUNTER
+# if CPPTL_USE_LINUX_ATOMIC
+   config += "linux atomic operations (limited to 24 bits)";
+# elif CPPTL_USE_WIN32_ATOMIC
+   config += "win32";
+# elif CPPTL_USE_PTHREAD_ATOMIC
+   config += "pthread mutex";
+# else
+   config += "???";
+# endif
+#else
+   config += "none (not thread-safe)";
+#endif
+   config += "\n";
+// Int64
+   config += "Int64: ";
+#ifndef CPPTL_NO_INT64
+   config += "Yes\n";
+#else
+   config += "No\n";
+#endif
+// RTTI
+   config += "RTTI: ";
+#ifndef CPPTL_NO_RTTI
+   config += "Yes\n";
+#else
+   config += "No\n";
+#endif
+
+   printf( "=> CPPUT Configuration:\n%s\n", config.c_str() );
+}
+
+
+int main( int argc, const char *argv[] )
+{
+   displayConfiguration();
+
+   bool bootStrapSuccess = bootStrapTest();
+
+   if ( !bootStrapSuccess )
+   {
+      printf( "bootstrap tests failed...\n" );
+      return 1;
+   }
+
+   printf( "All bootstrap tests passed successfuly...\n" );
+
+   // Notes: the Registry must not be used. Some tests are
+   // registered statically in the Registry to unit test the registration
+   // macros (see RegistryTest).
+   CppUT::TestSuitePtr allSuite = CppUT::makeTestSuite( "All tests" );
+   allSuite->add( RegistryTest::suite() );
+   allSuite->add( TestFixtureTest::suite() );
+   allSuite->add( AssertStringTest::suite() );
+   allSuite->add( EnumeratorTest::suite() );
+   allSuite->add( AssertEnumTest::suite() );
+   allSuite->add( ReflectionTest::suite() );
+   allSuite->add( SmallMapTest::suite() );
+   allSuite->add( ValueTest::suite() );
+//   allSuite->add( FormatTest::suite() );
+   // allSuite->add( CommandLineOptionsTest::suite() );
+
+/* // using opentest
+   CppUT::TestRunner runner;
+   CppUT::AbstractTestSuitePtr rootSuite = 
+      CppTL::staticPointerCast<CppUT::AbstractTestSuite>( allSuite );
+   runner.setRootSuite( rootSuite );
+
+   OpenTest::TextTestDriver driver( runner );
+   bool sucessful = driver.run();
+*/
+
+   CppUT::LightTestRunner runner;
+   runner.addTest( allSuite.get() );
+   bool sucessful = runner.runAllTests();
+   return sucessful ? 0 : 1;
+}
+@
+
+
+1.27
+log
+@* added CppTL:SmallMap, a std::map like container that use a sorted vector to hold item.
+@
+text
+@d11 1
+d115 1
+@
+
+
+1.26
+log
+@- added unit tests for TestInfo
+- fixed bug in CPPUT_IGNORE_FAILURE and exception guard.
+- added 'isIgnoredFailure' to Assertion.
+- lighttestrunner now print ignored failure and skipped tests.
+@
+text
+@d10 1
+d113 1
+@
+
+
+1.25
+log
+@- fixed static registration macro for Registry
+- static registration macros must no longer be followed by a semi-colon
+  (therefore we get compiler error if registry.h was not included)
+- allow registration macros to work with class implenting suite() or suite( const std::string &).
+@
+text
+@d6 2
+a8 1
+#include "enumeratortest.h"
+a9 1
+#include "reflectiontest.h"
+d21 1
+d28 1
+@
+
+
+1.24
+log
+@* removed formattest as it is experimental stuff.
+@
+text
+@d100 3
+@
+
+
+1.23
+log
+@* fixed compilation without RTTI
+* revised stringize implementation to allow an additional customization point by overloading toString().
+* added test and corrected bug in serialization/packets implementation.
+@
+text
+@d10 1
+a10 1
+#include "formattest.h"
+a12 2
+//#include <cpput/testrunner.h>    // cppunit2 testrunner for opentest
+//#include <opentest/texttestdriver.h>
+d107 1
+a107 1
+   allSuite->add( FormatTest::suite() );
+@
+
+
+1.22
+log
+@- Added test run summary at the end of test run
+- cpputtest now use LightTestRunner instead of OpenTest.
+@
+text
+@d10 1
+d109 1
+@
+
+
+1.21
+log
+@* added global define to indicate if atomic counter is thread-safe
+* removed vacpp specific atomic counter implementation (couldn't get it to compile)
+* added pthread mutex based atomic counter implementation
+@
+text
+@d11 3
+a13 2
+#include <cpput/testrunner.h>    // cppunit2 testrunner for opentest
+#include <opentest/texttestdriver.h>
+d110 1
+d118 5
+@
+
+
+1.20
+log
+@* added pthread api activation
+* added CPPTL_USE_WIN32_ATOMIC for WIN32
+@
+text
+@d53 2
+a54 3
+#if CPPTL_HAS_VACPP_CHECKLOCK
+   config += "Visual Age C++ built-in __check_lock()";
+#elif CPPTL_USE_LINUX_ATOMIC
+d56 1
+a56 1
+#elif CPPTL_USE_WIN32_ATOMIC
+d58 5
+@
+
+
+1.19
+log
+@* added configuration dump before running the test
+@
+text
+@d57 1
+a57 1
+#elif defined(WIN32)
+@
+
+
+1.18
+log
+@* removed include of commandlineoptiontest
+@
+text
+@d34 48
+d84 2
+@
+
+
+1.17
+log
+@* added unit tests for CppTL::Reflect
+@
+text
+@a5 1
+#include "commandlineoptionstest.h"
+@
+
+
+1.16
+log
+@* added tests for ExceptionGuard.
+* fixed bug in ExceptionGuard::append()
+@
+text
+@d10 1
+d53 1
+@
+
+
+1.15
+log
+@* removed dependency on <iostream>.
+* added progress traces while running bootstrap tests.
+@
+text
+@d16 1
+a16 1
+//bool testTestContext();
+d27 1
+a27 1
+//          testTestRunResult()  &&
+@
+
+
+1.14
+log
+@* ported the TestFixture tests back to the new framework architecture.
+@
+text
+@d3 1
+a3 1
+#include <iostream>
+d40 1
+a40 1
+      std::cout  <<  "bootstrap tests failed..."  <<  std::endl;
+d44 1
+a44 1
+   std::cout  <<  "All bootstrap tests passed successfuly..."  <<  std::endl;
+@
+
+
+1.13
+log
+@* ported the Registry tests back to the new framework architecture.
+@
+text
+@d9 1
+a9 1
+//#include "testfixturetest.h"
+d48 1
+a48 1
+//   allSuite->add( TestFixtureTest::suite() );
+@
+
+
+1.12
+log
+@* changed cppunit 2 to use the new functors (cpptl/functor.h). bind_cfn & bind_memfn simplified some of the test code.
+@
+text
+@d7 1
+a7 1
+//#include "registrytest.h"
+d47 1
+a47 1
+//   allSuite->add( RegistryTest::suite() );
+@
+
+
+1.11
+log
+@* simpler implementation of functors.
+* complete rewrote of the generator (much easier to maintain)
+@
+text
+@a20 1
+bool testFunctors3();
+a26 1
+          testFunctors3()  &&
+@
+
+
+1.10
+log
+@* started removing TestDriver stuff from CppUnit 2
+* Removed Test::run(), Test::totalTestCount and Test::parent
+* User can only subclass AbstractTestSuite or AbstractTestCase.
+* AbstractTest has been inlined into Test
+* Test no longer have parent
+* Removed TestListener::enterTest() & TestListener::exitTest()
+* Moved responsibility of running TestCase from AbstractTestCase to TestContext::run( AbstractTestCase &test ).
+* Removed method related to suite and enter/exit event from TestContext.
+* Disabled some unit tests (rely on running test which will change again shortly)
+@
+text
+@d21 1
+a21 1
+//bool testFunctors2();
+d28 1
+a28 1
+//          testFunctors2()  &&
+@
+
+
+1.9
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@a0 2
+#include <cpput/progresslistener.h>
+#include <cpput/testrunresult.h>
+a1 1
+#include <cpput/testcontext.h>
+d7 1
+a7 1
+#include "registrytest.h"
+d9 1
+a9 1
+#include "testfixturetest.h"
+d16 2
+a17 2
+bool testTestContext();
+bool testTestRunResult();
+d29 2
+a30 2
+          testTestRunResult()  &&
+          testTestContext() &&
+a35 26
+static void dumpFailures( const CppUT::TestSuite &allSuite,
+                          const CppUT::TestRunResult &result )
+{
+   if ( result.successful() )
+   {
+      std::cout  <<  "All "  <<  allSuite.totalTestCount()  <<  " tests passed..."   <<  std::endl;
+      return;
+   }
+
+   for ( int index =0; index < result.failureCount(); ++index )
+   {
+      const CppUT::TestResult &failure = result.failureAt( index );
+
+      if ( failure.location().isValid() )
+         std::cout  <<  failure.location().toString()  <<  ": ";
+      else
+         std::cout  <<  "Unknown failure location: ";
+      std::cout  << CppUT::path( failure.test() )  <<  std::endl;
+      std::cout  <<  failure.message().toString()  <<  std::endl;
+   }
+
+   std::cout  <<  "Failures: "  << result.failureCount()  <<  ", ";
+   std::cout  <<  "Tested: "  <<  allSuite.totalTestCount()  <<  std::endl;
+}
+
+
+d49 2
+a50 2
+   allSuite->add( RegistryTest::suite() );
+   allSuite->add( TestFixtureTest::suite() );
+a55 13
+
+/* // Old stuff using CppUnit 2
+   CppUT::TestContext context;
+   CppUT::TestRunResult result;
+   context.add( result );
+   CppUT::BriefProgressListener progress;
+   context.add( progress );
+   allSuite->run( context );
+
+   dumpFailures( *allSuite, result );
+   return result.successful() ? 0 : 1;
+*/
+
+@
+
+
+1.8
+log
+@* disabled test failing on VC++ 6
+* using OpenTest TextTestDriver instead of CppUnit runner stuff.
+@
+text
+@d100 1
+a100 1
+      CppUT::staticPointerCast<CppUT::AbstractTestSuite>( allSuite );
+@
+
+
+1.7
+log
+@* moved drafty progress listener from main.cpp to include/cpput/progresslistener.h
+@
+text
+@d14 3
+d24 1
+d31 1
+d83 1
+a83 1
+   allSuite->add( CommandLineOptionsTest::suite() );
+d86 1
+d96 10
+@
+
+
+1.6
+log
+@* renamed TestFailure to TestResult (can now be a success or a failure)
+* renamed testfailure.h to testresult.h
+* renamed testresult.cpp to testtestrunresult.cpp
+@
+text
+@d1 1
+a33 7
+static std::string makeTestPath( const CppUT::Test &test )
+{
+   if ( test.parentTest() )
+      return makeTestPath( *test.parentTest() ) + "/" + test.name();
+   return test.name();
+}
+
+d51 1
+a51 1
+      std::cout  << makeTestPath( failure.test() )  <<  std::endl;
+a59 26
+
+class ShowProgress : public CppUT::TestListener
+{
+public:
+   void testFailed( const CppUT::TestResult &failure, 
+                    CppUT::TestContext &context )
+   {
+      testFailed_ = true;
+   }
+
+   void enterTest( CppUT::Test &test, CppUT::TestContext &context )
+   {
+      testFailed_ = false;
+      std::cout  <<  "Testing '" << makeTestPath( test ) << "' : ";
+      std::cout.flush();
+   }
+
+   void exitTest( CppUT::Test &test, CppUT::TestContext &context )
+   {
+      std::cout  <<  (testFailed_ ? "FAILURE" : "OK")  <<  std::endl;
+   }
+
+   bool testFailed_;
+};
+
+
+d84 1
+a84 1
+   ShowProgress progress;
+@
+
+
+1.5
+log
+@* renamed Result to TestRunResult (and cpput/result.h to cpput/testrunresult.h)
+@
+text
+@d16 1
+a16 1
+bool testResult();
+d26 1
+a26 1
+          testResult()  &&
+d51 1
+a51 1
+      const CppUT::TestFailure &failure = result.failureAt( index );
+d70 1
+a70 1
+   void testFailed( const CppUT::TestFailure &failure, 
+@
+
+
+1.4
+log
+@* test failure type is now parametrized. The framework recognize 'fault' and 'assertion', but the user can define any failure type.
+* properties are now associated to the failure message and can be used to pass any structured data to the test report (such as run time...).
+* TestFailure can now be either a success or a failure (need renaming).
+* Next step is to send a generic TestResult event to listener, and collect TestResult identically for both successful and failing tests.
+@
+text
+@d1 1
+a1 1
+#include <cpput/result.h>
+d41 1
+a41 1
+                          const CppUT::Result &result )
+d114 1
+a114 1
+   CppUT::Result result;
+@
+
+
+1.3
+log
+@* fixed compilation issue related to changing OptionValue into the new Value library
+@
+text
+@d57 1
+a57 1
+      std::cout  << makeTestPath( failure.failedTest() )  <<  std::endl;
+@
+
+
+1.2
+log
+@* adding cpputtools library, command line options among other thing (for test runners). In progress.
+@
+text
+@d8 1
+a8 1
+//#include "commandlineoptions.h"
+d110 1
+a110 1
+//   allSuite->add( CommandLineOptionsTest::suite() );
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a0 1
+#include <iostream>
+d5 1
+d8 1
+d80 1
+d91 1
+d110 1
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

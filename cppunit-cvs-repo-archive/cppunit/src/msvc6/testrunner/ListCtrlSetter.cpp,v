@@ -1,0 +1,278 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2
+	REL_1_9_4:1.2
+	REL_1_9_0:1.2
+	REL_1_8_0:1.2
+	REL_1_7_8:1.2
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.3
+date	2004.06.18.11.20.42;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.03.25.07.15.06;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.27.21.23.22;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* added DEBUG_NEW for memory leaks tracking
+@
+text
+@#include "StdAfx.h"
+#include "ListCtrlSetter.h"
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+
+
+ListCtrlSetter::ListCtrlSetter( CListCtrl &list ) :
+    m_List( list ),
+    m_nLineNo( -1 )
+{
+}
+
+
+ListCtrlSetter::~ListCtrlSetter()
+{
+}
+
+
+void 
+ListCtrlSetter::modifyLine( int nLineNo )
+{
+  editLine( nLineNo, nLineNo >= m_List.GetItemCount() );
+}
+
+
+void 
+ListCtrlSetter::addLine()
+{
+  editLine( m_List.GetItemCount(), true );
+}
+
+
+void 
+ListCtrlSetter::insertLine( int nLineNo )
+{
+  editLine( nLineNo, true );
+}
+
+
+void 
+ListCtrlSetter::editLine( int nLineNo, 
+                          bool bInsertLine )
+{
+  m_nLineNo = nLineNo;
+  m_bInsertLine = bInsertLine;
+  m_nNextSubItem = 0;
+}
+
+
+void 
+ListCtrlSetter::addSubItem( const CString &strText )
+{
+  doAddSubItem( LVIF_TEXT, strText, 0 );
+}
+
+
+void 
+ListCtrlSetter::addSubItem( const CString &strText, 
+                            void *lParam )
+{
+  doAddSubItem( LVIF_TEXT | LVIF_PARAM, strText, 0, lParam );
+}
+
+
+void 
+ListCtrlSetter::addSubItem( const CString &strText,
+                            int nImage )
+{
+  doAddSubItem( LVIF_TEXT | LVIF_IMAGE, strText, nImage );
+}
+
+
+void 
+ListCtrlSetter::addSubItem( const CString &strText, 
+                            void *lParam,
+                            int nImage )
+{
+  doAddSubItem( LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM, strText, 0, lParam );
+}
+
+
+void 
+ListCtrlSetter::doAddSubItem( UINT nMask, 
+                              CString strText, 
+                              int nImage, 
+                              void *lParam )
+{
+  int textLength = strText.GetLength();
+
+  LVITEM item;
+  item.mask = nMask;
+  item.pszText = strText.GetBuffer( textLength );
+  item.cchTextMax = textLength;
+  item.iImage = nImage;
+  item.lParam = (LPARAM)lParam;
+  item.iItem = m_nLineNo;
+  item.iSubItem = m_nNextSubItem++;
+  if ( m_nNextSubItem == 1  &&
+       m_bInsertLine )      // First item & new line
+  {
+    m_nLineNo = m_List.InsertItem( &item );
+    VERIFY( m_nLineNo >= 0 );
+  }
+  else
+  {
+    VERIFY( m_List.SetItem( &item ) );
+  }
+
+  strText.ReleaseBuffer();
+}
+
+
+int 
+ListCtrlSetter::getLineNo() const
+{
+  return m_nLineNo;
+}
+@
+
+
+1.2
+log
+@* INSTALL-WIN32.txt: updated for MFC Unicode TestRunner.
+
+* src/msvc6/testrunner/TestRunner.dsp: added Unicode configurations.
+
+* src/msvc6/testrunner/ListCtrlSetter.cpp:
+* src/msvc6/testrunner/ListCtrlSetter.h: replaced usage of std::string by
+CString for easier ansi/unicode switch.
+
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: made changes to compile with
+either ANSI and UNICODE support.
+
+* examples/msvc6/HostApp/HostApp.cpp:
+* examples/msvc6/HostApp/HostApp.h:
+* examples/msvc6/HostApp/HostAppDoc.cpp:
+* examples/msvc6/HostApp/HostAppDoc.h: moved TestRunner execution to
+HostApp::RunUnitTests() and removed the MainFrame application window.
+
+* examples/msvc6/HostApp/HostApp.dsp: added Unicode configurations.
+@
+text
+@d4 7
+@
+
+
+1.1
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+moved dll copy from post-build to custom build setting, so that the
+dll is copied even if the CppUnitTestApp was not modified.
+
+* examples/msvc6/TestPlugIn/: a new example of test plug in.
+
+* src/msvc6/TestRunner/ListCtrlFormatter.*
+* src/msvc6/TestRunner/ListCtrlSetter.*:
+added, helper to manipulate list control.
+
+* src/msvc6/TestRunner/TestRunnerDlg.*: change to make the error list
+more compact. text moved to string resources. icons added for typ
+test tfailure type.
+
+* src/msvc6/TestRunner/MostRecentTests.*: added, classes that will
+replace the current implementation of MRU test which make it hard
+to subclass the dialog.
+
+* src/msvc6/TestRunner/res/errortype.bmp: added, bitmap with error
+types (failure and error).
+
+* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+
+* src/cppunit/cppunit.dsp:
+removed config.h from project
+added Portability.h and config-msvc6.h
+
+* include/cppunit/config-msvc6.h:
+undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+@
+text
+@d49 1
+a49 1
+ListCtrlSetter::addSubItem( const std::string &strText )
+d56 1
+a56 1
+ListCtrlSetter::addSubItem( const std::string &strText, 
+d64 2
+a65 2
+ListCtrlSetter::addSubItem( int nImage, 
+                            const std::string &strText )
+d72 3
+a74 3
+ListCtrlSetter::addSubItem( int nImage, 
+                            const std::string &strText, 
+                            void *lParam )
+d82 1
+a82 1
+                              const std::string &strText, 
+d86 2
+d90 2
+a91 2
+  item.pszText = (char *)strText.c_str();
+  item.cchTextMax = strText.length();
+d106 2
+@
+

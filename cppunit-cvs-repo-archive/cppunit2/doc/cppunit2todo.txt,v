@@ -1,0 +1,236 @@
+head	1.3;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.2
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.2
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.3
+date	2005.09.06.07.14.49;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.11.16.08.47.29;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.11.15.20.41.12;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* added CPPTL_ARRAY_SIZE
+* added typedef LargestInt and LargestUnsignedInt
+@
+text
+@==============
+CppUnit 2 todo
+==============
+
+:Author: Baptiste Lepilleur
+:Contact: blep@@users.sourceforge.net
+
+.. contents::
+
+.. _TestDriver: opentest.html
+.. _TestRunner: opentest.html
+.. _`Open Test`: opentest.html
+
+
+Moving CppUnit 2 to Open Test
+=============================
+
+Starting point
+--------------
+
+Currently, the framework has adopted CppUnit approach to driving testing. 
+This means that the framework provides services for both TestDriver_ and
+TestRunner_ responsibility.
+
+Since CppUnit is a testing framework, it should only provide the 
+TestRunner_ for integration with `Open Test`_.
+
+What should be removed?
+-----------------------
+
+* All stuffs concerning test reporting, output result must be removed
+  (will likely be moved to OpenTest but will no longer be based on
+  CppUnit classes).
+
+Should at least include the following headers:
+
+* progresslistener.h
+* properties.h  (should use OpenTest properties or some proxy)
+* testcontext.h (some stuff need to be preserved, see `What need to be changed?`_)
+* testlistener.h
+* testresult.h (preserved some stuff, integrate some to the TestRunner)
+* testrunresult.h
+
+*Status*: done (2004/11/22)
+
+What need to be changed?
+------------------------
+
+* Test should no longer be runnable
+* TestContext guard chain and protect functions should be moved
+  to the TestRunner. The rest should be taken out => no more TestListener.
+* TestResult should be integrated to TestRunner.
+
+*Status*: done (2004/11/22)
+
+Features to add
+===============
+
+Test descriptive information
+----------------------------
+
+Provides a way to associate descriptive information to a test.
+
+**Warning**: it should be designed/documented so that only the framework 
+uses it to declare test.
+
+Should also find a way to integrate this with test fixture declaration.
+
+*Status*: done (2004/11/22). A warning doc has been written. Update of
+info after declaration will simply not be taken in account.
+
+Test configuration information
+------------------------------
+
+Just before test execution, test descriptive information should be merged
+with test configuration information (configuration information overriding
+test descriptive information if they share properties).
+
+A mean should be provided to the user to access a read only copy of
+those data.
+
+Test result information
+-----------------------
+
+The user should be able to set test result information during the test
+run.
+
+This can be used to add a line of log, set specific message, 
+actual values, assertion location...
+
+*Status*: done (2004/11/22). 
+
+Logging stream
+--------------
+
+Provides a logging stream that associated logged data to the test.
+
+Logged data should be sent to the TestDriver on each '\\n'. This probably 
+requires implementing a streambuffer.
+
+This logging stream would be a singleton, like std::cout => CppUT::log. 
+
+Data written in the stream should be forwarded to the component
+managing TestInfo (TestRunner ?). This ensures that the correct threading
+strategy is used (one log per thread, one log for all thread...).
+
+*Status*: 
+
+* 2004/11/22: Study show that it can not be done. std::basic_stream are 
+  not thread-safe. An alternative solution could be to embed the stream in 
+  TestInfoData and returning it from a function. Further study are required 
+  to see how this would work with context switch.
+
+Checking assertions vs. aborting assertions
+-------------------------------------------
+
+Checking assertions (opposed to aborting assertions) need to be added.
+
+This should use the same mechanism as `setCheckPointLocation()`:
+
+* `setAssertionType( checkingAssertion )`
+* `setAssertionType( abortingAssertion )`
+
+The `fail` function checks the assertion type to determine if an assertion
+if thrown of is an assertion occurred.
+
+It might also be interesting to see if removing Message is worth it. It could
+be replaced by direct update of the current assertion `Properties`.
+
+*Status*: 
+
+* 2004/11/22: framework has been modified to support checking assertions. Macro need to
+  be added to correctly set the assertion mode (CPPUT_CHECK_xxx).
+
+Test plug-in wrapper application
+--------------------------------
+
+A TestRunner wrapper application needs to be written for test plug-in
+support with Open test.
+
+The wrapper application:
+
+* load the DLL
+* call a specific function on the DLL passing remaining command-line parameter
+
+Features to enhance
+===================
+
+Equality check
+--------------
+
+At the current time it is impossible to overload the 
+equality check on older compiler without 
+function template ordering support such as VC++ 6 (you must specialize
+the trait template)
+
+The current implementation should be enhanced to detect if a 
+specific overload is provided for comparison of AType and BType
+is provided, and automatically fallback on the generic == otherwise.
+This is similar to the convert to string trick used by stringize().
+
+This would solve the overloading issue on older compiler without 
+function template ordering support.
+
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   sentence-end-double-space: t
+   fill-column: 70
+   End:
+
+@
+
+
+1.2
+log
+@* added a bit about functional testing
+@
+text
+@d44 2
+d54 2
+d69 3
+d91 2
+d107 7
+d130 5
+@
+
+
+1.1
+log
+@* added some documentations: features, open test, todo for cppunit 2 and open test. docutils is needed to build the doc.
+@
+text
+@d125 19
+@
+

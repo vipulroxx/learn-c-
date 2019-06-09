@@ -1,0 +1,105 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.2
+date	2002.09.16.20.11.45;	author esche;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.08.27.21.51.18;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@moved header to top
+@
+text
+@#include <cppunit/plugin/PlugInParameters.h>
+
+#if !defined(CPPUNIT_NO_TESTPLUGIN)
+
+CPPUNIT_NS_BEGIN
+
+
+PlugInParameters::PlugInParameters( const std::string &commandLine )
+    : m_commandLine( commandLine )
+{
+}
+
+
+PlugInParameters::~PlugInParameters()
+{
+}
+
+
+std::string 
+PlugInParameters::getCommandLine() const
+{
+  return m_commandLine;
+}
+
+
+CPPUNIT_NS_END
+
+#endif // !defined(CPPUNIT_NO_TESTPLUGIN)
+@
+
+
+1.1
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d1 2
+a3 2
+
+#include <cppunit/plugin/PlugInParameters.h>
+@
+

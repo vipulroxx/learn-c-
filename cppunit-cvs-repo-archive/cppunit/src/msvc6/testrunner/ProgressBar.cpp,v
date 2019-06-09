@@ -1,0 +1,504 @@
+head	1.4;
+access;
+symbols
+	REL_1_12_1:1.4
+	REL_1_11_6:1.4
+	REL_1_11_4:1.4
+	REL_1_11_0:1.4
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2
+	REL_1_9_4:1.2
+	REL_1_9_0:1.2
+	REL_1_8_0:1.2
+	REL_1_7_8:1.2
+	REL_1_7_3:1.2
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1
+	REL_1_5_5:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.4
+date	2005.06.14.21.08.47;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.06.13.23.25.55;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.10.24.20.03.29;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.28.14.27.24;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* src/msvc6/testrunner/ProgressBar.cpp: applied patch from bug #1165875,
+(use system color for border instead of hard-coded color).
+@
+text
+@#include "stdafx.h"
+#include "ProgressBar.h"
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+ProgressBar::ProgressBar()
+    : m_error( false )
+    , m_total( 0 )
+    , m_progress( 0 ) 
+    , m_progressX( 0 )
+{
+}
+
+
+ProgressBar::~ProgressBar()
+{
+}
+
+
+BEGIN_MESSAGE_MAP(ProgressBar, CWnd)
+	//{{AFX_MSG_MAP(ProgressBar)
+	ON_WM_PAINT()
+	ON_WM_SIZE()
+	ON_WM_ERASEBKGND()
+	//}}AFX_MSG_MAP
+END_MESSAGE_MAP()
+
+
+void 
+ProgressBar::OnPaint() 
+{
+	CPaintDC dc(this); // device context for painting
+  paint( dc );
+}
+
+
+// Paint the progress bar in response to a paint message
+void 
+ProgressBar::paint( CDC &dc )
+{
+  paintBackground( dc );
+  paintStatus( dc );
+}
+
+
+// Paint the background of the progress bar region
+void 
+ProgressBar::paintBackground( CDC &dc )
+{
+  CBrush brshBackground;
+  CPen penShade( PS_SOLID, 1, GetSysColor(COLOR_3DSHADOW) );
+  CPen penLight( PS_SOLID, 1, GetSysColor(COLOR_3DHILIGHT) );
+
+  VERIFY( brshBackground.CreateSolidBrush( ::GetSysColor (COLOR_BTNFACE) ) );
+
+  dc.FillRect( m_bounds, &brshBackground );
+  
+  CPen *pOldPen = dc.SelectObject( &penShade );
+  int xRight = m_bounds.left + m_bounds.Width() -1;
+  int yBottom = m_bounds.top + m_bounds.Height() -1;
+  {
+    dc.MoveTo( m_bounds.left, m_bounds.top );
+    dc.LineTo( xRight, m_bounds.top );
+
+    dc.MoveTo( m_bounds.left, m_bounds.top );
+    dc.LineTo( m_bounds.left, yBottom );
+  }
+
+  dc.SelectObject( &penLight );
+  {
+    dc.MoveTo( xRight, m_bounds.top );
+    dc.LineTo( xRight, yBottom );
+
+    dc.MoveTo( m_bounds.left, yBottom );
+    dc.LineTo( xRight, yBottom );
+  }
+
+  dc.SelectObject( pOldPen );
+}
+
+
+// Paint the actual status of the progress bar
+void 
+ProgressBar::paintStatus( CDC &dc )
+{
+  if ( m_progress <= 0 )
+    return;
+
+  CBrush brshStatus;
+  CRect rect( m_bounds.left, m_bounds.top, 
+              m_bounds.left + m_progressX, m_bounds.bottom );
+
+  COLORREF statusColor = getStatusColor();
+
+  VERIFY( brshStatus.CreateSolidBrush( statusColor ) );
+
+  rect.DeflateRect( 1, 1 );
+  dc.FillRect( rect, &brshStatus );
+}
+
+
+// Paint the current step
+void 
+ProgressBar::paintStep( int startX, 
+                        int endX )
+{
+  CRect redrawBounds( m_bounds.left + startX-1, m_bounds.top, 
+                      m_bounds.left + endX, m_bounds.bottom );
+  RedrawWindow( redrawBounds );
+}
+
+
+// Setup the progress bar for execution over a total number of steps
+void 
+ProgressBar::start( int total )
+{
+  m_total = total;
+  reset ();
+}
+
+
+// Take one step, indicating whether it was a successful step
+void 
+ProgressBar::step( bool successful )
+{
+  m_progress++;
+
+  int x = m_progressX;
+
+  m_progressX = scale (m_progress);
+
+  if ( !m_error  &&  !successful )
+  {
+    m_error = true;
+    x = 1;
+  }
+
+  paintStep( x, m_progressX );
+}
+
+
+// Map from steps to display units
+int 
+ProgressBar::scale( int value )
+{
+  if ( m_total > 0 )
+      return max( 1, value * (m_bounds.Width() - 1) / m_total );
+
+  return value;
+}
+
+
+// Reset the progress bar
+void 
+ProgressBar::reset()
+{
+  m_progressX = 1;
+  m_progress = 0;
+  m_error = false;
+
+  RedrawWindow( m_bounds );
+  UpdateWindow( );
+}
+
+
+void 
+ProgressBar::OnSize(UINT nType, int cx, int cy) 
+{
+	CWnd::OnSize(nType, cx, cy);
+
+  GetClientRect( &m_bounds );
+  m_progressX = scale (m_progress);
+  Invalidate();
+}
+
+
+BOOL 
+ProgressBar::OnEraseBkgnd( CDC *pDC )
+{
+  return FALSE;
+}
+@
+
+
+1.3
+log
+@* src/cppunit/CompilerOutputter.cpp: fixed bug #549762 (line wrap).
+
+* src/msvc6/testrunner/DynamicWindow/*: added. Dynamic Window library
+  from Hans Bühler (hans.buehler@@topmail.de) to resize window.
+
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TestRunnerModel.cpp: removed dialog bounds from
+  settings. Added public registry keys for cppunit, main dialog, and
+  browse dialog.
+
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: dialog is now resizable.
+  Window placement is stored and restored.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replaced dialog resizing code
+  by usage of Hans Bühler's Dynamic Window library. Dialog placement
+  is stored/restored by that library. ProgressBar is now a child window.
+  Added edit field to see the details of the failure. List on show
+  the short description of the failure.
+
+* src/msvc6/testrunner/ProgressBar.h:
+* src/msvc6/testrunner/ProgressBar.cpp: is now a CWnd.
+
+* src/msvc6/testrunner/TestRunner.rc: named all static fill ID for resizing.
+  Added an invisble static field for progress bar placement.
+@
+text
+@d55 2
+a56 2
+  CPen penGray( PS_SOLID, 1, RGB (128, 128, 128) );
+  CPen penWhite( PS_SOLID, 1, RGB (255, 255, 255) );
+d62 1
+a62 1
+  CPen *pOldPen = dc.SelectObject( &penGray );
+d73 1
+a73 1
+  dc.SelectObject( &penWhite );
+@
+
+
+1.2
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+* examples/msvc6/HostApp/HostApp.dsp: use custom file build instead
+of post-build/pre-link step to copy the TestRunner DLL to the
+Release/Debug directory.
+
+* src/msvc6/ProgressBar.cpp:
+* src/msvc6/ProgressBar.h:
+* src/msvc6/TestRunner.rc:
+* src/msvc6/TestRunnerDlg.cpp:
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/testRunner.dsp:
+* src/msvc6/TestRunnerModel.cpp:
+* src/msvc6/TestRunnerModel.h: included Gigi Sayfan (gigi@@morphink.com)
+patch. The dialog can now be resized, and list view columns and dialog
+sizes are saved.
+
+* src/msvc6/ProgressBar.cpp:
+* src/msvc6/ProgressBar.h: Minor refactoring.
+
+* THANKS: added Gigi Sayfan to the list.
+@
+text
+@d4 5
+d10 5
+a14 9
+// Construct a ProgressBar
+ProgressBar::ProgressBar( CWnd *baseWindow, 
+                          CRect &bounds ) :
+    m_baseWindow( baseWindow ), 
+    m_bounds( bounds ), 
+    m_error( false ),
+    m_total( 0 ), 
+    m_progress( 0 ), 
+    m_progressX( 0 )
+d19 22
+d108 2
+a109 1
+ProgressBar::paintStep (int startX, int endX)
+d111 3
+a113 3
+  // kludge: painting the whole region on each step
+  m_baseWindow->RedrawWindow( m_bounds );
+  m_baseWindow->UpdateWindow( );
+a125 11
+// Set the width of the progress bar, scale the  and invalidate the base window
+void 
+ProgressBar::setWidth( int width )
+{
+  m_baseWindow->InvalidateRect( m_bounds ); // invalidate before
+  m_bounds.right = m_bounds.left + width;
+  m_progressX = scale( m_progress );
+  m_baseWindow->InvalidateRect( m_bounds ); // and invalidate after
+}
+
+
+d148 1
+a148 1
+ProgressBar::scale (int value)
+d165 20
+a184 2
+  m_baseWindow->RedrawWindow( m_bounds );
+  m_baseWindow->UpdateWindow( );
+@
+
+
+1.1
+log
+@Merged msvc6 specific TestRunner and example adapted from Michael Feathers
+version by Baptiste Lepilleur.
+@
+text
+@a0 2
+
+
+d5 12
+d19 2
+a20 1
+void ProgressBar::paint (CDC& dc)
+d22 2
+a23 2
+    paintBackground (dc);
+    paintStatus (dc);
+d28 2
+a29 1
+void ProgressBar::paintBackground (CDC& dc)
+d31 27
+a57 29
+    CBrush      brshBackground;
+    CPen        penGray     (PS_SOLID, 1, RGB (128, 128, 128));
+    CPen        penWhite    (PS_SOLID, 1, RGB (255, 255, 255));
+
+    VERIFY (brshBackground.CreateSolidBrush (::GetSysColor (COLOR_BTNFACE)));
+
+    dc.FillRect (m_bounds, &brshBackground);
+    
+    CPen    *pOldPen;
+            
+    pOldPen = dc.SelectObject (&penGray);
+    {
+        dc.MoveTo (m_bounds.left, m_bounds.top);
+        dc.LineTo (m_bounds.left + m_bounds.Width () -1, m_bounds.top);
+
+        dc.MoveTo (m_bounds.left, m_bounds.top);
+        dc.LineTo (m_bounds.left, m_bounds.top + m_bounds.Height () -1);
+
+    }
+    dc.SelectObject (&penWhite);
+    {
+        dc.MoveTo (m_bounds.left + m_bounds.Width () -1, m_bounds.top);
+        dc.LineTo (m_bounds.left + m_bounds.Width () -1, m_bounds.top + m_bounds.Height () -1);
+
+        dc.MoveTo (m_bounds.left, m_bounds.top + m_bounds.Height () -1);
+        dc.LineTo (m_bounds.left + m_bounds.Width () -1, m_bounds.top + m_bounds.Height () -1);
+
+    }
+    dc.SelectObject (pOldPen);
+d59 1
+d64 2
+a65 1
+void ProgressBar::paintStatus (CDC& dc)
+d67 2
+a68 2
+    if (m_progress <= 0)
+        return;
+d70 3
+a72 3
+    CBrush      brshStatus;
+    CRect       rect (m_bounds.left, m_bounds.top, 
+                    m_bounds.left + m_progressX, m_bounds.bottom);
+d74 1
+a74 1
+    COLORREF    statusColor = getStatusColor ();
+d76 1
+a76 4
+    VERIFY (brshStatus.CreateSolidBrush (statusColor));
+
+    rect.DeflateRect (1, 1);
+    dc.FillRect (rect, &brshStatus);
+d78 2
+d84 2
+a85 1
+void ProgressBar::paintStep (int startX, int endX)
+d87 4
+a90 3
+    // kludge: painting the whole region on each step
+    m_baseWindow->RedrawWindow (m_bounds);
+    m_baseWindow->UpdateWindow ();
+d92 7
+d102 3
+a104 2
+// Setup the progress bar for execution over a total number of steps
+void ProgressBar::start (int total)
+d106 4
+a109 2
+    m_total = total;
+    reset ();
+d114 2
+a115 1
+void ProgressBar::step (bool successful)
+d117 1
+a117 1
+    m_progress++;
+d119 1
+a119 1
+    int x = m_progressX;
+d121 1
+a121 1
+    m_progressX = scale (m_progress);
+d123 5
+a127 7
+    if (!m_error && !successful)
+    {
+        m_error = true;
+        x = 1;
+    }
+
+    paintStep (x, m_progressX);
+d129 1
+d134 2
+a135 1
+int ProgressBar::scale (int value)
+d137 2
+a138 4
+    if (m_total > 0)
+        return max (1, value * (m_bounds.Width () - 1) / m_total);
+
+    return value;
+d140 1
+d145 2
+a146 1
+void ProgressBar::reset ()
+d148 3
+a150 6
+    m_progressX     = 1;
+    m_progress      = 0;
+    m_error         = false;
+
+    m_baseWindow->RedrawWindow (m_bounds);
+    m_baseWindow->UpdateWindow ();
+d152 2
+a154 1
+
+@
+

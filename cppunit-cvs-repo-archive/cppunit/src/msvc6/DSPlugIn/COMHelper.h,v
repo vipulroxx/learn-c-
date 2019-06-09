@@ -1,0 +1,198 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.4
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2001.09.14.19.27.58;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* src/msvc6/testrunner/TestRunner.dsp: fixed release configuration.
+
+* src/msvc6/testrunner/TestRunner.dsw: added DSPlugIn.dsp. TestRunner
+depends on DSPlugIn.
+
+* src/msvc6/testrunner/TestRunner.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/DSPlugIn/*: integrated patch from
+Patrick Berny (PPBerny@@web.de). An add-ins for VC++. Double-cliking
+a failed test in the TestRunner, VC++ will open the source file and
+go to the failure location.
+
+* src/cppunit/Exception.cpp:
+* include/cppunit/Exception.h: compile fix, call to overrided
+operator = of parent class failed. Using typedef to the parent
+class fix that.
+
+* src/cppunit/cppunit.dsp: added TestFixture.h
+
+* src/cppunit/TestFactoryRegistry.cpp: removed <utility> which isn't
+needed any more.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/extensions/TestFactoryRegistry.h: added
+include <Portability.h> before any other includes to remove warning
+with VC++.
+
+* include/cppunit/Portability.h: moved platform specific includes at
+the beginning of the header. fixed CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION
+declaration.
+
+* include/cppunit/config-msvc6.h: removed pragma once (useless, should
+be put in each header to have an effect).
+@
+text
+@#ifndef COMHelper_h
+#define COMHelper_h
+
+#pragma warning( push)
+#pragma warning( disable: 4786)
+#pragma warning( disable: 4290)
+
+#include <new>
+#include <typeinfo>
+
+#include <comdef.h>
+#include <comip.h>
+
+namespace COMUtility
+{
+
+// simple template to reduce the typing effort when doing reinterpret<void**> casts
+template< typename Interface>
+  inline void** ppvoid( Interface **ppInterface)
+{
+  return reinterpret_cast< void**>( ppInterface);
+}
+
+
+template< typename Interface>
+  inline GUID* piid( const Interface* pInterface)
+{
+  return __uuidof( pInterface);
+}
+
+// to be used with _com_ptr_t, uses function overloading
+template< typename InterfacePtr>
+  inline GUID* piid( const InterfacePtr& pInterface)
+{
+  return const_cast< GUID*>( &pInterface.GetIID());
+}
+
+
+template< typename Interface>
+  inline const GUID& riid( const Interface* pInterface)
+{
+  return *__uuidof( pInterface);
+}
+
+// to be used with _com_ptr_t, use function overloading
+template< typename InterfacePtr>
+  inline const GUID& riid( const InterfacePtr& pInterface)
+{
+  return pInterface.GetIID();
+}
+
+
+// this is used for regular COM interface pointers
+template < class rawTargetInterface, class rawSourceInterface>
+  inline rawTargetInterface* interface_cast( rawSourceInterface* pSrcInterface) throw( std::bad_cast)
+{
+  rawTargetInterface* pTargetInterface = NULL;
+
+  if ( SUCCEEDED( pSrcInterface->QueryInterface( __uuidof( pTargetInterface),
+                                                 reinterpret_cast<void**>(&pTargetInterface))))
+    return pTargetInterface;
+  else
+    throw std::bad_cast();
+}
+
+
+// non-throwing versions of the same - need to use parameter std::nothrow on function call
+template < class rawTargetInterface, class rawSourceInterface>
+  inline rawTargetInterface* interface_cast( const std::nothrow_t&,
+                                             rawSourceInterface* pSrcInterface) throw()
+{
+  rawTargetInterface* pTargetInterface = NULL;
+
+  pSrcInterface->QueryInterface( __uuidof( pTargetInterface),
+                                 reinterpret_cast<void**>(&pTargetInterface));
+  return pTargetInterface;
+}
+
+
+// Is probably best used as a static member of the class, so it's
+// accessible everywhere
+class COMExceptionThrower
+{
+public:
+	COMExceptionThrower( void){}
+	~COMExceptionThrower( void){}
+
+	COMExceptionThrower( const HRESULT errCode)
+	{
+		this->operator=( errCode);
+	}
+		
+protected:
+	// don't allow regular copy constructor call
+	COMExceptionThrower( const COMExceptionThrower&);
+
+public:
+	inline const COMExceptionThrower& operator=( const HRESULT errCode) const throw( _com_error)
+	{
+		if ( FAILED( errCode))
+			_com_raise_error( errCode);
+			
+		return *this;
+	}
+};
+
+} // end namespace COMUtility
+
+#pragma warning( pop) 
+
+#endif // COMHelper_h
+@

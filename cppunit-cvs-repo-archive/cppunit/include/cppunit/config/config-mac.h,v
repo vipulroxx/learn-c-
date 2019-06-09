@@ -1,0 +1,186 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.15.15.24.14;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@#ifndef _INCLUDE_CPPUNIT_CONFIG_MAC_H
+#define _INCLUDE_CPPUNIT_CONFIG_MAC_H 1
+
+/* MacOS X should be installed using the configure script.
+   This file is for other macs.
+
+   It is not integrated into <cppunit/Portability.h> because we don't
+   know a suitable preprocessor symbol that will distinguish MacOS X
+   from other MacOS versions.  Email us if you know the answer.
+*/
+ 
+/* define if library uses std::string::compare(string,pos,n) */
+#ifdef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST 
+#undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+#endif
+
+/* define if the library defines strstream */
+#ifndef CPPUNIT_HAVE_CLASS_STRSTREAM 
+#define CPPUNIT_HAVE_CLASS_STRSTREAM  1 
+#endif
+
+/* Define if you have the <cmath> header file. */
+#ifdef CPPUNIT_HAVE_CMATH 
+#undef CPPUNIT_HAVE_CMATH
+#endif
+
+/* Define if you have the <dlfcn.h> header file. */
+#ifdef CPPUNIT_HAVE_DLFCN_H 
+#undef CPPUNIT_HAVE_DLFCN_H
+#endif
+
+/* define to 1 if the compiler implements namespaces */
+#ifndef CPPUNIT_HAVE_NAMESPACES 
+#define CPPUNIT_HAVE_NAMESPACES  1 
+#endif
+
+/* define if the compiler supports Run-Time Type Identification */
+#ifndef CPPUNIT_HAVE_RTTI 
+#define CPPUNIT_HAVE_RTTI  1 
+#endif
+
+/* define if the compiler has stringstream */
+#ifndef CPPUNIT_HAVE_SSTREAM 
+#define CPPUNIT_HAVE_SSTREAM  1 
+#endif
+
+/* Define if you have the <strstream> header file. */
+#ifndef CPPUNIT_HAVE_STRSTREAM 
+#define CPPUNIT_HAVE_STRSTREAM  1 
+#endif
+
+/* Define to 1 to use type_info::name() for class names */
+#ifndef CPPUNIT_USE_TYPEINFO_NAME 
+#define CPPUNIT_USE_TYPEINFO_NAME  CPPUNIT_HAVE_RTTI 
+#endif
+
+/* _INCLUDE_CPPUNIT_CONFIG_MAC_H */
+#endif
+@
+
+
+1.1
+log
+@* NEWS: updated.
+
+* configure.in: added include/cppunit/config/Makefile and
+  include/cppunit/plugin/Makefile to the list of target.
+
+* doc/CppUnit-win.dox: enabled generation of HTML Help documentation.
+
+* include/cppunit/config/Makefile.am:
+* include/cppunit/plugin/Makefile.am: added.
+
+* include/cppunit/config-bcb5.h:
+* include/cppunit/config-msvc6.h:
+* include/cppunit/config-mac.h: moved to include/cppunit/config/.
+
+* include/cppunit/Portability.h: updated config files location. Added macros
+  CPPUNIT_STRINGIZE and CPPUNIT_JOIN (implementation adapted from boost.org).
+  Added macro CPPUNIT_MAKE_UNIQUE_NAME.
+
+* include/cppunit/Test.h: modified methods order.
+
+* include/cppunit/extensions/HelperMacros.h: renamed macro
+  __CPPUNIT_MAKE_UNIQUE_NAME to CPPUNIT_MAKE_UNIQUE_NAME and moved its
+  definition to include/cppunit/Portability.h.
+
+* include/cppunit/extensions/TestDecorator.h: Inherits Test instead of TestLeaf.
+
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* src/cppunit/DynamicLibraryManager.cpp: added. DLL manager (load & lookup
+  symbol).
+
+* src/cppunit/BeOsDynamicLibraryManager.cpp:
+* src/cppunit/UnixDynamicLibraryManager.cpp:
+* src/cppunit/Win32DynamicLibraryManager.cpp: added. Implementation of
+  platform dependent methods of DynamicLibraryManager.
+
+* include/cppunit/plugin/DynamicLibraryManagerException.h:
+* src/cppunit/DynamicLibraryManagerException.cpp: added. Exception thrown
+  by DynamicLibraryManager.
+
+* include/cppunit/plugin/TestPlugIn.h: added. CppUnitTestPlugIn interface
+  definition. Helper macros to implements plug-in.
+
+* include/cppunit/plugin/TestPlugInSuite.h:
+* src/cppunit/plugin/TestPlugInSuite.cpp: added. A suite to wrap a test
+  plug-in.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: added. A default implementation
+  of the test plug-in interface.
+
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp: updated to use the
+  new TestPlugIn.
+
+* examples/cppunittest/TestResultCollectorTest.cpp: fixed typo.
+@
+text
+@a10 1
+
+@
+

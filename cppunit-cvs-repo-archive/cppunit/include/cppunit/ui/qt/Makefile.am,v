@@ -1,0 +1,153 @@
+head	1.4;
+access;
+symbols
+	REL_1_12_1:1.4
+	REL_1_11_6:1.4
+	REL_1_11_4:1.4
+	REL_1_11_0:1.4
+	TG_CPPUNIT_NO_STREAM_AFTER:1.4
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.4
+	REL_1_10_2:1.4
+	REL_1_10_0:1.4
+	REL_1_9_14:1.4
+	REL_1_9_12:1.4
+	BRANCH_1_9_12:1.4.0.2
+	TG_BRANCH_1_9_12:1.4
+	TG_BEFORE_HPUX_PLUGIN:1.4
+	TG_BEFORE_SUN4_PORT:1.4
+	REL_1_9_10:1.4
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.3
+	REL_1_9_4:1.3
+	REL_1_9_0:1.3
+	REL_1_8_0:1.3;
+locks; strict;
+comment	@# @;
+
+
+1.4
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.11.04.10.19;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.10.15.41.12;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.10.15.35.43;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@libcppunitincludedir = $(includedir)/cppunit/ui/qt
+
+libcppunitinclude_HEADERS = \
+	TestRunner.h \
+	QtTestRunner.h \
+	Config.h
+@
+
+
+1.3
+log
+@Fix up header rearrangement.
+@
+text
+@d5 1
+@
+
+
+1.2
+log
+@* Makefile.am: removed directory cppunitui from copy when making the dist.
+
+* include/cppunit/ui: added Makefile.am for dist and install.
+@
+text
+@d1 2
+d5 1
+a5 1
+	config.h
+@
+
+
+1.1
+log
+@* Makefile.am: removed directory cppunitui from copy when making the dist.
+
+* include/cppunit/ui: added Makefile.am for dist and install.
+@
+text
+@a0 2
+libcppunitincludedir = $(includedir)/cppunit/ui/qt
+
+@
+

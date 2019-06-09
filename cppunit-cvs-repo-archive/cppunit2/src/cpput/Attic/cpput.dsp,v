@@ -1,0 +1,460 @@
+head	1.6;
+access;
+symbols
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.5
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.5
+	TG_AFTER_REMOVING_TESTCONTEXT:1.5
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.5
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.5
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@# @;
+
+
+1.6
+date	2005.09.06.07.45.55;	author blep;	state dead;
+branches;
+next	1.5;
+
+1.5
+date	2004.06.14.23.31.25;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.01.31.11.40.51;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.01.29.08.54.49;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.27.23.37.22;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.31;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.31;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@* moved project files to cppunit2/makefiles/vs71
+@
+text
+@# Microsoft Developer Studio Project File - Name="cpput" - Package Owner=<4>
+# Microsoft Developer Studio Generated Build File, Format Version 6.00
+# ** DO NOT EDIT **
+
+# TARGTYPE "Win32 (x86) Static Library" 0x0104
+
+CFG=cpput - Win32 Debug
+!MESSAGE This is not a valid makefile. To build this project using NMAKE,
+!MESSAGE use the Export Makefile command and run
+!MESSAGE 
+!MESSAGE NMAKE /f "cpput.mak".
+!MESSAGE 
+!MESSAGE You can specify a configuration when running NMAKE
+!MESSAGE by defining the macro CFG on the command line. For example:
+!MESSAGE 
+!MESSAGE NMAKE /f "cpput.mak" CFG="cpput - Win32 Debug"
+!MESSAGE 
+!MESSAGE Possible choices for configuration are:
+!MESSAGE 
+!MESSAGE "cpput - Win32 Release" (based on "Win32 (x86) Static Library")
+!MESSAGE "cpput - Win32 Debug" (based on "Win32 (x86) Static Library")
+!MESSAGE 
+
+# Begin Project
+# PROP AllowPerConfigDependencies 0
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
+CPP=cl.exe
+RSC=rc.exe
+
+!IF  "$(CFG)" == "cpput - Win32 Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "Release"
+# PROP BASE Intermediate_Dir "Release"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "..\..\build\cpput\release"
+# PROP Intermediate_Dir "..\..\build\cpput\release"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "..\..\include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
+# ADD BASE RSC /l 0x40c /d "NDEBUG"
+# ADD RSC /l 0x40c /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LIB32=link.exe -lib
+# ADD BASE LIB32 /nologo
+# ADD LIB32 /nologo /out:"..\..\build\cpput\release\cpput_vc6_mrs.lib"
+
+!ELSEIF  "$(CFG)" == "cpput - Win32 Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "Debug"
+# PROP BASE Intermediate_Dir "Debug"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "..\..\build\cpput\debug"
+# PROP Intermediate_Dir "..\..\build\cpput\debug"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I "..\..\include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
+# ADD BASE RSC /l 0x40c /d "_DEBUG"
+# ADD RSC /l 0x40c /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LIB32=link.exe -lib
+# ADD BASE LIB32 /nologo
+# ADD LIB32 /nologo /out:"..\..\build\cpput\debug\cpput_vc6_mds.lib"
+
+!ENDIF 
+
+# Begin Target
+
+# Name "cpput - Win32 Release"
+# Name "cpput - Win32 Debug"
+# Begin Group "compatibility"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\include\cpput\compatibility\cppunit\extensions\HelperMacros.h
+# End Source File
+# End Group
+# Begin Group "cpputtools"
+
+# PROP Default_Filter ""
+# Begin Group "configuration"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\include\cpputtools\configuration\description.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpputtools\configuration\errors.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpputtools\configuration\forwards.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpputtools\configuration\parser.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpputtools\configuration\simplertti.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpputtools\configuration\validator.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpputtools\configuration\value.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpputtools\configuration\values.h
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=..\..\include\cpputtools\configuration.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpputtools\convertor.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpputtools\ctti.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpputtools\value.h
+# End Source File
+# End Group
+# Begin Group "stuffs"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\assert.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\assert.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\assertenum.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\assertexception.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\assertstring.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\assertstring.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\atomiccounter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\impl\atomiccounter.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\autolink.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\config.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\enumerator.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\forwards.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\functor.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\location.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\message.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\parametrizedsource.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\parametrizedsource.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\properties.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\registry.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\registry.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\result.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\smartptr.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\stringize.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\test.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\testcase.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\testcase.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\testcontext.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\testcontext.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\testfailure.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\testfailureguard.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\testfailureguard.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\testfixture.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\testlistener.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\testsuite.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\testsuite.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\testvisitor.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\thread.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\thread.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\translate.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cpput\typehelper.h
+# End Source File
+# End Group
+# End Target
+# End Project
+@
+
+
+1.5
+log
+@* adding cpputtools library, command line options among other thing (for test runners). In progress.
+@
+text
+@@
+
+
+1.4
+log
+@* updated
+@
+text
+@d91 59
+d310 1
+@
+
+
+1.3
+log
+@* added testfailureguard
+@
+text
+@d237 8
+@
+
+
+1.2
+log
+@* SmartPtr now subclass boost::shared_ptr to make templated function
+  overloading easier.
+* Added our own smart pointer implementation
+* Added AtomicCounter as implementation detail.
+  Can use boost::detail::atomic_counter.
+@
+text
+@d209 8
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a82 16
+# Begin Group "build"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\SConscript
+# End Source File
+# Begin Source File
+
+SOURCE=..\cpputtest\SConscript
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\sconstruct
+# End Source File
+# End Group
+d117 5
+a121 1
+SOURCE=..\..\include\cpput\autolink.h
+d125 1
+a125 1
+SOURCE=..\..\include\cpput\config.h
+d129 1
+a129 1
+SOURCE=.\dllexport.cpp
+a176 4
+SOURCE=.\smartptr.cpp
+# End Source File
+# Begin Source File
+
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

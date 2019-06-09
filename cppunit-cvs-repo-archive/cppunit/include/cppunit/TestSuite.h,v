@@ -1,0 +1,816 @@
+head	1.15;
+access;
+symbols
+	REL_1_12_1:1.15
+	REL_1_11_6:1.15
+	REL_1_11_4:1.15
+	REL_1_11_0:1.15
+	TG_CPPUNIT_NO_STREAM_AFTER:1.14
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.14
+	REL_1_10_2:1.14
+	REL_1_10_0:1.14
+	REL_1_9_14:1.14
+	REL_1_9_12:1.14
+	BRANCH_1_9_12:1.14.0.2
+	TG_BRANCH_1_9_12:1.14
+	TG_BEFORE_HPUX_PLUGIN:1.14
+	TG_BEFORE_SUN4_PORT:1.14
+	REL_1_9_10:1.14
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.11
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.11
+	REL_1_9_6:1.10
+	REL_1_9_4:1.10
+	REL_1_9_0:1.10
+	REL_1_8_0:1.9
+	REL_1_7_8:1.8
+	REL_1_7_3:1.6
+	REL_1_7_1:1.6
+	REL_1_6_2:1.6
+	BRANCH_1_6:1.6.0.2
+	REL_1_6_1:1.6
+	REL_1_6_0:1.6
+	REL_1_5_5:1.4;
+locks; strict;
+comment	@ * @;
+
+
+1.15
+date	2005.07.09.07.42.47;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2002.06.14.11.12.17;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2002.04.23.10.02.29;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2002.04.12.19.28.47;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2002.03.28.15.47.07;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2002.03.25.18.41.39;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2002.03.24.19.39.55;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.09.14.19.27.58;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.07.15.04.18.06;	author smr99;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.05.06.17.21.31;	author bastiaan;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.05.06.16.19.31;	author bastiaan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.14.22.37.31;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.15
+log
+@* doc/Money.dox:
+* include/cppunit/TestSuite.h:
+* include/cppunit/XmlOutputterHook.h: applied Brad Hards patch
+  that correct miscellaneous doc generation issues (unescaped <>, \...).
+
+* include/cppunit/plugin/TestPlugIn.h:
+* include/cppunit/CompilerOutputter.h:
+* doc/CppUnit-win.dox: removed a few documentation generation warnings.
+
+  * include/cppunit/plugin/TestPlugIn.h:
+  * include/cppunit/CompilerOutputter.h:
+  * doc/CppUnit-win.dox: removed a few documentation generation warnings.
+@
+text
+@#ifndef CPPUNIT_TESTSUITE_H    // -*- C++ -*-
+#define CPPUNIT_TESTSUITE_H
+
+#include <cppunit/Portability.h>
+
+#if CPPUNIT_NEED_DLL_DECL
+#pragma warning( push )
+#pragma warning( disable: 4251 )  // X needs to have dll-interface to be used by clients of class Z
+#endif
+
+#include <cppunit/TestComposite.h>
+#include <cppunit/portability/CppUnitVector.h>
+
+CPPUNIT_NS_BEGIN
+
+
+#if CPPUNIT_NEED_DLL_DECL
+//  template class CPPUNIT_API std::vector<Test *>;
+#endif
+
+
+/*! \brief A Composite of Tests.
+ * \ingroup CreatingTestSuite
+ *
+ * It runs a collection of test cases. Here is an example.
+ * \code
+ * CppUnit::TestSuite *suite= new CppUnit::TestSuite();
+ * suite->addTest(new CppUnit::TestCaller<MathTest> (
+ *                  "testAdd", testAdd));
+ * suite->addTest(new CppUnit::TestCaller<MathTest> (
+ *                  "testDivideByZero", testDivideByZero));
+ * \endcode
+ * Note that \link TestSuite TestSuites \endlink assume lifetime
+ * control for any tests added to them.
+ *
+ * TestSuites do not register themselves in the TestRegistry.
+ * \see Test 
+ * \see TestCaller
+ */
+class CPPUNIT_API TestSuite : public TestComposite
+{
+public:
+  /*! Constructs a test suite with the specified name.
+   */
+  TestSuite( std::string name = "" );
+
+  ~TestSuite();
+
+  /*! Adds the specified test to the suite.
+   * \param test Test to add. Must not be \c NULL.
+    */
+  void addTest( Test *test );
+
+  /*! Returns the list of the tests (DEPRECATED).
+   * \deprecated Use getChildTestCount() & getChildTestAt() of the 
+   *             TestComposite interface instead.
+   * \return Reference on a vector that contains the tests of the suite.
+   */
+  const CppUnitVector<Test *> &getTests() const;
+
+  /*! Destroys all the tests of the suite.
+   */
+  virtual void deleteContents();
+
+  int getChildTestCount() const;
+
+  Test *doGetChildTestAt( int index ) const;
+
+private:
+  CppUnitVector<Test *> m_tests;
+};
+
+
+CPPUNIT_NS_END
+
+#if CPPUNIT_NEED_DLL_DECL
+#pragma warning( pop )
+#endif
+
+#endif // CPPUNIT_TESTSUITE_H
+@
+
+
+1.14
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d33 1
+a33 1
+ * Note that \link TestSuite TestSuites assume lifetime
+@
+
+
+1.13
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d12 1
+a12 1
+#include <vector>
+d59 1
+a59 1
+  const std::vector<Test *> &getTests() const;
+d70 1
+a70 1
+  std::vector<Test *> m_tests;
+@
+
+
+1.12
+log
+@* src/cppunit/TypeInfoHelper.cpp: added work around for bug #565481.
+  gcc 3.0 RTTI name() returns the type prefixed with a number (the
+  length of the type). The work around strip the number.
+
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp: registry key is now
+  set. Allow to save settings.
+
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp: added layout
+  initialization for resizing.
+
+* src/msvc6/testpluginrunner/TestPlugRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: added TestRunner
+  project files. Somehow I can't get cdxCDynamicDialog to compile
+  as a MFC extension. Included all sources files and resources
+  as a very dirt work around.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h: those classes are no longer
+  exported in the MFC extension. See TestPlugInRunner issue with
+  cdxCDynamicDialog.
+
+* include/cppunit/Message.h:
+* include/cppunit/TestPath.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TestFactoryRegistry.h:
+* include/cppunit/XmlElement.h:
+* include/cppunit/TypeInfoHelper.h: commented out STL template export
+  in DLL. This caused conflicts when instantiting the same template in
+  a user project.
+@
+text
+@d14 2
+a15 1
+namespace CppUnit {
+d74 1
+a74 2
+} // namespace CppUnit
+
+@
+
+
+1.11
+log
+@* bumped version to 1.9.7
+
+* comitted stuffs I forgot to in 1.9.6.
+@
+text
+@d17 1
+a17 1
+  template class CPPUNIT_API std::vector<Test *>;
+@
+
+
+1.10
+log
+@* Makefile.am: added examples/qt to tar ball release.
+
+* TODO: heavily updated.
+
+* contrib/msvc/CppUnit*.wwtpl: changed base class for unit test to TestFixture.
+
+* include/cppunit/Test.h: removed toString() method. Not used by the framework
+  and source of confusions with getName().
+  Added getChildTestCount() and getChildTestAt(), introducing the composite pattern
+  at top level. Added utility methods findTest() and findTestPath().
+
+* src/cppunit/Test.cpp: added. Implementation of new utility methods.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: inherits TestLeaf. Removed toString(), run(void) and
+  defaultResult(). Removed default constructor.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestSuite.cpp: fixed some includes that used "" instead of <>.
+
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: added. Common implementation of Test for composite
+  tests (TestSuite).
+
+* include/cppunit/TestFailure.h:
+* src/cppunit/TestFailure.cpp: removed toString().
+
+* include/cppunit/TestLeaf.h:
+* src/cppunit/TestLeaf.cpp: added. Common implementation of Test for single test
+  (TestCase).
+
+* include/cppunit/TestListener.h: added TimingListener example to documentation.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: added. List of test traversed to access a test in the
+  test hierarchy.
+
+* include/cppunit/TestRunner.h: added. Generic TestRunner.
+
+* src/cppunit/TestRunner.cpp: moved to TextTestRunner.cpp. Added new implementation
+  of includecppunit/TestRunner.h.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: inherits TestComposite and implements new Test
+  interface. Removed toString().
+
+* src/cppunit/TextTestRunner.cpp: moved from TestRunner.cpp. Implementation of
+  include/cppunit/ui/text/TestRunner.h.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* src/cppunit/RepeatedTest.cpp: removed toString().
+
+* include/cppunit/extensions/TestDecorator.h: inherits TestLeaf.
+  Removed toString()
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h: XML outputter now escape node content.
+  Add unit test for that bug (#540944). Added style sheet support. Modified
+  XML structure: failure message as its own element.
+
+* src/msvc/testrunner/TestRunnerModel.h:
+* src/msvc/testrunner/TestRunnerModel.cpp: used Test::findTest() to find a test
+  by name instead of using RTTI. Added toAnsiString() for convertion when
+  compiling as UNICODE.
+
+* src/msvc/testrunner/TreeHierarchyDlg.h:
+* src/msvc/testrunner/TreeHierarchyDlg.cpp: used new composite interface of Test
+  to explorer the test hierarchy instead of RTTI.
+
+* examples/cppunittest/TestPathTest.h:
+* examples/cppunittest/TestPathTest.cpp: added, unit tests for TestPath.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: added test for TestLeaf.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: added test for TestComposite and
+  new Test interface.
+@
+text
+@a69 1
+  const std::string m_name;
+@
+
+
+1.9
+log
+@* doc/cookbook.html: removed. Replaced by cookbook.doc.
+
+* doc/cookbook.dox: added, conversion of cookbook.html to Doxygen format.
+
+* doc/other_documentation.dox: added groups definition.
+
+* doc/Makefile.am: replaced cookbook.html by cookbook.dox
+
+* doc/Doxyfile.in: added predefined CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION.
+Replaced cookbook.html by cookbook.dox.
+
+* include/cppunitui/mfc/TestRunner.h: added, extracted from
+include/msvc6/testrunner/TestRunner.h. Moved class TestRunner to namespace
+CppUnit::MfcUi.
+
+* include/msvc6/testrunner/TestRunner.h: deprecated. A simple typedef to
+CppUnit::MfcUi::TestRunner.
+
+* include/textui/TestRuner.h: added, extracted from
+include/cppunit/TextTestRunner.h.
+
+* src/cppunit/TextTestRunner.cpp: renamed TestRunner.cpp. Moved into
+namespace CppUnit::TextUi.
+
+* src/msvc6/testruner/TestRunner.cpp: moved into namespace CppUnit::MfcUi.
+
+* src/cppunit/CompilerOutputter.cpp: removed printing "- " before
+NotEqualException addional message, for consistency between different
+TestRunner (Mfc,Text...)
+
+* include/cppunit/Asserter.h:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/Outputter.h:
+* include/cppunit/SourceLine.h:
+* include/cppunit/TestAssert.h:
+* include/cppunit/TestCaller.h:
+* include/cppunit/TestFailure.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: doc update. organization
+in groups.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.cpp:
+* examples/msvc6/HostApp/HostApp.cpp: updated to use
+CppUnit::MfcUi::TestRunner.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use
+CppUnit::TextUi::TestRunner.
+@
+text
+@d11 1
+a11 1
+#include <cppunit/Test.h>
+a12 1
+#include <string>
+a15 2
+class TestResult;
+
+d32 1
+a32 1
+ * Note that TestSuites assume lifetime
+d39 1
+a39 3
+
+
+class CPPUNIT_API TestSuite : public Test
+d42 2
+d45 1
+d48 4
+a51 4
+  void run( TestResult *result );
+  int countTestCases() const;
+  std::string getName() const;
+  std::string toString() const;
+d53 5
+a57 1
+  void addTest( Test *test );
+d60 2
+d64 3
+a66 3
+private:
+  TestSuite( const TestSuite &other );
+  TestSuite &operator =( const TestSuite &other ); 
+@
+
+
+1.8
+log
+@* include/cppunit/config-msvc6.h:
+* include/cppunit/Portability.h
+* include/cppunit/extensions/TestFactoryRegistry.h
+* include/cppunit/TestResult.h
+* include/cppunit/TestResultCollector.h
+* include/cppunit/TestSuite.h
+* include/cppunit/TextTestRunner.h
+* include/cppunit/XmlOutputter.h: removed warning when compiling CppUnit as DLL.
+
+* src/cppunit/DllMain.cpp: added some defines to speed up compilation a bit.
+@
+text
+@d25 1
+@
+
+
+1.7
+log
+@* INSTALL-WIN32.txt: added some info to build cppunit as a DLL.
+
+* include/cppunit/config-msvc6.h: added definition of macro CPPUNIT_API when
+building or linking DLL. Defined CPPUNIT_BUILD_DLL when building, and
+CPPUNIT_DLL when linking.
+
+* include/cppunit/Portability.h: added empty definition of macro CPPUNIT_API
+when not building or using CppUnit as a DLL. When any of those symbol is defined,
+the symbol CPPUNIT_NEED_DLL_DECL is set to 1.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* include/cppunit/extensions/TestDecorator.h:
+* include/cppunit/extensions/TestSetUp.h:
+* include/cppunit/TestCaller.h
+* include/cppunit/extensions/TestFactory.h
+* include/cppunit/extensions/TestFactoryRegistry.h
+* include/cppunit/extensions/TypeInfoHelper.h
+* include/cppunit/Asserter.h
+* include/cppunit/Exception.h
+* include/cppunit/NotEqualException.h
+* include/cppunit/SourceLine.h
+* include/cppunit/SynchronizedObject.h
+* include/cppunit/Test.h
+* include/cppunit/TestAssert.h
+* include/cppunit/TestCase.h
+* include/cppunit/TestFailure.h
+* include/cppunit/TestListener.h
+* include/cppunit/TestResult.h
+* include/cppunit/TestSuite.h
+* include/cppunit/CompilerOutputter.h
+* include/cppunit/Outputter.h
+* include/cppunit/TestResultCollector.h
+* include/cppunit/TestSuccessListener.h
+* include/cppunit/TextOutputter.h
+* include/cppunit/TextTestProgressListener.h
+* include/cppunit/TextTestResult.h
+* include/cppunit/TextTestRunner.h
+* include/cppunit/XmlOutputter.h: added CPPUNIT_API for DLL export.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: reindented
+
+* include/cppunit/extensions/TestSetUp.h:
+* src/cppunit/TestSetUp.cpp: added .cpp. extracted inline method and moved them
+to cpp file.
+@
+text
+@d5 6
+d70 5
+@
+
+
+1.6
+log
+@* src/msvc6/testrunner/TestRunner.dsp: fixed release configuration.
+
+* src/msvc6/testrunner/TestRunner.dsw: added DSPlugIn.dsp. TestRunner
+depends on DSPlugIn.
+
+* src/msvc6/testrunner/TestRunner.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/DSPlugIn/*: integrated patch from
+Patrick Berny (PPBerny@@web.de). An add-ins for VC++. Double-cliking
+a failed test in the TestRunner, VC++ will open the source file and
+go to the failure location.
+
+* src/cppunit/Exception.cpp:
+* include/cppunit/Exception.h: compile fix, call to overrided
+operator = of parent class failed. Using typedef to the parent
+class fix that.
+
+* src/cppunit/cppunit.dsp: added TestFixture.h
+
+* src/cppunit/TestFactoryRegistry.cpp: removed <utility> which isn't
+needed any more.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/extensions/TestFactoryRegistry.h: added
+include <Portability.h> before any other includes to remove warning
+with VC++.
+
+* include/cppunit/Portability.h: moved platform specific includes at
+the beginning of the header. fixed CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION
+declaration.
+
+* include/cppunit/config-msvc6.h: removed pragma once (useless, should
+be put in each header to have an effect).
+@
+text
+@d13 5
+d37 1
+a37 1
+class TestSuite : public Test
+d40 2
+a41 2
+    TestSuite       (std::string name = "");
+    ~TestSuite      ();
+d43 4
+a46 4
+    void                run             (TestResult *result);
+    int                 countTestCases  () const;
+    std::string         getName         () const;
+    std::string         toString        () const;
+d48 2
+a49 2
+    void                addTest         (Test *test);
+    const std::vector<Test *> & getTests() const;
+d51 1
+a51 1
+    virtual void        deleteContents  ();
+d54 2
+a55 2
+    TestSuite (const TestSuite& other);
+    TestSuite& operator= (const TestSuite& other); 
+d58 2
+a59 2
+    std::vector<Test *> m_tests;
+    const std::string   m_name;
+@
+
+
+1.5
+log
+@Added documentation.
+@
+text
+@d4 2
+a7 1
+#include <cppunit/Test.h>
+@
+
+
+1.4
+log
+@Removed unnecessary #include's of TestSuiteBuilder.h
+Removed RTTI dependent stuff from TestSuite and TestSuiteBuilder.
+@
+text
+@d1 1
+a1 1
+#ifndef CPPUNIT_TESTSUITE_H
+d10 1
+a10 1
+  class TestResult;
+d12 24
+a35 24
+  /**
+   * A TestSuite is a Composite of Tests.
+   * It runs a collection of test cases. Here is an example.
+   * \code
+   * CppUnit::TestSuite *suite= new CppUnit::TestSuite();
+   * suite->addTest(new CppUnit::TestCaller<MathTest> (
+   *                  "testAdd", testAdd));
+   * suite->addTest(new CppUnit::TestCaller<MathTest> (
+   *                  "testDivideByZero", testDivideByZero));
+   * \endcode
+   * Note that TestSuites assume lifetime
+   * control for any tests added to them.
+   *
+   * TestSuites do not register themselves in the TestRegistry.
+   * \see Test 
+   * \see TestCaller
+   */
+
+
+  class TestSuite : public Test
+  {
+    public:
+                        TestSuite       (std::string name = "");
+                        ~TestSuite      ();
+a38 1
+    void                addTest         (Test *test);
+d42 1
+d47 10
+a56 8
+    private:
+      TestSuite (const TestSuite& other);
+      TestSuite& operator= (const TestSuite& other); 
+
+    private:
+      std::vector<Test *> m_tests;
+      const std::string   m_name;
+  };
+@
+
+
+1.3
+log
+@Fixed #include's for cppunit headers.
+@
+text
+@a34 3
+#ifdef USE_TYPEINFO
+                        TestSuite       (const std::type_info &info );
+#endif // USE_TYPEINFO
+@
+
+
+1.2
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@d6 1
+a6 8
+
+#ifdef USE_TYPEINFO
+#include <typeinfo>
+#endif // USE_TYPEINFO
+
+#ifndef CPPUNIT_TEST_H
+#include "Test.h"
+#endif
+@
+
+
+1.1
+log
+@Moved public header files from cppunit dir to include/cppunit, to separate them from internal header files like estring.h.
+@
+text
+@d7 4
+d42 3
+d52 2
+@
+

@@ -1,0 +1,143 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.4
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2001.06.27.21.23.22;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+moved dll copy from post-build to custom build setting, so that the
+dll is copied even if the CppUnitTestApp was not modified.
+
+* examples/msvc6/TestPlugIn/: a new example of test plug in.
+
+* src/msvc6/TestRunner/ListCtrlFormatter.*
+* src/msvc6/TestRunner/ListCtrlSetter.*:
+added, helper to manipulate list control.
+
+* src/msvc6/TestRunner/TestRunnerDlg.*: change to make the error list
+more compact. text moved to string resources. icons added for typ
+test tfailure type.
+
+* src/msvc6/TestRunner/MostRecentTests.*: added, classes that will
+replace the current implementation of MRU test which make it hard
+to subclass the dialog.
+
+* src/msvc6/TestRunner/res/errortype.bmp: added, bitmap with error
+types (failure and error).
+
+* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+
+* src/cppunit/cppunit.dsp:
+removed config.h from project
+added Portability.h and config-msvc6.h
+
+* include/cppunit/config-msvc6.h:
+undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+@
+text
+@// //////////////////////////////////////////////////////////////////////////
+// Header file TestPlugInException.h for class TestPlugInException
+// (c)Copyright 2000, Baptiste Lepilleur.
+// Created: 2001/06/23
+// //////////////////////////////////////////////////////////////////////////
+#ifndef TESTPLUGINEXCEPTION_H
+#define TESTPLUGINEXCEPTION_H
+
+#include <stdexcept>
+#include <string>
+
+
+/*! \class TestPlugInException
+ * \brief This class represents a failure of using the test plug-in.
+ */
+class TestPlugInException : public std::runtime_error
+{
+public:
+  enum Cause
+  {
+    failedToLoadDll =0,
+    failedToCopyDll,
+    failedToGetInterfaceFunction,
+    failedToMakeTest
+  };
+
+  /*! Constructs a TestPlugInException object.
+   */
+  TestPlugInException( std::string message, 
+                       Cause cause );
+
+  /*! Copy constructor.
+   * @@param copy Object to copy.
+   */
+  TestPlugInException( const TestPlugInException &copy );
+
+  /*! Destructor.
+   */
+  virtual ~TestPlugInException();
+
+  /*! Copy operator.
+   * @@param copy Object to copy.
+   * @@return Reference on this object.
+   */
+  TestPlugInException &operator =( const TestPlugInException &copy );
+
+  Cause getCause() const;
+
+private:
+  Cause m_cause;
+};
+
+
+
+// Inlines methods for TestPlugInException:
+// ----------------------------------------
+
+
+
+#endif  // TESTPLUGINEXCEPTION_H
+@

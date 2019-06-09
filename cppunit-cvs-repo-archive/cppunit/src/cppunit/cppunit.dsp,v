@@ -1,0 +1,3646 @@
+head	1.55;
+access;
+symbols
+	REL_1_12_1:1.55
+	REL_1_11_6:1.54
+	REL_1_11_4:1.54
+	REL_1_11_0:1.52
+	TG_CPPUNIT_NO_STREAM_AFTER:1.52
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.51
+	REL_1_10_2:1.51
+	REL_1_10_0:1.49
+	REL_1_9_14:1.49
+	REL_1_9_12:1.49
+	BRANCH_1_9_12:1.48.0.2
+	TG_BRANCH_1_9_12:1.48
+	TG_BEFORE_HPUX_PLUGIN:1.47
+	TG_BEFORE_SUN4_PORT:1.45
+	REL_1_9_10:1.45
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.35
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.34
+	REL_1_9_6:1.30
+	REL_1_9_4:1.29
+	REL_1_9_0:1.23
+	REL_1_8_0:1.22
+	REL_1_7_8:1.21
+	REL_1_7_3:1.19
+	REL_1_7_1:1.18
+	REL_1_6_2:1.14
+	BRANCH_1_6:1.14.0.2
+	REL_1_6_1:1.14
+	REL_1_6_0:1.14
+	REL_1_5_5:1.5;
+locks; strict;
+comment	@# @;
+
+
+1.55
+date	2007.02.24.21.13.04;	author blep;	state Exp;
+branches;
+next	1.54;
+
+1.54
+date	2005.10.13.20.35.50;	author blep;	state Exp;
+branches;
+next	1.53;
+
+1.53
+date	2005.10.13.20.13.15;	author blep;	state Exp;
+branches;
+next	1.52;
+
+1.52
+date	2004.06.25.10.41.28;	author blep;	state Exp;
+branches;
+next	1.51;
+
+1.51
+date	2004.06.18.09.27.43;	author blep;	state Exp;
+branches;
+next	1.50;
+
+1.50
+date	2004.06.17.19.25.26;	author blep;	state Exp;
+branches;
+next	1.49;
+
+1.49
+date	2004.02.19.20.46.19;	author blep;	state Exp;
+branches;
+next	1.48;
+
+1.48
+date	2003.05.07.20.29.13;	author blep;	state Exp;
+branches
+	1.48.2.1;
+next	1.47;
+
+1.47
+date	2003.03.11.20.06.33;	author blep;	state Exp;
+branches;
+next	1.46;
+
+1.46
+date	2002.12.02.19.45.53;	author blep;	state Exp;
+branches;
+next	1.45;
+
+1.45
+date	2002.08.28.22.20.52;	author blep;	state Exp;
+branches;
+next	1.44;
+
+1.44
+date	2002.08.27.21.51.18;	author blep;	state Exp;
+branches;
+next	1.43;
+
+1.43
+date	2002.08.03.15.47.52;	author blep;	state Exp;
+branches;
+next	1.42;
+
+1.42
+date	2002.07.16.22.59.22;	author blep;	state Exp;
+branches;
+next	1.41;
+
+1.41
+date	2002.07.14.19.48.32;	author blep;	state Exp;
+branches;
+next	1.40;
+
+1.40
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.39;
+
+1.39
+date	2002.07.12.05.59.58;	author blep;	state Exp;
+branches;
+next	1.38;
+
+1.38
+date	2002.07.10.18.50.02;	author blep;	state Exp;
+branches;
+next	1.37;
+
+1.37
+date	2002.07.03.07.02.49;	author blep;	state Exp;
+branches;
+next	1.36;
+
+1.36
+date	2002.06.14.20.21.00;	author blep;	state Exp;
+branches;
+next	1.35;
+
+1.35
+date	2002.06.13.18.17.42;	author blep;	state Exp;
+branches;
+next	1.34;
+
+1.34
+date	2002.06.13.15.31.01;	author blep;	state Exp;
+branches;
+next	1.33;
+
+1.33
+date	2002.05.25.09.27.39;	author blep;	state Exp;
+branches;
+next	1.32;
+
+1.32
+date	2002.05.23.18.38.39;	author blep;	state Exp;
+branches;
+next	1.31;
+
+1.31
+date	2002.05.22.17.27.26;	author blep;	state Exp;
+branches;
+next	1.30;
+
+1.30
+date	2002.04.20.21.51.33;	author blep;	state Exp;
+branches;
+next	1.29;
+
+1.29
+date	2002.04.19.14.11.38;	author blep;	state Exp;
+branches;
+next	1.28;
+
+1.28
+date	2002.04.18.09.56.17;	author blep;	state Exp;
+branches;
+next	1.27;
+
+1.27
+date	2002.04.18.09.32.18;	author blep;	state Exp;
+branches;
+next	1.26;
+
+1.26
+date	2002.04.17.22.27.28;	author blep;	state Exp;
+branches;
+next	1.25;
+
+1.25
+date	2002.04.15.15.32.54;	author blep;	state Exp;
+branches;
+next	1.24;
+
+1.24
+date	2002.04.14.10.08.37;	author blep;	state Exp;
+branches;
+next	1.23;
+
+1.23
+date	2002.04.12.19.28.47;	author blep;	state Exp;
+branches;
+next	1.22;
+
+1.22
+date	2002.03.28.15.47.08;	author blep;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2002.03.25.22.35.34;	author blep;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2002.03.24.19.39.55;	author blep;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2002.02.28.10.57.20;	author blep;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2001.10.07.19.36.47;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2001.10.06.12.03.30;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2001.10.05.22.27.14;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2001.10.05.08.06.28;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2001.09.16.19.27.02;	author smr99;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2001.09.14.19.27.58;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2001.06.27.21.23.22;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2001.06.11.19.59.15;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2001.06.05.21.35.57;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2001.06.02.19.53.06;	author smr99;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2001.06.01.19.34.42;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.05.19.11.32.20;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.05.18.19.32.42;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.05.06.18.19.04;	author bastiaan;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.05.05.23.34.50;	author bastiaan;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.04.29.14.14.54;	author bastiaan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.28.18.23.32;	author bastiaan;	state Exp;
+branches;
+next	;
+
+1.48.2.1
+date	2004.02.19.08.20.14;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.55
+log
+@* src/cppunit/TestAssert.cpp (assertDoubleEquals): Moved finite & NaN
+  tests to include/cppunit/portability/FloatingPoint.h. Changed
+  implementation assertDoubleEquals to explicitly test for NaN
+  in case of non-finite values to force equality failure in the
+  presence of NaN. Previous implementation failed on Microsoft
+  Visual Studio 6 (on this platform: NaN == NaN).
+* examples/cppunittest/TestAssertTest.cpp: Add more unit tests to
+  test the portable floating-point primitive. Added missing
+  include <limits>.
+
+* include/cppunit/portability/Makefile.am:
+* include/cppunit/portability/FloatingPoint.h: Added file. Extracted
+  isfinite() from TestAssert.cpp.
+
+* include/cppunit/config-evc4:
+* include/cppunit/config-msvc6: Added support for _finite().
+@
+text
+@# Microsoft Developer Studio Project File - Name="cppunit" - Package Owner=<4>
+# Microsoft Developer Studio Generated Build File, Format Version 6.00
+# ** DO NOT EDIT **
+
+# TARGTYPE "Win32 (x86) Static Library" 0x0104
+
+CFG=CPPUNIT - WIN32 DEBUG
+!MESSAGE This is not a valid makefile. To build this project using NMAKE,
+!MESSAGE use the Export Makefile command and run
+!MESSAGE 
+!MESSAGE NMAKE /f "cppunit.mak".
+!MESSAGE 
+!MESSAGE You can specify a configuration when running NMAKE
+!MESSAGE by defining the macro CFG on the command line. For example:
+!MESSAGE 
+!MESSAGE NMAKE /f "cppunit.mak" CFG="CPPUNIT - WIN32 DEBUG"
+!MESSAGE 
+!MESSAGE Possible choices for configuration are:
+!MESSAGE 
+!MESSAGE "cppunit - Win32 Release" (based on "Win32 (x86) Static Library")
+!MESSAGE "cppunit - Win32 Debug" (based on "Win32 (x86) Static Library")
+!MESSAGE 
+
+# Begin Project
+# PROP AllowPerConfigDependencies 0
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
+CPP=cl.exe
+RSC=rc.exe
+
+!IF  "$(CFG)" == "cppunit - Win32 Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "Release"
+# PROP BASE Intermediate_Dir "Release"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "Release"
+# PROP Intermediate_Dir "Release"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /Zd /O2 /I "..\..\include" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "WIN32" /YX /FD /c
+# ADD BASE RSC /l 0x40c /d "NDEBUG"
+# ADD RSC /l 0x40c /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LIB32=link.exe -lib
+# ADD BASE LIB32 /nologo
+# ADD LIB32 /nologo
+# Begin Special Build Tool
+TargetPath=.\Release\cppunit.lib
+TargetName=cppunit
+SOURCE="$(InputPath)"
+PostBuild_Desc=Copying target to lib/
+PostBuild_Cmds=copy "$(TargetPath)" ..\..\lib\$(TargetName).lib
+# End Special Build Tool
+
+!ELSEIF  "$(CFG)" == "cppunit - Win32 Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "Debug"
+# PROP BASE Intermediate_Dir "Debug"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "Debug"
+# PROP Intermediate_Dir "Debug"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "..\..\include" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "WIN32" /YX /FD /GZ /c
+# ADD BASE RSC /l 0x40c /d "_DEBUG"
+# ADD RSC /l 0x40c /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LIB32=link.exe -lib
+# ADD BASE LIB32 /nologo
+# ADD LIB32 /nologo /out:"Debug\cppunitd.lib"
+# Begin Special Build Tool
+TargetPath=.\Debug\cppunitd.lib
+TargetName=cppunitd
+SOURCE="$(InputPath)"
+PostBuild_Desc=Copying target to lib/
+PostBuild_Cmds=copy "$(TargetPath)" ..\..\lib\$(TargetName).lib
+# End Special Build Tool
+
+!ENDIF 
+
+# Begin Target
+
+# Name "cppunit - Win32 Release"
+# Name "cppunit - Win32 Debug"
+# Begin Group "documentation"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\ChangeLog
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\CodingGuideLines.txt
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\cookbook.dox
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\FAQ
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\INSTALL-unix"
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\INSTALL-WIN32.txt"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\Money.dox
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\NEWS
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\other_documentation.dox
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\THANKS
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\TODO
+# End Source File
+# End Group
+# Begin Group "listener"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\BriefTestProgressListener.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\BriefTestProgressListener.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestResultCollector.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestResultCollector.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestSuccessListener.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\TextTestProgressListener.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TextTestProgressListener.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TextTestResult.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TextTestResult.h
+# End Source File
+# End Group
+# Begin Group "textui"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\ui\text\TestRunner.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TextTestRunner.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TextTestRunner.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\ui\text\TextTestRunner.h
+# End Source File
+# End Group
+# Begin Group "portability"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE="..\..\include\cppunit\config\config-bcb5.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\include\cppunit\config\config-evc4.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\include\cppunit\config\config-mac.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\include\cppunit\config\config-msvc6.h"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\config\CppUnitApi.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\portability\CppUnitDeque.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\portability\CppUnitMap.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\portability\CppUnitSet.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\portability\CppUnitStack.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\portability\CppUnitVector.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\portability\FloatingPoint.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\Portability.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\config\SelectDllLoader.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\config\SourcePrefix.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\portability\Stream.h
+# End Source File
+# End Group
+# Begin Group "output"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\CompilerOutputter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\CompilerOutputter.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\Outputter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TextOutputter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TextOutputter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\XmlOutputter.cpp
+
+!IF  "$(CFG)" == "cppunit - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "cppunit - Win32 Debug"
+
+# ADD CPP /W3
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\XmlOutputter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\XmlOutputterHook.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\XmlOutputterHook.h
+# End Source File
+# End Group
+# Begin Group "core"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\AdditionalMessage.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\AdditionalMessage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Asserter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\Asserter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Exception.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\Exception.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Message.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\Message.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SourceLine.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\SourceLine.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SynchronizedObject.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\SynchronizedObject.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Test.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\Test.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestAssert.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestAssert.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestCase.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestCase.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestComposite.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestComposite.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestFailure.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestFailure.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestFixture.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestLeaf.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestLeaf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestListener.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestPath.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestPath.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestResult.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestResult.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestRunner.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestRunner.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestSuite.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestSuite.h
+# End Source File
+# End Group
+# Begin Group "helper"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\AutoRegisterSuite.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\HelperMacros.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestCaller.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\TestFactory.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestFactoryRegistry.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\TestFactoryRegistry.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\TestFixtureFactory.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestNamer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\TestNamer.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\TestSuiteBuilder.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestSuiteBuilderContext.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\TestSuiteBuilderContext.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\TestSuiteFactory.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TypeInfoHelper.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\TypeInfoHelper.h
+# End Source File
+# End Group
+# Begin Group "extension"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\ExceptionTestCaseDecorator.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\Orthodox.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\RepeatedTest.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\RepeatedTest.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestCaseDecorator.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\TestCaseDecorator.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestDecorator.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\TestDecorator.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestSetUp.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\TestSetUp.h
+# End Source File
+# End Group
+# Begin Group "plugin"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\BeOsDynamicLibraryManager.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DynamicLibraryManager.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\plugin\DynamicLibraryManager.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DynamicLibraryManagerException.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\plugin\DynamicLibraryManagerException.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\PlugInManager.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\plugin\PlugInManager.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\PlugInParameters.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\plugin\PlugInParameters.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ShlDynamicLibraryManager.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\plugin\TestPlugIn.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestPlugInDefaultImpl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\plugin\TestPlugInDefaultImpl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\UnixDynamicLibraryManager.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Win32DynamicLibraryManager.cpp
+# End Source File
+# End Group
+# Begin Group "tools"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\tools\Algorithm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\StringTools.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\tools\StringTools.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\XmlDocument.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\tools\XmlDocument.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\XmlElement.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\tools\XmlElement.h
+# End Source File
+# End Group
+# Begin Group "protector"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\DefaultProtector.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DefaultProtector.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Protector.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\Protector.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ProtectorChain.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ProtectorChain.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ProtectorContext.h
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=..\..\configure.in
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\Makefile.am
+# End Source File
+# Begin Source File
+
+SOURCE=.\Makefile.am
+# End Source File
+# End Target
+# End Project
+@
+
+
+1.54
+log
+@* removed most warning when compiling with vc++ 6sp6.
+@
+text
+@d250 4
+@
+
+
+1.53
+log
+@* removed most warning when compiling with vc++ 6sp6.
+@
+text
+@d44 1
+a44 1
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "..\..\include" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "WIN32" /YX /FD /c
+d74 1
+a74 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\include" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "WIN32" /YX /FD /GZ /c
+@
+
+
+1.52
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@d258 4
+@
+
+
+1.51
+log
+@* src/*/*.dsp: bug #933154, post build fail in directory with spaces.
+@
+text
+@d214 4
+d256 4
+@
+
+
+1.50
+log
+@* src/*/*.dsp: bug #933154, post build fail in directory with spaces.
+@
+text
+@d88 1
+a88 1
+PostBuild_Cmds=copy $(TargetPath) ..\..\lib\$(TargetName).lib
+@
+
+
+1.49
+log
+@* configure.in: bumped version number to 1.9.12
+@
+text
+@d58 1
+a58 1
+PostBuild_Cmds=copy $(TargetPath) ..\..\lib\$(TargetName).lib
+@
+
+
+1.48
+log
+@* Makefile.am
+* configure.in
+* config/ac_dll.m4
+* examples/cppunittest/Makefile.am
+* examples/hierarchy/Makefile.am
+* examples/money/Makefile.am
+* examples/simple/Makefile.am
+* include/cppunit/config/SelectDllLoader.h
+* include/cppunit/plugin/TestPlugIn.h
+* include/cppunit/tools/Algorithm.h
+* src/DllPlugInTester/Makefile.am
+* src/cppunit/Makefile.am
+* src/cppunit/TestDecorator.cpp
+* src/cppunit/ShlDynamicLibraryManager.cpp
+* src/cppunit/UnixDynamicLibraryManager.cpp
+* src/cppunit/Win32DynamicLibraryManager.cpp: applied patch from
+  Abdessattar Sassi <abdesassi@@users.sourceforge.net> to add support
+  for plug-in to hp-ux (patch #721546).
+@
+text
+@d118 4
+a677 63
+# Begin Group "input"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\input\DummyInputTestCase.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\input\DummyTestInput.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\input\GenericTestInputFactory.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\input\InputTestCall.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\input\InputTestCase.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\XmlInput\ParameterizedTestCase.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\input\ParameterizedTestCase.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\input\ParamTestCaller.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\XmlInput\ParamTestLeaf.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\input\ParamTestLeaf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\input\TestInput.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\XmlInput\XmlInputDefinition.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\input\XmlInputDefinition.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\extensions\XmlInputHelper.h
+# End Source File
+# End Group
+@
+
+
+1.48.2.1
+log
+@* removed xml input stuff
+@
+text
+@d674 63
+@
+
+
+1.47
+log
+@* include/cppunit/tools/Algorithm.h:
+* src/cppunit/TestResult.cpp:
+* src/msvc6/testrunner/TestRunnerModel.cpp: added removeFromSequence
+algorithm in Algorithm.h to fix STLPort compatibility issue
+(std::remove use the one of cstdio instead of algorithm). Bug #694971.
+
+* include/cppunit/extensions/TestNamer.h: fixed bug #662666 (missing include
+for typeinfo).
+
+* src/cppunit/TestResult.cpp: TestFailure are no longer passed as temporary,
+but explicitely instantiated on the stack. Work around AIX compiler bug.
+@
+text
+@d587 4
+@
+
+
+1.46
+log
+@* include/cppunit/plugin/DynamicLibraryManagerException.h: added constructor
+  to fix compilation issues on recents version of gcc and sun CC (bug #619059)
+
+* include/cppunit/input/XmlInputHelper.h: added.
+
+* include/cppunit/extensions/TestSuiteBuilderContext.h:
+* src/cppunit/TestSuiteBuilderContext.cpp: added addProperty() and
+  getStringProperty(). Added macros CPPUNIT_TEST_SUITE_PROPERTY.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: integrated Tim Threlkeld's
+  bug fix #610162: browse button was disabled if history was empty.
+
+* src/msvc6/testrunner/DynamicWindow/cdxCSizeIconCtrl.cpp: integrated
+  Tim Threlkeld's bug fix #610191: common control were not initialized.
+
+* include/cppunit/extensions/ExceptionTestCaseDecorator.h: bug #603172,
+  missing Message construction.
+
+* src/cppunit/DefaultProtector.cpp: bug #603172. Fixed missing ';'.
+
+* src/cppunit/TestCase.cpp: bug #603671. Removed unguarded typeinfo
+  include.
+
+* examples/cppunittests/*Suite.h: bug #603666. Added missing Portability.h
+  include.
+@
+text
+@d611 4
+@
+
+
+1.45
+log
+@* include/cppunit/Portability.h: added CPPUNIT_STATIC_CAST.
+
+* include/cppunit/extensions/TestFixtureFactory.h: extracted from
+  HelperMacros.h. Added template class ConcretTestFixtureFactory.
+
+* include/cppunit/extensions/TestSuiteBuilderContext.h:
+* src/cppunit/TestSuiteBuilderContext.cpp: added. Context used
+  to add test case to the fixture suite. Prevent future
+  compatibility break for custom test API.
+
+* include/cppunit/extensions/HelperMacros.h: mostly rewritten. No
+  longer use TestSuiteBuilder. Added support for abstract test fixture
+  through macro CPPUNIT_TEST_SUITE_END_ABSTRACT. Made custom test API
+  easier to use.
+
+* examples/cppunittest/HelperMacrosTest.h:
+* examples/cppunittest/HelperMacrosTest.cpp: updated against
+  HelperMacros.h changes.
+@
+text
+@d666 63
+@
+
+
+1.44
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d467 4
+d480 8
+@
+
+
+1.43
+log
+@* include/cppunit/Exception.h:
+* src/cppunit/Exception.h: added setMessage().
+
+* include/cppunit/Protector.h:
+* src/cppunit/Protector.cpp: added class ProtectorGuard. Change the
+  reportXXX() method to support Exception passing and SourceLine.
+
+* include/cppunit/TestCaller.h: removed 'expect exception' features.
+  It is now handled by ExceptionTestCaseDecorator and TestCaller no
+  longer need default template argument support.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/extensions/TestCaller.h: runTest() is now public
+  instead of protected, so that it can be decorated.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.h: added pushProtector() and popProtector()
+  methods. This allow user to specify their own exception trap when
+  running test case.
+
+* include/cppunit/extensions/TestDecorator.h:
+* src/cppunit/TestDecorator.cpp: added. Extracted from TestDecorator.h.
+  The test passed to the constructor is now owned by the decorator.
+
+* include/cppunit/extensions/TestCaseDecorator.h:
+* src/cppunit/TestCaseDecorator.cpp: added. Decorator for TestCase
+  setUp(), tearDown() and runTest().
+
+* include/cppunit/extensions/ExceptionTestCaseDecorator.h: added.
+  TestCaseDecorator to expect that a specific exception is thrown.
+
+* include/cppunit/extensions/HelperMacros.h: updated against TestCaller
+  change.
+
+* src/cppunit/DefaultFunctor.h: fixed bug (did not return underlying
+  test return code).
+
+* src/cppunit/ProtectorChain.cpp: fixed bug in chaing return code.
+
+* src/cppunit/DefaultFunctor.h: fixed bug.
+
+* src/msvc6/testrunner/ActiveTest.h:
+* src/msvc6/testrunner/ActiveTest.cpp: updated against
+  TestCaseDecorator ownership policy change. Moved inline functions
+  to .cpp.
+
+* examples/cppunittest/TestSetUpTest.cpp: updated to use MockTestCase
+  and against the new ownership policy.
+
+* examples/cppunittest/TestDecoratorTest.cpp:
+* examples/cppunittest/RepeatedTestTest.cpp: updated against
+  TestDecorator ownership policy change.
+
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.h:
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.cpp: added. Unit
+  tests for ExceptionTestCaseDecoratorTest.
+@
+text
+@d559 1
+a559 1
+SOURCE=..\..\include\cppunit\plugin\Parameters.h
+d563 5
+a567 1
+SOURCE=.\PlugInManager.cpp
+d571 1
+a571 1
+SOURCE=..\..\include\cppunit\plugin\PlugInManager.h
+@
+
+
+1.42
+log
+@* include/cppunit/Protector.h:
+* src/cppunit/Protector.cpp: added. Base class for protectors.
+
+* src/cppunit/DefaultProtector.h:
+* src/cppunit/DefaultProtector.cpp: added. Implementation of the default
+  protector used to catch std::exception and any other exception.
+
+* src/cppunit/ProtectorChain.h:
+* src/cppunit/ProtectorChain.cpp: added. Implementation of a chain of
+  protector, allowing catching custom exception and implementation of
+  expected exception.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestResult.cpp: updated to use protector.
+@
+text
+@d495 4
+d511 12
+a656 4
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\plugin\Makefile.am
+@
+
+
+1.41
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d602 32
+@
+
+
+1.40
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d106 4
+d227 8
+@
+
+
+1.39
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d192 4
+d218 9
+a226 1
+SOURCE=..\..\include\cppunit\Portability.h
+d230 1
+a230 1
+SOURCE=..\..\include\cppunit\config\PortabilityEpilog.h
+d263 9
+@
+
+
+1.38
+log
+@* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/Orthodox.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h:
+* include/cppunit/TestCaller.h:
+* examples/hierarchy/BoardGameTest.h:
+* examples/hierarchy/ChessTest.h: replaced usage of 'typename' in template
+  declaration with 'class'.
+
+* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to use the generic TestRunner.
+  Removed methods runTestByName() and runTest(). Inherits
+  CppUnit::TestRunner.
+
+* include/cppunit/extensions/TestSuiteBuilder.h: removed templatized method
+  addTestCallerForException(). It is no longer used since release 1.9.8.
+
+* examples/cppunittest/MockTestCase.h
+* examples/cppunittest/MockTestCase.cpp: removed the usage of 'mutable'
+  keyword.
+@
+text
+@d218 4
+@
+
+
+1.37
+log
+@* include/cppunit/XmlOutputter.h: fixed XmlOutputter constructed default
+  value initializatino which caused compilation error with BC5.
+
+* src/cppunit/PlugInManager.cpp: added missing CPPUNIT_NO_TESTPLUGIN guard.
+
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp:
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h: applied Steven Mitter
+  patch to fix bug #530426 (conflict between TestRunner and host application
+  resources). Adapted patch to compile work with Unicode.
+
+* src/msvc6/testrunner/ResourceLoaders.h:
+* src/msvc6/testrunner/ResourceLoaders.cpp:
+* src/msvc6/testrunner/Change-Diary-ResourceBugFix.txt: added, from
+  Steven Mitter's patch. Simplified loadCString() to compile with Unicode.
+
+* src/cppunit/cppunit.dsp:
+* src/cppunit/cppunit_dll.dsp:
+* src/DllPlugInTester/DllPlugInTester.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: all lib, dll and exe are
+  now created in the intermediate directory. A post-build rule is used to
+  copy them to the lib/ directory.
+@
+text
+@d182 4
+@
+
+
+1.36
+log
+@* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added two methods to use the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugIn.h: added two methods to the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugInAdapter.h:
+* src/cppunit/plugin/TestPlugInAdapter.cpp: renamed TestPlugInDefaultImpl.
+  Added empty implementation for Xml outputter hook methods.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/tools/StringTools.cpp: added. Functions to manipulate string
+  (conversion, wrapping...)
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/XmlElement.cpp: renamed addNode() to addElement(). Added
+  methods to walk and modify XmlElement (for hook). Added documentation.
+  Use StringTools.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: added hook calls & management.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: added. Hook to customize XML output.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: call plug-in XmlOutputterHook
+  when writing XML output. Modified so that memory is freed before
+  unloading the test plug-in (caused crash when freeing the XmlDocument).
+
+* examples/ReadMe.txt:
+* examples/ClockerPlugIn/ReadMe.txt: added details about the plug-in
+  (usage, xml content...)
+
+* examples/ClockerPlugIn/ClockerModel.h:
+* examples/ClockerPlugIn/ClockerModel.cpp: extracted from ClockerListener.
+  Represents the test hierarchy and tracked time for each test.
+
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/ClockerListener.cpp: extracted test hierarchy
+  tracking to ClockerModel. Replaced the 'flat' view option with a 'text'
+  option to print the timed test tree to stdout.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp: updated to hook the XML
+  output and use the new classes.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: added. XmlOutputterHook to
+  includes the timed test hierarchy and test timing in the XML output.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added new test cases.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: added tests for
+  XmlOutputterHook.
+@
+text
+@d52 8
+a59 1
+# ADD LIB32 /nologo /out:"..\..\lib\cppunit.lib"
+d82 8
+a89 1
+# ADD LIB32 /nologo /out:"..\..\lib\cppunitd.lib"
+d260 8
+@
+
+
+1.35
+log
+@* include/cppunit/NotEqualException.h:
+* src/cppunit/NotEqualException.cpp: removed.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: removed 'type' related stuffs.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: delegate printing to TextOutputter.
+
+* examples/simple/ExampleTestCase.h:
+* examples/simple/ExampleTestCase.cpp: reindented.
+
+* src/qttestrunner/build:
+* src/qttestrunner/qttestrunner.pro:
+* src/qttestrunner/TestBrowserDlgImpl.h:
+* src/qttestrunner/TestRunnerModel.h: applied Thomas Neidhart's patch,
+  'Some minor fixes to compile QTTestrunner under Linux.'.
+@
+text
+@d234 8
+d496 1
+a496 1
+SOURCE=.\TestPlugInAdapter.cpp
+d500 1
+a500 1
+SOURCE=..\..\include\cppunit\plugin\TestPlugInAdapter.h
+d514 8
+@
+
+
+1.34
+log
+@* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: added functions that take a Message as a
+  parameter. Existing function have a short description indicating
+  an assertion failure.
+
+* include/cppunit/CompilerOuputter.h:
+* src/cppunit/CompilerOuputter.cpp: removed printNotEqualMessage() and
+  printDefaultMessage(). Updated to use Message.
+
+* include/cppunit/Message.h:
+* src/cppunit/Message.cpp: added. Represents a message associated to an
+  Exception.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: the message associated to the exception is now
+  stored as a Message instead of a string.
+
+* include/cppunit/NotEqualException.cpp: constructs a Message instead of a
+  string.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: updated to use Asserter functions that
+  take a message when pertinent (CPPUNIT_FAIL...).
+
+* include/cppunit/TestCaller.h:
+* src/cppunit/TestCaller.cpp: exception not caught failure has a better
+  short description.
+
+* src/cppunit/TestCase.cpp: better short description when setUp() or
+  tearDown() fail.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replace '\n' in failure message
+  with space.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/NotEqualExceptionTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated to use Exception/Message.
+
+* examples/cppunittest/MessageTest.h:
+* examples/cppunittest/MessageTest.cpp: added. Unit test for Message.
+@
+text
+@a263 8
+SOURCE=.\NotEqualException.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\NotEqualException.h
+# End Source File
+# Begin Source File
+
+@
+
+
+1.33
+log
+@* include/cppunit/extensions/TestSuiteBuilder.h: updated to use TestNamer. Removed
+template method addTestCallerForException() which should solve the compilation
+issue with Sun 5.0/6.0 compiler.
+
+* include/cppunit/extensions/HelperMacros.h: updated against TestSuiteBuilder
+change. Added CPPUNIT_TEST_CUSTOM and CPPUNIT_TEST_CUSTOMS to add custom
+tests to the fixture suite.
+
+* include/cppunit/extensions/TestNamer.h:
+* src/cppunit/TestNamer.cpp: added, TestNamer to name test case and fixture.
+@
+text
+@d256 8
+@
+
+
+1.32
+log
+@* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: extracted class XmlOutputter::Node to
+XmlElement. Extracted xml 'prolog' generation to XmlDocument.
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/tools/XmlElement.cpp: added, extracted from XmlOutputter::Node.
+
+* include/cppunit/tools/XmlDocument.h:
+* src/cppunit/tools/XmlDocument.cpp: added, extracted from XmlOutputter. Handle
+XML document prolog (encoding & style-sheet) and manage the root element.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: bug fix, flag --xsl was ignored.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated for XmlOuputter changes.
+extracted tests for XmlOutputter::Node to XmlElementTest
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added, tests extracted from
+XmlOutputterTest.
+@
+text
+@d396 8
+@
+
+
+1.31
+log
+@* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/Resource.h:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerModel.cpp: integrated patch from
+Marco Welti (Welti@@GretagMacbeth.ch) with a few clean up.
+Display the name of the test being run during above the progress bar. Allow the
+VC++ add-ins to works with TestPlugInRunner (COM init). DLL name can be specified
+on the command line after flag '-testsuite'. Display wait cursor, clear and reload
+history when reloading DLL.
+
+* THANKS: added Marco Welti to the list.
+@
+text
+@d495 20
+@
+
+
+1.30
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@d116 4
+@
+
+
+1.29
+log
+@* src/cppunit/PlugInManager.cpp: fixed bug in unload().
+
+* include/cppunit/TypeInfoHelper.h:
+* src/cppunit/TypeInfoHelper.cpp: Implementation is now always available
+  is CPPUNIT_HAVE_RTTI is not 0. This removes the need to use
+  different libraries. CPPUNIT_USE_TYPEINFO_NAME can be set on a
+  case by case basis for HelperMacros.
+
+* src/cppunit/TestFactoryRegistry.cpp: removed unused include of
+  TypeInfoHelper.h.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: used endTest() instead
+  of done() to finalize.
+
+* src/msvc6/TestPlugInRunner/TestPlugIn.h:
+* src/msvc6/TestPlugInRunner/TestPlugIn.cpp: updated to use the
+  new test plug-in system.
+
+* examples/simple/SimplePlugIn.cpp:
+* examples/simple/simple_plugin.dsp: crossplatform test plug-in
+  example using 'simple'.
+
+* examples/msvc6/EasyTestPlugIn/*: projects replaced with the
+  crossplatform projecct examples/simple/simple_plugin.dsp.
+@
+text
+@d104 4
+@
+
+
+1.28
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d7 1
+a7 1
+CFG=cppunit - Win32 Debug Crossplatform Setting
+d16 1
+a16 1
+!MESSAGE NMAKE /f "cppunit.mak" CFG="cppunit - Win32 Debug Crossplatform Setting"
+a21 1
+!MESSAGE "cppunit - Win32 Debug Crossplatform Setting" (based on "Win32 (x86) Static Library")
+a76 23
+!ELSEIF  "$(CFG)" == "cppunit - Win32 Debug Crossplatform Setting"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "cppunit___Win32_Debug_Without_CPPUNIT_USE_TYPEINFO"
+# PROP BASE Intermediate_Dir "cppunit___Win32_Debug_Without_CPPUNIT_USE_TYPEINFO"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "DebugCrossplatform"
+# PROP Intermediate_Dir "DebugCrossplatform"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\include" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "CPPUNIT_USE_TYPEINFO" /D "WIN32" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\include" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "WIN32" /D "CPPUNIT_DONT_USE_TYPEINFO" /YX /FD /GZ /c
+# ADD BASE RSC /l 0x40c /d "_DEBUG"
+# ADD RSC /l 0x40c /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LIB32=link.exe -lib
+# ADD BASE LIB32 /nologo /out:"..\..\lib\cppunitd.lib"
+# ADD LIB32 /nologo /out:"..\..\lib\cppunitcd.lib"
+
+a82 1
+# Name "cppunit - Win32 Debug Crossplatform Setting"
+d100 4
+a489 4
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\INSTALL-WIN32.txt"
+@
+
+
+1.27
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d522 4
+@
+
+
+1.26
+log
+@* bumped version to 1.9.3
+
+* FAQ: added question about 4786 warning on VC++.
+
+* NEWS: updated.
+
+* contrib/msvc/readme.txt: moved to contrib/readme.txt.
+
+* contrib/xml-xsl/report.xsl: added XML style sheet contributed by
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for
+  startTestRun()/endTestRun().
+
+* examples/simple/*: added. A simple example.
+
+* include/cppunit/BriefTestProgressListener.h:
+* src/cppunit/BriefTestProgressListener.cpp: added. Verbose progess listener
+  that print the test name before running the test.
+
+* include/cppunit/TestListener.h: added startTestRun()/endTestRun().
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: added runTest(), to be called to run
+  a test by test runner.
+
+* src/cppunit/TextTestRunner.cpp:
+* src/cppunit/TestRunner.cpp: updated to use TestResult::runTest().
+
+* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added. Managers for all loaded plug-ins.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: renamed TestPlugInAdapter. All
+  implementations are empty.
+
+* include/cppunit/plugin/TestPlugInSuite.h: removed.
+* src/cppunit/TestPlugInSuite.cpp: removed. Replaced by PlugInManager.
+
+* include/cppunit/plugin/TestPlugIn.h: rewrote the plug-in interface to
+  provide more versatility. updated macros to match new interface.
+
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestFactoryRegistry.cpp: Added unregisterFactory().
+  Added convenience method addRegistry(). Rewrote registry life cycle
+  management. AutoRegisterSuite can now detect that the registry has been
+  destroy and not call to it to unregister its test factory.
+
+* include/cppunit/extensions/AutoRegisterTest.h: on destruction, the registered
+  factory is unregistered from the registry.
+
+* include/cppunit/extensions/HelperMacros.h: added macros
+  CPPUNIT_REGISTRY_ADD_TO_DEFAULT and CPPUNIT_REGISTRY_ADD to help
+  build test suite hierarchy.
+
+* src/cppunit/msvc/DllPlugInTester/*: moved to src/cppunit/DllPlugInTester/.
+
+* src/cppunit/DllPlugInTester/DllPlugInTester.cpp: removed UNICODE stuffs. Use
+  the PlugInManager instead of PlugInTestSuite. Simplified: only one test on
+  command line, but many DLL can be specified. Added configurations to link
+  against cppunit dll, those are now the default configuration (static linking
+  don't make much sense for plug-in).
+@
+text
+@d205 4
+@
+
+
+1.25
+log
+@* NEWS: updated.
+
+* configure.in: added include/cppunit/config/Makefile and
+  include/cppunit/plugin/Makefile to the list of target.
+
+* doc/CppUnit-win.dox: enabled generation of HTML Help documentation.
+
+* include/cppunit/config/Makefile.am:
+* include/cppunit/plugin/Makefile.am: added.
+
+* include/cppunit/config-bcb5.h:
+* include/cppunit/config-msvc6.h:
+* include/cppunit/config-mac.h: moved to include/cppunit/config/.
+
+* include/cppunit/Portability.h: updated config files location. Added macros
+  CPPUNIT_STRINGIZE and CPPUNIT_JOIN (implementation adapted from boost.org).
+  Added macro CPPUNIT_MAKE_UNIQUE_NAME.
+
+* include/cppunit/Test.h: modified methods order.
+
+* include/cppunit/extensions/HelperMacros.h: renamed macro
+  __CPPUNIT_MAKE_UNIQUE_NAME to CPPUNIT_MAKE_UNIQUE_NAME and moved its
+  definition to include/cppunit/Portability.h.
+
+* include/cppunit/extensions/TestDecorator.h: Inherits Test instead of TestLeaf.
+
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* src/cppunit/DynamicLibraryManager.cpp: added. DLL manager (load & lookup
+  symbol).
+
+* src/cppunit/BeOsDynamicLibraryManager.cpp:
+* src/cppunit/UnixDynamicLibraryManager.cpp:
+* src/cppunit/Win32DynamicLibraryManager.cpp: added. Implementation of
+  platform dependent methods of DynamicLibraryManager.
+
+* include/cppunit/plugin/DynamicLibraryManagerException.h:
+* src/cppunit/DynamicLibraryManagerException.cpp: added. Exception thrown
+  by DynamicLibraryManager.
+
+* include/cppunit/plugin/TestPlugIn.h: added. CppUnitTestPlugIn interface
+  definition. Helper macros to implements plug-in.
+
+* include/cppunit/plugin/TestPlugInSuite.h:
+* src/cppunit/plugin/TestPlugInSuite.cpp: added. A suite to wrap a test
+  plug-in.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: added. A default implementation
+  of the test plug-in interface.
+
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp: updated to use the
+  new TestPlugIn.
+
+* examples/cppunittest/TestResultCollectorTest.cpp: fixed typo.
+@
+text
+@d108 1
+a108 1
+# Begin Group "plugin"
+d113 1
+a113 1
+SOURCE=.\BeosDynamicLibraryManager.cpp
+d117 1
+a117 1
+SOURCE=.\DynamicLibraryManager.cpp
+d121 1
+a121 1
+SOURCE=..\..\include\cppunit\plugin\DynamicLibraryManager.h
+d125 1
+a125 1
+SOURCE=.\DynamicLibraryManagerException.cpp
+d129 1
+a129 1
+SOURCE=..\..\include\cppunit\plugin\DynamicLibraryManagerException.h
+d133 1
+a133 25
+SOURCE=..\..\include\cppunit\plugin\TestPlugIn.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestPlugInDefaultImpl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\plugin\TestPlugInDefaultImpl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestPlugInSuite.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\plugin\TestPlugInSuite.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\UnixDynamicLibraryManager.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Win32DynamicLibraryManager.cpp
+d136 1
+a136 1
+# Begin Group "documentation"
+d141 1
+a141 1
+SOURCE=..\..\ChangeLog
+d145 1
+a145 1
+SOURCE=..\..\doc\cookbook.dox
+d149 1
+a149 1
+SOURCE=..\..\doc\FAQ
+d153 1
+a153 5
+SOURCE=..\..\NEWS
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\other_documentation.dox
+a156 8
+SOURCE=..\..\TODO
+# End Source File
+# End Group
+# Begin Group "listener"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+a228 8
+SOURCE=.\TestResultCollector.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestResultCollector.h
+# End Source File
+# Begin Source File
+
+d448 60
+@
+
+
+1.24
+log
+@* NEWS: updated.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: renamed TestSuccessListener
+
+* doc/cookbook.dox:
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* src/cppunit/CompilerOutputter.cpp: fixed 'success' typo (was misspelled
+'sucess').
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: updated (renaming of
+  TestSucessListener).
+
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp: Changed SucessfulTests tag to
+SucessfulTests.
+@
+text
+@d108 81
+a188 1
+# Begin Group "extension"
+d193 5
+a197 1
+SOURCE=..\..\include\cppunit\extensions\Orthodox.h
+d201 1
+a201 1
+SOURCE=.\RepeatedTest.cpp
+d205 1
+a205 1
+SOURCE=..\..\include\cppunit\extensions\RepeatedTest.h
+d209 1
+a209 1
+SOURCE=..\..\include\cppunit\extensions\TestDecorator.h
+d211 4
+d217 1
+a217 1
+SOURCE=.\TestSetUp.cpp
+d221 1
+a221 1
+SOURCE=..\..\include\cppunit\extensions\TestSetUp.h
+d224 1
+a224 1
+# Begin Group "helper"
+d229 17
+a245 1
+SOURCE=..\..\include\cppunit\extensions\AutoRegisterSuite.h
+d247 4
+d253 1
+a253 1
+SOURCE=..\..\include\cppunit\extensions\HelperMacros.h
+d257 1
+a257 1
+SOURCE=..\..\include\cppunit\TestCaller.h
+d261 1
+a261 1
+SOURCE=..\..\include\cppunit\extensions\TestFactory.h
+d265 1
+a265 1
+SOURCE=.\TestFactoryRegistry.cpp
+d269 1
+a269 1
+SOURCE=..\..\include\cppunit\extensions\TestFactoryRegistry.h
+d273 1
+a273 1
+SOURCE=..\..\include\cppunit\extensions\TestSuiteBuilder.h
+d277 1
+a277 1
+SOURCE=..\..\include\cppunit\extensions\TestSuiteFactory.h
+d281 1
+a281 1
+SOURCE=.\TypeInfoHelper.cpp
+d285 1
+a285 1
+SOURCE=..\..\include\cppunit\extensions\TypeInfoHelper.h
+d420 1
+a420 1
+# Begin Group "output"
+d425 1
+a425 2
+SOURCE=.\CompilerOutputter.cpp
+# SUBTRACT CPP /YX
+d429 1
+a429 1
+SOURCE=..\..\include\cppunit\CompilerOutputter.h
+d433 1
+a433 1
+SOURCE=..\..\include\cppunit\Outputter.h
+d437 1
+a437 1
+SOURCE=.\TestResultCollector.cpp
+d441 1
+a441 1
+SOURCE=..\..\include\cppunit\TestResultCollector.h
+d445 1
+a445 1
+SOURCE=.\TextOutputter.cpp
+d449 1
+a449 1
+SOURCE=..\..\include\cppunit\TextOutputter.h
+d453 1
+a453 1
+SOURCE=.\XmlOutputter.cpp
+d457 1
+a457 1
+SOURCE=..\..\include\cppunit\XmlOutputter.h
+a458 4
+# End Group
+# Begin Group "portability"
+
+# PROP Default_Filter ""
+d461 1
+a461 5
+SOURCE="..\..\include\cppunit\config-msvc6.h"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\Portability.h
+d464 1
+a464 1
+# Begin Group "textui"
+d469 1
+a469 1
+SOURCE=.\TextTestRunner.cpp
+d473 1
+a473 1
+SOURCE=..\..\include\cppunit\TextTestRunner.h
+a474 4
+# End Group
+# Begin Group "listener"
+
+# PROP Default_Filter ""
+d477 1
+a477 1
+SOURCE=.\TestSuccessListener.cpp
+d481 1
+a481 1
+SOURCE=.\TextTestProgressListener.cpp
+d485 1
+a485 1
+SOURCE=..\..\include\cppunit\TextTestProgressListener.h
+d489 1
+a489 33
+SOURCE=.\TextTestResult.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TextTestResult.h
+# End Source File
+# End Group
+# Begin Group "documentation"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\ChangeLog
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\cookbook.dox
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\FAQ
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\NEWS
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\doc\other_documentation.dox
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\TODO
+@
+
+
+1.23
+log
+@* Makefile.am: added examples/qt to tar ball release.
+
+* TODO: heavily updated.
+
+* contrib/msvc/CppUnit*.wwtpl: changed base class for unit test to TestFixture.
+
+* include/cppunit/Test.h: removed toString() method. Not used by the framework
+  and source of confusions with getName().
+  Added getChildTestCount() and getChildTestAt(), introducing the composite pattern
+  at top level. Added utility methods findTest() and findTestPath().
+
+* src/cppunit/Test.cpp: added. Implementation of new utility methods.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: inherits TestLeaf. Removed toString(), run(void) and
+  defaultResult(). Removed default constructor.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestSuite.cpp: fixed some includes that used "" instead of <>.
+
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: added. Common implementation of Test for composite
+  tests (TestSuite).
+
+* include/cppunit/TestFailure.h:
+* src/cppunit/TestFailure.cpp: removed toString().
+
+* include/cppunit/TestLeaf.h:
+* src/cppunit/TestLeaf.cpp: added. Common implementation of Test for single test
+  (TestCase).
+
+* include/cppunit/TestListener.h: added TimingListener example to documentation.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: added. List of test traversed to access a test in the
+  test hierarchy.
+
+* include/cppunit/TestRunner.h: added. Generic TestRunner.
+
+* src/cppunit/TestRunner.cpp: moved to TextTestRunner.cpp. Added new implementation
+  of includecppunit/TestRunner.h.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: inherits TestComposite and implements new Test
+  interface. Removed toString().
+
+* src/cppunit/TextTestRunner.cpp: moved from TestRunner.cpp. Implementation of
+  include/cppunit/ui/text/TestRunner.h.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* src/cppunit/RepeatedTest.cpp: removed toString().
+
+* include/cppunit/extensions/TestDecorator.h: inherits TestLeaf.
+  Removed toString()
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h: XML outputter now escape node content.
+  Add unit test for that bug (#540944). Added style sheet support. Modified
+  XML structure: failure message as its own element.
+
+* src/msvc/testrunner/TestRunnerModel.h:
+* src/msvc/testrunner/TestRunnerModel.cpp: used Test::findTest() to find a test
+  by name instead of using RTTI. Added toAnsiString() for convertion when
+  compiling as UNICODE.
+
+* src/msvc/testrunner/TreeHierarchyDlg.h:
+* src/msvc/testrunner/TreeHierarchyDlg.cpp: used new composite interface of Test
+  to explorer the test hierarchy instead of RTTI.
+
+* examples/cppunittest/TestPathTest.h:
+* examples/cppunittest/TestPathTest.cpp: added, unit tests for TestPath.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: added test for TestLeaf.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: added test for TestComposite and
+  new Test interface.
+@
+text
+@a369 4
+SOURCE=..\..\include\cppunit\ui\text\TestRunner.h
+# End Source File
+# Begin Source File
+
+d382 1
+a382 5
+SOURCE=.\TestSucessListener.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\cppunit\TestSucessListener.h
+@
+
+
+1.22
+log
+@* doc/cookbook.html: removed. Replaced by cookbook.doc.
+
+* doc/cookbook.dox: added, conversion of cookbook.html to Doxygen format.
+
+* doc/other_documentation.dox: added groups definition.
+
+* doc/Makefile.am: replaced cookbook.html by cookbook.dox
+
+* doc/Doxyfile.in: added predefined CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION.
+Replaced cookbook.html by cookbook.dox.
+
+* include/cppunitui/mfc/TestRunner.h: added, extracted from
+include/msvc6/testrunner/TestRunner.h. Moved class TestRunner to namespace
+CppUnit::MfcUi.
+
+* include/msvc6/testrunner/TestRunner.h: deprecated. A simple typedef to
+CppUnit::MfcUi::TestRunner.
+
+* include/textui/TestRuner.h: added, extracted from
+include/cppunit/TextTestRunner.h.
+
+* src/cppunit/TextTestRunner.cpp: renamed TestRunner.cpp. Moved into
+namespace CppUnit::TextUi.
+
+* src/msvc6/testruner/TestRunner.cpp: moved into namespace CppUnit::MfcUi.
+
+* src/cppunit/CompilerOutputter.cpp: removed printing "- " before
+NotEqualException addional message, for consistency between different
+TestRunner (Mfc,Text...)
+
+* include/cppunit/Asserter.h:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/Outputter.h:
+* include/cppunit/SourceLine.h:
+* include/cppunit/TestAssert.h:
+* include/cppunit/TestCaller.h:
+* include/cppunit/TestFailure.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: doc update. organization
+in groups.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.cpp:
+* examples/msvc6/HostApp/HostApp.cpp: updated to use
+CppUnit::MfcUi::TestRunner.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use
+CppUnit::TextUi::TestRunner.
+@
+text
+@d225 4
+d249 8
+d269 8
+d281 8
+d297 8
+d370 1
+a370 1
+SOURCE=.\TestRunner.cpp
+d374 1
+a374 1
+SOURCE=..\..\include\cppunitui\text\TestRunner.h
+d431 4
+@
+
+
+1.21
+log
+@* include/cppunit/makefile.am: removed TestRegistry.h
+
+* include/cppunit/TestRegistry.h: removed. Obsolete, replaced by
+TestFactoryRegistry.
+
+* src/cppunit/makefile.am: removed TestRegistry.cpp. Added cppunit_dll.dsp.
+
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/SynchronizedObject.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TextOutputter.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestResult.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/TestFactory.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: minor doc update.
+
+* include/cppunit/TestFixture.h: added DLL export.
+
+* include/cppunit/msvc6/TestPlugInInterface.h: updated doc. Added automatic
+exportation of TestPlugIn publishing function.
+
+* src/cppunit/TestCase.cpp:
+* include/cppunit/TestCase.h: inherits setUp() and tearDown() from
+class TestFixture.
+@
+text
+@d302 9
+a310 1
+SOURCE=.\TestSucessListener.cpp
+d314 1
+a314 1
+SOURCE=..\..\include\cppunit\TestSucessListener.h
+d316 4
+d322 1
+a322 1
+SOURCE=.\TextOutputter.cpp
+d326 1
+a326 1
+SOURCE=..\..\include\cppunit\TextOutputter.h
+d328 4
+d334 1
+a334 1
+SOURCE=.\TextTestProgressListener.cpp
+d338 1
+a338 1
+SOURCE=..\..\include\cppunit\TextTestProgressListener.h
+d342 9
+a350 1
+SOURCE=.\TextTestResult.cpp
+d354 1
+a354 1
+SOURCE=..\..\include\cppunit\TextTestResult.h
+d358 1
+a358 1
+SOURCE=.\TextTestRunner.cpp
+d362 1
+a362 1
+SOURCE=..\..\include\cppunit\TextTestRunner.h
+d366 1
+a366 1
+SOURCE=.\XmlOutputter.cpp
+d370 1
+a370 1
+SOURCE=..\..\include\cppunit\XmlOutputter.h
+d373 1
+a373 1
+# Begin Group "portability"
+d378 9
+a386 1
+SOURCE="..\..\include\cppunit\config-msvc6.h"
+d390 1
+a390 1
+SOURCE=..\..\include\cppunit\Portability.h
+a391 1
+# End Group
+d394 1
+a394 1
+SOURCE=..\..\ChangeLog
+d396 1
+a407 4
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\NEWS
+@
+
+
+1.20
+log
+@* INSTALL-WIN32.txt: added some info to build cppunit as a DLL.
+
+* include/cppunit/config-msvc6.h: added definition of macro CPPUNIT_API when
+building or linking DLL. Defined CPPUNIT_BUILD_DLL when building, and
+CPPUNIT_DLL when linking.
+
+* include/cppunit/Portability.h: added empty definition of macro CPPUNIT_API
+when not building or using CppUnit as a DLL. When any of those symbol is defined,
+the symbol CPPUNIT_NEED_DLL_DECL is set to 1.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* include/cppunit/extensions/TestDecorator.h:
+* include/cppunit/extensions/TestSetUp.h:
+* include/cppunit/TestCaller.h
+* include/cppunit/extensions/TestFactory.h
+* include/cppunit/extensions/TestFactoryRegistry.h
+* include/cppunit/extensions/TypeInfoHelper.h
+* include/cppunit/Asserter.h
+* include/cppunit/Exception.h
+* include/cppunit/NotEqualException.h
+* include/cppunit/SourceLine.h
+* include/cppunit/SynchronizedObject.h
+* include/cppunit/Test.h
+* include/cppunit/TestAssert.h
+* include/cppunit/TestCase.h
+* include/cppunit/TestFailure.h
+* include/cppunit/TestListener.h
+* include/cppunit/TestResult.h
+* include/cppunit/TestSuite.h
+* include/cppunit/CompilerOutputter.h
+* include/cppunit/Outputter.h
+* include/cppunit/TestResultCollector.h
+* include/cppunit/TestSuccessListener.h
+* include/cppunit/TextOutputter.h
+* include/cppunit/TextTestProgressListener.h
+* include/cppunit/TextTestResult.h
+* include/cppunit/TextTestRunner.h
+* include/cppunit/XmlOutputter.h: added CPPUNIT_API for DLL export.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: reindented
+
+* include/cppunit/extensions/TestSetUp.h:
+* src/cppunit/TestSetUp.cpp: added .cpp. extracted inline method and moved them
+to cpp file.
+@
+text
+@d253 4
+@
+
+
+1.19
+log
+@* NEW: updated and restructured.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp:
+updated against TestResultChange. Changed TestResult to TestResultCollector.
+
+* include/cppunit/extensions/HelperMacros.h: minor documentation fix.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all Outputter.
+
+* include/cppunit/Portability.h: made the fix on OStringStream suggested by
+Bob Summerwill to remove level 4 warning with VC++.
+
+* include/cppunit/TestAssert.h: added macro CPPUNIT_ASSERT_EQUAL_MESSAGE.
+
+* src/cppunit/TestFailure.cpp:
+* include/cppunit/TestFailure.h: added method clone() to duplicate a failure. Made
+all method virtual.
+
+* include/cppunit/TestListener.h: changed signature of addFailure() to
+addFailure( const TestFailure &failure ). Failure is now only a temporary object.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all outputter. Used
+by TextTestRunner.
+
+* include/cppunit/SynchronizedObject.h:
+* src/cppunit/SynchronizedObject.cpp: added. Class extracted from TestResult.
+Base class for objects that can be accessed from different threads.
+
+* include/cppunit/TestResult.h: TestFailure.h is no longer included.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: extracted all methods related to keeping track
+of the result to the new TestResultCollector class which is a TestListener.
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: added. TestListener which kept track
+of the result of the test run. All failure/error, and tests are tracked.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: added. TestListener extracted from
+TestResult. Is responsible for wasSucessful().
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: reindented.
+
+* include/cppunit/TextOutputter.h:
+* src/cppunit/TextOutputter.cpp: added. Copied from the deprecated
+TextTestResult and modified to act as an Ouputter.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: Copied from the deprecated
+TextTestResult and modified to print the dot while the test are running.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: updated against TestResult change.
+No compatiblity break. Deprecated.
+
+* include/cppunit/TextTestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to work with the new TestResult.
+Use TextTestProgressListener and TextOutputter instead of TextTestResult.
+Any outputter with interface Outputter can be used to print the test result
+(CompilerOutputter, XmlOutputter, TextOutputter...)
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against TestResultChange.
+Changed TestResult to TestResultCollector.
+
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/TestRunnerDlg.cpp: fixed the 'fullrowselect' feature of the list view.
+The dialog is a TestListener itself, it no longer use the GUITestResult class.
+
+* src/msvc6/TestRunner.rc: moved the "autorun test button" in such a way that it
+did not overlap the progress bar anymore.
+
+* src/msvc6/MfcSynchronizationObject.h: added. Generic SynchronizedObject
+lock for MFC.
+
+* src/msvc6/GUITestResult.h :
+* src/msvc6/GUITestResult.cpp : removed.
+
+* src/qttestrunner/TestRunnerModel.h:
+* src/qttestrunner/TestRunnerModel.cpp: changed addFailure() signature to reflect
+change on TestListener.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use the new Outputter
+abstraction and TextTestRunner facilities.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.cpp: removed. Replaced by MockTestCase.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.h:
+
+* examples/cppunittest/HelperMacrosTest.h:
+* examples/cppunittest/HelperMacrosTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/MockTestListener.h:
+* examples/cppunittest/MockTestListener.cpp: the class now behave like a mock
+object.
+
+* examples/cppunittest/MockTestCase.h:
+* examples/cppunittest/MockTestCase.cpp: added. Mock TestCase object.
+
+* examples/cppunittest/OrthodoxTest.h:
+* examples/cppunittest/OrthodoxTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/SynchronizedTestResult.h: Updated against TestResult
+change.
+
+* examples/cppunittest/TestCallerTest.h:
+* examples/cppunittest/TestCallerTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: Updated against TestResult change.
+Use MockTestListener and MockTestCase instead of FailingTestCase and TestResult.
+
+* examples/cppunittest/TestDecoratorTest.h:
+* examples/cppunittest/TestDecoratorTest.cpp: Updated against TestResult change.
+Use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/TestListenerTest.h:
+* examples/cppunittest/TestListenerTest.cpp: removed. Those unit tests have been
+rewrote and moved to TestResultTest.
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: Updated to test the new interface.
+Tests from TestListenerTest have been moved here.
+
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp: added. Tests for the class
+that been extracted from TestResult.
+
+* examples/cppunittest/TestSetUpTest.h:
+* examples/cppunittest/TestSetUpTest.cpp: renamed SetUp inner class to MockSetUp.
+Changed interface to be more akin to a Mock object.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: Updated against TestResult change,
+and rewrote to use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: Updated against TestResult change.
+Added some utility methods to make the update easier.
+@
+text
+@d129 4
+d360 4
+@
+
+
+1.18
+log
+@* include/cppunit/CompilerTestResultOutputter.h :
+renamed CompilerOutputter.h
+
+* src/cppunit/CompilerTestResultOutputter.cpp :
+renamed CompilerOutputter.cpp
+
+* include/cppunit/CompilerTestResultOutputter.h :
+* src/cppunit/CompilerTestResultOutputter.cpp : ajust max line length
+for wrapping. Added static factory method defaultOutputter(). Print
+the number of test runs on success.
+
+* include/cppunit/CompilerTestResultOutputter.h : renamed
+CompilerOutputter.h.
+
+* src/cppunit/CompilerTestResultOutputter.cpp : renamed
+CompilerOutputter.cpp.
+
+* examples/cppunittest/CppUnitTestMain.cpp : use factory method
+CompilerTestResultOutputter::defaultOutputter().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp : removed COM registration in
+post-build step. IT is automatically done by VC++ when the add-in is
+added. Caused build to failed if the add-in was used in VC++.
+
+* NEWS : updated.
+
+* src/cppunit/TestAssert.cpp : modified deprecated assert
+implementations to use Asserter.
+
+* examples/cppunittest/XmlTestResultOutputterTest.h :
+renamed XmlOutputterTest.h.
+
+* examples/cppunittest/XmlTestResultOutputterTest.cpp :
+renamed XmlOutputterTest.cpp.
+
+* NEWS :
+* examples/cppunittest/CppUnitTestMain.cpp :
+* examples/cppunittest/CppUnitTestMain.dsp :
+* examples/cppunittest/Makefile.am :
+* examples/cppunittest/XmlTestResultOutputterTest.h :
+* examples/cppunittest/XmlTestResultOutputterTest.cpp :
+* examples/msvc6/CppUniTestApp/CppUnitTestApp.dsp
+* include/cppunit/CompilerOutputter.h :
+* include/cppunit/Makefile.am :
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/CompilerOutputter.cpp :
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* src/cppunit/XmlTestResultOutputter.cpp : change due to renaming
+CompilerTestResultOutputter to CompilerOutputter,
+XmlTestResultOutputter to XmlOuputter, XmlTestResultOutputterTest
+to XmlOutputterTest.
+@
+text
+@d213 8
+d279 36
+@
+
+
+1.17
+log
+@* include/cppunit/CompilerTestResultOutputter.h :
+* src/cppunit/CompilerTestResultOutputter.cpp : added. Output result
+in a compiler compatible format.
+
+* src/cppunit/CppUnit.dsp :
+* include/cppunit/MakeFile.am :
+* src/cppunit/MakeFile.am : added CompilerTestResultOutputter.cpp
+and CompilerTestResultOutputter.h.
+
+* examples/cppunittest/CppUnitTestMain.cpp : if -selftest is specified
+on the command line, no standard test result are printed, but compiler
+compatible result at printed.
+
+* examples/cppunittest/CppUnitTestMain.dsp : added post-build step to
+run the test suite with -selftest.
+
+* NEWS : updated.
+
+* src/cppunit/TextTestRunner.cpp : skip a line after printing
+progress.
+@
+text
+@d265 1
+a265 1
+SOURCE=.\CompilerTestResultOutputter.cpp
+d270 1
+a270 1
+SOURCE=..\..\include\cppunit\CompilerTestResultOutputter.h
+d290 1
+a290 1
+SOURCE=.\XmlTestResultOutputter.cpp
+d294 1
+a294 1
+SOURCE=..\..\include\cppunit\XmlTestResultOutputter.h
+@
+
+
+1.16
+log
+@* include/cppunit/Asserter.h :
+* src/cppunit/Asserter.cpp : added. Helper to create assertion macros.
+
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* include/cppunit/Makefile.am : added Asserter.h and Asserter.cpp.
+
+* include/cppunit/Exception.h :
+* src/cppunit/Exception.cpp : added constructor that take a
+SourceLine argument. Deprecated static constant and old constructor.
+Fixed some constness issues.
+
+* examples/cppunittest/ExceptionTest.cpp : Refactored.
+
+* NEWS : partially updated (need to be more detailed)
+
+* include/cppunit/NotEqualException.h :
+* src/cppunit/NotEqualException.cpp : added constructor that take a
+SourceLine argument. Deprecated old constructor. Added a third element
+to compose message.
+
+* examples/cppunittest/NotEqualExceptionTest.cpp : moved to "Core"
+suite. Added test for SourceLine() and additionalMessage().
+Refactored.
+
+* include/cppunit/SourceLine.h :
+* src/cppunit/SourceLine.cpp : added. Result of applying
+IntroduceParameterObject refactoring on filename & line number...
+
+* include/cppunit/TestAssert.h :
+* src/cppunit/TestAssert.cpp : deprecated old assert functions.
+added functions assertEquals() and assertDoubleEquals() which use
+SourceLine.
+
+* src/cppunit/TestCase.cpp : Modified for SourceLine.
+
+* include/cppunit/TestFailure.h :
+* src/cppunit/TestFailure.cpp : added failedTestName(), and
+sourceLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp : modified to use SourceLine.
+
+* include/cppunit/TextTestResult.h :
+* src/cppunit/TextTestResult.cpp : corrected include order and
+switched to angled brackets. Refactored. Don't print failure location
+if not available. Not equal failure dump additional message if
+available.
+
+* src/cppunit/TextTestRunner.cpp : run() now returns a boolean to
+indicate if the run was sucessful.
+
+* src/cppunit/XmlTestResultOutputter.cpp : replaced itoa() with
+OStringStream. Refactored.
+
+* examples/cppunittest/XmlUniformiser.h :
+* examples/cppunittest/XmlUniformiser.cpp :
+CPPUNITTEST_ASSERT_XML_EQUAL capture failure location. Refactored
+checkXmlEqual().
+
+* examples/cppunittest/XmlUniformiserTest.h :
+* examples/cppunittest/XmlUniformiserTest.cpp : added test for
+CPPUNITTEST_ASSERT_XML_EQUAL.
+
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/XmlTestResultOutputter.cpp : updated to use SourceLine.
+@
+text
+@d265 9
+@
+
+
+1.15
+log
+@* NEWS : updated.
+
+* include/cppunit/Exception.h : added include Portability.h.
+
+* include/cppunit/TestResult.* : changed TestFailures to a deque.
+added tests().
+
+* examples/cppunittest/CppUnitTest.dsp :
+* examples/cppunittest/MakeFile.am :
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp : Added
+XmlTestResultOutputterTest.*, XmlUniformiser.*, XmlUniformiserTest.*,
+UnitTestToolSuite.h, OutputSuite.h.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp : revised project
+folders structure. Added missing NoteEqualExceptionTest.*.
+
+* examples/cppunittest/CppUnitTestSuite.cpp : added 'Output' and
+'UnitTestTool' suites.
+
+* src/cppunit/cppunit.dsp: removed estring.h. Revised project folders
+structure. Removed TestRegistry.*. Added TestSetUp.h,
+XmlTestResultOutputter.*.
+
+* src/cppunit/MakeFile.am: added XmlTestResultOutputter.*.
+
+* src/testrunner/TestRunnerDlg.cpp: removed disabled code.
+@
+text
+@d181 8
+d205 8
+d303 4
+@
+
+
+1.14
+log
+@Revert TestFixture-related changes from 2001-07-15.
+@
+text
+@d108 1
+a108 1
+# Begin Group "extensions"
+d113 9
+a121 1
+SOURCE=..\..\include\cppunit\extensions\AutoRegisterSuite.h
+d125 1
+a125 1
+SOURCE=..\..\include\cppunit\extensions\HelperMacros.h
+d129 1
+a129 1
+SOURCE=..\..\include\cppunit\extensions\Orthodox.h
+d131 4
+d137 1
+a137 1
+SOURCE=.\RepeatedTest.cpp
+d141 1
+a141 1
+SOURCE=..\..\include\cppunit\extensions\RepeatedTest.h
+d145 1
+a145 1
+SOURCE=..\..\include\cppunit\extensions\TestDecorator.h
+d176 3
+d181 1
+a181 1
+SOURCE=..\..\ChangeLog
+d185 1
+a185 1
+SOURCE="..\..\include\cppunit\config-msvc6.h"
+d189 1
+a189 1
+SOURCE=.\estring.h
+d193 1
+a193 1
+SOURCE=.\Exception.cpp
+d197 1
+a197 1
+SOURCE=..\..\include\cppunit\Exception.h
+d201 1
+a201 1
+SOURCE=.\NotEqualException.cpp
+d205 1
+a205 1
+SOURCE=..\..\include\cppunit\NotEqualException.h
+d209 1
+a209 1
+SOURCE=..\..\include\cppunit\Portability.h
+d213 1
+a213 1
+SOURCE=..\..\include\cppunit\Test.h
+d217 1
+a217 1
+SOURCE=.\TestAssert.cpp
+d221 1
+a221 1
+SOURCE=..\..\include\cppunit\TestAssert.h
+d225 1
+a225 1
+SOURCE=..\..\include\cppunit\TestCaller.h
+d229 1
+a229 1
+SOURCE=.\TestCase.cpp
+d233 1
+a233 1
+SOURCE=..\..\include\cppunit\TestCase.h
+d237 1
+a237 1
+SOURCE=.\TestFailure.cpp
+d241 1
+a241 1
+SOURCE=..\..\include\cppunit\TestFailure.h
+d243 4
+d249 1
+a249 1
+SOURCE=..\..\include\cppunit\TestListener.h
+d253 1
+a253 1
+SOURCE=.\TestRegistry.cpp
+d257 1
+a257 1
+SOURCE=..\..\include\cppunit\TestRegistry.h
+d261 1
+a261 1
+SOURCE=.\TestResult.cpp
+d265 1
+a265 1
+SOURCE=..\..\include\cppunit\TestResult.h
+d269 1
+a269 1
+SOURCE=.\TestSuite.cpp
+d271 4
+d277 1
+a277 1
+SOURCE=..\..\include\cppunit\TestSuite.h
+d281 1
+a281 1
+SOURCE=.\TextTestResult.cpp
+d283 1
+d286 1
+a286 1
+SOURCE=..\..\include\cppunit\TextTestResult.h
+d290 1
+a290 1
+SOURCE=.\TextTestRunner.cpp
+d294 1
+a294 1
+SOURCE=..\..\include\cppunit\TextTestRunner.h
+@
+
+
+1.13
+log
+@* src/msvc6/testrunner/TestRunner.dsp: fixed release configuration.
+
+* src/msvc6/testrunner/TestRunner.dsw: added DSPlugIn.dsp. TestRunner
+depends on DSPlugIn.
+
+* src/msvc6/testrunner/TestRunner.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/DSPlugIn/*: integrated patch from
+Patrick Berny (PPBerny@@web.de). An add-ins for VC++. Double-cliking
+a failed test in the TestRunner, VC++ will open the source file and
+go to the failure location.
+
+* src/cppunit/Exception.cpp:
+* include/cppunit/Exception.h: compile fix, call to overrided
+operator = of parent class failed. Using typedef to the parent
+class fix that.
+
+* src/cppunit/cppunit.dsp: added TestFixture.h
+
+* src/cppunit/TestFactoryRegistry.cpp: removed <utility> which isn't
+needed any more.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/extensions/TestFactoryRegistry.h: added
+include <Portability.h> before any other includes to remove warning
+with VC++.
+
+* include/cppunit/Portability.h: moved platform specific includes at
+the beginning of the header. fixed CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION
+declaration.
+
+* include/cppunit/config-msvc6.h: removed pragma once (useless, should
+be put in each header to have an effect).
+@
+text
+@a229 4
+SOURCE=..\..\include\cppunit\TestFixture.h
+# End Source File
+# Begin Source File
+
+@
+
+
+1.12
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+moved dll copy from post-build to custom build setting, so that the
+dll is copied even if the CppUnitTestApp was not modified.
+
+* examples/msvc6/TestPlugIn/: a new example of test plug in.
+
+* src/msvc6/TestRunner/ListCtrlFormatter.*
+* src/msvc6/TestRunner/ListCtrlSetter.*:
+added, helper to manipulate list control.
+
+* src/msvc6/TestRunner/TestRunnerDlg.*: change to make the error list
+more compact. text moved to string resources. icons added for typ
+test tfailure type.
+
+* src/msvc6/TestRunner/MostRecentTests.*: added, classes that will
+replace the current implementation of MRU test which make it hard
+to subclass the dialog.
+
+* src/msvc6/TestRunner/res/errortype.bmp: added, bitmap with error
+types (failure and error).
+
+* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+
+* src/cppunit/cppunit.dsp:
+removed config.h from project
+added Portability.h and config-msvc6.h
+
+* include/cppunit/config-msvc6.h:
+undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+@
+text
+@d230 4
+@
+
+
+1.11
+log
+@* include/cppunit/NotEqualException.cpp: addded, exception to be used
+with assertEquals().
+
+* src/cppunit/RepeatedTest.cpp: added to reduce header dependency
+(TestResult.h was missing).
+
+* src/cppunit/TestAssert.cpp: added to put non template functions
+there.
+
+* src/cppunit/TestCase.cpp: added std:: prefix to
+catch (exception& e). Integrated a modified version of Tim Jansen
+patch (#403745) for TestCase to make the unit test (TestCaseTest)
+pass. If the setUp() fail then neither the runTest() nor
+the tearDown() method is called.
+@
+text
+@d45 1
+a45 1
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "..\..\include" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "WIN32" /YX /FD /c
+d170 1
+a170 1
+SOURCE=..\..\include\cppunit\config.h
+d191 4
+@
+
+
+1.10
+log
+@* src/cppunit/TypeInfoHelper.cpp: removed #include <config.h>, cppunit/config.h was already included.
+
+* src/cppunit/cppunit.dsp: removed TestAssert.cpp from project.
+
+* added/updated .cvsignore files for beter handling of windows projects.
+
+* added include/cppunit/config.h with a default configuration for VC++ 6.0.
+
+* include/cppunit/.cvsignore: removed config.h from the list of ignored file.
+
+* renamed VC++ configurations without RTTI from "Debug No CU_USE_TYPEINFO" to "Debug Crossplatform".
+
+* include/cppunit/TestAssert.h: added include <math.h> for fabs().
+@
+text
+@d125 4
+a148 4
+SOURCE=..\..\include\cppunit\extensions\TestSetup.h
+# End Source File
+# Begin Source File
+
+d186 8
+d195 4
+@
+
+
+1.9
+log
+@Replace CU_ by CPPUNIT_.
+@
+text
+@d7 1
+a7 1
+CFG=cppunit - Win32 Debug Without CPPUNIT_USE_TYPEINFO
+d16 1
+a16 1
+!MESSAGE NMAKE /f "cppunit.mak" CFG="cppunit - Win32 Debug Without CPPUNIT_USE_TYPEINFO"
+d22 1
+a22 1
+!MESSAGE "cppunit - Win32 Debug Without CPPUNIT_USE_TYPEINFO" (based on "Win32 (x86) Static Library")
+d45 1
+a45 1
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "..\..\include" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "CPPUNIT_USE_TYPEINFO" /D "WIN32" /YX /FD /c
+d68 1
+a68 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\include" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "CPPUNIT_USE_TYPEINFO" /D "WIN32" /YX /FD /GZ /c
+d78 1
+a78 1
+!ELSEIF  "$(CFG)" == "cppunit - Win32 Debug Without CPPUNIT_USE_TYPEINFO"
+d87 2
+a88 2
+# PROP Output_Dir "DebugNoTypeInfo"
+# PROP Intermediate_Dir "DebugNoTypeInfo"
+d91 1
+a91 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\include" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "WIN32" /YX /FD /GZ /c
+d99 1
+a99 1
+# ADD LIB32 /nologo /out:"..\..\lib\cppunitnotypeinfod.lib"
+d107 1
+a107 1
+# Name "cppunit - Win32 Debug Without CPPUNIT_USE_TYPEINFO"
+d170 4
+a186 4
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestAssert.cpp
+@
+
+
+1.8
+log
+@* added project cppunittest to examples/: unit tests to test cppunit. The
+  main file is CppUnitTestMain.cpp. Unit tests have been implemented
+  for TestCaller and TestListener.
+* added project CppUnitTestApp to examples/msvc6: graphical runner for
+  cppunittest.
+* added TestListener to TestResult. It is a port of junit TestListener.
+* updated some .cvsignore to ignore files generated with VC++.
+@
+text
+@d7 1
+a7 1
+CFG=cppunit - Win32 Debug Without CU_USE_TYPEINFO
+d16 1
+a16 1
+!MESSAGE NMAKE /f "cppunit.mak" CFG="cppunit - Win32 Debug Without CU_USE_TYPEINFO"
+d22 1
+a22 1
+!MESSAGE "cppunit - Win32 Debug Without CU_USE_TYPEINFO" (based on "Win32 (x86) Static Library")
+d45 1
+a45 1
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "..\..\include" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "CU_USE_TYPEINFO" /D "WIN32" /YX /FD /c
+d68 1
+a68 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\include" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "CU_USE_TYPEINFO" /D "WIN32" /YX /FD /GZ /c
+d78 1
+a78 1
+!ELSEIF  "$(CFG)" == "cppunit - Win32 Debug Without CU_USE_TYPEINFO"
+d82 2
+a83 2
+# PROP BASE Output_Dir "cppunit___Win32_Debug_Without_CU_USE_TYPEINFO"
+# PROP BASE Intermediate_Dir "cppunit___Win32_Debug_Without_CU_USE_TYPEINFO"
+d90 1
+a90 1
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\include" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "CU_USE_TYPEINFO" /D "WIN32" /YX /FD /GZ /c
+d107 1
+a107 1
+# Name "cppunit - Win32 Debug Without CU_USE_TYPEINFO"
+@
+
+
+1.7
+log
+@* Modified VC++ project to add TextTestRunner to cppunit lib.
+@
+text
+@d214 4
+@
+
+
+1.6
+log
+@  * Symbol CU_USE_TYPEINFO must be defined instead of USE_TYPEINFO to
+    compile RTTI.
+  * Added back default constructor to TestSuiteBuilder which use RTTI.
+    It is available only if CU_USE_TYPEINFO is defined.
+  * Moved TypeInfoHelper.h from src/cppunit to include/cppunit/extensions.
+  * Macro CU_TEST_SUITE in HelperMacros.h now use TestSuiteBuilder default
+    constructor if CU_USE_TYPEINFO is defined, otherwise it use the
+    type name given to the CU_TEST_SUITE macro.
+  * TestFactoryRegistry::registerFactory(factory) now generate a dummy
+    name based on a serial number instead of using RTTI. The macro
+    CU_TEST_SUITE_REGISTRATION and class AutoRegisterSuite can now
+    when CU_USE_TYPEINFO is not defined.
+  * Added a new Configuration named "Debug Without CU_USE_TYPEINFO" to
+    msvc6 projects. The flag CU_USE_TYPEINFO is not defined in that
+    configuration.
+@
+text
+@d244 8
+@
+
+
+1.5
+log
+@Renamed AbstractTestFactory to TestFactory.
+@
+text
+@d7 1
+a7 1
+CFG=cppunit - Win32 Debug
+d16 1
+a16 1
+!MESSAGE NMAKE /f "cppunit.mak" CFG="cppunit - Win32 Debug"
+d22 1
+d45 1
+a45 1
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "..\..\include" /D "_MBCS" /D "_LIB" /D "USE_TYPEINFO" /D "NDEBUG" /D "WIN32" /YX /FD /c
+d68 1
+a68 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\include" /D "_MBCS" /D "_LIB" /D "USE_TYPEINFO" /D "_DEBUG" /D "WIN32" /YX /FD /GZ /c
+d78 23
+d107 1
+a112 4
+SOURCE=..\..\include\cppunit\extensions\TestFactory.h
+# End Source File
+# Begin Source File
+
+d133 4
+d155 8
+d166 4
+a242 8
+# End Source File
+# Begin Source File
+
+SOURCE=.\TypeInfoHelper.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\TypeInfoHelper.h
+@
+
+
+1.4
+log
+@Merge of CppUnitW 1.2 phase 2.
+@
+text
+@d88 1
+a88 1
+SOURCE=..\..\include\cppunit\extensions\AbstractTestFactory.h
+@
+
+
+1.3
+log
+@TypeInfoHelper should not have been removed.
+@
+text
+@d44 1
+a44 1
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "..\..\include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
+d67 1
+a67 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
+d112 1
+a112 1
+SOURCE=.\extensions\TestFactoryRegistry.cpp
+@
+
+
+1.2
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@d208 9
+@
+
+
+1.1
+log
+@Moved files in subdir cppunit to src/cppunit.
+@
+text
+@d44 1
+a44 1
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "..\include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
+d52 1
+a52 1
+# ADD LIB32 /nologo /out:"..\lib\cppunit.lib"
+d67 1
+a67 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
+d75 1
+a75 1
+# ADD LIB32 /nologo /out:"..\lib\cppunitd.lib"
+d83 52
+d141 1
+a141 1
+SOURCE=..\include\cppunit\Exception.h
+d145 1
+a145 1
+SOURCE=..\include\cppunit\Test.h
+d149 9
+a157 1
+SOURCE=..\include\cppunit\TestCaller.h
+d165 1
+a165 1
+SOURCE=..\include\cppunit\TestCase.h
+d173 1
+a173 1
+SOURCE=..\include\cppunit\TestFailure.h
+d181 1
+a181 1
+SOURCE=..\include\cppunit\TestRegistry.h
+d189 1
+a189 1
+SOURCE=..\include\cppunit\TestResult.h
+d197 1
+a197 1
+SOURCE=..\include\cppunit\TestSuite.h
+d205 1
+a205 1
+SOURCE=..\include\cppunit\TextTestResult.h
+d207 1
+a207 2
+# End Target
+# End Project
+@
+

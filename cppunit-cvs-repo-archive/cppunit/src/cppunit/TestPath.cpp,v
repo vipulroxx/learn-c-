@@ -1,0 +1,569 @@
+head	1.7;
+access;
+symbols
+	REL_1_12_1:1.7
+	REL_1_11_6:1.7
+	REL_1_11_4:1.7
+	REL_1_11_0:1.7
+	TG_CPPUNIT_NO_STREAM_AFTER:1.7
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.7
+	REL_1_10_2:1.7
+	REL_1_10_0:1.4
+	REL_1_9_14:1.4
+	REL_1_9_12:1.4
+	BRANCH_1_9_12:1.4.0.2
+	TG_BRANCH_1_9_12:1.4
+	TG_BEFORE_HPUX_PLUGIN:1.4
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.7
+date	2004.06.17.19.16.49;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.06.17.19.03.15;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.06.17.18.37.09;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2003.03.15.08.55.29;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.20.21.51.33;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.12.19.28.47;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@* src/cppunit/TestPath.cpp: bug #938753, array bound read in
+  splitPathString() with substr if an empty string is passed.
+@
+text
+@#include <cppunit/Portability.h>
+#include <cppunit/Test.h>
+#include <cppunit/TestPath.h>
+#include <stdexcept>
+
+
+CPPUNIT_NS_BEGIN
+
+
+TestPath::TestPath()
+{
+}
+
+
+TestPath::TestPath( Test *root )
+{
+  add( root );
+}
+
+
+TestPath::TestPath( const TestPath &other, 
+                    int indexFirst, 
+                    int count )
+{
+  int countAdjustment = 0;
+  if ( indexFirst < 0 )
+  {
+    countAdjustment = indexFirst;
+    indexFirst = 0;
+  }
+
+  if ( count < 0 )
+    count = other.getTestCount();
+  else
+    count += countAdjustment;
+
+  int index = indexFirst;
+  while ( count-- > 0  &&  index < other.getTestCount() )
+    add( other.getTestAt( index++ ) );
+}
+
+
+TestPath::TestPath( Test *searchRoot, 
+                    const std::string &pathAsString )
+{
+  PathTestNames testNames;
+
+  Test *parentTest = findActualRoot( searchRoot, pathAsString, testNames );
+  add( parentTest );
+
+  for ( unsigned int index = 1; index < testNames.size(); ++index )
+  {
+    bool childFound = false;
+    for ( int childIndex =0; childIndex < parentTest->getChildTestCount(); ++childIndex )
+    {
+      if ( parentTest->getChildTestAt( childIndex )->getName() == testNames[index] )
+      {
+        childFound = true;
+        parentTest = parentTest->getChildTestAt( childIndex );
+        break;
+      }
+    }
+
+    if ( !childFound )
+      throw std::invalid_argument( "TestPath::TestPath(): failed to resolve test name <"+
+                                   testNames[index] + "> of path <" + pathAsString + ">" );
+
+    add( parentTest );
+  }
+}
+
+
+TestPath::TestPath( const TestPath &other )
+  : m_tests( other.m_tests )
+{
+}
+
+
+TestPath::~TestPath()
+{
+}
+
+
+TestPath &
+TestPath::operator =( const TestPath &other )
+{
+  if ( &other != this )
+    m_tests = other.m_tests;
+  return *this;
+}
+
+
+bool 
+TestPath::isValid() const
+{
+  return getTestCount() > 0;
+}
+
+
+void 
+TestPath::add( Test *test )
+{
+  m_tests.push_back( test );
+}
+
+
+void 
+TestPath::add( const TestPath &path )
+{
+  for ( int index =0; index < path.getTestCount(); ++index )
+    add( path.getTestAt( index ) );
+}
+
+
+void 
+TestPath::insert( Test *test, 
+                  int index )
+{
+  if ( index < 0  ||  index > getTestCount() )
+    throw std::out_of_range( "TestPath::insert(): index out of range" );
+  m_tests.insert( m_tests.begin() + index, test );
+}
+
+void 
+TestPath::insert( const TestPath &path, 
+                  int index )
+{
+  int itemIndex = path.getTestCount() -1;
+  while ( itemIndex >= 0 )
+    insert( path.getTestAt( itemIndex-- ), index );
+}
+
+
+void 
+TestPath::removeTests()
+{
+  while ( isValid() )
+    removeTest( 0 );
+}
+
+
+void 
+TestPath::removeTest( int index )
+{
+  checkIndexValid( index );
+  m_tests.erase( m_tests.begin() + index );
+}
+
+
+void 
+TestPath::up()
+{
+  checkIndexValid( 0 );
+  removeTest( getTestCount() -1 );
+}
+
+
+int 
+TestPath::getTestCount() const
+{
+  return m_tests.size();
+}
+
+
+Test *
+TestPath::getTestAt( int index ) const
+{
+  checkIndexValid( index );
+  return m_tests[index];
+}
+
+
+Test *
+TestPath::getChildTest() const
+{
+  return getTestAt( getTestCount() -1 );
+}
+
+
+void 
+TestPath::checkIndexValid( int index ) const
+{
+  if ( index < 0  ||  index >= getTestCount() )
+    throw std::out_of_range( "TestPath::checkIndexValid(): index out of range" );
+}
+
+
+std::string 
+TestPath::toString() const
+{
+  std::string asString( "/" );
+  for ( int index =0; index < getTestCount(); ++index )
+  {
+    if ( index > 0 )
+      asString += '/';
+    asString += getTestAt(index)->getName();
+  }
+
+  return asString;
+}
+
+
+Test *
+TestPath::findActualRoot( Test *searchRoot,
+                          const std::string &pathAsString,
+                          PathTestNames &testNames )
+{
+  bool isRelative = splitPathString( pathAsString, testNames );
+
+  if ( isRelative  &&  pathAsString.empty() )
+    return searchRoot;
+
+  if ( testNames.empty() )
+    throw std::invalid_argument( "TestPath::TestPath(): invalid root or root name in absolute path" );
+
+  Test *root = isRelative ? searchRoot->findTest( testNames[0] )  // throw if bad test name
+                          : searchRoot;
+  if ( root->getName() != testNames[0] )
+    throw std::invalid_argument( "TestPath::TestPath(): searchRoot does not match path root name" );
+
+  return root;
+}
+
+
+bool
+TestPath::splitPathString( const std::string &pathAsString,
+                           PathTestNames &testNames )
+{
+  if ( pathAsString.empty() )
+    return true;
+
+  bool isRelative = pathAsString[0] != '/';
+
+  int index = (isRelative ? 0 : 1);
+  while ( true )
+  {
+    int separatorIndex = pathAsString.find( '/', index );
+    if ( separatorIndex >= 0 )
+    {
+      testNames.push_back( pathAsString.substr( index, separatorIndex - index ) );
+      index = separatorIndex + 1;
+    }
+    else
+    {
+      testNames.push_back( pathAsString.substr( index ) );
+      break;
+    }
+  }
+
+  return isRelative;
+}
+  
+
+CPPUNIT_NS_END
+@
+
+
+1.6
+log
+@* src/cppunit/TestPath.cpp: bug #938753, array bound read in
+  splitPathString() with substr if an empty string is passed.
+@
+text
+@d229 4
+a232 1
+  bool isRelative = pathAsString.length()  &&  pathAsString[0] != '/';
+@
+
+
+1.5
+log
+@* src/cppunit/TestPath.cpp: bug #938753, array bound read in
+  splitPathString() with substr if an empty string is passed.
+@
+text
+@d229 1
+a229 1
+  bool isRelative = pathAsString.length()  &&  pathAsString[0] != "/";
+@
+
+
+1.4
+log
+@* src/cppunit/CompilerOutputter.cpp:
+* src/cppunit/ProtectorChain.cpp:
+* src/cppunit/StringTools.cpp:
+* src/cppunit/TestPath.cpp:
+* src/cppunit/TypeInfoHelper.cpp:
+* src/cppunit/XmlElement.cpp:
+* src/cppunit/XmlOutputter.cpp: switched to using unsigned index in loop to
+	avoid signed/unsigned warning in vc7.
+
+* include/cppunit/extension/ExceptionTestCaseDecorator.h: removed dll export
+	on template (caused link error on vc7).
+@
+text
+@d229 1
+a229 1
+  bool isRelative = (pathAsString.substr(0,1) != "/");
+@
+
+
+1.3
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d51 1
+a51 1
+  for ( int index = 1; index < testNames.size(); ++index )
+@
+
+
+1.2
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@d7 1
+a7 1
+namespace CppUnit {
+d251 1
+a251 1
+} // namespace CppUnit
+@
+
+
+1.1
+log
+@* Makefile.am: added examples/qt to tar ball release.
+
+* TODO: heavily updated.
+
+* contrib/msvc/CppUnit*.wwtpl: changed base class for unit test to TestFixture.
+
+* include/cppunit/Test.h: removed toString() method. Not used by the framework
+  and source of confusions with getName().
+  Added getChildTestCount() and getChildTestAt(), introducing the composite pattern
+  at top level. Added utility methods findTest() and findTestPath().
+
+* src/cppunit/Test.cpp: added. Implementation of new utility methods.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: inherits TestLeaf. Removed toString(), run(void) and
+  defaultResult(). Removed default constructor.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestSuite.cpp: fixed some includes that used "" instead of <>.
+
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: added. Common implementation of Test for composite
+  tests (TestSuite).
+
+* include/cppunit/TestFailure.h:
+* src/cppunit/TestFailure.cpp: removed toString().
+
+* include/cppunit/TestLeaf.h:
+* src/cppunit/TestLeaf.cpp: added. Common implementation of Test for single test
+  (TestCase).
+
+* include/cppunit/TestListener.h: added TimingListener example to documentation.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: added. List of test traversed to access a test in the
+  test hierarchy.
+
+* include/cppunit/TestRunner.h: added. Generic TestRunner.
+
+* src/cppunit/TestRunner.cpp: moved to TextTestRunner.cpp. Added new implementation
+  of includecppunit/TestRunner.h.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: inherits TestComposite and implements new Test
+  interface. Removed toString().
+
+* src/cppunit/TextTestRunner.cpp: moved from TestRunner.cpp. Implementation of
+  include/cppunit/ui/text/TestRunner.h.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* src/cppunit/RepeatedTest.cpp: removed toString().
+
+* include/cppunit/extensions/TestDecorator.h: inherits TestLeaf.
+  Removed toString()
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h: XML outputter now escape node content.
+  Add unit test for that bug (#540944). Added style sheet support. Modified
+  XML structure: failure message as its own element.
+
+* src/msvc/testrunner/TestRunnerModel.h:
+* src/msvc/testrunner/TestRunnerModel.cpp: used Test::findTest() to find a test
+  by name instead of using RTTI. Added toAnsiString() for convertion when
+  compiling as UNICODE.
+
+* src/msvc/testrunner/TreeHierarchyDlg.h:
+* src/msvc/testrunner/TreeHierarchyDlg.cpp: used new composite interface of Test
+  to explorer the test hierarchy instead of RTTI.
+
+* examples/cppunittest/TestPathTest.h:
+* examples/cppunittest/TestPathTest.cpp: added, unit tests for TestPath.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: added test for TestLeaf.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: added test for TestComposite and
+  new Test interface.
+@
+text
+@d73 6
+d84 9
+d103 1
+a103 1
+  _tests.push_back( test );
+d121 1
+a121 1
+  _tests.insert( _tests.begin() + index, test );
+d146 1
+a146 1
+  _tests.erase( _tests.begin() + index );
+d161 1
+a161 1
+  return _tests.size();
+d169 1
+a169 1
+  return _tests[index];
+@
+

@@ -1,0 +1,647 @@
+head	1.9;
+access;
+symbols
+	REL_1_12_1:1.9
+	REL_1_11_6:1.9
+	REL_1_11_4:1.9
+	REL_1_11_0:1.9
+	TG_CPPUNIT_NO_STREAM_AFTER:1.9
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.9
+	REL_1_10_2:1.9
+	REL_1_10_0:1.9
+	REL_1_9_14:1.9
+	REL_1_9_12:1.9
+	BRANCH_1_9_12:1.9.0.2
+	TG_BRANCH_1_9_12:1.9
+	TG_BEFORE_HPUX_PLUGIN:1.9
+	TG_BEFORE_SUN4_PORT:1.9
+	REL_1_9_10:1.9
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.7
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.7
+	REL_1_9_6:1.7
+	REL_1_9_4:1.7
+	REL_1_9_0:1.6
+	REL_1_8_0:1.4
+	REL_1_7_8:1.3
+	REL_1_7_3:1.2
+	REL_1_7_1:1.2
+	REL_1_6_2:1.2
+	BRANCH_1_6:1.2.0.2
+	REL_1_6_1:1.2
+	REL_1_6_0:1.2
+	REL_1_5_5:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.9
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2002.07.11.06.01.54;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2002.04.15.15.19.43;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.04.12.22.34.37;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.04.12.19.28.46;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.03.28.15.47.07;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.03.24.19.39.54;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.07.15.04.18.06;	author smr99;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.14.22.37.31;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.9
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@#ifndef CPPUNIT_TEST_H
+#define CPPUNIT_TEST_H
+
+#include <cppunit/Portability.h>
+#include <string>
+
+CPPUNIT_NS_BEGIN
+
+
+class TestResult;
+class TestPath;
+
+/*! \brief Base class for all test objects.
+ * \ingroup BrowsingCollectedTestResult
+ *
+ * All test objects should be a subclass of Test.  Some test objects,
+ * TestCase for example, represent one individual test.  Other test
+ * objects, such as TestSuite, are comprised of several tests.  
+ *
+ * When a Test is run, the result is collected by a TestResult object.
+ *
+ * \see TestCase
+ * \see TestSuite
+ */
+class CPPUNIT_API Test
+{
+public:
+  virtual ~Test() {};
+
+  /*! \brief Run the test, collecting results.
+   */
+  virtual void run( TestResult *result ) =0;
+
+  /*! \brief Return the number of test cases invoked by run().
+   *
+   * The base unit of testing is the class TestCase.  This
+   * method returns the number of TestCase objects invoked by
+   * the run() method.
+   */
+  virtual int countTestCases () const =0;
+
+  /*! \brief Returns the number of direct child of the test.
+   */
+  virtual int getChildTestCount() const =0;
+
+  /*! \brief Returns the child test of the specified index.
+   *
+   * This method test if the index is valid, then call doGetChildTestAt() if 
+   * the index is valid. Otherwise std::out_of_range exception is thrown.
+   *
+   * You should override doGetChildTestAt() method.
+   * 
+   * \param index Zero based index of the child test to return.
+   * \return Pointer on the test. Never \c NULL.
+   * \exception std::out_of_range is \a index is < 0 or >= getChildTestCount().
+   */
+  virtual Test *getChildTestAt( int index ) const;
+
+  /*! \brief Returns the test name.
+   * 
+   * Each test has a name.  This name may be used to find the
+   * test in a suite or registry of tests.
+   */
+  virtual std::string getName () const =0;
+
+  /*! \brief Finds the test with the specified name and its parents test.
+   * \param testName Name of the test to find.
+   * \param testPath If the test is found, then all the tests traversed to access
+   *                 \a test are added to \a testPath, including \c this and \a test.
+   * \return \c true if a test with the specified name is found, \c false otherwise.
+   */
+  virtual bool findTestPath( const std::string &testName,
+                             TestPath &testPath ) const;
+
+  /*! \brief Finds the specified test and its parents test.
+   * \param test Test to find.
+   * \param testPath If the test is found, then all the tests traversed to access
+   *                 \a test are added to \a testPath, including \c this and \a test.
+   * \return \c true if the specified test is found, \c false otherwise.
+   */
+  virtual bool findTestPath( const Test *test,
+                             TestPath &testPath ) const;
+
+  /*! \brief Finds the test with the specified name in the hierarchy.
+   * \param testName Name of the test to find.
+   * \return Pointer on the first test found that is named \a testName. Never \c NULL.
+   * \exception std::invalid_argument if no test named \a testName is found.
+   */
+  virtual Test *findTest( const std::string &testName ) const;
+
+  /*! \brief Resolved the specified test path with this test acting as 'root'.
+   * \param testPath Test path string to resolve.
+   * \return Resolved TestPath. 
+   * \exception std::invalid_argument if \a testPath could not be resolved.
+   * \see TestPath.
+   */
+  virtual TestPath resolveTestPath( const std::string &testPath ) const;
+
+protected:
+  /*! Throws an exception if the specified index is invalid.
+   * \param index Zero base index of a child test.
+   * \exception std::out_of_range is \a index is < 0 or >= getChildTestCount().
+   */
+  virtual void checkIsValidIndex( int index ) const;
+
+  /*! \brief Returns the child test of the specified valid index.
+   * \param index Zero based valid index of the child test to return.
+   * \return Pointer on the test. Never \c NULL.
+   */
+  virtual Test *doGetChildTestAt( int index ) const =0;
+};
+
+
+CPPUNIT_NS_END
+
+#endif // CPPUNIT_TEST_H
+
+@
+
+
+1.8
+log
+@* added missing files
+@
+text
+@d7 2
+a8 1
+namespace CppUnit {
+d114 1
+a114 1
+} // namespace CppUnit
+@
+
+
+1.7
+log
+@* NEWS: updated.
+
+* configure.in: added include/cppunit/config/Makefile and
+  include/cppunit/plugin/Makefile to the list of target.
+
+* doc/CppUnit-win.dox: enabled generation of HTML Help documentation.
+
+* include/cppunit/config/Makefile.am:
+* include/cppunit/plugin/Makefile.am: added.
+
+* include/cppunit/config-bcb5.h:
+* include/cppunit/config-msvc6.h:
+* include/cppunit/config-mac.h: moved to include/cppunit/config/.
+
+* include/cppunit/Portability.h: updated config files location. Added macros
+  CPPUNIT_STRINGIZE and CPPUNIT_JOIN (implementation adapted from boost.org).
+  Added macro CPPUNIT_MAKE_UNIQUE_NAME.
+
+* include/cppunit/Test.h: modified methods order.
+
+* include/cppunit/extensions/HelperMacros.h: renamed macro
+  __CPPUNIT_MAKE_UNIQUE_NAME to CPPUNIT_MAKE_UNIQUE_NAME and moved its
+  definition to include/cppunit/Portability.h.
+
+* include/cppunit/extensions/TestDecorator.h: Inherits Test instead of TestLeaf.
+
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* src/cppunit/DynamicLibraryManager.cpp: added. DLL manager (load & lookup
+  symbol).
+
+* src/cppunit/BeOsDynamicLibraryManager.cpp:
+* src/cppunit/UnixDynamicLibraryManager.cpp:
+* src/cppunit/Win32DynamicLibraryManager.cpp: added. Implementation of
+  platform dependent methods of DynamicLibraryManager.
+
+* include/cppunit/plugin/DynamicLibraryManagerException.h:
+* src/cppunit/DynamicLibraryManagerException.cpp: added. Exception thrown
+  by DynamicLibraryManager.
+
+* include/cppunit/plugin/TestPlugIn.h: added. CppUnitTestPlugIn interface
+  definition. Helper macros to implements plug-in.
+
+* include/cppunit/plugin/TestPlugInSuite.h:
+* src/cppunit/plugin/TestPlugInSuite.cpp: added. A suite to wrap a test
+  plug-in.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: added. A default implementation
+  of the test plug-in interface.
+
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp: updated to use the
+  new TestPlugIn.
+
+* examples/cppunittest/TestResultCollectorTest.cpp: fixed typo.
+@
+text
+@d72 1
+a72 1
+                             TestPath &testPath );
+d81 1
+a81 1
+                             TestPath &testPath );
+d96 1
+a96 1
+  virtual TestPath resolveTestPath( const std::string &testPath );
+@
+
+
+1.6
+log
+@* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.h: deprecated defaultOuputter(). Added
+  setLocationFormat() and format specifiation in constructor. A string that
+  represent the location format is used to output the location. Default format
+  is defined by CPPUNIT_COMPILER_LOCATION_FORMAT.
+
+* include/cppunit/config-msvc6.h:
+* include/cppunit/Portability.h: added CPPUNIT_COMPILER_LOCATION_FORMAT. Use
+  gcc location format if VC++ is not detected.
+
+* include/cppunit/Test.h: fixed documentation.
+
+* include/cppunit/TestListener.h: added startSuite() and endSuite()
+  callbacks. Added new example to documentation.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp:
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: Updated to inform the listeners.
+
+* src/qttestrunner/TestBrowserDlgImpl.cpp: used Test new composite interface
+  instead of RTTI to explore the test hierarchy.
+
+* examples/cppunittest/MockTestListener.h:
+* examples/cppunittest/MockTestListener.cpp: updated,added support for
+  startSuite() and endSuite().
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for startSuite()
+  and endSuite().
+@
+text
+@a44 7
+  /*! \brief Returns the test name.
+   * 
+   * Each test has a name.  This name may be used to find the
+   * test in a suite or registry of tests.
+   */
+  virtual std::string getName () const =0;
+
+d57 7
+@
+
+
+1.5
+log
+@* Makefile.am: added examples/qt to tar ball release.
+
+* TODO: heavily updated.
+
+* contrib/msvc/CppUnit*.wwtpl: changed base class for unit test to TestFixture.
+
+* include/cppunit/Test.h: removed toString() method. Not used by the framework
+  and source of confusions with getName().
+  Added getChildTestCount() and getChildTestAt(), introducing the composite pattern
+  at top level. Added utility methods findTest() and findTestPath().
+
+* src/cppunit/Test.cpp: added. Implementation of new utility methods.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: inherits TestLeaf. Removed toString(), run(void) and
+  defaultResult(). Removed default constructor.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestSuite.cpp: fixed some includes that used "" instead of <>.
+
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: added. Common implementation of Test for composite
+  tests (TestSuite).
+
+* include/cppunit/TestFailure.h:
+* src/cppunit/TestFailure.cpp: removed toString().
+
+* include/cppunit/TestLeaf.h:
+* src/cppunit/TestLeaf.cpp: added. Common implementation of Test for single test
+  (TestCase).
+
+* include/cppunit/TestListener.h: added TimingListener example to documentation.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: added. List of test traversed to access a test in the
+  test hierarchy.
+
+* include/cppunit/TestRunner.h: added. Generic TestRunner.
+
+* src/cppunit/TestRunner.cpp: moved to TextTestRunner.cpp. Added new implementation
+  of includecppunit/TestRunner.h.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: inherits TestComposite and implements new Test
+  interface. Removed toString().
+
+* src/cppunit/TextTestRunner.cpp: moved from TestRunner.cpp. Implementation of
+  include/cppunit/ui/text/TestRunner.h.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* src/cppunit/RepeatedTest.cpp: removed toString().
+
+* include/cppunit/extensions/TestDecorator.h: inherits TestLeaf.
+  Removed toString()
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h: XML outputter now escape node content.
+  Add unit test for that bug (#540944). Added style sheet support. Modified
+  XML structure: failure message as its own element.
+
+* src/msvc/testrunner/TestRunnerModel.h:
+* src/msvc/testrunner/TestRunnerModel.cpp: used Test::findTest() to find a test
+  by name instead of using RTTI. Added toAnsiString() for convertion when
+  compiling as UNICODE.
+
+* src/msvc/testrunner/TreeHierarchyDlg.h:
+* src/msvc/testrunner/TreeHierarchyDlg.cpp: used new composite interface of Test
+  to explorer the test hierarchy instead of RTTI.
+
+* examples/cppunittest/TestPathTest.h:
+* examples/cppunittest/TestPathTest.cpp: added, unit tests for TestPath.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: added test for TestLeaf.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: added test for TestComposite and
+  new Test interface.
+@
+text
+@d67 2
+d76 2
+d100 1
+a100 1
+   * \param Zero base index of a child test.
+@
+
+
+1.4
+log
+@* doc/cookbook.html: removed. Replaced by cookbook.doc.
+
+* doc/cookbook.dox: added, conversion of cookbook.html to Doxygen format.
+
+* doc/other_documentation.dox: added groups definition.
+
+* doc/Makefile.am: replaced cookbook.html by cookbook.dox
+
+* doc/Doxyfile.in: added predefined CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION.
+Replaced cookbook.html by cookbook.dox.
+
+* include/cppunitui/mfc/TestRunner.h: added, extracted from
+include/msvc6/testrunner/TestRunner.h. Moved class TestRunner to namespace
+CppUnit::MfcUi.
+
+* include/msvc6/testrunner/TestRunner.h: deprecated. A simple typedef to
+CppUnit::MfcUi::TestRunner.
+
+* include/textui/TestRuner.h: added, extracted from
+include/cppunit/TextTestRunner.h.
+
+* src/cppunit/TextTestRunner.cpp: renamed TestRunner.cpp. Moved into
+namespace CppUnit::TextUi.
+
+* src/msvc6/testruner/TestRunner.cpp: moved into namespace CppUnit::MfcUi.
+
+* src/cppunit/CompilerOutputter.cpp: removed printing "- " before
+NotEqualException addional message, for consistency between different
+TestRunner (Mfc,Text...)
+
+* include/cppunit/Asserter.h:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/Outputter.h:
+* include/cppunit/SourceLine.h:
+* include/cppunit/TestAssert.h:
+* include/cppunit/TestCaller.h:
+* include/cppunit/TestFailure.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: doc update. organization
+in groups.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.cpp:
+* examples/msvc6/HostApp/HostApp.cpp: updated to use
+CppUnit::MfcUi::TestRunner.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use
+CppUnit::TextUi::TestRunner.
+@
+text
+@d10 1
+d27 1
+a27 30
+    virtual                       ~Test () {};
+
+    /*! \brief Run the test, collecting results.
+     */
+    virtual void                  run (TestResult *result)    = 0;
+
+    /*! \brief Return the number of test cases invoked by run().
+     *
+     * The base unit of testing is the class TestCase.  This
+     * method returns the number of TestCase objects invoked by
+     * the run() method.
+     */
+    virtual int                   countTestCases () const     = 0;
+
+    /*! \brief Returns the test name.
+     * 
+     * Each test has a name.  This name may be used to find the
+     * test in a suite or registry of tests.
+     */
+    virtual std::string           getName () const            = 0;
+
+    /*! \brief Description of the test, for diagnostic output.
+     *
+     * The test description will typically include the test name,
+     * but may have additional description.  For example, a test
+     * suite named <tt>complex_add</tt> may be described as 
+     * <tt>suite complex_add</tt>.
+     */
+    virtual std::string           toString () const           = 0;
+
+d29 77
+@
+
+
+1.3
+log
+@* INSTALL-WIN32.txt: added some info to build cppunit as a DLL.
+
+* include/cppunit/config-msvc6.h: added definition of macro CPPUNIT_API when
+building or linking DLL. Defined CPPUNIT_BUILD_DLL when building, and
+CPPUNIT_DLL when linking.
+
+* include/cppunit/Portability.h: added empty definition of macro CPPUNIT_API
+when not building or using CppUnit as a DLL. When any of those symbol is defined,
+the symbol CPPUNIT_NEED_DLL_DECL is set to 1.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* include/cppunit/extensions/TestDecorator.h:
+* include/cppunit/extensions/TestSetUp.h:
+* include/cppunit/TestCaller.h
+* include/cppunit/extensions/TestFactory.h
+* include/cppunit/extensions/TestFactoryRegistry.h
+* include/cppunit/extensions/TypeInfoHelper.h
+* include/cppunit/Asserter.h
+* include/cppunit/Exception.h
+* include/cppunit/NotEqualException.h
+* include/cppunit/SourceLine.h
+* include/cppunit/SynchronizedObject.h
+* include/cppunit/Test.h
+* include/cppunit/TestAssert.h
+* include/cppunit/TestCase.h
+* include/cppunit/TestFailure.h
+* include/cppunit/TestListener.h
+* include/cppunit/TestResult.h
+* include/cppunit/TestSuite.h
+* include/cppunit/CompilerOutputter.h
+* include/cppunit/Outputter.h
+* include/cppunit/TestResultCollector.h
+* include/cppunit/TestSuccessListener.h
+* include/cppunit/TextOutputter.h
+* include/cppunit/TextTestProgressListener.h
+* include/cppunit/TextTestResult.h
+* include/cppunit/TextTestRunner.h
+* include/cppunit/XmlOutputter.h: added CPPUNIT_API for DLL export.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: reindented
+
+* include/cppunit/extensions/TestSetUp.h:
+* src/cppunit/TestSetUp.cpp: added .cpp. extracted inline method and moved them
+to cpp file.
+@
+text
+@d12 1
+@
+
+
+1.2
+log
+@Added documentation.
+@
+text
+@d4 1
+d22 1
+a22 1
+class Test
+@
+
+
+1.1
+log
+@Moved public header files from cppunit dir to include/cppunit, to separate them from internal header files like estring.h.
+@
+text
+@d8 1
+a8 1
+  class TestResult;
+d10 15
+a24 14
+  /**
+   * A Test can be run and collect its results.
+   * \see TestResult.
+   * 
+   */
+  class Test
+  {
+    public:
+      virtual                       ~Test () {};
+
+      virtual void                  run (TestResult *result)    = 0;
+      virtual int                   countTestCases () const     = 0;
+      virtual std::string           toString () const           = 0;
+      virtual std::string           getName () const            = 0;
+d26 3
+d30 26
+a55 1
+  };
+@
+

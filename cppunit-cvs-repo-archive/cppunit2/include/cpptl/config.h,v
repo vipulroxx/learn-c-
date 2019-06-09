@@ -1,0 +1,775 @@
+head	1.23;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.22
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.8
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.7
+	TG_AFTER_REMOVING_TESTCONTEXT:1.5
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.5
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.5;
+locks; strict;
+comment	@ * @;
+
+
+1.23
+date	2007.08.15.11.20.57;	author blep;	state Exp;
+branches;
+next	1.22;
+
+1.22
+date	2006.09.06.19.23.26;	author blep;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2005.11.09.22.03.56;	author blep;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2005.09.06.07.14.49;	author blep;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2005.07.04.08.09.29;	author blep;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2005.06.24.19.47.39;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2005.03.07.21.34.45;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2005.03.06.21.12.39;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2005.03.06.20.12.31;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2005.03.06.18.35.14;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2005.03.05.13.11.23;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2005.03.05.12.21.07;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2005.03.04.22.16.57;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2005.03.03.20.57.13;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.02.28.21.36.19;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.02.27.09.56.18;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.02.23.22.45.56;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2005.02.23.21.35.18;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.11.15.08.50.59;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.11.15.08.19.53;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.11.15.08.12.20;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.10.22.06.20.23;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.10.21.17.23.23;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.23
+log
+@   Added support for light test fixture (a la CppUnitLite).
+See lightfixture.h and example/light_fixture.
+   Added support for direct declaration and registration of test in plain C
+function. See testfunction.h and example/test_function.
+@
+text
+@#ifndef CPPTL_CONFIG_H_INCLUDED
+# define CPPTL_CONFIG_H_INCLUDED
+
+// Need to include an STL header to detect STL type & version
+#include <utility>
+
+// compiler specific stuffs...
+///////////////////////////////////////////////////////////////////////////
+
+// Microsoft Visual C++
+# if defined(_MSC_VER)
+#  if _MSC_VER <= 1200    // VC++ 6 or before
+#   pragma warning( disable : 4786 ) // ident trunc to '255' chars in debug info
+#   pragma warning( disable : 4800 ) // forcing value to bool performance warning
+#   pragma warning( disable : 4018 ) // '<' signed/unsigned mismatch
+#   define CPPTL_NO_VECTOR_STD_ITERATOR
+#   define CPPTL_NO_FUNCTION_TEMPLATE_ORDERING
+#   define CPPTL_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+#   define CPPTL_HAS_INT64 1
+#   define CPPTL_NO_INT64_TO_DOUBLE // no conversion from int64 to double
+#  endif
+
+#  if _MSC_VER >= 1200    // VC++ 6 and above
+#   undef CPPTL_NO_ENUM_STATIC_CONSTANT
+#  endif
+
+#  if _MSC_VER <= 1300    // VC++ 7.0 or before
+// VC++ 7.0 does have deduced typename, but their behavior is not consistent with
+// VC++ 7.1. Since it is not required to compile, we just pretend it's not available.
+#   define CPPTL_NO_DEDUCED_TYPENAME
+#   define CPPTL_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+# endif
+
+#  if _MSC_VER >= 1310 // VC++ 7.1
+#   define CPPTL_HAS_INT64 1
+//#  define CPPTL_HAS_LONGLONG 1    // supported but not by default.
+#   pragma warning( disable : 4800 ) // forcing value to bool performance warning
+#   pragma warning( disable : 4018 ) // '<' signed/unsigned mismatch
+#   pragma warning( disable : 4180 ) // qualifier applied to function type has no meaning
+#  endif
+
+# ifndef _CPPRTTI // RTTI is not enabled
+#  define CPPTL_NO_RTTI
+# endif
+
+#  define CPPTL_HAS__SNPRINTF 1
+
+# endif
+
+
+// STL specifics
+///////////////////////////////////////////////////////////////////////////
+# if defined(__GLIBCPP__) || defined(__GLIBCXX__) // GNU libstdc++ 3
+#  if !defined(_GLIBCPP_USE_WCHAR_T) && !defined(_GLIBCXX_USE_WCHAR_T)
+#   define CPPTL_NO_STD_WSTRING 1
+#  endif
+# endif
+
+# if defined(__GNUC__) && (__GNUC__ < 3) && !defined(__STL_USE_NEW_IOSTREAMS)
+#  define CPPTL_NO_SSTREAM 1  // No #include <sstream>
+#  define CPPTL_NO_STL_SEQUENCE_AT 1 // No std::vector<>::at std::deque<>::at
+#  define CPPTL_NO_STD_WSTRING 1
+# endif
+
+// OS specifics
+///////////////////////////////////////////////////////////////////////////
+
+# if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
+#  define CPPTL_USE_WIN32_ATOMIC 1
+#  define CPPTL_USE_WIN32_THREAD 1
+# elif defined(linux) || defined(__linux) || defined(__linux__)
+#  define CPPTL_USE_PTHREAD_THREAD 1
+# elif defined(sun) || defined(__sun)
+#  define CPPTL_USE_PTHREAD_THREAD 1
+# elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#  define CPPTL_USE_PTHREAD_THREAD 1
+# elif defined(__IBMCPP__)
+#  define CPPTL_USE_PTHREAD_THREAD 1
+# endif
+
+// Common to all compilers
+///////////////////////////////////////////////////////////////////////////
+
+/// CPPTL_TYPENAME is defined as 'typename' if the compiler requires deduced
+/// typename in template.
+# if defined(CPPTL_NO_DEDUCED_TYPENAME)
+#  define CPPTL_TYPENAME
+#else
+#  define CPPTL_TYPENAME typename
+# endif
+
+/// CPPTL_STATIC_CONSTANT is defined to declare a static constant in a class
+/// struct A { CPPTL_STATIC_CONSTANT( x, 1 ) }; // A::x = 1
+# if defined(CPPTL_NO_ENUM_STATIC_CONSTANT)
+#  define CPPTL_STATIC_CONSTANT( type, assignment ) \
+              static const int assignment
+# else
+#  define CPPTL_STATIC_CONSTANT( type, assignment ) \
+              enum { assignment }
+# endif
+
+/// CPPTL_NO_VECTOR_ITERATOR_VALUE_TYPE_DEDUCTION is defined if it not possible to
+/// deduced the value_type of std::vector<>::iterator (it is a pointer and there is
+/// no partial specialization support).
+# if defined(CPPTL_NO_VECTOR_STD_ITERATOR)  && defined(CPPTL_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+#  define CPPTL_NO_VECTOR_ITERATOR_VALUE_TYPE_DEDUCTION 1 // might works with STLPort
+# endif
+
+/// CPPTL_NO_TYPE_DEFAULT_ARG is defined if the compiler does not support the following construct:
+/// template<class ValueType> void doSomething( CppTL::Type<ValueType> type = CppTL::Type<ValueType>() );
+/// With allow for the following usage:
+/// doSomething<int>();
+/// Some compiler can not deduce type correctly or may cause silent linker error (all function
+/// instantion for different type being recognized as a single one).
+/// If this construct is not supported, the portable call syntax should be use:
+/// doSomething( CppTL::Type<int>() );
+/// @@todo Should this be kept. It is not used at the time...
+# if defined(CPPTL_NO_TYPE_DEFAULT_ARG)
+#  define CPPTL_TYPE_DEFAULT_ARG(aType)
+# else
+#  define CPPTL_TYPE_DEFAULT_ARG(aType) = ::CppTL::Type<aType>()
+# endif
+
+
+// CPPTL_NO_STL_SEQUENCE_AT is defined if the STL does not provide std::vector<>::at
+# if defined(CPPTL_NO_STL_SEQUENCE_AT)
+#  define CPPTL_AT( container, index ) container[index]
+# else
+#  define CPPTL_AT( container, index ) (container).at(index)
+# endif
+
+# if !defined(CPPTL_HAS_THREAD)
+#  if CPPTL_USE_WIN32_THREAD || CPPTL_USE_PTHREAD_THREAD
+#   define CPPTL_HAS_THREAD 1
+#  endif
+# endif
+
+# if !CPPTL_HAS_THREAD_SAFE_ATOMIC_COUNTER
+#  if CPPTL_USE_PTHREAD_THREAD && !CPPTL_USE_WIN32_ATOMIC
+#   define CPPTL_USE_PTHREAD_ATOMIC 1
+#  endif
+#  if CPPTL_USE_PTHREAD_ATOMIC || CPPTL_USE_WIN32_ATOMIC
+#   define CPPTL_HAS_THREAD_SAFE_ATOMIC_COUNTER 1
+#  endif
+# endif
+
+
+// auto-link specification
+///////////////////////////////////////////////////////////////////////////
+
+# define CPPTL_API
+
+
+
+
+// Macro tools...
+///////////////////////////////////////////////////////////////////////////
+
+
+/*! Joins to symbol after expanding them into string.
+ *
+ * Use this macro to join two symbols. Example of usage:
+ *
+ * \code
+ * #define MAKE_UNIQUE_NAME(prefix) CPPTL_JOIN( prefix, __LINE__ )
+ * \endcode
+ *
+ * The macro defined in the example concatenate a given prefix with the line number
+ * to obtain a 'unique' identifier.
+ *
+ * \internal From boost documentation:
+ * The following piece of macro magic joins the two 
+ * arguments together, even when one of the arguments is
+ * itself a macro (see 16.3.1 in C++ standard).  The key
+ * is that macro expansion of macro arguments does not
+ * occur in CPPUT_JOIN2 but does in CPPTL_JOIN.
+ */
+#define CPPTL_JOIN( symbol1, symbol2 ) _CPPTL_DO_JOIN( symbol1, symbol2 )
+
+/// \internal
+#define _CPPTL_DO_JOIN( symbol1, symbol2 ) _CPPTL_DO_JOIN2( symbol1, symbol2 )
+
+/// \internal
+#define _CPPTL_DO_JOIN2( symbol1, symbol2 ) symbol1##symbol2
+
+/*! Adds the line number to the specified string to create a unique identifier.
+ * \param prefix Prefix added to the line number to create a unique identifier.
+ * \see CPPUT_TEST_SUITE_REGISTRATION for an example of usage.
+ */
+#define CPPTL_MAKE_UNIQUE_NAME( prefix ) CPPTL_JOIN( prefix, __LINE__ )
+
+#define CPPTL_MIN( a, b ) ((a) < (b) ? a : b)
+#define CPPTL_MAX( a, b ) ((a) > (b) ? a : b)
+
+/*! Cause a compilation error if a type is not complete.
+ * Typical use if before call to delete operator (ScopedPtr, SharedPtr...).
+ * (based on boost.checked_delete)
+ */
+#define CPPTL_CHECK_TYPE_COMPLETE( Type )                        \
+    {                                                            \
+       typedef char typeMustBeComplete[ sizeof(Type) ? 1 : -1 ]; \
+       (void)sizeof(typeMustBeComplete);                         \
+    }
+
+/// Evaluates to the number of elements in the array
+#define CPPTL_ARRAY_SIZE( array ) (sizeof(array)/sizeof((array)[0]))
+
+///////////////////////////////////////////////////////////////////////////
+
+#ifdef NDEBUG
+# define CPPTL_ASSERT_MESSAGE( cond, message ) \
+   (void)(0)
+
+# define CPPTL_DEBUG_ASSERT_UNREACHABLE \
+   (void)(0)
+#else
+# include <assert.h>
+# define CPPTL_ASSERT_MESSAGE( cond, message ) \
+   assert( (cond)  &&  message )
+
+# define CPPTL_DEBUG_ASSERT_UNREACHABLE \
+   assert( false  &&  "unreachable code" )
+#endif
+
+namespace CppTL {
+
+// defines portable int64_t  &&  uint64_t
+# ifndef CPPTL_NO_INT64
+#  if CPPTL_HAS_LONGLONG
+      typedef long long int64_t;
+      typedef unsigned long long uint64_t;
+#  elif CPPTL_HAS_INT64
+      typedef __int64 int64_t;
+      typedef unsigned __int64 uint64_t;
+#  else
+#   define CPPTL_NO_INT64 1
+#  endif
+# endif
+
+
+#ifndef CPPTL_NO_INT64
+   typedef CppTL::int64_t LargestInt;
+   typedef CppTL::uint64_t LargestUnsignedInt;
+#else
+   typedef int LargestInt;
+   typedef unsigned int LargestUnsignedInt;
+#endif
+
+
+   typedef unsigned int size_type;
+
+   template<class T>
+   struct Type
+   {
+      typedef T type;
+   };
+
+   /// Base class for non copyable class.
+   class CPPTL_API NonCopyable
+   {
+   public:
+      NonCopyable()
+      {
+      }
+
+      ~NonCopyable()
+      {
+      }
+
+   private:
+      NonCopyable( const NonCopyable &other );
+      void operator =( const NonCopyable &other );
+   };
+
+   template<class T>
+   inline void
+   swap( T &left, T &right )
+   {
+      T temp( left );
+      left = right;
+      right = temp;
+   }
+
+   template<class T>
+   void checkedDelete( T *p )
+   {
+      CPPTL_CHECK_TYPE_COMPLETE( T )
+      delete p;
+   }
+
+   template<class T>
+   void checkedArrayDelete( T *p )
+   {
+      CPPTL_CHECK_TYPE_COMPLETE( T )
+      delete[] p;
+   }
+
+   template<class TargetType, class SourceType>
+   TargetType checkedCast( SourceType *pointer, Type<TargetType> )
+   {
+      TargetType casted = dynamic_cast<TargetType>( pointer );
+      CPPTL_ASSERT_MESSAGE( casted != 0, "CPPTL_CHECKED_CAST: wrong TargetType." );
+      return casted;
+   }
+
+#if defined(NDEBUG)  ||  defined(CPPTL_NO_RTTI)
+# define CPPTL_CHECKED_CAST( TargetType, pointer ) \
+   static_cast<TargetType>( pointer )
+#else
+# define CPPTL_CHECKED_CAST( TargetType, pointer ) \
+   ::CppTL::checkedCast( pointer, ::CppTL::Type<TargetType>() )
+#endif
+
+
+
+} // namespace CppTL
+
+
+#endif // CPPTL_CONFIG_H_INCLUDED
+@
+
+
+1.22
+log
+@- made atomic counter copyable
+- added implementation of CPPTL_ assertions.
+- fixed wrong assertions in smallmap.h
+- fixed buggy iterator usage in smallmaptest.
+- no longer require a library to use cpptl threads.
+@
+text
+@d298 18
+@
+
+
+1.21
+log
+@- removed support for atomic counter on linux (warning on include, don't work reliably)
+@
+text
+@d210 1
+a210 1
+
+d216 4
+d221 3
+@
+
+
+1.20
+log
+@* added CPPTL_ARRAY_SIZE
+* added typedef LargestInt and LargestUnsignedInt
+@
+text
+@a72 1
+#  define CPPTL_USE_LINUX_ATOMIC 1
+d139 1
+a139 1
+#  if CPPTL_USE_PTHREAD_THREAD && !CPPTL_USE_WIN32_ATOMIC  && !CPPTL_USE_LINUX_ATOMIC
+d142 1
+a142 1
+#  if CPPTL_USE_PTHREAD_ATOMIC || CPPTL_USE_WIN32_ATOMIC || CPPTL_USE_LINUX_ATOMIC
+@
+
+
+1.19
+log
+@* updated forward declarations
+* ScopedPtr and SharedPtr now use checked delete (check if type is complete)
+* added checkedDelete() and checkedArrayDelete() to config.h
+* added ScopedPtr and ScopedArray.
+@
+text
+@d36 1
+a36 1
+//#  define CPPTL_HAS_LONGLONG 1    // support but not by default.
+d46 2
+d206 3
+d234 10
+@
+
+
+1.18
+log
+@added CPPTL_MIN & CPPTL_MAX macros.
+@
+text
+@d194 10
+d263 14
+@
+
+
+1.17
+log
+@* added global define to indicate if atomic counter is thread-safe
+* removed vacpp specific atomic counter implementation (couldn't get it to compile)
+* added pthread mutex based atomic counter implementation
+@
+text
+@d191 3
+@
+
+
+1.16
+log
+@* added pthread api activation
+* added CPPTL_USE_WIN32_ATOMIC for WIN32
+@
+text
+@d137 9
+@
+
+
+1.15
+log
+@* added automatic detection of pthread support
+* added atomic counter implementation for linux
+@
+text
+@d67 1
+d132 1
+a132 1
+#  if CPPTL_USE_WIN32_THREAD
+@
+
+
+1.14
+log
+@* enabled thread if WIN32 platform.
+@
+text
+@d68 9
+@
+
+
+1.13
+log
+@* no std::wstring for gcc 2.95
+@
+text
+@a6 1
+
+d63 7
+d121 6
+@
+
+
+1.12
+log
+@* added config macro CPPTL_NO_SSTREAM and CPPTL_NO_STL_SEQUENCE_AT for gcc 2.95
+* added portability macro CPPTL_AT to access sequence container portably
+@
+text
+@d61 1
+@
+
+
+1.11
+log
+@* added CPPTL_NO_INT64_TO_DOUBLE if compiler does not support conversion from int64 to double (vc6)
+@
+text
+@d58 4
+d100 1
+a100 1
+#if defined(CPPTL_NO_TYPE_DEFAULT_ARG)
+d102 1
+a102 1
+#else
+d104 9
+a112 1
+#endif
+@
+
+
+1.10
+log
+@* renamed and moved macro CPPUT_MAKE_UNIQUE_NAME to cpptl library.
+@
+text
+@d21 1
+@
+
+
+1.9
+log
+@* moved cpput/typehelper.h to cpptl/typename.h
+* renamed helper functions: getObjectTypeName(), getTypeName() and demangleTypeInfoName()
+* With mingw, typeinfo name is correctly extracted (skip initial digits)
+* added automatic detection of the presence of RTTI with msvc.
+@
+text
+@d107 39
+@
+
+
+1.8
+log
+@* added swap()
+* added size_type
+@
+text
+@d41 5
+@
+
+
+1.7
+log
+@* added detection of gcc stdlib & of the presence of std::wstring
+@
+text
+@d127 2
+d152 9
+@
+
+
+1.6
+log
+@* fixed detection of MSVC compiler (other compilers will now correctly skip those specific configurations).
+@
+text
+@d4 2
+d41 10
+a50 1
+#endif
+@
+
+
+1.5
+log
+@* fixed int64_t support on VC++ 7.1
+@
+text
+@d9 11
+a19 9
+# if _MSC_VER <= 1200    // VC++ 6 or before
+#  pragma warning( disable : 4786 ) // ident trunc to '255' chars in debug info
+#  pragma warning( disable : 4800 ) // forcing value to bool performance warning
+#  pragma warning( disable : 4018 ) // '<' signed/unsigned mismatch
+#  define CPPTL_NO_VECTOR_STD_ITERATOR
+#  define CPPTL_NO_FUNCTION_TEMPLATE_ORDERING
+#  define CPPTL_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+#  define CPPTL_HAS_INT64 1
+# endif
+d21 3
+a23 3
+# if _MSC_VER >= 1200    // VC++ 6 and above
+#  undef CPPTL_NO_ENUM_STATIC_CONSTANT
+# endif
+d25 1
+a25 1
+# if _MSC_VER <= 1300    // VC++ 7.0 or before
+d28 2
+a29 2
+#  define CPPTL_NO_DEDUCED_TYPENAME
+#  define CPPTL_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+d32 2
+a33 2
+# if _MSC_VER >= 1310 // VC++ 7.1
+#  define CPPTL_HAS_INT64 1
+d35 5
+a39 5
+#  pragma warning( disable : 4800 ) // forcing value to bool performance warning
+#  pragma warning( disable : 4018 ) // '<' signed/unsigned mismatch
+#  pragma warning( disable : 4180 ) // qualifier applied to function type has no meaning
+# endif
+
+d70 16
+a121 1
+
+@
+
+
+1.4
+log
+@* added portable int64_t and uint64_t
+* fixed some macros prefix
+* fixed VC6 profile
+@
+text
+@d32 1
+a32 1
+#  define CPPTL_HAS_LONGLONG 1
+@
+
+
+1.3
+log
+@* added CppUT::Type<> template to pass type around on older compiler.
+@
+text
+@d11 2
+d16 1
+d31 2
+d51 2
+a52 2
+/// CPPUT_STATIC_CONSTANT is defined to declare a static constant in a class
+/// struct A { CPPUT_STATIC_CONSTANT( x, 1 ) }; // A::x = 1
+d54 1
+a54 1
+#  define CPPUT_STATIC_CONSTANT( type, assignment ) \
+d57 1
+a57 1
+#  define CPPUT_STATIC_CONSTANT( type, assignment ) \
+d68 5
+d79 3
+d85 13
+d104 18
+@
+
+
+1.2
+log
+@* Replaced the EnumerationSugar strangely curring template  with a macro (compiler was too stressed)
+* Fixed Internal compiler error on Keys
+* Added sugar() enumeration for custom enumerator
+* Test cases for all enumerator
+@
+text
+@d24 1
+d70 10
+@
+
+
+1.1
+log
+@* moving CppUTTools library to CppTL library & namespace
+* implemented new enumerator library providing both "any" enumerator and specific enumerator avoid virtual function cost
+* fixed NoType declaration
+@
+text
+@d29 1
+@
+

@@ -1,0 +1,743 @@
+head	1.7;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.6;
+locks; strict;
+comment	@ * @;
+
+
+1.7
+date	2007.08.16.15.51.04;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2005.11.13.10.12.01;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.03.05.10.15.12;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.03.04.07.30.32;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.03.03.20.57.14;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.03.03.20.48.54;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.03.03.08.14.23;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@   Added initial support for column fixture supported by fitness. Still missing
+automatic type convertion and correct reporting of error with regard to
+originating cell.
+@
+text
+@#ifndef CPPTL_REFLECTION_H_INCLUDED
+# define CPPTL_REFLECTION_H_INCLUDED
+
+# include <cpptl/conststring.h>
+# include <cpptl/enumerator.h>
+# include <cpptl/sharedptr.h>
+# include <cpptl/any.h>
+# include <map>
+# include <vector>
+
+
+
+namespace CppTL {
+
+typedef std::vector<Any> MethodParameters;
+
+/// \cond implementation_detail
+namespace Impl {
+   class AttributAccessor;
+   class InvokableBase;
+
+   typedef SharedPtr<AttributAccessor> AttributAccessorPtr;
+   typedef SharedPtr<InvokableBase> InvokableBasePtr;
+
+   class MethodCall
+   {
+   public:
+      MethodCall( const Method &method,
+                  const Any &holder,
+                  const MethodParameters &args,
+                  Any &result )
+         : method_( method )
+         , holder_( holder )
+         , args_( args )
+         , result_( result )
+      {
+      }
+
+      const Method &method_;
+      const Any &holder_;
+      const MethodParameters &args_;
+      Any &result_;
+   };
+
+
+   class InvokableBase
+   {
+   public:
+      virtual ~InvokableBase()
+      {
+      }
+
+      virtual void invoke( MethodCall &call ) const = 0;
+   };
+
+
+   class Invokable
+   {
+   public:
+      Invokable( const Impl::InvokableBasePtr &invokable );
+
+      virtual ~Invokable()
+      {
+      }
+
+      void invoke( Impl::MethodCall &call ) const;
+
+      TypeId returnType_;
+      std::vector<TypeId> argTypes_;
+      InvokableBasePtr invokable_;
+   };
+
+
+   class AttributAccessor
+   {
+   public:
+      virtual ~AttributAccessor()
+      {
+      }
+
+      virtual TypeId getType() const =0;
+
+      virtual Any get( const Any &holder) const = 0;
+
+      virtual void set( const Any &holder,
+                        const Any &value ) const = 0;
+   };
+
+
+   template<class Object, class AttributType>
+   class AttributAccessorImpl : public AttributAccessor
+   {
+   public:
+      typedef AttributType Object::*Attribut;
+
+      AttributAccessorImpl( Attribut attribut )
+         : attribut_( attribut )
+      {
+      }
+
+      TypeId getType() const
+      {
+         return typeId( Type<AttributType>() );
+      }
+
+      Any get( const Any &holder ) const
+      {
+         Object &object = *any_cast( holder, Type<Object *>() );
+         return makeAny( object.*attribut_ );
+      }
+
+      void set( const Any &holder,
+                const Any &value ) const
+      {
+         Object &object = *any_cast( holder, Type<Object *>() );
+         object.*attribut_ = any_cast( value, Type<AttributType>() );
+      }
+
+   private:
+      Attribut attribut_;
+   };
+
+
+   template<class Object, class TheAttributType>
+   AttributAccessorPtr makeAccessor( TheAttributType Object::*attribut )
+   {
+      return AttributAccessorPtr( 
+         new AttributAccessorImpl<Object
+                                 ,TheAttributType>( attribut ) );
+   }
+
+} // namespace Impl
+/// \endcond
+
+
+class Attribut
+{
+public:
+   Attribut( const ConstString &name,
+             const Impl::AttributAccessorPtr &accessor );
+
+   ConstString getName() const;
+
+   TypeId getType() const;
+
+   void set( const Any &object, 
+             const Any &value ) const;
+
+   Any get( const Any &object ) const;
+
+private:
+   Class *class_;
+   ConstString name_;
+   Impl::AttributAccessorPtr accessor_;
+};
+
+
+class Method
+{
+public:
+   Method( const ConstString &name,
+           const Impl::Invokable &invokable );
+
+   Any invoke( const Any &object,
+               const MethodParameters &args ) const;
+
+   ConstString getName() const;
+
+   size_type getArgCount() const;
+
+   TypeId getArgType( size_type index ) const;
+
+   TypeId getReturnType() const;
+
+   AnyEnumerator<TypeId> getArgTypes() const;
+
+private:
+   Class *class_;
+   ConstString name_;
+   Impl::Invokable invokable_;
+};
+
+
+class Class
+{
+public:
+   static Class &create( const ConstString &name,
+                         TypeId type );
+
+   static const Class *findClass( const ConstString &name );
+
+   ConstString getName() const;
+
+   const Method *findMethod( const ConstString &name ) const;
+
+   void addMethod( const ConstString &name, 
+                   const Impl::Invokable &invokable );
+
+   const Attribut *findAttribut( const ConstString &name ) const;
+
+   void addAttribut( const ConstString &name, 
+                     const Impl::AttributAccessorPtr &accessor );
+
+private:
+   typedef SharedPtr<Class> ClassPtr;
+   typedef SharedPtr<Method> MethodPtr;
+   typedef SharedPtr<Attribut> AttributPtr;
+   typedef std::map<ConstString,ClassPtr> ClassesByName;
+   typedef std::map<ConstString,MethodPtr> MethodsByName;
+   typedef std::map<ConstString,AttributPtr> AttributsByName;
+
+   static ClassesByName &registry();
+
+   Class( const ConstString &name,
+          TypeId type );
+
+   AttributsByName attributsByName_;
+   MethodsByName methodsByName_;
+   ConstString name_;
+   TypeId type_;
+};
+
+
+template<class ClassType>
+class AutoRegisterClassReflection
+{
+public:
+   AutoRegisterClassReflection()
+   {
+      ClassType::registerClassReflection();
+   }
+};
+
+
+} // namespace CppTL
+
+
+
+
+# define CPPTL_REFLECT_CLASS_BEGIN( ClassType )                             \
+   typedef ClassType _Reflection_SelfType;                                  \
+   virtual const ::CppTL::Class *getClass() const                           \
+   {                                                                        \
+      return ::CppTL::Class::findClass( #ClassType );                       \
+   }                                                                        \
+   static void registerClassReflection()                                    \
+   {                                                                        \
+      ::CppTL::Class &class_ = ::CppTL::Class::create( #ClassType,          \
+                         ::CppTL::typeId( ::CppTL::Type<ClassType>() ) );
+
+//# define CPPTL_REFLECT_CLASS_EXTEND( ClassType )
+# define CPPTL_REFLECT_METHOD( method )                                           \
+      {                                                                           \
+         ::CppTL::Impl::Invokable invokable = ::CppTL::Impl::makeInvokable(       \
+                                              &_Reflection_SelfType::method );    \
+         class_.addMethod( #method, invokable );                                  \
+      }
+
+# define CPPTL_REFLECT_METHOD_WITH_RETURN( method )                               \
+      {                                                                           \
+         ::CppTL::Impl::Invokable invokable = ::CppTL::Impl::makeInvokableR(      \
+                                              &_Reflection_SelfType::method );    \
+         class_.addMethod( #method, invokable );                                  \
+      }
+
+# define CPPTL_REFLECT_RENAMED_ATTRIBUT( attribut, name )                           \
+      {                                                                             \
+         ::CppTL::Impl::AttributAccessorPtr accessor = ::CppTL::Impl::makeAccessor( \
+                                              &_Reflection_SelfType::attribut );    \
+         class_.addAttribut( name, accessor );                                      \
+      }
+
+# define CPPTL_REFLECT_ATTRIBUT( attribut )                 \
+   CPPTL_REFLECT_RENAMED_ATTRIBUT( attribut, #attribut )
+
+# define CPPTL_REFLECT_CLASS_END() \
+   }
+
+# define CPPTL_REFLECT_REGISTER_CLASS( ClassType )          \
+   static ::CppTL::AutoRegisterClassReflection<ClassType>   \
+      CPPTL_MAKE_UNIQUE_NAME(cpptlReflectRegisterClass);
+
+
+# include <cpptl/reflection.inl>
+# include <cpptl/reflectionimpl10.h>
+
+#endif // CPPTL_REFLECTION_H_INCLUDED
+
+@
+
+
+1.6
+log
+@- renamed include/cpput/assert.h to include/cpput/assertcommon.h. This avoid clash with include <assert.h> in doxygen documentation
+- most Impl namespaces are now hidden from documentation using \cond and \endcond.
+@
+text
+@d242 4
+@
+
+
+1.5
+log
+@* added support for reflection of method with return value
+@
+text
+@d17 1
+d133 1
+@
+
+
+1.4
+log
+@* extracted invokable subclass in a specific generated header.
+@
+text
+@d253 7
+@
+
+
+1.3
+log
+@* renamed and moved macro CPPUT_MAKE_UNIQUE_NAME to cpptl library.
+@
+text
+@d44 1
+a55 70
+   template<class Object>
+   class Invokable0 : public InvokableBase
+   {
+   public:
+      typedef void (Object::*Member)();
+
+      Invokable0( Member member )
+         : member_( member )
+      {
+      }
+
+      void invoke( MethodCall &call ) const
+      {
+         Object &object = *any_cast( call.holder_, Type<Object *>() );
+         (object.*member_)();
+      }
+
+   private:
+      Member member_;
+   };
+
+
+   template<class Object
+         ,class Arg1>
+   class Invokable1 : public InvokableBase
+   {
+   public:
+      typedef void (Object::*Member)( Arg1 a1 );
+
+      Invokable1( Member member )
+         : member_( member )
+      {
+      }
+
+      void invoke( MethodCall &call ) const
+      {
+         Object &object = *any_cast( call.holder_, Type<Object *>() );
+         (object.*member_)( any_cast( call.args_.at(0), Type<Arg1>() ) );
+      }
+
+   private:
+      Member member_;
+   };
+
+
+   template<class Object
+         ,class Arg1
+         ,class Arg2>
+   class Invokable2: public InvokableBase
+   {
+   public:
+      typedef void (Object::*Member)( Arg1 a1, Arg2 a2 );
+
+      Invokable2( Member member )
+         : member_( member )
+      {
+      }
+
+      void invoke( MethodCall &call ) const
+      {
+         Object &object = *any_cast( call.holder_, Type<Object *>() );
+         (object.*member_)( any_cast( call.args_.at(0), Type<Arg1>() ),
+                           any_cast( call.args_.at(1), Type<Arg2>() ) );
+      }
+
+   private:
+      Member member_;
+   };
+
+
+a72 26
+   template<class Object>
+   Invokable makeInvokable( void (Object::*member)() )
+   {
+      Invokable invokable( InvokableBasePtr( new Invokable0<Object>( member ) ) );
+      return invokable;
+   }
+
+
+   template<class Object, class Arg1>
+   Invokable makeInvokable( void (Object::*member)( Arg1 a1 ) )
+   {
+      Invokable invokable( InvokableBasePtr( new Invokable1<Object,Arg1>( member ) ) );
+      invokable.argTypes_.push_back( typeId( Type<Arg1>() ) );
+      return invokable;
+   }
+
+
+   template<class Object, class Arg1, class Arg2>
+   Invokable makeInvokable( void (Object::*member)( Arg1 a1, Arg2 a2 ) )
+   {
+      Invokable invokable( InvokableBasePtr( new Invokable2<Object,Arg1,Arg2>( member ) ) );
+      invokable.argTypes_.push_back( typeId( Type<Arg1>() ) );
+      invokable.argTypes_.push_back( typeId( Type<Arg2>() ) );
+      return invokable;
+   }
+
+d88 1
+d122 1
+d233 5
+a270 2
+} // namespace CppTL
+
+d272 1
+@
+
+
+1.2
+log
+@* moved reflection implementation details in Impl namespace
+* added reflection support for attribut
+@
+text
+@d356 1
+a356 1
+      CPPUT_MAKE_UNIQUE_NAME(cpptlReflectRegisterClass);
+@
+
+
+1.1
+log
+@* Simple reflection support
+@
+text
+@d13 1
+a13 1
+namespace CppTL { namespace Reflect {
+d15 1
+a15 6
+// Forwards
+class Class;
+class Invokable;
+class InvokableBase;
+class Method;
+struct MethodCall;
+d17 3
+a19 2
+typedef SharedPtr<InvokableBase> InvokableBasePtr;
+typedef std::vector<Any> ArgValues;
+d21 36
+a56 10
+struct MethodCall
+{
+   MethodCall( const Method &method,
+               const Any &holder,
+               const ArgValues &args,
+               Any &result )
+      : method_( method )
+      , holder_( holder )
+      , args_( args )
+      , result_( result )
+d58 13
+a70 1
+   }
+d72 3
+a74 5
+   const Method &method_;
+   const Any &holder_;
+   const ArgValues &args_;
+   Any &result_;
+};
+a75 4
+class Invokable
+{
+public:
+   Invokable( const InvokableBasePtr &invokable );
+d77 3
+a79 1
+   virtual ~Invokable()
+d81 7
+a87 1
+   }
+d89 5
+a93 1
+   void invoke( MethodCall &call ) const;
+d95 3
+a97 4
+   TypeId returnType_;
+   std::vector<TypeId> argTypes_;
+   InvokableBasePtr invokable_;
+};
+d100 4
+a103 4
+class InvokableBase
+{
+public:
+   virtual ~InvokableBase()
+d105 7
+a111 1
+   }
+d113 6
+a118 2
+   virtual void invoke( MethodCall &call ) const = 0;
+};
+d120 3
+a123 5
+template<class Object>
+class Invokable0 : public InvokableBase
+{
+public:
+   typedef void (Object::*Member)();
+d125 1
+a125 2
+   Invokable0( Member member )
+      : member_( member )
+d127 14
+a140 1
+   }
+d142 2
+a143 1
+   void invoke( MethodCall &call ) const
+d145 2
+a146 2
+      Object &object = *any_cast( call.holder_, Type<Object *>() );
+      (object.*member_)();
+a148 3
+private:
+   Member member_;
+};
+d150 7
+a157 6
+template<class Object
+        ,class Arg1>
+class Invokable1 : public InvokableBase
+{
+public:
+   typedef void (Object::*Member)( Arg1 a1 );
+d159 2
+a160 2
+   Invokable1( Member member )
+      : member_( member )
+d162 4
+d168 1
+a168 1
+   void invoke( MethodCall &call ) const
+d170 4
+a173 3
+      Object &object = *any_cast( call.holder_, Type<Object *>() );
+      (object.*member_)( any_cast( call.args_.at(0), Type<Arg1>() ) );
+   }
+d175 1
+a175 3
+private:
+   Member member_;
+};
+d177 1
+d179 3
+a181 7
+template<class Object
+        ,class Arg1
+        ,class Arg2>
+class Invokable2: public InvokableBase
+{
+public:
+   typedef void (Object::*Member)( Arg1 a1, Arg2 a2 );
+d183 2
+a184 2
+   Invokable2( Member member )
+      : member_( member )
+d186 29
+a214 1
+   }
+d216 2
+a217 1
+   void invoke( MethodCall &call ) const
+d219 3
+a221 3
+      Object &object = *any_cast( call.holder_, Type<Object *>() );
+      (object.*member_)( any_cast( call.args_.at(0), Type<Arg1>() ),
+                         any_cast( call.args_.at(1), Type<Arg2>() ) );
+d224 1
+a224 3
+private:
+   Member member_;
+};
+d227 1
+a227 2
+template<class Object>
+Invokable makeInvokable( void (Object::*member)() )
+d229 3
+a231 3
+   Invokable invokable( InvokableBasePtr( new Invokable0<Object>( member ) ) );
+   return invokable;
+}
+d233 1
+d235 1
+a235 7
+template<class Object, class Arg1>
+Invokable makeInvokable( void (Object::*member)( Arg1 a1 ) )
+{
+   Invokable invokable( InvokableBasePtr( new Invokable1<Object,Arg1>( member ) ) );
+   invokable.argTypes_.push_back( typeId( Type<Arg1>() ) );
+   return invokable;
+}
+d237 2
+d240 1
+a240 8
+template<class Object, class Arg1, class Arg2>
+Invokable makeInvokable( void (Object::*member)( Arg1 a1, Arg2 a2 ) )
+{
+   Invokable invokable( InvokableBasePtr( new Invokable2<Object,Arg1,Arg2>( member ) ) );
+   invokable.argTypes_.push_back( typeId( Type<Arg1>() ) );
+   invokable.argTypes_.push_back( typeId( Type<Arg2>() ) );
+   return invokable;
+}
+d242 5
+d253 1
+a253 1
+           const Invokable &invokable );
+d255 2
+a256 3
+   void invoke( const Any &object,
+                const ArgValues &args,
+                Any &result ) const;
+d271 1
+a271 1
+   Invokable invokable_;
+a274 12
+template<class Holder>
+Any invokeWithArgValues( const Holder &object,
+                         const Method &method,
+                         const ArgValues &args )
+{
+   Any actualObject = makeAny( &*object );
+   Any result;
+   method.invoke( actualObject, args, result );
+   return result;
+}
+
+
+d288 6
+a293 1
+                   const Invokable &invokable );
+d298 1
+d301 1
+d308 1
+d316 1
+a316 1
+class AutoRegisterClass
+d319 1
+a319 1
+   AutoRegisterClass()
+d326 5
+a330 5
+# define CPPTL_REFLECT_CLASS_BEGIN( ClassType )                                      \
+   typedef ClassType _Reflection_SelfType;                                           \
+   static void registerClassReflection()                                             \
+   {                                                                                 \
+      ::CppTL::Reflect::Class &class_ = ::CppTL::Reflect::Class::create( #ClassType, \
+d336 1
+a336 1
+         ::CppTL::Reflect::Invokable invokable = ::CppTL::Reflect::makeInvokable( \
+d341 10
+d355 1
+a355 1
+   static ::CppTL::Reflect::AutoRegisterClass<ClassType>    \
+d359 1
+a359 1
+} } // namespace CppTL { namespace Reflect
+@
+

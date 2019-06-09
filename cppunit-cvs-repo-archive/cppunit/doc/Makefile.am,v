@@ -1,0 +1,567 @@
+head	1.16;
+access;
+symbols
+	REL_1_12_1:1.16
+	REL_1_11_6:1.16
+	REL_1_11_4:1.16
+	REL_1_11_0:1.16
+	TG_CPPUNIT_NO_STREAM_AFTER:1.16
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.16
+	REL_1_10_2:1.16
+	REL_1_10_0:1.15
+	REL_1_9_14:1.15
+	REL_1_9_12:1.15
+	BRANCH_1_9_12:1.15.0.2
+	TG_BRANCH_1_9_12:1.15
+	TG_BEFORE_HPUX_PLUGIN:1.15
+	TG_BEFORE_SUN4_PORT:1.14
+	REL_1_9_10:1.14
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.14
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.14
+	REL_1_9_6:1.14
+	REL_1_9_4:1.13
+	REL_1_9_0:1.13
+	REL_1_8_0:1.13
+	REL_1_7_8:1.12
+	REL_1_7_3:1.12
+	REL_1_7_1:1.12
+	REL_1_6_2:1.10.2.1
+	BRANCH_1_6:1.10.0.2
+	REL_1_6_1:1.10
+	REL_1_6_0:1.8
+	REL_1_5_5:1.2
+	REL_1_5_4:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.16
+date	2004.06.17.18.18.54;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2003.03.11.20.34.12;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2002.04.21.10.57.52;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2002.03.28.15.47.07;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2001.10.21.21.20.25;	author smr99;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2001.10.20.19.00.15;	author smr99;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2001.09.30.22.36.08;	author smr99;	state Exp;
+branches
+	1.10.2.1;
+next	1.9;
+
+1.9
+date	2001.09.30.07.02.01;	author smr99;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2001.09.23.06.09.15;	author smr99;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.08.07.15.48.10;	author smr99;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.08.07.14.25.22;	author smr99;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.07.07.19.37.15;	author smr99;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.05.29.03.18.54;	author smr99;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.05.17.20.24.46;	author bastiaan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.04.14.00.18.58;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.13.22.51.31;	author bastiaan;	state Exp;
+branches;
+next	;
+
+1.10.2.1
+date	2001.10.18.23.08.23;	author smr99;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.16
+log
+@* doc/Makefile.am: fixed bug #940650 => cp -dpR, removed option -p since
+  there is no link to preserve anyway (does not exist on SunOs).
+@
+text
+@EXTRA_DIST = $(doxygen_input) $(static_pages)
+
+doxygen_input = cookbook.dox other_documentation.dox header.html footer.html Money.dox
+static_pages = FAQ
+
+
+# DOC is defined if installer requests doc generation.
+# For now, we only install HTML documentation.  We could install manpages
+# using the following
+#   man_MANS = man/man3/CppUnit.3
+#   man/man3/CppUnit.3: dox
+# and an extra copy or two in the install-data-hook.  
+# However, the manpages do not appear to be tremendously useful, so
+# let's not bother.
+
+if DOC
+
+htmldir = $(pkgdatadir)/html
+html_DATA = $(static_pages) html/index.html
+
+install-data-hook:
+	cp -pR html/* $(DESTDIR)$(htmldir)
+
+# Automake's "distcheck" is sensitive to having files left over
+# after "make uninstall", so we have to clean up the install hook.
+uninstall-local:
+	rm -rf $(DESTDIR)$(htmldir)
+
+dox: html/index.html
+
+else
+
+# We repeat the three targets in both the "if" and "else" clauses
+# of the conditional, because the generated makefile will contain
+# references to the targets (target "install" depends on target
+# "install-datahook", for example), and some make programs get upset
+# if no target exists.
+
+install-data-hook:
+uninstall-local:
+dox:
+
+endif
+
+
+all-local: dox
+
+
+html/index.html: Doxyfile $(doxygen_input)
+	"@@DOXYGEN@@"
+
+
+# Make tarfile to distribute the HTML documentation.
+doc-dist: dox
+	cp $(static_pages) html
+	tar -czf $(PACKAGE)-docs-$(VERSION).tar.gz -C html .
+
+pdf: @@PACKAGE@@.pdf
+@@PACKAGE@@.pdf:
+	$(MAKE) -C ./latex pdf
+	ln -s ./latex/refman.ps	 @@PACKAGE@@.ps
+	ln -s ./latex/refman.pdf @@PACKAGE@@.pdf
+
+
+clean-local:
+	$(RM) -r latex
+	$(RM) -r html man @@PACKAGE@@.ps @@PACKAGE@@.pdf
+@
+
+
+1.15
+log
+@* config/bb_enable_doxygen.m4:
+* doc/Makefile.am: applied Luke Dunstan's fix for bug #700730 (spaces not
+allowed in doxygen path)
+@
+text
+@d22 1
+a22 1
+	cp -dpR html/* $(DESTDIR)$(htmldir)
+@
+
+
+1.14
+log
+@* src/DllPlugInTester/makefile.am: removed ld.so from LDADD flags.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: rewrote, fixed problem
+  with double quotes in command line...
+
+* src/DllPlugInTester/CommandLineParserTest.h:
+* src/DllPlugInTester/CommandLineParserTest.cpp:
+* src/DllPlugInTester/DllPlugInTesterTest.cpp: added, unit tests for
+  CommandLineParser.
+
+* src/msvc6/TestPlugIn/*: removed.
+@
+text
+@d50 1
+a50 1
+	@@DOXYGEN@@
+@
+
+
+1.13
+log
+@* doc/cookbook.html: removed. Replaced by cookbook.doc.
+
+* doc/cookbook.dox: added, conversion of cookbook.html to Doxygen format.
+
+* doc/other_documentation.dox: added groups definition.
+
+* doc/Makefile.am: replaced cookbook.html by cookbook.dox
+
+* doc/Doxyfile.in: added predefined CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION.
+Replaced cookbook.html by cookbook.dox.
+
+* include/cppunitui/mfc/TestRunner.h: added, extracted from
+include/msvc6/testrunner/TestRunner.h. Moved class TestRunner to namespace
+CppUnit::MfcUi.
+
+* include/msvc6/testrunner/TestRunner.h: deprecated. A simple typedef to
+CppUnit::MfcUi::TestRunner.
+
+* include/textui/TestRuner.h: added, extracted from
+include/cppunit/TextTestRunner.h.
+
+* src/cppunit/TextTestRunner.cpp: renamed TestRunner.cpp. Moved into
+namespace CppUnit::TextUi.
+
+* src/msvc6/testruner/TestRunner.cpp: moved into namespace CppUnit::MfcUi.
+
+* src/cppunit/CompilerOutputter.cpp: removed printing "- " before
+NotEqualException addional message, for consistency between different
+TestRunner (Mfc,Text...)
+
+* include/cppunit/Asserter.h:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/Outputter.h:
+* include/cppunit/SourceLine.h:
+* include/cppunit/TestAssert.h:
+* include/cppunit/TestCaller.h:
+* include/cppunit/TestFailure.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: doc update. organization
+in groups.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.cpp:
+* examples/msvc6/HostApp/HostApp.cpp: updated to use
+CppUnit::MfcUi::TestRunner.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use
+CppUnit::TextUi::TestRunner.
+@
+text
+@d3 1
+a3 1
+doxygen_input = cookbook.dox other_documentation.dox header.html footer.html
+@
+
+
+1.12
+log
+@Commit of 1.7.1 release.
+@
+text
+@d3 2
+a4 2
+doxygen_input = other_documentation.dox header.html footer.html
+static_pages = cookbook.html FAQ
+@
+
+
+1.11
+log
+@*** empty log message ***
+@
+text
+@a0 2
+htmldir = $(pkgdatadir)/html
+
+d18 1
+d29 13
+a41 1
+all-local: dox #pdf
+d46 2
+a47 1
+dox: html/index.html
+@
+
+
+1.10
+log
+@Tweak the HTML docs.  Link to FAQ.
+@
+text
+@a34 7
+# Workaround for broken Doxygen.  Version 1.2.9.1 doesn't create
+# this directory, though it does create man/man3.
+man_extension_dir = man/man3/extensions
+$(man_extension_dir):
+	mkdir -p $@@
+
+
+d37 1
+a37 1
+html/index.html: Doxyfile $(doxygen_input) $(man_extension_dir)
+d41 1
+a41 1
+# Distribute the HTML documentation.
+@
+
+
+1.10.2.1
+log
+@Improved install process on systems that lack "doxygen".
+Reinstated hook to remove config-auto.h from distribution.
+@
+text
+@d1 2
+a19 1
+htmldir = $(pkgdatadir)/html
+d30 1
+a30 7
+dox: html/index.html
+
+else
+
+install-data-hook:
+uninstall-local:
+dox:
+a34 3
+all-local: dox
+
+
+d41 2
+@
+
+
+1.9
+log
+@Documentation tweaks.  Add config-mac.h
+@
+text
+@d6 1
+a6 1
+static_pages = cookbook.html
+@
+
+
+1.8
+log
+@Polishing for 1.6.0 release.
+@
+text
+@d5 2
+a7 2
+doxygen_input = other_documentation.dox
+static_pages = cookbook.html header.html footer.html 
+d9 8
+a17 1
+# DOC is defined if installer requests doc generation
+d19 11
+a29 2
+man_MANS = man/man3/*.3 man/man3/extensions/*.3
+html_DATA = $(static_pages) html/*
+d31 1
+d43 2
+a44 2
+html/* man/man3/*.3 man/man3/extensions/*.3: html/index.html
+html/index.html: Doxyfile other_documentation.dox $(man_extension_dir)
+d46 6
+@
+
+
+1.7
+log
+@Fixes to allow building with SGI MIPSpro 7.30 compiler.
+The testsuite file examples/cppunittest/SubclassedTestCase.cpp
+causes the compiler to dump core, so that and HelperMacrosTest
+were not tested.  The rest of the test suite passes.
+@
+text
+@d1 1
+a1 4
+man3dir = $(mandir)/man3
+# FIXME: should be in ${datadir} (i.e. ${prefix}/share) ?
+docdir  = $(prefix)/doc/@@PACKAGE@@-@@VERSION@@
+htmldir = $(docdir)/html
+d3 1
+a3 1
+EXTRA_DIST = cookbook.html header.html footer.html other_documentation.dox
+d6 5
+d12 2
+a13 2
+html_DATA = html/*
+
+a16 5
+man_extension_dir = man/man3/extensions
+
+dox: html/index.html
+html/* html/index.html: Doxyfile other_documentation.dox $(man_extension_dir)
+	@@DOXYGEN@@
+d20 1
+d24 6
+a35 22
+
+#install-data-local:
+
+# This is failing because doxygen generates manpage filenames with
+# spaces in them.  Removed until fixed -smr.
+# 
+#	$(mkinstalldirs) $(DESTDIR)$(man3dir)
+#	@@for i in ./man/man3/*.3; do \
+#		inst=`basename $$i | sed 's/_/:/g'`; \
+#		echo "$(INSTALL_DATA) $$i $(DESTDIR)$(man3dir)/$$inst"; \
+#		$(INSTALL_DATA) $$i $(DESTDIR)$(man3dir)/$$inst; \
+#	done
+
+# This is replaced by html_DATA.
+#	$(mkinstalldirs) $(DESTDIR)$(docdir)
+#	cp -r html $(DESTDIR)$(docdir)
+
+# This was commented out long ago.
+#	@@for i in ../README ../ChangeLog @@PACKAGE@@.ps @@PACKAGE@@.pdf; do \
+#		echo "$(INSTALL_DATA) $$i $(DESTDIR)$(docdir)"; \
+#		$(INSTALL_DATA) $$i $(DESTDIR)$(docdir); \
+#	done
+@
+
+
+1.6
+log
+@Build changes.  Distribute all m4 files.
+@
+text
+@d15 1
+d18 1
+a18 1
+html/* html/index.html: Doxyfile other_documentation.dox
+d20 5
+@
+
+
+1.5
+log
+@Tighten up build process to ensure "make distcheck" works with CVS automake.
+@
+text
+@a1 1
+
+a3 1
+
+a4 1
+html_DATA = html/*
+d8 4
+d13 2
+@
+
+
+1.4
+log
+@Documentation mods.
+@
+text
+@d2 2
+d6 3
+d14 1
+a14 1
+html/index.html: Doxyfile other_documentation.dox
+d24 17
+a40 8
+install-data-local:
+	$(mkinstalldirs) $(DESTDIR)$(man3dir)
+	@@for i in ./man/man3/*.3; do \
+		inst=`basename $$i | sed 's/_/:/g'`; \
+		echo "$(INSTALL_DATA) $$i $(DESTDIR)$(man3dir)/$$inst"; \
+		$(INSTALL_DATA) $$i $(DESTDIR)$(man3dir)/$$inst; \
+	done
+	$(mkinstalldirs) $(DESTDIR)$(docdir)
+a44 1
+	cp -r html $(docdir)
+@
+
+
+1.3
+log
+@Merged fixes for distcheck target, contributed by Steve M. Robbins  <steve@@nyongwa.montreal.qc.ca>.
+@
+text
+@d9 1
+a9 1
+html/index.html: Doxyfile
+@
+
+
+1.2
+log
+@Enabled man page generation.
+Added *.html and *.dox files to dist tar ball.
+@
+text
+@d9 1
+a9 1
+html/index.html:
+@
+
+
+1.1
+log
+@Document generation is now autoconfed. (copied from log4cpp autoconf/automake).
+Added doc subdir to dist.
+Upped version number to 1.5.3.
+@
+text
+@d4 2
+@
+

@@ -1,0 +1,69 @@
+head	1.2;
+access;
+symbols
+	REL_1_5_5:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2001.07.07.19.12.41;	author smr99;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.28.18.23.32;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@Removed last uses of estring.
+@
+text
+@#ifndef CPPUNIT_ESTRING_H
+#define CPPUNIT_ESTRING_H
+
+
+#include <cstdio>
+
+namespace CppUnit {
+
+  /// Create a string from a const char pointer
+  inline std::string estring (const char *cstring)
+  { return std::string (cstring); }
+  
+  /// Create a string from a string (for uniformities' sake)
+  inline std::string estring (std::string& expandedString)
+  { return expandedString; }
+
+  /// Create a string from an int
+  inline std::string estring (int number)
+  { char buffer [50]; sprintf (buffer, "%d", number); return std::string (buffer); }
+
+  /// Create a string from a long
+  inline std::string estring (long number)
+  { char buffer [50]; sprintf (buffer, "%ld", number); return std::string (buffer); }
+
+  /// Create a string from a double
+  inline std::string estring (double number)
+  { char buffer [50]; sprintf (buffer, "%f", number); return std::string (buffer); }
+
+} // namespace CppUnit
+
+#endif // CPPUNIT_ESTRING_H
+@
+
+
+1.1
+log
+@Moved files in subdir cppunit to src/cppunit.
+@
+text
+@@
+

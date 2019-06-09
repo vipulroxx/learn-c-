@@ -1,0 +1,29 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2005.03.01.22.17.41;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* added example that demonstrate the checking assertions.
+@
+text
+@*.plg
+*.old
+*.WW
+*.old
+
+@

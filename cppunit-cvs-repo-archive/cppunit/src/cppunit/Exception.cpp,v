@@ -1,0 +1,906 @@
+head	1.17;
+access;
+symbols
+	REL_1_12_1:1.17
+	REL_1_11_6:1.17
+	REL_1_11_4:1.17
+	REL_1_11_0:1.17
+	TG_CPPUNIT_NO_STREAM_AFTER:1.17
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.17
+	REL_1_10_2:1.17
+	REL_1_10_0:1.17
+	REL_1_9_14:1.17
+	REL_1_9_12:1.17
+	BRANCH_1_9_12:1.17.0.2
+	TG_BRANCH_1_9_12:1.17
+	TG_BEFORE_HPUX_PLUGIN:1.17
+	TG_BEFORE_SUN4_PORT:1.17
+	REL_1_9_10:1.17
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.14
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.13
+	REL_1_9_6:1.12
+	REL_1_9_4:1.12
+	REL_1_9_0:1.11
+	REL_1_8_0:1.11
+	REL_1_7_8:1.11
+	REL_1_7_3:1.11
+	REL_1_7_1:1.11
+	REL_1_6_2:1.7
+	BRANCH_1_6:1.7.0.2
+	REL_1_6_1:1.7
+	REL_1_6_0:1.7
+	REL_1_5_5:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.17
+date	2002.08.03.15.47.52;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2002.07.11.06.01.54;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2002.06.13.18.17.42;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2002.06.13.15.31.01;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2002.04.17.22.27.28;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2001.10.19.18.37.24;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2001.10.09.00.32.24;	author smr99;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2001.10.06.10.16.31;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2001.10.05.22.27.14;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.09.14.19.27.58;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.08.07.15.48.10;	author smr99;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.07.12.16.49.13;	author smr99;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.06.17.16.59.53;	author bastiaan;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.06.11.19.59.15;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.06.03.00.17.35;	author smr99;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.28.18.23.32;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.17
+log
+@* include/cppunit/Exception.h:
+* src/cppunit/Exception.h: added setMessage().
+
+* include/cppunit/Protector.h:
+* src/cppunit/Protector.cpp: added class ProtectorGuard. Change the
+  reportXXX() method to support Exception passing and SourceLine.
+
+* include/cppunit/TestCaller.h: removed 'expect exception' features.
+  It is now handled by ExceptionTestCaseDecorator and TestCaller no
+  longer need default template argument support.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/extensions/TestCaller.h: runTest() is now public
+  instead of protected, so that it can be decorated.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.h: added pushProtector() and popProtector()
+  methods. This allow user to specify their own exception trap when
+  running test case.
+
+* include/cppunit/extensions/TestDecorator.h:
+* src/cppunit/TestDecorator.cpp: added. Extracted from TestDecorator.h.
+  The test passed to the constructor is now owned by the decorator.
+
+* include/cppunit/extensions/TestCaseDecorator.h:
+* src/cppunit/TestCaseDecorator.cpp: added. Decorator for TestCase
+  setUp(), tearDown() and runTest().
+
+* include/cppunit/extensions/ExceptionTestCaseDecorator.h: added.
+  TestCaseDecorator to expect that a specific exception is thrown.
+
+* include/cppunit/extensions/HelperMacros.h: updated against TestCaller
+  change.
+
+* src/cppunit/DefaultFunctor.h: fixed bug (did not return underlying
+  test return code).
+
+* src/cppunit/ProtectorChain.cpp: fixed bug in chaing return code.
+
+* src/cppunit/DefaultFunctor.h: fixed bug.
+
+* src/msvc6/testrunner/ActiveTest.h:
+* src/msvc6/testrunner/ActiveTest.cpp: updated against
+  TestCaseDecorator ownership policy change. Moved inline functions
+  to .cpp.
+
+* examples/cppunittest/TestSetUpTest.cpp: updated to use MockTestCase
+  and against the new ownership policy.
+
+* examples/cppunittest/TestDecoratorTest.cpp:
+* examples/cppunittest/RepeatedTestTest.cpp: updated against
+  TestDecorator ownership policy change.
+
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.h:
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.cpp: added. Unit
+  tests for ExceptionTestCaseDecoratorTest.
+@
+text
+@#include <cppunit/Exception.h>
+
+
+CPPUNIT_NS_BEGIN
+
+
+#ifdef CPPUNIT_ENABLE_SOURCELINE_DEPRECATED
+/*!
+ * \deprecated Use SourceLine::isValid() instead.
+ */
+const std::string Exception::UNKNOWNFILENAME = "<unknown>";
+
+/*!
+ * \deprecated Use SourceLine::isValid() instead.
+ */
+const long Exception::UNKNOWNLINENUMBER = -1;
+#endif
+
+
+Exception::Exception( const Exception &other )
+   : std::exception( other )
+{ 
+  m_message = other.m_message; 
+  m_sourceLine = other.m_sourceLine;
+} 
+
+
+Exception::Exception( const Message &message, 
+                      const SourceLine &sourceLine )
+    : m_message( message )
+    , m_sourceLine( sourceLine )
+{
+}
+
+
+#ifdef CPPUNIT_ENABLE_SOURCELINE_DEPRECATED
+Exception::Exception( std::string message, 
+                      long lineNumber, 
+                      std::string fileName )
+    : m_message( message )
+    , m_sourceLine( fileName, lineNumber )
+{
+}
+#endif
+
+
+Exception::~Exception() throw()
+{
+}
+
+
+Exception & 
+Exception::operator =( const Exception& other )
+{ 
+// Don't call superclass operator =(). VC++ STL implementation
+// has a bug. It calls the destructor and copy constructor of 
+// std::exception() which reset the virtual table to std::exception.
+//  SuperClass::operator =(other);
+
+  if ( &other != this )
+  {
+    m_message = other.m_message; 
+    m_sourceLine = other.m_sourceLine;
+  }
+
+  return *this; 
+}
+
+
+const char*
+Exception::what() const throw()
+{
+  Exception *mutableThis = CPPUNIT_CONST_CAST( Exception *, this );
+  mutableThis->m_whatMessage = m_message.shortDescription() + "\n" + 
+                               m_message.details();
+  return m_whatMessage.c_str();
+}
+
+
+SourceLine 
+Exception::sourceLine() const
+{
+  return m_sourceLine;
+}
+
+
+Message 
+Exception::message() const
+{
+  return m_message;
+}
+
+
+void 
+Exception::setMessage( const Message &message )
+{
+  m_message = message;
+}
+
+
+#ifdef CPPUNIT_ENABLE_SOURCELINE_DEPRECATED
+long 
+Exception::lineNumber() const
+{ 
+  return m_sourceLine.isValid() ? m_sourceLine.lineNumber() : 
+                                  UNKNOWNLINENUMBER; 
+}
+
+
+std::string 
+Exception::fileName() const
+{ 
+  return m_sourceLine.isValid() ? m_sourceLine.fileName() : 
+                                  UNKNOWNFILENAME;
+}
+#endif
+
+
+Exception *
+Exception::clone() const
+{
+  return new Exception( *this );
+}
+
+
+CPPUNIT_NS_END
+@
+
+
+1.16
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d94 7
+@
+
+
+1.15
+log
+@* added missing files
+@
+text
+@d4 1
+a4 1
+namespace CppUnit {
+d119 1
+a119 1
+}  // namespace CppUnit
+@
+
+
+1.14
+log
+@* include/cppunit/NotEqualException.h:
+* src/cppunit/NotEqualException.cpp: removed.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: removed 'type' related stuffs.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: delegate printing to TextOutputter.
+
+* examples/simple/ExampleTestCase.h:
+* examples/simple/ExampleTestCase.cpp: reindented.
+
+* src/qttestrunner/build:
+* src/qttestrunner/qttestrunner.pro:
+* src/qttestrunner/TestBrowserDlgImpl.h:
+* src/qttestrunner/TestRunnerModel.h: applied Thomas Neidhart's patch,
+  'Some minor fixes to compile QTTestrunner under Linux.'.
+@
+text
+@d73 1
+a73 1
+  Exception *mutableThis = const_cast<Exception *>( this );
+@
+
+
+1.13
+log
+@* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: added functions that take a Message as a
+  parameter. Existing function have a short description indicating
+  an assertion failure.
+
+* include/cppunit/CompilerOuputter.h:
+* src/cppunit/CompilerOuputter.cpp: removed printNotEqualMessage() and
+  printDefaultMessage(). Updated to use Message.
+
+* include/cppunit/Message.h:
+* src/cppunit/Message.cpp: added. Represents a message associated to an
+  Exception.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: the message associated to the exception is now
+  stored as a Message instead of a string.
+
+* include/cppunit/NotEqualException.cpp: constructs a Message instead of a
+  string.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: updated to use Asserter functions that
+  take a message when pertinent (CPPUNIT_FAIL...).
+
+* include/cppunit/TestCaller.h:
+* src/cppunit/TestCaller.cpp: exception not caught failure has a better
+  short description.
+
+* src/cppunit/TestCase.cpp: better short description when setUp() or
+  tearDown() fail.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replace '\n' in failure message
+  with space.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/NotEqualExceptionTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated to use Exception/Message.
+
+* examples/cppunittest/MessageTest.h:
+* examples/cppunittest/MessageTest.cpp: added. Unit test for Message.
+@
+text
+@a118 14
+bool 
+Exception::isInstanceOf( const Type &exceptionType ) const
+{
+  return exceptionType == type();
+}
+
+
+Exception::Type
+Exception::type()
+{
+  return Type( "CppUnit::Exception" );
+}
+
+
+@
+
+
+1.12
+log
+@* bumped version to 1.9.3
+
+* FAQ: added question about 4786 warning on VC++.
+
+* NEWS: updated.
+
+* contrib/msvc/readme.txt: moved to contrib/readme.txt.
+
+* contrib/xml-xsl/report.xsl: added XML style sheet contributed by
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for
+  startTestRun()/endTestRun().
+
+* examples/simple/*: added. A simple example.
+
+* include/cppunit/BriefTestProgressListener.h:
+* src/cppunit/BriefTestProgressListener.cpp: added. Verbose progess listener
+  that print the test name before running the test.
+
+* include/cppunit/TestListener.h: added startTestRun()/endTestRun().
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: added runTest(), to be called to run
+  a test by test runner.
+
+* src/cppunit/TextTestRunner.cpp:
+* src/cppunit/TestRunner.cpp: updated to use TestResult::runTest().
+
+* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added. Managers for all loaded plug-ins.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: renamed TestPlugInAdapter. All
+  implementations are empty.
+
+* include/cppunit/plugin/TestPlugInSuite.h: removed.
+* src/cppunit/TestPlugInSuite.cpp: removed. Replaced by PlugInManager.
+
+* include/cppunit/plugin/TestPlugIn.h: rewrote the plug-in interface to
+  provide more versatility. updated macros to match new interface.
+
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestFactoryRegistry.cpp: Added unregisterFactory().
+  Added convenience method addRegistry(). Rewrote registry life cycle
+  management. AutoRegisterSuite can now detect that the registry has been
+  destroy and not call to it to unregister its test factory.
+
+* include/cppunit/extensions/AutoRegisterTest.h: on destruction, the registered
+  factory is unregistered from the registry.
+
+* include/cppunit/extensions/HelperMacros.h: added macros
+  CPPUNIT_REGISTRY_ADD_TO_DEFAULT and CPPUNIT_REGISTRY_ADD to help
+  build test suite hierarchy.
+
+* src/cppunit/msvc/DllPlugInTester/*: moved to src/cppunit/DllPlugInTester/.
+
+* src/cppunit/DllPlugInTester/DllPlugInTester.cpp: removed UNICODE stuffs. Use
+  the PlugInManager instead of PlugInTestSuite. Simplified: only one test on
+  command line, but many DLL can be specified. Added configurations to link
+  against cppunit dll, those are now the default configuration (static linking
+  don't make much sense for plug-in).
+@
+text
+@d20 2
+a21 3
+/// Construct the exception
+Exception::Exception( const Exception &other ) : 
+    std::exception( other )
+d28 4
+a31 7
+/*!
+ * \deprecated Use other constructor instead.
+ */
+Exception::Exception( std::string message, 
+                      SourceLine sourceLine ) : 
+    m_message( message ), 
+    m_sourceLine( sourceLine )
+a36 3
+/*!
+ * \deprecated Use other constructor instead.
+ */
+d39 3
+a41 3
+                      std::string fileName ) : 
+    m_message( message ), 
+    m_sourceLine( fileName, lineNumber )
+d47 1
+a47 2
+/// Destruct the exception
+Exception::~Exception () throw()
+d52 1
+a52 2
+/// Perform an assignment
+Exception& 
+a69 1
+/// Return descriptive message
+d72 5
+a76 2
+{ 
+  return m_message.c_str (); 
+d79 1
+a79 1
+/// Location where the error occured
+d87 7
+a94 1
+/// The line on which the error occurred
+a102 1
+/// The file in which the error occurred
+@
+
+
+1.11
+log
+@* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: what(), added back the throw() qualifier.
+@
+text
+@d1 1
+a1 1
+#include "cppunit/Exception.h"
+@
+
+
+1.10
+log
+@Let source catch up with previous header change.
+@
+text
+@d81 1
+a81 1
+Exception::what() const
+@
+
+
+1.9
+log
+@* examples/cppunittest/CppUnitTestMain.cpp : application returns
+0 is test suite run sucessfuly, 1 otherwise.
+
+* src/cppunit/Exception.cpp : bug fix, operator =() with VC++.
+Removed call to std::exception::operator =() which is bugged
+on VC++.
+
+* doc/FAQ : added a note explaining why the test
+ExceptionTest.testAssignment used to fail.
+
+* NEWS : updated and detailed.
+
+* include/cppunit/TestResult.h :
+* src/cppunit/TestResult.cpp : added reset().
+
+* include/cppunit/TextTestRunner.h :
+* src/cppunit/TextTestRunner.cpp : Constructor take an optional
+TextTestRestult. The TextTestResult remain alive as long as
+the runner. Added result() to retreive the result. Printing the
+result is now optinal (enabled by default).
+@
+text
+@d81 1
+a81 1
+Exception::what() const throw ()
+@
+
+
+1.8
+log
+@* include/cppunit/Asserter.h :
+* src/cppunit/Asserter.cpp : added. Helper to create assertion macros.
+
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* include/cppunit/Makefile.am : added Asserter.h and Asserter.cpp.
+
+* include/cppunit/Exception.h :
+* src/cppunit/Exception.cpp : added constructor that take a
+SourceLine argument. Deprecated static constant and old constructor.
+Fixed some constness issues.
+
+* examples/cppunittest/ExceptionTest.cpp : Refactored.
+
+* NEWS : partially updated (need to be more detailed)
+
+* include/cppunit/NotEqualException.h :
+* src/cppunit/NotEqualException.cpp : added constructor that take a
+SourceLine argument. Deprecated old constructor. Added a third element
+to compose message.
+
+* examples/cppunittest/NotEqualExceptionTest.cpp : moved to "Core"
+suite. Added test for SourceLine() and additionalMessage().
+Refactored.
+
+* include/cppunit/SourceLine.h :
+* src/cppunit/SourceLine.cpp : added. Result of applying
+IntroduceParameterObject refactoring on filename & line number...
+
+* include/cppunit/TestAssert.h :
+* src/cppunit/TestAssert.cpp : deprecated old assert functions.
+added functions assertEquals() and assertDoubleEquals() which use
+SourceLine.
+
+* src/cppunit/TestCase.cpp : Modified for SourceLine.
+
+* include/cppunit/TestFailure.h :
+* src/cppunit/TestFailure.cpp : added failedTestName(), and
+sourceLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp : modified to use SourceLine.
+
+* include/cppunit/TextTestResult.h :
+* src/cppunit/TextTestResult.cpp : corrected include order and
+switched to angled brackets. Refactored. Don't print failure location
+if not available. Not equal failure dump additional message if
+available.
+
+* src/cppunit/TextTestRunner.cpp : run() now returns a boolean to
+indicate if the run was sucessful.
+
+* src/cppunit/XmlTestResultOutputter.cpp : replaced itoa() with
+OStringStream. Refactored.
+
+* examples/cppunittest/XmlUniformiser.h :
+* examples/cppunittest/XmlUniformiser.cpp :
+CPPUNITTEST_ASSERT_XML_EQUAL capture failure location. Refactored
+checkXmlEqual().
+
+* examples/cppunittest/XmlUniformiserTest.h :
+* examples/cppunittest/XmlUniformiserTest.cpp : added test for
+CPPUNITTEST_ASSERT_XML_EQUAL.
+
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/XmlTestResultOutputter.cpp : updated to use SourceLine.
+@
+text
+@d64 4
+a67 1
+  SuperClass::operator =(other);
+@
+
+
+1.7
+log
+@* src/msvc6/testrunner/TestRunner.dsp: fixed release configuration.
+
+* src/msvc6/testrunner/TestRunner.dsw: added DSPlugIn.dsp. TestRunner
+depends on DSPlugIn.
+
+* src/msvc6/testrunner/TestRunner.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/DSPlugIn/*: integrated patch from
+Patrick Berny (PPBerny@@web.de). An add-ins for VC++. Double-cliking
+a failed test in the TestRunner, VC++ will open the source file and
+go to the failure location.
+
+* src/cppunit/Exception.cpp:
+* include/cppunit/Exception.h: compile fix, call to overrided
+operator = of parent class failed. Using typedef to the parent
+class fix that.
+
+* src/cppunit/cppunit.dsp: added TestFixture.h
+
+* src/cppunit/TestFactoryRegistry.cpp: removed <utility> which isn't
+needed any more.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/extensions/TestFactoryRegistry.h: added
+include <Portability.h> before any other includes to remove warning
+with VC++.
+
+* include/cppunit/Portability.h: moved platform specific includes at
+the beginning of the header. fixed CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION
+declaration.
+
+* include/cppunit/config-msvc6.h: removed pragma once (useless, should
+be put in each header to have an effect).
+@
+text
+@d7 4
+d13 3
+d17 1
+d21 2
+a22 1
+Exception::Exception (const Exception& other) : std::exception (other)
+d24 2
+a25 3
+  m_message       = other.m_message; 
+  m_lineNumber    = other.m_lineNumber;
+  m_fileName      = other.m_fileName;
+d29 15
+d48 1
+a48 2
+    m_lineNumber( lineNumber ), 
+    m_fileName( fileName )
+d51 1
+d62 1
+a62 1
+Exception::operator=( const Exception& other )
+d64 1
+a64 1
+  SuperClass::operator= (other);
+d66 1
+a66 1
+  if (&other != this) 
+d68 2
+a69 3
+    m_message       = other.m_message; 
+    m_lineNumber    = other.m_lineNumber;
+    m_fileName      = other.m_fileName;
+d83 7
+d91 1
+d94 1
+a94 1
+Exception::lineNumber()
+d96 2
+a97 1
+  return m_lineNumber; 
+d103 1
+a103 1
+Exception::fileName()
+d105 2
+a106 1
+  return m_fileName; 
+d108 1
+@
+
+
+1.6
+log
+@Fixes to allow building with SGI MIPSpro 7.30 compiler.
+The testsuite file examples/cppunittest/SubclassedTestCase.cpp
+causes the compiler to dump core, so that and HelperMacrosTest
+were not tested.  The rest of the test suite passes.
+@
+text
+@d41 1
+a41 1
+  std::exception::operator= (other);
+@
+
+
+1.5
+log
+@Fixes for GCC 3.0
+@
+text
+@d13 1
+a13 1
+Exception::Exception (const Exception& other) : exception (other)
+d41 1
+a41 1
+  exception::operator= (other);
+@
+
+
+1.4
+log
+@Added newline at end of file.
+@
+text
+@d32 1
+a32 1
+Exception::~Exception ()
+@
+
+
+1.3
+log
+@* include/cppunit/NotEqualException.cpp: addded, exception to be used
+with assertEquals().
+
+* src/cppunit/RepeatedTest.cpp: added to reduce header dependency
+(TestResult.h was missing).
+
+* src/cppunit/TestAssert.cpp: added to put non template functions
+there.
+
+* src/cppunit/TestCase.cpp: added std:: prefix to
+catch (exception& e). Integrated a modified version of Tim Jansen
+patch (#403745) for TestCase to make the unit test (TestCaseTest)
+pass. If the setUp() fail then neither the runTest() nor
+the tearDown() method is called.
+@
+text
+@d99 1
+a99 1
+}  // namespace CppUnit@
+
+
+1.2
+log
+@Remove unnecessary namespace
+@
+text
+@d3 8
+a10 4
+const std::string 
+CppUnit::Exception::UNKNOWNFILENAME = 
+  "<unknown>";
+const int CppUnit::Exception::UNKNOWNLINENUMBER = -1;
+d13 1
+a13 2
+CppUnit::Exception::Exception (const Exception& other)
+  : exception (other)
+d20 7
+a26 2
+CppUnit::Exception::Exception (std::string message, long lineNumber, std::string fileName)
+  : m_message (message), m_lineNumber (lineNumber), m_fileName (fileName)
+d32 3
+a34 2
+CppUnit::Exception::~Exception ()
+{}
+d38 2
+a39 2
+CppUnit::Exception& 
+CppUnit::Exception::operator= (const Exception& other)
+d43 2
+a44 1
+  if (&other != this) {
+d56 5
+a60 2
+CppUnit::Exception::what() const throw ()
+{ return m_message.c_str (); }
+d64 4
+a67 2
+CppUnit::Exception::lineNumber ()
+{ return m_lineNumber; }
+d72 28
+a99 2
+CppUnit::Exception::fileName ()
+{ return m_fileName; }
+@
+
+
+1.1
+log
+@Moved files in subdir cppunit to src/cppunit.
+@
+text
+@a2 2
+namespace CppUnit {
+
+d29 1
+a29 1
+Exception& 
+a58 2
+
+} // namespace CppUnit
+@
+

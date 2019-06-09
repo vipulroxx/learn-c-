@@ -1,0 +1,95 @@
+head	1.3;
+access;
+symbols
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.4
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2
+	REL_1_9_4:1.2
+	REL_1_9_0:1.2
+	REL_1_8_0:1.2
+	REL_1_7_8:1.2
+	REL_1_7_3:1.2
+	REL_1_7_1:1.2
+	REL_1_6_2:1.2
+	BRANCH_1_6:1.2.0.2
+	REL_1_6_1:1.2
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.3
+date	2006.03.04.21.20.36;	author blep;	state dead;
+branches;
+next	1.2;
+
+1.2
+date	2001.09.30.07.02.01;	author smr99;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.05.16.09.07.09;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* removed debian/ directory. An up to date patch can be found at:
+ packages.debian.org.
+* cppunit.spec.in: applied patch #1242905 partially (%post and %postun).
+@
+text
+@Document: cppunit
+Title: CppUnit Cookbook
+Author: Michael Feathers and others
+Abstract: A short cookbook to help the user getting started with CppUnit.
+Section: devel
+
+Format: HTML
+Index: /usr/share/doc/cppunit/html/index.html
+Files: /usr/share/doc/cppunit/html/*.html
+
+  
+@
+
+
+1.2
+log
+@Documentation tweaks.  Add config-mac.h
+@
+text
+@@
+
+
+1.1
+log
+@Added debian packaging support by Christian Leutloff <leutloff@@debian.org>.
+Use 'make debian' to build.
+Since Christians files were for 1.5.4, they problably need to be resynced.
+@
+text
+@d8 2
+a9 2
+Index: /usr/share/doc/cppunit/cookbook.html
+Files: /usr/share/doc/cppunit/cookbook.html
+@
+

@@ -1,0 +1,79 @@
+head	1.2;
+access;
+symbols
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2002.04.10.15.21.24;	author blep;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2001.10.14.12.23.31;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* include/cppunitui/: moved to include/cppunit/ui (fix unix install problem).
+
+* doc/cookbook.dox:
+* examples/cppunittest/CppUnitTestMain.cpp:
+* examples/msvc/CppUnitTestApp/HostApp.cpp:
+* examples/msvc/HostApp/HostApp.cpp:
+* examples/qt/Main.Cpp:
+* examples/src/cppunit/TestRunner.cpp:
+* examples/src/msvc6/TestRunner/TestRunner.cpp:
+* examples/src/qttestrunner/TestRunner.cpp: updated to use <cppunit/ui/...>
+instead of <cppunitui/...> in include directives.
+
+* doc/CppUnit-win.dox: generated documentation give the include path at the
+bottom of the page for each class.
+
+* NEWS: added compatibility break for 1.7.10 users.
+@
+text
+@#ifndef CPPUNIT_QTUI_CONFIG_H
+#define CPPUNIT_QTUI_CONFIG_H
+
+/*! Macro to export symbol to DLL with VC++.
+ *
+ * - QTTESTRUNNER_DLL_BUILD must be defined when building the DLL.
+ * - QTTESTRUNNER_DLL must be defined if linking against the DLL.
+ * - If none of the above are defined then you are building or linking against
+ *   the static library.
+ */
+
+#if defined( QTTESTRUNNER_DLL_BUILD )
+#  define QTTESTRUNNER_API __declspec(dllexport)
+#elif defined ( QTTESTRUNNER_DLL )
+#  define QTTESTRUNNER_API __declspec(dllimport)
+#else
+#  define QTTESTRUNNER_API
+#endif
+
+
+#endif // CPPUNIT_QTUI_CONFIG_H@
+
+
+1.1
+log
+@* include/cppunitui/* : added, Qt TestRunner.
+
+* examples/qt/* : added, example showing the use of Qt TestRunner.
+
+* src/qttestrunner : added, source of the Qt TestRunner DLL.
+@
+text
+@@
+

@@ -1,0 +1,70 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2005.11.06.16.58.21;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.10.13.20.13.15;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* include/cppunit/config/SourcePrefix.h: disable warning #4996
+(sprintf is deprecated) for visual studio 2005.
+
+* include/cppunit/TestAssert.h: use sprintf_s instead of sprintf for
+visual studio 2005.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp
+* examples/DumperPlugIn/DumperPlugIn.cpp: use SourcePrefix.h. Fixed
+wrong macro usage to implement DllMain.
+
+* examples/msvc6/HostApp/ExamplesTestCase.h
+* examples/msvc6/HostApp/ExamplesTestCase.cpp
+* examples/simple/ExamplesTestCase.h
+* examples/simple/ExamplesTestCase.cpp: removed divideByZero test case
+as it cause some crash on some platforms.
+@
+text
+@#ifndef CPPUNIT_CONFIG_H_INCLUDED
+#define CPPUNIT_CONFIG_H_INCLUDED
+
+#include <cppunit/Portability.h>
+
+#ifdef _MSC_VER
+#pragma warning(disable: 4018 4284 4146)
+#if _MSC_VER >= 1400
+#pragma warning(disable: 4996)		// sprintf is deprecated
+#endif
+#endif
+
+
+#endif // CPPUNIT_CONFIG_H_INCLUDED
+@
+
+
+1.1
+log
+@* removed most warning when compiling with vc++ 6sp6.
+@
+text
+@d8 3
+@
+

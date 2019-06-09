@@ -1,0 +1,381 @@
+head	1.4;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3;
+locks; strict;
+comment	@# @;
+
+
+1.4
+date	2007.08.14.17.30.52;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2006.06.05.12.02.56;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.11.07.22.43.07;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.09.06.07.35.12;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@   Modified assertion implementation to force evaluation of user
+condition expression first, while preserving delegation to
+function, overloading and optional parameters feature.
+   See CPPUT_BEGIN_ASSERTION_MACRO() documentation in testinfo.h for an example
+to update your custom assertion code.
+
+   New implementation rely on operator evaluation order and operator overloading. The trick is documented in CPPUT_BEGIN_ASSERTION_MACRO().
+@
+text
+@<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="7.10"
+	Name="cpptl_lib"
+	ProjectGUID="{4037D758-74CD-412B-B67C-BA3CA89FEF28}"
+	Keyword="Win32Proj">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="../../build/cpptl/debug"
+			IntermediateDirectory="../../build/cpptl/debug"
+			ConfigurationType="4"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				MinimalRebuild="TRUE"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				BufferSecurityCheck="TRUE"
+				TreatWChar_tAsBuiltInType="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)/cpptl_vc71_libmdd.lib"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="../../build/cpptl/release"
+			IntermediateDirectory="../../build/cpptl/release"
+			ConfigurationType="4"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="../../include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				StringPooling="TRUE"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="TRUE"
+				TreatWChar_tAsBuiltInType="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)/cpptl_vc71_libmd.lib"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="json"
+			Filter="">
+			<File
+				RelativePath="..\..\include\json\autolink.h">
+			</File>
+			<File
+				RelativePath="..\..\include\json\config.h">
+			</File>
+			<File
+				RelativePath="..\..\include\json\forwards.h">
+			</File>
+			<File
+				RelativePath="..\..\include\json\json.h">
+			</File>
+			<File
+				RelativePath="..\..\src\cpptl\json_reader.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\cpptl\json_value.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\cpptl\json_writer.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\json\reader.h">
+			</File>
+			<File
+				RelativePath="..\..\include\json\value.h">
+			</File>
+			<File
+				RelativePath="..\..\include\json\writer.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="cpptl"
+			Filter="">
+			<File
+				RelativePath="..\..\include\cpptl\any.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\atomiccounter.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\autolink.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\config.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\conststring.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\enumerator.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\forwards.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\functor.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\intrusiveptr.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\reflection.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\reflection.inl">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\reflectionimpl10.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\scopedptr.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\sharedptr.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\stringtools.h">
+			</File>
+			<File
+				RelativePath="..\..\src\cpptl\thread.cpp">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\thread.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\typeinfo.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\typename.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\typetraits.h">
+			</File>
+		</Filter>
+		<File
+			RelativePath="..\..\include\cpptl\_stlimpl.h">
+		</File>
+		<File
+			RelativePath="..\..\src\cpptl\deque.cpp">
+			<FileConfiguration
+				Name="Debug|Win32"
+				ExcludedFromBuild="TRUE">
+				<Tool
+					Name="VCCLCompilerTool"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|Win32"
+				ExcludedFromBuild="TRUE">
+				<Tool
+					Name="VCCLCompilerTool"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\deque.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\enum2string.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\smallmap.h">
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>
+@
+
+
+1.3
+log
+@* added CppTL:SmallMap, a std::map like container that use a sorted vector to hold item.
+@
+text
+@d225 3
+@
+
+
+1.2
+log
+@- replaced usage of OpenTest::Properties with Json::Value.
+  Json::Value provides a simpler interface and a standard *simple* serialization
+  format.
+- jsoncpp has been inlined in CppTL to make deploy easier and remove
+  an external dependency.
+@
+text
+@d149 3
+d203 24
+@
+
+
+1.1
+log
+@* new msvc project to build cppunit2. Scons is still the official way though, but this is handy for development/debugging...
+@
+text
+@d105 95
+a199 69
+		<File
+			RelativePath="..\..\include\cpptl\any.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\atomiccounter.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\bimap.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\config.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\conststring.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\enumerator.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\enumstringizer.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\format.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\forwards.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\functor.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\intrusiveptr.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\reflection.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\reflection.inl">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\reflectionimpl10.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\scopedptr.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\sharedptr.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\stringtools.h">
+		</File>
+		<File
+			RelativePath="..\..\src\cpptl\thread.cpp">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\thread.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\typeinfo.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\typename.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\typetraits.h">
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\yaml.h">
+		</File>
+@
+

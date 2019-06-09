@@ -1,0 +1,297 @@
+head	1.5;
+access;
+symbols
+	REL_1_12_1:1.5
+	REL_1_11_6:1.5
+	REL_1_11_4:1.5
+	REL_1_11_0:1.5
+	TG_CPPUNIT_NO_STREAM_AFTER:1.5
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.5
+	REL_1_10_2:1.5
+	REL_1_10_0:1.5
+	REL_1_9_14:1.5
+	REL_1_9_12:1.5
+	BRANCH_1_9_12:1.5.0.2
+	TG_BRANCH_1_9_12:1.5
+	TG_BEFORE_HPUX_PLUGIN:1.5
+	TG_BEFORE_SUN4_PORT:1.4
+	REL_1_9_10:1.4
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.5
+date	2002.12.02.19.45.53;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.07.03.07.02.48;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.23.10.02.30;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.15.15.27.22;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* include/cppunit/plugin/DynamicLibraryManagerException.h: added constructor
+  to fix compilation issues on recents version of gcc and sun CC (bug #619059)
+
+* include/cppunit/input/XmlInputHelper.h: added.
+
+* include/cppunit/extensions/TestSuiteBuilderContext.h:
+* src/cppunit/TestSuiteBuilderContext.cpp: added addProperty() and
+  getStringProperty(). Added macros CPPUNIT_TEST_SUITE_PROPERTY.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: integrated Tim Threlkeld's
+  bug fix #610162: browse button was disabled if history was empty.
+
+* src/msvc6/testrunner/DynamicWindow/cdxCSizeIconCtrl.cpp: integrated
+  Tim Threlkeld's bug fix #610191: common control were not initialized.
+
+* include/cppunit/extensions/ExceptionTestCaseDecorator.h: bug #603172,
+  missing Message construction.
+
+* src/cppunit/DefaultProtector.cpp: bug #603172. Fixed missing ';'.
+
+* src/cppunit/TestCase.cpp: bug #603671. Removed unguarded typeinfo
+  include.
+
+* examples/cppunittests/*Suite.h: bug #603666. Added missing Portability.h
+  include.
+@
+text
+@#ifndef CPPUNIT_PLUGIN_DYNAMICLIBRARYMANAGEREXCEPTION_H
+#define CPPUNIT_PLUGIN_DYNAMICLIBRARYMANAGEREXCEPTION_H
+
+#include <cppunit/Portability.h>
+
+#if !defined(CPPUNIT_NO_TESTPLUGIN)
+#include <stdexcept>
+#include <string>
+
+
+CPPUNIT_NS_BEGIN
+
+
+/*! \brief Exception thrown by DynamicLibraryManager when a failure occurs.
+ *
+ * Use getCause() to know what function caused the failure.
+ *
+ */
+class DynamicLibraryManagerException : public std::runtime_error
+{
+public:
+  enum Cause
+  {
+    /// Failed to load the dynamic library
+    loadingFailed =0,
+    /// Symbol not found in the dynamic library
+    symbolNotFound
+  };
+
+  /// Failed to load the dynamic library or Symbol not found in the dynamic library.
+  DynamicLibraryManagerException( const std::string &libraryName,
+                                  const std::string &errorDetail,
+                                  Cause cause );
+
+  ~DynamicLibraryManagerException() throw()
+  {
+  }
+
+  Cause getCause() const;
+
+  const char *what() const throw();
+
+private:
+  std::string m_message;
+  Cause m_cause;
+};
+
+
+CPPUNIT_NS_END
+
+#endif // !defined(CPPUNIT_NO_TESTPLUGIN)
+
+#endif  // CPPUNIT_PLUGIN_DYNAMICLIBRARYMANAGEREXCEPTION_H
+@
+
+
+1.4
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d35 4
+@
+
+
+1.3
+log
+@* include/cppunit/XmlOutputter.h: fixed XmlOutputter constructed default
+  value initializatino which caused compilation error with BC5.
+
+* src/cppunit/PlugInManager.cpp: added missing CPPUNIT_NO_TESTPLUGIN guard.
+
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp:
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h: applied Steven Mitter
+  patch to fix bug #530426 (conflict between TestRunner and host application
+  resources). Adapted patch to compile work with Unicode.
+
+* src/msvc6/testrunner/ResourceLoaders.h:
+* src/msvc6/testrunner/ResourceLoaders.cpp:
+* src/msvc6/testrunner/Change-Diary-ResourceBugFix.txt: added, from
+  Steven Mitter's patch. Simplified loadCString() to compile with Unicode.
+
+* src/cppunit/cppunit.dsp:
+* src/cppunit/cppunit_dll.dsp:
+* src/DllPlugInTester/DllPlugInTester.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: all lib, dll and exe are
+  now created in the intermediate directory. A post-build rule is used to
+  copy them to the lib/ directory.
+@
+text
+@d11 2
+a12 2
+namespace CppUnit
+{
+d45 1
+a45 2
+} //  namespace CppUnit
+
+@
+
+
+1.2
+log
+@* bumped version to 1.9.7
+
+* comitted stuffs I forgot to in 1.9.6.
+@
+text
+@d30 1
+a30 4
+  /// Failed to load the dynamic library
+  DynamicLibraryManagerException( const std::string &libraryName );
+
+  /// Symbol not found in the dynamic library
+d32 2
+a33 1
+                                  const std::string &symbol );
+d37 2
+d40 1
+@
+
+
+1.1
+log
+@* NEWS: updated.
+
+* configure.in: added include/cppunit/config/Makefile and
+  include/cppunit/plugin/Makefile to the list of target.
+
+* doc/CppUnit-win.dox: enabled generation of HTML Help documentation.
+
+* include/cppunit/config/Makefile.am:
+* include/cppunit/plugin/Makefile.am: added.
+
+* include/cppunit/config-bcb5.h:
+* include/cppunit/config-msvc6.h:
+* include/cppunit/config-mac.h: moved to include/cppunit/config/.
+
+* include/cppunit/Portability.h: updated config files location. Added macros
+  CPPUNIT_STRINGIZE and CPPUNIT_JOIN (implementation adapted from boost.org).
+  Added macro CPPUNIT_MAKE_UNIQUE_NAME.
+
+* include/cppunit/Test.h: modified methods order.
+
+* include/cppunit/extensions/HelperMacros.h: renamed macro
+  __CPPUNIT_MAKE_UNIQUE_NAME to CPPUNIT_MAKE_UNIQUE_NAME and moved its
+  definition to include/cppunit/Portability.h.
+
+* include/cppunit/extensions/TestDecorator.h: Inherits Test instead of TestLeaf.
+
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* src/cppunit/DynamicLibraryManager.cpp: added. DLL manager (load & lookup
+  symbol).
+
+* src/cppunit/BeOsDynamicLibraryManager.cpp:
+* src/cppunit/UnixDynamicLibraryManager.cpp:
+* src/cppunit/Win32DynamicLibraryManager.cpp: added. Implementation of
+  platform dependent methods of DynamicLibraryManager.
+
+* include/cppunit/plugin/DynamicLibraryManagerException.h:
+* src/cppunit/DynamicLibraryManagerException.cpp: added. Exception thrown
+  by DynamicLibraryManager.
+
+* include/cppunit/plugin/TestPlugIn.h: added. CppUnitTestPlugIn interface
+  definition. Helper macros to implements plug-in.
+
+* include/cppunit/plugin/TestPlugInSuite.h:
+* src/cppunit/plugin/TestPlugInSuite.cpp: added. A suite to wrap a test
+  plug-in.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: added. A default implementation
+  of the test plug-in interface.
+
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp: updated to use the
+  new TestPlugIn.
+
+* examples/cppunittest/TestResultCollectorTest.cpp: fixed typo.
+@
+text
+@d27 1
+a27 1
+    symbolNotFound,
+@
+

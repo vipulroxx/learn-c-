@@ -1,0 +1,126 @@
+head	1.7;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.7
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.4
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.4
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.7
+date	2006.06.05.14.03.23;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2006.06.05.13.22.57;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.08.08.22.11.14;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.02.26.12.54.38;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.02.24.07.11.09;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.23.18.47.06;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.21.13.42;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@* added doc and doc-dist target to generate doc and doc tarball.
+@
+text
+@scons.py sconsign.py  scons-LICENSE scons-README scons-local*
+build buildscons
+scons-local*
+bin
+libs
+gcc-options.txt
+dependencies
+env.bat
+dist
+@
+
+
+1.6
+log
+@- synchronized with lastest jsoncpp.
+@
+text
+@d9 1
+@
+
+
+1.5
+log
+@* share examples/common in all examples.
+@
+text
+@d8 1
+@
+
+
+1.4
+log
+@* ignore build stuff
+@
+text
+@d7 1
+@
+
+
+1.3
+log
+@* ignore dummy files
+@
+text
+@d3 4
+a6 1
+scons-local*@
+
+
+1.2
+log
+@* updated
+@
+text
+@d1 2
+a2 1
+build
+@
+
+
+1.1
+log
+@* added .cvsignore files and a bit of documentation.
+@
+text
+@d2 1
+@
+

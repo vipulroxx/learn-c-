@@ -1,0 +1,675 @@
+head	1.5;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.3
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.3
+	TG_AFTER_REMOVING_TESTCONTEXT:1.3
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.3
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.3;
+locks; strict;
+comment	@ * @;
+
+
+1.5
+date	2008.07.13.08.19.18;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2007.08.14.17.30.52;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.11.17.08.59.05;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.10.21.17.21.20;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.06.15.01.20.34;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@- Added core framework for resource handling to test case, resource registry and test info. Not integrated with the test runner and no unit tests yet.
+@
+text
+@#ifndef CPPUT_RESOURCE_H_INCLUDED
+# define CPPUT_RESOURCE_H_INCLUDED
+
+# include <cpput/forwards.h>
+//# include <cpptl/sharedptr.h>
+# include <cpptl/intrusiveptr.h>
+# include <cpptl/any.h>
+# include <cpptl/conststring.h>
+# include <cpptl/thread.h>
+# include <map>
+
+/*
+ * Notes: 
+ * 1) it would be interesting to use the dependency injection pattern for test fixture
+ * that use resource. This would allows the fixture to be run with different resources, making
+ * it simple to run different set of input/expected set on the same fixture.
+ *
+ * 2) the above seems to relate to some of the tablefixture ideas...
+ *
+ *
+ *
+ * Should the factory takes a resource name as parameter of create/destroy ?
+ * -> this seems more generic as it allows reuse of the same factory for multiple resources
+ * -> example: business object initialized from file. File is in the resource name.
+ */
+
+
+namespace CppUT {
+
+
+//
+//enum ResourceScope 
+//{
+//   /** Indicates that the resource is thread-safe and can be used concurrently
+//    * by multiple thread.
+//    */
+//   resourceScopeMultiThread = 1,
+//   /** Indicates that the resource is not thread-safe, but that one instance
+//    * can be created by thread.
+//    */
+//   resourceScopeThread,
+//   /** Indicates that the resource is not thread-safe and 
+//    * only one instance of the resource can be created within a system process. 
+//	* This means that the execution of all tests using this
+//	* resource will be serialized when executed within the same process.
+//	*/
+//   resourceScopeProcess,
+//   /// @@todo find a use case for this scope ???
+//   /// Intent: can only be used across different process by different test session
+//   /// Example: each test session creates its test table in database, but
+//   /// test use the same table inside the same session in conflicting way.
+//   resourceScopeSession,         
+//   /** Indicates that the resource is not thread-safe and must not be used
+//    * concurrently even within different system process.
+//	* Typical example: a database accessed and modified by tests in conflicting
+//	* way.
+//	* \Warning CppUnit 2 does not implement this scope level, but an interface
+//	*          is provided to implement it.
+//    */
+//   resourceScopeGlobal           // exclusively used by one test case in the whole world.
+//};
+
+
+
+/** Manage a resource creation/destruction.
+ *
+ * The resource scope determines when and how often it is created:
+ * - resourceScopeMultiThread: only one instance of the resource will
+ *   exist at a given time in the system process. This instance may be
+ *   used by multiple test thread at the same time.
+ *   - create() is called just before executing the first test requiring this
+ *     resource. 
+ *   - destroy() is called after executing the last test requiring this 
+ *     resource.
+ * - resourceScopeThread: one instance of the resource exist for each test
+ *   thread at a given time.
+ *   - create() is called once per test thread just before executing
+ *     the first test requiring this resource in a given thread.
+ *   - destroy() is called after executing the last test requiring this
+ *     resource in the test thread.
+ * test requiring this resource. 
+ * - resourceScopeProcess:  only one instance of the resource will
+ *   exist at a given time in the system process. Only one test
+ *   will be able to use the resource at any given time.
+ *   - create() is called just before executing the first test requiring this
+ *     resource. 
+ *   - destroy() is called after executing the last test requiring this 
+ *     resource.
+ *
+ *
+ * NOTES: with resource scope, two things are being mixed up which 
+ * complexify thing a bit:
+ * - how many instance of the resource can exist at a given time
+ *   (one per thread, a single one, one per session)
+ * - how many test can access the resource at a given time
+ *   - serialize (processs/session, process, global/session, global)
+ *   - concurrently
+ * resourceScopeMultiThread => unique instance, concurrent access
+ * resourceScopeThread => one instance per thread, concurrently or serialize???
+ * resourceScopeProcess => unique instance, serialize 
+ *
+ *
+ * Implementation notes: only serialization impact test scheduling. The
+ * only impact that instantiation may have is to attempt to limit creating
+ * new resource.
+ */
+class CPPUT_API ResourceHandler : public CppTL::IntrusiveCount
+{
+public:
+   enum InstiationPolicy
+   {
+      /// A single instance can be created in the system process.
+      unique = 1,
+      /// One instance may be created per testing thread.
+      perThread
+   };
+
+   enum AccessPolicy
+   {
+      /// All tests can use the resource concurrently
+      concurrent = 1,
+      // For each running test session, only one test of each session can
+      // use the resource at the same time.
+      // @@todo find a use case. Otherwise remove, complexify exclusion handling.
+      // processSessionSerialization,
+      /// Only one test can use the resource at a given time in the system process.
+      process,
+      /// Only one test of a session can use the resource, but if other session
+      /// are running in other process, then the can also use the resource.
+      globalSessionSerialization,
+      /// Only one test can use the resource at a given time, regarless of
+      /// the session or system process.
+      global
+   };
+
+   virtual ~ResourceHandler()
+   {
+   }
+
+   bool uniqueInstance() const
+   {
+      return instantiation_ == unique;
+   }
+
+   AccessPolicy accessPolicy() const
+   {
+      return access_;
+   }
+
+   /** Creates a new instance of the resource.
+    * The resource scope determine when and how often it is called:
+    * \return New resource instance.
+    */
+   virtual Resource create( const ResourceName &name ) = 0;
+
+   /// Called once at the end of the test run
+   /// Used to destroy the resource
+   virtual void destroy( const ResourceName &name,
+                         Resource &resource ) = 0;
+
+   /// Called once before each test case execution
+   virtual void setUp( const ResourceName &name,
+                       Resource &resource ) = 0;
+
+   /// Called once after each test case execution
+   virtual void tearDown( const ResourceName &name,
+                          Resource &resource ) = 0;
+
+protected:
+   explicit ResourceHandler( InstiationPolicy instantiation,
+                             AccessPolicy access )
+      : instantiation_( instantiation )
+      , access_( access )
+   {
+   }
+
+private:
+   InstiationPolicy instantiation_;
+   AccessPolicy access_;
+};
+
+
+class CPPUT_API ConstantResourceHandler : public ResourceHandler
+{
+public:
+   ConstantResourceHandler( const CppTL::Any &resource,
+                            InstiationPolicy instantiation = unique,
+                            AccessPolicy access = concurrent )
+      : ResourceHandler( instantiation, access )
+      , resource_( resource )
+   {
+   }
+
+   virtual ~ConstantResourceHandler()
+   {
+   }
+
+public: // overridden from ResourceHandler
+   virtual Resource create( const ResourceName &name )
+   {
+      return resource_;
+   }
+
+   virtual void destroy( const ResourceName &name,
+                         Resource &resource )
+   {
+   }
+
+   virtual void setUp( const ResourceName &name,
+                       Resource &resource )
+   {
+      resource = resource_;
+   }
+
+   virtual void tearDown( const ResourceName &name,
+                          Resource &resource )
+   {
+   }
+
+private:
+   const Resource resource_;
+};
+
+
+
+/*! \brief Represents an instance of a resource.
+ * The life-time of the underlying resource is bound to this class life-time.
+ * It encapsulate both the underlying resource and its handler.
+ * It also manage the access policy in a single system process.
+ */
+class CPPUT_API ResourceInstance : public CppTL::IntrusiveCount
+                                 , public CppTL::NonCopyable
+{
+private:
+   friend class ResourceHandlerRegistry;
+
+   // Resource instances are always created by ResourceHandlerRegistry::obtainResource.
+   explicit ResourceInstance( const ResourceName &name,
+                              const ResourceHandlerPtr &handler );
+
+public:
+   ~ResourceInstance();
+
+   void setUp();
+
+   void tearDown();
+
+   /*! \brief Acquires a lock on the resource according to the specified policy.
+    * The lock is released once the last copy of the returned ScopedLock is destroyed.
+    */
+   AcquiredResourceHandlePtr acquire( ResourceHandler::AccessPolicy access );
+
+   Resource &resource()
+   {
+      return resource_;
+   }
+
+   const ResourceName &name() const
+   {
+      return name_;
+   }
+private:
+   Resource resource_;
+   ResourceName name_;
+   ResourceHandlerPtr handler_;
+   CppTL::Mutex lock_;
+};
+
+
+/*! \brief Represents an handle on an acquired resource.
+ *
+ * The acquired resource won't be destroyed as long as the handle or one of its copy
+ * is alive. The lock associated to the resource policy will also remain for the
+ * same life-time.
+ */
+class CPPUT_API AcquiredResourceHandle : public CppTL::IntrusiveCount
+                                       , public CppTL::NonCopyable
+{
+   friend class ResourceInstance;
+
+   // Instantiated by ResourceInstance::acquire().
+   AcquiredResourceHandle( CppTL::Mutex &lock,
+                           const ResourceInstancePtr &instance,
+                           ResourceHandler::AccessPolicy access );
+
+public:
+   ~AcquiredResourceHandle();
+
+   void setUp();
+
+   void tearDown();
+
+   Resource &resource()
+   {
+      return instance_->resource();
+   }
+
+   const ResourceName &name() const
+   {
+      return instance_->name();
+   }
+
+private:
+   CppTL::Mutex &lock_;
+   ResourceInstancePtr instance_;
+   ResourceHandler::AccessPolicy access_;
+};
+
+
+class CPPUT_API ResourceHandlerRegistry : public CppTL::NonCopyable
+{
+   friend class ResourceLazyPtr;
+public:
+   static ResourceHandlerRegistry &instance();
+
+   void addConstant( const ResourceName &name,
+                     const Resource &constant );
+
+   ResourceId add( const ResourceName &name, 
+                   const ResourceHandlerPtr &handler );
+
+   void remove( ResourceId id );
+
+   /** Obtains a lazy reference on the resource.
+    * This will not create the resource but indicate the intent to create it
+    * later. Existing instance of ResourceLazyPtr on a given resource prevent it
+    * from being destroyed if it was created.
+    *
+    * Notes: for resource with one per thread instantiation policy, 
+    * a list of allocated resource need to be tracker per thread.
+    * but the same future usage policy can be used to simplify the implementation.
+    *
+    * Issue: as we need to guaranty that the destructor is called in the
+    * thread the resource was created in, we either need to delay destruction
+    * until the thread terminate or track future usage on a per thread basis.
+    * Tracking future usage on a per thread basis would make scheduling more
+    * complex (it would not be possible to use multiple consumer test thread).
+    */
+   ResourceLazyPtr getResource( const ResourceName &name );
+
+private:
+   AcquiredResourceHandlePtr obtainResource( ResourceId id );
+
+   void increaseLazyRef( ResourceId id );
+
+   void decreaseLazyRef( ResourceId id );
+
+
+   struct ResourceData
+   {
+      ResourceName name_;
+      ResourceHandlerPtr handler_;
+      ResourceInstancePtr instance_;
+      /// Number of known future reference on the resource
+      volatile unsigned int lazyCount_;
+      ResourceId id_;
+   };
+
+   CppTL::Mutex lock_;
+   typedef std::map<ResourceName, ResourceId> IdsByName;
+   IdsByName idsByName_;
+   typedef std::map<ResourceId,ResourceData> ResourceById;
+   ResourceById resourceById_;
+   ResourceId nextId_;
+};
+
+
+class CPPUT_API ResourceLazyPtr
+{
+   friend class ResourceHandlerRegistry;
+public:
+   ResourceLazyPtr()
+      : id_( 0 )
+   {
+   }
+
+   explicit ResourceLazyPtr( ResourceId id )
+      : id_( id )
+   {
+      ResourceHandlerRegistry::instance().increaseLazyRef( id_ );
+   }
+
+   ResourceLazyPtr( const ResourceLazyPtr &other )
+      : id_( other.id_ )
+   {
+      ResourceHandlerRegistry::instance().increaseLazyRef( id_ );
+   }
+
+   ResourceLazyPtr &operator =( const ResourceLazyPtr &other );
+
+   ~ResourceLazyPtr()
+   {
+      ResourceHandlerRegistry::instance().decreaseLazyRef( id_ );
+   }
+
+   /** Obtains the resource.
+    * Create the resource if required. The reference on the resource remains
+    * valid until the last copy of ResourceInstancePtr is destroyed.
+    *
+    * Notes: may lock if the resource does not allow concurrent access and 
+    * is in use in another thread.
+    *
+    * \return Reference on the resource if it was instantiated successfully,
+    *         \c NULL otherwise.
+    */
+   AcquiredResourceHandlePtr acquire();
+
+   bool isValid() const
+   {
+      return id_ != 0;
+   }
+
+private:
+   ResourceId id_;
+};
+
+
+} // namespace CppUT
+
+#endif // CPPUT_RESOURCE_H_INCLUDED
+@
+
+
+1.4
+log
+@   Modified assertion implementation to force evaluation of user
+condition expression first, while preserving delegation to
+function, overloading and optional parameters feature.
+   See CPPUT_BEGIN_ASSERTION_MACRO() documentation in testinfo.h for an example
+to update your custom assertion code.
+
+   New implementation rely on operator evaluation order and operator overloading. The trick is documented in CPPUT_BEGIN_ASSERTION_MACRO().
+@
+text
+@d4 3
+a6 1
+# include <cpptl/sharedptr.h>
+d8 3
+a29 1
+typedef CppTL::Any Resource;
+d31 32
+a62 7
+enum ResourceScope 
+{
+   resourceScopeMultiThread = 1, // concurrently used by multiple test case
+   resourceScopeProcess,         // exclusively used by one test case at a time in a process
+   resourceScopeSession,         // exclusively used by one test case in test session (session can be distributed over multiple processes)
+   resourceScopeGlobal           // exclusively used by one test case in the whole world.
+};
+a63 1
+typedef CppTL::ConstString ResourceId;
+d65 42
+a106 1
+/// A factory for a given resource
+d110 26
+d140 1
+a140 1
+   ResourceScope scope() const
+d142 1
+a142 1
+      return scope_;
+d145 10
+a154 3
+   /// Called once per test run
+   /// @@return New resource instance
+   virtual Resource create( const ResourceId &id ) = 0;
+d158 1
+a158 1
+   virtual void destroy( const ResourceId &id,
+d162 1
+a162 1
+   virtual void setUp( const ResourceId &id,
+d166 2
+a167 1
+   virtual void tearDown( Resource &resource ) = 0;
+d170 4
+a173 2
+   explicit ResourceHandler( ResourceScope scope )
+      : scope_( scope )
+d178 2
+a179 1
+   ResourceScope scope_;
+a181 2
+class ResourceHandler;
+typedef CppTL::IntrusivePtr<ResourceHandler> ResourceHandlerPtr;
+d187 3
+a189 2
+                            ResourceScope scope = resourceScopeMultiThread )
+      : ResourceHandler( scope )
+d199 1
+a199 1
+   virtual Resource create( const ResourceId &id )
+d204 1
+a204 1
+   virtual void destroy( const ResourceId &id,
+d209 1
+a209 1
+   virtual void setUp( const ResourceId &id,
+d215 2
+a216 1
+   virtual void tearDown( Resource &resource )
+d225 86
+a310 1
+class ResourceHandlerRegistry
+d312 1
+d316 58
+a373 2
+   void addConstant( const ResourceId &id,
+                     const Resource &constant )
+a374 2
+      ResourceHandlerPtr handler( new ConstantResourceHandler( constant ) );
+      addFactory( id, handler );
+d377 2
+a378 2
+   void add( const ResourceId &id, 
+             const ResourceHandlerPtr &handler )
+d380 31
+a410 2
+      CppTL::Mutex::ScopedLockGuard guard( lock_ );
+      handlersById_[id] = handler;
+d414 1
+a414 3
+   CppTL::Mutex lock_;
+   typedef std::map<ResourceId, ResourceHandlerPtr> HandlersById;
+   HandlersById handlersById_;
+@
+
+
+1.3
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@d5 1
+d14 6
+d25 9
+a33 2
+class Resource;
+typedef CppTL::SharedPtr<Resource> ResourcePtr;
+d35 4
+a38 1
+class CPPUT_API Resource
+d41 1
+a41 1
+   virtual ~Resource()
+d45 1
+a45 1
+   virtual void setUp()
+d47 1
+d50 19
+a68 1
+   virtual void cleanUp()
+d71 3
+d76 2
+d79 1
+a79 1
+class CPPUT_API ResourceProvider
+d82 8
+a89 1
+   virtual ~ResourceProvider()
+d93 5
+a97 1
+   virtual std::string handledProtocol() const = 0;
+d99 4
+a102 2
+   virtual ResourcePtr makeResource( const std::string &uri ) = 0;
+};
+d104 5
+d110 1
+a110 4
+class CPPUT_API InjectResource
+{
+public:
+   virtual ~InjectResource()
+d114 2
+a115 2
+   virtual void setResource( const std::string &uri, 
+                             const ResourcePtr &resource ) = 0;
+d118 2
+a119 2
+template<class FixtureType>
+class SharedFixtureResourceProvider : public ResourceProvider
+d121 5
+a125 2
+public:  //  overridden from ResourceProvider
+   std::string handledProtocol() const
+d127 2
+a128 1
+      return "shared_fixture";
+d131 2
+a132 1
+   ResourcePtr makeResource( const std::string &uri )
+d134 2
+a135 1
+      return ResourcePtr<FixtureType>();
+d137 5
+a144 2
+
+
+@
+
+
+1.2
+log
+@*fixed comment
+@
+text
+@d4 1
+a4 1
+# include <cpput/smartptr.h>
+d19 1
+a19 1
+typedef SmartPtr<Resource> ResourcePtr;
+@
+
+
+1.1
+log
+@* resource concept: tests can depend on resource
+@
+text
+@d8 1
+a8 1
+ * 1) it would be intersting to use the dependency injection pattern for test fixture
+@
+

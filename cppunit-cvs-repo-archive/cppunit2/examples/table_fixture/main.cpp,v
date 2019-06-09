@@ -1,0 +1,109 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@// @;
+
+
+1.1
+date	2007.08.15.17.35.39;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@   Added initial support for table fixture (still like cell value automatic
+conversion, but it is usable).
+@
+text
+@#include <examples/common/examplecommon.h>
+#include <cpput/tablefixture.h>
+#include <cpput/testfixture.h>
+#include <cpput/registry.h>
+#include <cpput/assertcommon.h>
+
+// table fixture in a TestFixture:
+
+class MyTableTest : public CppUT::TestFixture
+{
+   CPPUT_TESTSUITE_BEGIN( MyTableTest );
+   CPPUT_TEST_TABLE( testSum );
+   CPPUT_TESTSUITE_END();
+
+   static void testSumData( CppUT::Table &table )
+   {
+      table.addColumn( "value1" );
+      table.addColumn( "value2" );
+      table.addColumn( "sum" );
+      table.newRow("positive") << 1 << 2 << 3;
+      table.newRow("negative") << -5 << -6 << -11;
+   }
+
+   void testSum( const CppUT::TableRow &row )
+   {
+      CPPUT_TABLE_FETCH( int, value1 );
+      CPPUT_TABLE_FETCH( int, value2 );
+      CPPUT_TABLE_FETCH( int, sum );
+      CPPUT_CHECK( value1+value2 == sum );
+   }
+};
+
+CPPUT_REGISTER_SUITE_TO_DEFAULT( MyTableTest );
+
+
+
+
+// table fixture as plain C function
+
+// 1) Plain C function and late registration
+
+static void testSumData( CppUT::Table &table )
+{
+   table.addColumn( "value1" );
+   table.addColumn( "value2" );
+   table.addColumn( "sum" );
+   table.newRow("positive") << 1 << 2 << 3;
+   table.newRow("negative") << -5 << -6 << -11;
+}
+
+static void testSum( const CppUT::TableRow &row )
+{
+   CPPUT_TABLE_FETCH( int, value1 );
+   CPPUT_TABLE_FETCH( int, value2 );
+   CPPUT_TABLE_FETCH( int, sum );
+   CPPUT_CHECK( value1+value2 == sum );
+}
+
+// Register the suite using the table setup and test functions in the default test suite.
+CPPUT_REGISTER_TEST_FUNCTION_TABLE( testSum );
+
+// 2) Plain C function with macroed declaration + register in a named suite
+
+static void testSum2Data( CppUT::Table &table )
+{
+   testSumData( table );
+}
+
+// Also register the table suite, but declare the C function for testing
+CPPUT_TEST_FUNCTION_TABLE_IN( testSum2, "MyCFunctionTableTest" )
+{
+   CPPUT_TABLE_FETCH( int, value1 );
+   CPPUT_TABLE_FETCH( int, value2 );
+   CPPUT_TABLE_FETCH( int, sum );
+   CPPUT_CHECK( value1+value2 == sum );
+}
+
+// Makes MyCFunctionTableTest a child of default.
+CPPUT_REGISTER_SUITE_RELATIONSHIP_TO_DEFAULT( "MyCFunctionTableTest" );
+
+int main( int argc, const char *argv[] )
+{
+   CppUT::TestSuitePtr allSuite = CppUT::Registry::instance().createDefaultTests();
+   return runExampleTests( argc, argv, allSuite.get() );
+}
+@

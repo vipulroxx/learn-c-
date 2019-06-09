@@ -1,0 +1,150 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.3
+date	2003.05.07.21.10.20;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.07.03.07.02.49;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.27.21.23.22;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* added to .cvsignore:
+SunWS_cache
+ir.out
+@
+text
+@*.Tags.WW
+Debug DebugCrossplatform Release
+*.ncb *.opt
+*.aps
+SunWS_cache
+ir.out
+@
+
+
+1.2
+log
+@* include/cppunit/XmlOutputter.h: fixed XmlOutputter constructed default
+  value initializatino which caused compilation error with BC5.
+
+* src/cppunit/PlugInManager.cpp: added missing CPPUNIT_NO_TESTPLUGIN guard.
+
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp:
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h: applied Steven Mitter
+  patch to fix bug #530426 (conflict between TestRunner and host application
+  resources). Adapted patch to compile work with Unicode.
+
+* src/msvc6/testrunner/ResourceLoaders.h:
+* src/msvc6/testrunner/ResourceLoaders.cpp:
+* src/msvc6/testrunner/Change-Diary-ResourceBugFix.txt: added, from
+  Steven Mitter's patch. Simplified loadCString() to compile with Unicode.
+
+* src/cppunit/cppunit.dsp:
+* src/cppunit/cppunit_dll.dsp:
+* src/DllPlugInTester/DllPlugInTester.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: all lib, dll and exe are
+  now created in the intermediate directory. A post-build rule is used to
+  copy them to the lib/ directory.
+@
+text
+@d5 2
+@
+
+
+1.1
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+moved dll copy from post-build to custom build setting, so that the
+dll is copied even if the CppUnitTestApp was not modified.
+
+* examples/msvc6/TestPlugIn/: a new example of test plug in.
+
+* src/msvc6/TestRunner/ListCtrlFormatter.*
+* src/msvc6/TestRunner/ListCtrlSetter.*:
+added, helper to manipulate list control.
+
+* src/msvc6/TestRunner/TestRunnerDlg.*: change to make the error list
+more compact. text moved to string resources. icons added for typ
+test tfailure type.
+
+* src/msvc6/TestRunner/MostRecentTests.*: added, classes that will
+replace the current implementation of MRU test which make it hard
+to subclass the dialog.
+
+* src/msvc6/TestRunner/res/errortype.bmp: added, bitmap with error
+types (failure and error).
+
+* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+
+* src/cppunit/cppunit.dsp:
+removed config.h from project
+added Portability.h and config-msvc6.h
+
+* include/cppunit/config-msvc6.h:
+undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+@
+text
+@d4 1
+@
+

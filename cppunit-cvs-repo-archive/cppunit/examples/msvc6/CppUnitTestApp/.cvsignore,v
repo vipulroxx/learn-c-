@@ -1,0 +1,138 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.3
+	REL_1_9_4:1.3
+	REL_1_9_0:1.3
+	REL_1_8_0:1.3
+	REL_1_7_8:1.3
+	REL_1_7_3:1.3
+	REL_1_7_1:1.3
+	REL_1_6_2:1.2
+	BRANCH_1_6:1.2.0.2
+	REL_1_6_1:1.2
+	REL_1_6_0:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.3
+date	2001.10.03.21.16.12;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.06.05.21.35.57;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.01.19.34.42;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* include/cppunit/TestFailure.cpp :
+* include/cppunit/TestFailure.h : fixed some constness issues. Added
+argument to indicate the type of failure to constructor. Added
+isError().
+
+* include/cppunit/TestListener.h : removed addError(). addFailure()
+now take a TestFailure as argument.
+
+* include/cppunit/TestResult.h :
+* include/cppunit/TestResult.cpp : removed errors(). Refactored. Fixed
+some constness issues. Added typedef TestFailures for vector returned
+by failures(). failures() returns a const reference on the list of
+failure. added testFailuresTotal(). Constructor can take an optional
+synchronization object.
+
+* include/cppunit/TextTestResult.h :
+* include/cppunit/TextTestResult.cpp : removed printErrors().
+Refactored. Updated to suit new TestResult, errors and failures are
+reported in the same list.
+
+* examples/cppunittest/TestFailureTest.cpp :
+* examples/cppunittest/TestFailureTest.h : modified to use the new
+TestFailure constructor. Added one test.
+
+* examples/cppunittest/TestListenerTest.cpp: removed addError().
+Refactored to suit new TestListener.
+
+* examples/cppunittest/TestResultTest.h :
+* examples/cppunittest/TestResultTest.cpp : modified to suit the
+new TestResult.
+@
+text
+@*.Tags.WW
+Debug DebugCrossplatform Release
+*.ncb *.opt *.aps
+@
+
+
+1.2
+log
+@* src/cppunit/TypeInfoHelper.cpp: removed #include <config.h>, cppunit/config.h was already included.
+
+* src/cppunit/cppunit.dsp: removed TestAssert.cpp from project.
+
+* added/updated .cvsignore files for beter handling of windows projects.
+
+* added include/cppunit/config.h with a default configuration for VC++ 6.0.
+
+* include/cppunit/.cvsignore: removed config.h from the list of ignored file.
+
+* renamed VC++ configurations without RTTI from "Debug No CU_USE_TYPEINFO" to "Debug Crossplatform".
+
+* include/cppunit/TestAssert.h: added include <math.h> for fabs().
+@
+text
+@d3 1
+a3 1
+*.ncb *.opt
+@
+
+
+1.1
+log
+@* added project cppunittest to examples/: unit tests to test cppunit. The
+  main file is CppUnitTestMain.cpp. Unit tests have been implemented
+  for TestCaller and TestListener.
+* added project CppUnitTestApp to examples/msvc6: graphical runner for
+  cppunittest.
+* added TestListener to TestResult. It is a port of junit TestListener.
+* updated some .cvsignore to ignore files generated with VC++.
+@
+text
+@d1 3
+a3 5
+Debug
+CppUnitTestApp.aps
+CppUnitTestApp.ncb
+CppUnitTestApp.opt
+CppUnitTestApp.Tags.WW
+@
+

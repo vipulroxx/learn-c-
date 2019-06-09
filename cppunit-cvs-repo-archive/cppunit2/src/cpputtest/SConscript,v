@@ -1,0 +1,357 @@
+head	1.17;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.16
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.4
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.4
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.17
+date	2007.08.19.20.13.24;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2006.06.05.12.02.56;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2005.11.11.20.54.15;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2005.11.10.09.05.41;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2005.11.08.19.54.38;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2005.09.29.20.32.48;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2005.03.05.11.02.25;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2005.03.04.08.23.39;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.03.03.08.15.54;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.02.28.22.11.56;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.02.27.17.42.32;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2005.02.27.16.12.08;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.02.27.15.27.09;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.02.26.11.40.58;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.02.23.23.11.23;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.14.23.30.12;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.31.23.08.48;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.17
+log
+@In progress of adding CppTL::Value to replace CppTL::Any in table fixture and input based fixture. Value allows optionaly comparison, conversion to other type, conversion to string...
+@
+text
+@Import( 'env_testing buildLibraryUnitTest' )
+
+buildLibraryUnitTest( env_testing, Split( """
+    assertenumtest.cpp 
+    assertstringtest.cpp 
+    enumeratortest.cpp 
+    main.cpp
+    registrytest.cpp
+    smallmaptest.cpp
+    testbasicassertion.cpp
+    testexceptionguard.cpp
+    testfunctor.cpp 
+    testfixturetest.cpp 
+    testinfotest.cpp
+    testtestcase.cpp 
+    testtestsuite.cpp
+    reflectiontest.cpp
+    valuetest.cpp
+     """ ),
+    'cpputtest',
+    'check_cpput' )
+@
+
+
+1.16
+log
+@* added CppTL:SmallMap, a std::map like container that use a sorted vector to hold item.
+@
+text
+@d18 1
+@
+
+
+1.15
+log
+@- added unit tests for TestInfo
+- fixed bug in CPPUT_IGNORE_FAILURE and exception guard.
+- added 'isIgnoredFailure' to Assertion.
+- lighttestrunner now print ignored failure and skipped tests.
+@
+text
+@d9 1
+@
+
+
+1.14
+log
+@- added check_cpput and check_opentest alias to build script to run unit tests.
+@
+text
+@d13 1
+@
+
+
+1.13
+log
+@* removed formattest as it is experimental stuff.
+@
+text
+@d17 2
+a18 1
+    'cpputtest' )
+@
+
+
+1.12
+log
+@Added formattest.cpp
+@
+text
+@a6 1
+    formattest.cpp
+@
+
+
+1.11
+log
+@* changed from using string split() method to scons Split() helper function for portability with python 1.5.2.
+@
+text
+@d7 1
+@
+
+
+1.10
+log
+@* added buildLibrary() and buildLibraryUnitTest() exported functions to sconstruct
+* refactored sconscript to use the exported functions
+* build productions are now placed in a platform specific subdirectory (bin/mingw/...)
+@
+text
+@d3 1
+a3 1
+buildLibraryUnitTest( env_testing, """
+d16 1
+a16 1
+     """.split(),
+@
+
+
+1.9
+log
+@* added unit tests for CppTL::Reflect
+@
+text
+@d1 1
+a1 1
+# cpputtest build script
+d3 1
+a3 3
+Import( 'env_testing' )
+
+cpputtest_sources="""
+d16 2
+a17 15
+     """.split()
+
+#cpputtest_env = env.Copy(LIBS = ['cpput-vc6-rd'])
+#cpputtest_env.Append( CCFLAGS = ' -DCPPUT_DLL' )
+
+cpputtest_exe = env_testing.Program( target='cpputtest',
+                                     source=cpputtest_sources )
+
+#cpputtest_env.Depends( cpputtest_exe, '#libs/cpput-vc6-rd.lib' )
+
+
+# should not be
+bin_dir='#bin'
+
+env_testing.Install( bin_dir, cpputtest_exe )
+@
+
+
+1.8
+log
+@* moved texttestdriver.h class implementations into a .cpp
+@
+text
+@d17 1
+@
+
+
+1.7
+log
+@* added tests for ExceptionGuard.
+* fixed bug in ExceptionGuard::append()
+@
+text
+@d3 1
+a3 2
+Import( 'env' )
+env = env.Copy( LIBPATH = '#libs' )
+a18 1
+cpputtest_env = env.Copy(LIBS = ['cpput'])
+d22 2
+a23 2
+cpputtest_exe = cpputtest_env.Program( target='cpputtest',
+                                       source=cpputtest_sources )
+d31 1
+a31 1
+env.Install( bin_dir, cpputtest_exe )
+@
+
+
+1.6
+log
+@* ported the TestFixture tests back to the new framework architecture.
+@
+text
+@d12 2
+a13 1
+    testbasicassertion.cpp 
+@
+
+
+1.5
+log
+@* ported the Registry tests back to the new framework architecture.
+@
+text
+@d14 1
+a14 1
+    testfunctor3.cpp 
+@
+
+
+1.4
+log
+@* simpler implementation of functors.
+* complete rewrote of the generator (much easier to maintain)
+@
+text
+@d10 2
+a11 1
+    main.cpp 
+@
+
+
+1.3
+log
+@* scons can be used to build cppunit 2 using mingw
+@
+text
+@d13 1
+@
+
+
+1.2
+log
+@* clean up
+@
+text
+@d3 2
+a4 2
+Import( 'base_env' )
+env = base_env.Copy( LIBPATH = '#libs' )
+d7 7
+a13 11
+	assertenumtest.cpp
+	assertstringtest.cpp
+	enumeratortest.cpp
+    main.cpp
+    registrytest.cpp
+    testbasicassertion.cpp
+    testfixturetest.cpp
+    testfunctor.cpp
+    testresult.cpp
+    testtestcase.cpp
+    testtestcontext.cpp
+d15 1
+a15 1
+    """
+d17 1
+a17 1
+cpputtest_env = env.Copy(LIBS = ['cpput-vc6-rs'])
+d22 1
+a22 1
+                                       source=Split(cpputtest_sources) )
+@
+
+
+1.1
+log
+@* added very basic scons script
+@
+text
+@d1 2
+@
+

@@ -1,0 +1,288 @@
+head	1.7;
+access;
+symbols
+	REL_1_12_1:1.7
+	REL_1_11_6:1.7
+	REL_1_11_4:1.7
+	REL_1_11_0:1.6
+	TG_CPPUNIT_NO_STREAM_AFTER:1.6
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.6
+	REL_1_10_2:1.6
+	REL_1_10_0:1.6
+	REL_1_9_14:1.6
+	REL_1_9_12:1.6
+	BRANCH_1_9_12:1.6.0.4
+	TG_BRANCH_1_9_12:1.6
+	TG_BEFORE_HPUX_PLUGIN:1.6
+	TG_BEFORE_SUN4_PORT:1.6
+	REL_1_9_10:1.6
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.6
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.6
+	REL_1_9_6:1.6
+	REL_1_9_4:1.6
+	REL_1_9_0:1.6
+	REL_1_8_0:1.6
+	REL_1_7_8:1.6
+	REL_1_7_3:1.6
+	REL_1_7_1:1.6
+	REL_1_6_2:1.6
+	BRANCH_1_6:1.6.0.2
+	REL_1_6_1:1.6
+	REL_1_6_0:1.6
+	REL_1_5_5:1.3;
+locks; strict;
+comment	@// @;
+
+
+1.7
+date	2005.11.06.16.58.21;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.09.17.21.27.15;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.06.02.22.29.52;	author smr99;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.06.02.19.53.06;	author smr99;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.05.06.17.21.31;	author bastiaan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.28.14.27.24;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@* include/cppunit/config/SourcePrefix.h: disable warning #4996
+(sprintf is deprecated) for visual studio 2005.
+
+* include/cppunit/TestAssert.h: use sprintf_s instead of sprintf for
+visual studio 2005.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp
+* examples/DumperPlugIn/DumperPlugIn.cpp: use SourcePrefix.h. Fixed
+wrong macro usage to implement DllMain.
+
+* examples/msvc6/HostApp/ExamplesTestCase.h
+* examples/msvc6/HostApp/ExamplesTestCase.cpp
+* examples/simple/ExamplesTestCase.h
+* examples/simple/ExamplesTestCase.cpp: removed divideByZero test case
+as it cause some crash on some platforms.
+@
+text
+@#include "ExampleTestCase.h"
+
+CPPUNIT_TEST_SUITE_REGISTRATION( ExampleTestCase );
+
+void ExampleTestCase::example ()
+{
+	CPPUNIT_ASSERT_DOUBLES_EQUAL (1.0, 1.1, 0.05);
+	CPPUNIT_ASSERT (1 == 0);
+	CPPUNIT_ASSERT (1 == 1);
+}
+
+
+void ExampleTestCase::anotherExample ()
+{
+	CPPUNIT_ASSERT (1 == 2);
+}
+
+void ExampleTestCase::setUp ()
+{
+	m_value1 = 2.0;
+	m_value2 = 3.0;
+}
+
+void ExampleTestCase::testAdd ()
+{
+	double result = m_value1 + m_value2;
+	CPPUNIT_ASSERT (result == 6.0);
+}
+
+
+
+void ExampleTestCase::testEquals ()
+{
+    std::auto_ptr<long>	l1 (new long (12));
+    std::auto_ptr<long>	l2 (new long (12));
+
+    CPPUNIT_ASSERT_EQUAL (12, 12);
+    CPPUNIT_ASSERT_EQUAL (12L, 12L);
+    CPPUNIT_ASSERT_EQUAL (*l1, *l2);
+    
+	CPPUNIT_ASSERT (12L == 12L);
+	CPPUNIT_ASSERT_EQUAL (12, 13);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL (12.0, 11.99, 0.5);
+}
+@
+
+
+1.6
+log
+@* Makefile.am: Added INSTALL-WIN32.txt to EXTRA_DIST.
+
+* INSTALL-WIN32.txt: added, short documentation for CppUnit and VC++.
+
+* include/cppunit/extensions/HelperMacros.h: bug #448363, removed
+an extraneous ';' at the end of CPPUNIT_TEST_SUITE_END macro.
+
+* examples/cppunittest/TestCallerTest.cpp: bug #448332, fixed
+memory leaks.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp: change to define
+IDD to a dummy value when subclassing the dialog.
+
+* src/cppunit/cppunit.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* examples/cppunitttest/CppUnitTestMain.dsp:
+* examples/hierarchy.dsp:
+* examples/msvc6/TestPlugIn/TestPlugIn.dsp:
+* examples/msvc6/HostApp/HostApp.dsp: all configurations can be compiled.
+
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsw: added dependency to
+cppunit.dsp and TestRunner.dsp.
+@
+text
+@a30 6
+void ExampleTestCase::testDivideByZero ()
+{
+	int	zero	= 0;
+	int result	= 8 / zero;
+}
+
+@
+
+
+1.5
+log
+@Change to templatized TestAssert::assertEquals() and the new CPPUNIT_ASSERT* macros
+@
+text
+@a49 3
+
+
+
+@
+
+
+1.4
+log
+@Replace CU_ by CPPUNIT_.
+@
+text
+@d7 3
+a9 3
+	assertDoublesEqual (1.0, 1.1, 0.05);
+	assert (1 == 0);
+	assert (1 == 1);
+d15 1
+a15 1
+	assert (1 == 2);
+d27 1
+a27 1
+	assert (result == 6.0);
+d43 3
+a45 3
+    assertLongsEqual (12, 12);
+    assertLongsEqual (12L, 12L);
+    assertLongsEqual (*l1, *l2);
+d47 3
+a49 3
+	assert (12L == 12L);
+	assertLongsEqual (12, 13);
+	assertDoublesEqual (12.0, 11.99, 0.5);
+@
+
+
+1.3
+log
+@Removed unnecessary #include's of TestSuiteBuilder.h
+Removed RTTI dependent stuff from TestSuite and TestSuiteBuilder.
+@
+text
+@d3 1
+a3 1
+CU_TEST_SUITE_REGISTRATION( ExampleTestCase );
+@
+
+
+1.2
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@a0 2
+#include <cppunit/extensions/TestSuiteBuilder.h>
+
+a2 1
+
+a4 2
+
+
+d43 4
+a46 4
+	assertLongsEqual (12, 12);
+	assertLongsEqual (12L, 12L);
+	assertLongsEqual (*l1, *l2);
+
+@
+
+
+1.1
+log
+@Merged msvc6 specific TestRunner and example adapted from Michael Feathers
+version by Baptiste Lepilleur.
+@
+text
+@d1 3
+d6 1
+a6 1
+#include "ExampleTestCase.h"
+a57 14
+}
+
+
+
+CppUnit::Test *ExampleTestCase::suite ()
+{
+	CppUnit::TestSuite *testSuite = new CppUnit::TestSuite ("ExampleTestCase");
+
+	testSuite->addTest (new CppUnit::TestCaller <ExampleTestCase> ("anotherExample", anotherExample));
+    testSuite->addTest (new CppUnit::TestCaller <ExampleTestCase> ("testAdd", testAdd));
+    testSuite->addTest (new CppUnit::TestCaller <ExampleTestCase> ("testDivideByZero", testDivideByZero));
+    testSuite->addTest (new CppUnit::TestCaller <ExampleTestCase> ("testEquals", testEquals));
+
+	return testSuite;
+@
+

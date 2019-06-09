@@ -1,0 +1,766 @@
+head	1.5;
+access;
+symbols
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.4
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.4
+	TG_AFTER_REMOVING_TESTCONTEXT:1.3
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.3
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.3
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@# @;
+
+
+1.5
+date	2005.02.27.14.38.27;	author blep;	state dead;
+branches;
+next	1.4;
+
+1.4
+date	2005.02.23.21.34.53;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.11.17.08.59.34;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.27.23.49.48;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.35;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.35;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* changed cppunit 2 to use the new functors (cpptl/functor.h). bind_cfn & bind_memfn simplified some of the test code.
+@
+text
+@# script to generate functor.h
+
+max_arg_count = 2       # maximum number of arguments
+
+types_typedef_name = [ 'first', 'second', 'third' ]         # typedef name for argument types
+
+def getArgumentTypeName( index ):
+    return types_typedef_name[index] + '_argument_type'
+
+def getReturnType( has_return_type ):
+    return_type = 'void'
+    if has_return_type:
+        return_type = 'ReturnType'
+    return return_type
+
+def getReturnExpr( has_return_type ):
+    return_expr = ''
+    if has_return_type:
+        return_expr = 'return '
+    return return_expr
+
+def printArgTypes( out, types, has_return_type, indent = 3 ):
+    indent = ' ' * 3 * indent 
+    index = 0
+    for arg in types.types_pack:
+        print >> out, '%stypedef %s %s;' % ( indent, arg, getArgumentTypeName(index) )
+        index += 1
+    print >> out, '%stypedef %s result_type;' % ( indent, getReturnType(has_return_type) )
+
+def printDeducedArgTypes( out, types, has_return_type, indent = 3 ):
+    indent = ' ' * 3 * indent 
+    index = 0
+    for arg in types.types_pack:
+        print >> out, '%stypedef CPPTL_TYPENAME FunctorType::%s %s;' % ( indent,
+                                                                                 getArgumentTypeName(index),
+                                                                                 getArgumentTypeName(index) )
+        index += 1
+    print >> out, '%stypedef %s result_type;' % ( indent, getReturnType(has_return_type) )
+
+def getSuffix( arg_count, has_return_type ):
+    name = ''
+    if has_return_type:
+        name += 'R'
+    name += str(arg_count)
+    return name
+
+def printImplFunctorBase( out,
+                      functor_base_name,
+                      template_type_list,
+                      parameter_type_list,
+                      return_type ):
+    if len(template_type_list):
+        print >> out, '      template <' + template_type_list + '>'
+    print >> out, """      class %s
+      {
+      public:
+      """ % functor_base_name
+    print >> out, """         typedef %s result_type;
+
+         virtual ~%s()
+         {
+         }
+
+         virtual %s operator()( %s ) = 0;
+      };
+      """ % ( return_type,
+              functor_base_name,
+              return_type,
+              parameter_type_list )
+
+def printImplFunctor( out,
+                      base_name,
+                      name,
+                      types,
+                      has_return_type ):
+    if has_return_type:
+        print >> out, '      template <' + types.getReturnFunctorTemplateDecl() + '>'
+    else:
+        print >> out, '      template <' + types.getFunctorTemplateDecl() + '>'
+    base_instantiate = ''
+    print >> out, """      class %s : public %s<%s>
+      {
+      public:""" % ( name,
+                     base_name,
+                    types.getReturnBaseTemplateInstantiation( has_return_type ) )
+
+    printArgTypes( out, types, has_return_type )
+
+    print >> out, """
+         %s( FunctorType functor )
+            : functor_( functor )
+         {
+         }
+
+         %s operator()(%s)
+         {
+            %sfunctor_(%s);
+         }
+         
+      private:
+         FunctorType functor_;
+      };
+      """ % ( name,
+              getReturnType(has_return_type),
+              types.getParametersDecl(),
+              getReturnExpr(has_return_type),
+              types.getParameters() )
+
+def printImplMemFn( out,
+                    base_name,
+                    name,
+                    types,
+                    has_return_type ):
+    if has_return_type:
+        print >> out, '      template <' + types.getReturnMemFnTemplateDecl() + '>'
+    else:
+        print >> out, '      template <' + types.getMemFnTemplateDecl() + '>'
+    base_instantiate = ''
+    print >> out, """      class %s
+      {
+      public:""" % name
+
+    printArgTypes( out, types, has_return_type )
+
+    print >> out, """
+         %s( const ObjectPtrType &object,
+               %s (ObjectType::*method)(%s) )
+            : object_( object )
+            , method_( method )
+         {
+         }
+
+         %s operator()(%s)
+         {
+            ObjectType *object = &*object_;
+            %s(object->*method_)(%s);
+         }
+         
+      private:
+         ObjectPtrType object_;
+         %s (ObjectType::*method_)(%s);
+      };
+      """ % ( name,
+              getReturnType(has_return_type),
+              types.getParametersDecl(),
+              getReturnType(has_return_type),
+              types.getParametersDecl(),
+              getReturnExpr(has_return_type),
+              types.getParameters(),
+              getReturnType(has_return_type),
+              types.getParametersDecl() )
+
+def printImplBind( out, types, has_return_type ):
+    if len( types.types ) == 0:
+        return
+    suffix = getSuffix( len(types.types), has_return_type )
+    print >> out, """      template<class ReturnType, class FunctorType, class BindArgType>
+      class Bind%s
+      {
+      public:""" % suffix
+
+    new_types = TypeList( len(types.types) - 1 )
+    printDeducedArgTypes( out, new_types, has_return_type )
+    forwarded_args = new_types.getParameters()
+    if len(forwarded_args):
+        forwarded_args += ', '
+
+    print >> out, """
+         Bind%s( FunctorType functor, BindArgType arg )
+            : functor_( functor )
+            , arg_( arg )
+         {
+         }
+
+         %s operator()(%s)
+         {
+            %sfunctor_(%sarg_);
+         }
+      private:
+         FunctorType functor_;
+         BindArgType arg_;
+      };
+      """ % ( suffix,
+              getReturnType( has_return_type ),
+              new_types.getBindParametersDecl(),
+              getReturnExpr( has_return_type ),
+              forwarded_args )
+
+            
+def printFunctor( out,
+                  impl_base_name,
+                  name,
+                  types,
+                  has_return_type ):
+    if has_return_type:
+        print >> out, '   template <' + types.getReturnBaseTemplateDecl() + '>'
+    elif len(types.types):
+        print >> out, '   template <' + types.getBaseTemplateDecl() + '>'
+    base_instantiate = ''
+    print >> out, """   class %s
+   {
+   public:""" % name
+
+    printArgTypes( out, types, has_return_type, 2 )
+
+    impl_type = 'Impl::%s<%s>' % (impl_base_name, types.getReturnBaseTemplateInstantiation(has_return_type))
+    deduced_typename = ''
+    if len(types.types) > 0 or has_return_type:
+        deduced_typename = 'CPPTL_TYPENAME '
+    print >> out, """
+      explicit %s( %s *impl = 0 )
+         : impl_( impl )
+      {
+      }
+
+      %s operator()(%s)
+      {
+         %s(*impl_)(%s);
+      }
+
+      operator bool() const
+      {
+         return impl_.get() != 0;   
+      }
+      
+      bool operator !() const
+      {
+         return impl_.get() == 0;
+      }
+         
+   private:
+      %sCppTL::SharedPtr< %s > impl_;
+   };
+""" % ( name,
+        impl_type,
+        getReturnType(has_return_type),
+        types.getParametersDecl(),
+        getReturnExpr(has_return_type),
+        types.getParameters(),
+        deduced_typename,
+        impl_type )
+
+def printFnGenerator( out, arg_count, types, has_return_type ):
+    template_params = ['class FunctorType']
+    impl_template_params = ['FunctorType']
+    functor_type = []
+    if has_return_type:
+        template_params.insert( 0, 'class ReturnType' )
+        impl_template_params.append( 'ReturnType' )
+        functor_type.append( 'ReturnType' )
+    template_decl = ', '.join( template_params )
+    for index in xrange(0,len(types.types)):
+        arg_type = 'CPPTL_TYPENAME FunctorType::%s' % getArgumentTypeName(index)
+        impl_template_params.append( arg_type )
+        functor_type.append( arg_type )
+    impl_template_params = ',\n                    '.join( impl_template_params )
+    suffix = getSuffix( arg_count, has_return_type )
+    functor_type = '<' + ',\n            '.join( functor_type ) + '>'
+    if len(functor_type) == 2:
+        functor_type = ''
+    functor_type = 'Functor' + suffix + functor_type
+    print >> out, """   template<%s>
+   %s
+   makeFn%s( FunctorType functor )
+   {
+      return %s(
+                new Impl::Functor%s<%s>( functor ) );
+   }
+   """ % ( template_decl,
+           functor_type,
+           suffix,
+           functor_type,
+           suffix,
+           impl_template_params )
+
+def printMemFnGenerator( out, arg_count, types, has_return_type, ptr_type ):
+    template_params = ['class ObjectType']
+    basic_ptr_type = ptr_type
+    if ptr_type.count( 'shared_ptr' ):
+        basic_ptr_type = 'CppTL::SharedPtr<ObjectType>'
+    impl_template_params = ['ObjectType', basic_ptr_type]
+    makefn_template_params = ''
+    functor_template_params = types.getFunctionTemplateInstantiation( has_return_type )
+    if len(functor_template_params):
+        functor_template_params = '<' + functor_template_params + '>'
+    if has_return_type:
+        makefn_template_params = '<ReturnType>'
+        template_params.insert( 0, 'class ReturnType' )
+        impl_template_params.append( 'ReturnType' )
+    template_params.extend( types.types )
+    impl_template_params.extend( types.types_pack )
+    template_decl = ', '.join( template_params )
+    impl_template_params = ', '.join( impl_template_params )
+    suffix = getSuffix( arg_count, has_return_type )
+    print >> out, """   template<%s>
+   Functor%s%s
+   makeMemFn%s( %s object,
+                %s (ObjectType::*method)(%s) )
+   {
+      return makeFn%s%s( Impl::MemFn%s< %s >( object, method ) );
+   }
+   """ % ( template_decl,
+           suffix,
+           functor_template_params,
+           suffix,
+           ptr_type,
+           getReturnType(has_return_type),
+           types.getParametersDecl(),
+           suffix,
+           makefn_template_params,
+           suffix,
+           impl_template_params )
+
+def printBindGenerator( out, types, has_return_type ):
+    if len(types.types) == 0:
+        return
+    suffix = getSuffix( len(types.types), has_return_type )
+    new_suffix = getSuffix( len(types.types) - 1, has_return_type )
+    template_decl = 'class FunctorType, class ArgType'
+    result_type = 'CPPTL_TYPENAME FunctorType::result_type'
+    impl_template_params = result_type + ', FunctorType, ArgType'
+    makefn_template_params = ''
+    functor_template_params = []
+    for index in xrange(0,len(types.types) - 1):
+        functor_template_params.append( 'CPPTL_TYPENAME FunctorType::%s' % getArgumentTypeName(index) )
+    if has_return_type:
+        makefn_template_params = '<CPPTL_TYPENAME FunctorType::result_type>'
+        functor_template_params.insert(0, result_type )
+    functor_template_params = ',\n         '.join( functor_template_params )
+    if len(functor_template_params):
+        functor_template_params = '<' + functor_template_params + '>'
+    print >> out, """   template<%s>
+   Functor%s%s
+   bind%s( FunctorType functor, ArgType arg )
+   {
+      return makeFn%s%s(
+                Impl::Bind%s<%s>(
+                         functor, arg ) );
+   }
+""" % ( template_decl,
+        new_suffix,
+        functor_template_params,
+        suffix,
+        new_suffix,
+        makefn_template_params,
+        suffix,
+        impl_template_params )
+
+
+def printCFnGenerator( out, types, has_return_type ):
+    suffix = getSuffix( len(types.types), has_return_type )
+    template_decl = []
+    template_decl.extend( types.types )
+    functor_template_params = []
+    functor_template_params.extend( types.types_pack )
+    functor_impl_template_params = [ 'FunctionType' ]
+    if has_return_type:
+        template_decl.insert( 0, 'class ReturnType' )
+        functor_template_params.insert( 0, 'ReturnType' )
+        functor_impl_template_params.append( 'ReturnType' )
+    functor_impl_template_params.extend( types.types_pack )
+    functor_impl_template_params = ', '.join( functor_impl_template_params )
+    template_decl = ', '.join( template_decl )
+    if len(template_decl):
+        print >> out, '   template <%s>' % template_decl
+    functor_template_params = ', '.join( functor_template_params )
+    if len(functor_template_params):
+        functor_template_params = '<' + functor_template_params + '>'
+    print >> out, """   inline Functor%s%s
+   makeCFn%s( %s (*function)(%s) )
+   {
+      typedef %s (*FunctionType)(%s);
+      return Functor%s%s(
+                   new Impl::Functor%s<%s>( function ) );
+   }
+   """ % ( suffix,
+           functor_template_params,
+           suffix,
+           getReturnType(has_return_type),
+           types.getParametersDecl(),
+           getReturnType(has_return_type),
+           types.getParametersDecl(),
+           suffix,
+           functor_template_params,
+           suffix,
+           functor_impl_template_params )
+
+
+##   template<class FunctorType, class Arg1Type>
+##   Functor0 bind( FunctorType functor, Arg1Type arg1 )
+##   {
+##      return bind1( functor, arg1 );
+##   }
+##
+##   template<class FunctorType, class Arg1Type, class Arg2Type>
+##   Functor0 bind( FunctorType functor, Arg1Type arg1, Arg2Type arg2 )
+##   {
+##      return bind1( bind2( functor, arg2 ), arg1 );
+##   }
+
+def printBindRecurse( out, level, types ):
+    if level > len(types.types):
+        out.write( 'functor' )
+    else:
+        out.write( 'bind%d( ' % level )
+        printBindRecurse( out, level+1, types )
+        out.write( ', arg%d )' % level )
+        
+
+def printMultipleBindGenerator( out, types, has_return_type ):
+    template_decl = [ 'class FunctorType' ]
+    template_decl.extend( types.types )
+    template_decl = ', '.join( template_decl )
+
+    print >> out, """    
+   template<%s>
+   Functor0 bind( FunctorType functor, %s )
+   {
+      return """ % ( template_decl,
+           types.getParametersDecl() ),
+
+    printBindRecurse( out, 1, types )
+    print >> out, """;
+   }"""
+
+
+
+class TypeList:
+    def __init__( self, arg_count ):
+        arg_count += 1 # for xrange
+        self.types = [ 'class Arg%dType' % index for index in xrange(1,arg_count) ]
+        self.types_pack = [ 'Arg%dType' % index for index in xrange(1,arg_count) ]
+        self.args_decl = [ 'Arg%dType arg%d' % (index,index) for index in xrange(1,arg_count) ]
+        self.args = [ 'arg%d' % index for index in xrange(1,arg_count) ]
+
+    def getBaseTemplateDecl( self ):
+        return self._makeTemplateTypeList( *self.types )
+
+    def getReturnBaseTemplateDecl( self ):
+        return self._makeTemplateTypeList( 'class ReturnType', *self.types )
+
+    def getReturnBaseTemplateInstantiation( self, has_return_type ):
+        return self._makeTemplateTypeList( getReturnType(has_return_type), *self.types_pack )
+
+    def getFunctionTemplateInstantiation( self, has_return_type ):
+        if has_return_type:
+            return self._makeTemplateTypeList( getReturnType(has_return_type), *self.types_pack )
+        return self._makeTemplateTypeList( *self.types_pack )
+
+    def getFunctorTemplateDecl( self ):
+        return self._makeTemplateTypeList( 'class FunctorType', *self.types )
+
+    def getMemFnTemplateDecl( self ):
+        return self._makeTemplateTypeList( 'class ObjectType',
+                                           'class ObjectPtrType',
+                                           *self.types )
+
+    def getReturnFunctorTemplateDecl( self ):
+        return self._makeTemplateTypeList( 'class FunctorType',
+                                           'class ReturnType',
+                                           *self.types )
+
+    def getReturnMemFnTemplateDecl( self ):
+        return self._makeTemplateTypeList( 'class ObjectType',
+                                           'class ObjectPtrType',
+                                           'class ReturnType',
+                                           *self.types )
+
+    def getParametersDecl( self ):
+        return ', '.join( self.args_decl )
+
+    def getBindParametersDecl( self ):
+        params = []
+        for index in xrange(0,len(self.types)):
+            params.append( '%s arg%d' % ( getArgumentTypeName(index), index+1 ) )
+        return ', '.join( params )
+
+    def getParameters( self ):
+        return ', '.join( self.args )
+
+    def _makeTemplateTypeList( self, *types ):
+        return ', '.join( types )
+
+
+out = file( 'functor.h', 'wt' )
+print >>out, """#ifndef CPPUT_FUNCTOR_H_INCLUDED
+# define CPPUT_FUNCTOR_H_INCLUDED
+
+// File generated using functor.py. DO NOT EDIT.
+
+# include <cpptl/sharedptr.h>
+
+namespace CppUT {
+
+   // Partially borrowed from the standard
+   // See: 
+   // N1453: http://std.dkuug.dk/jtc1/sc22/wg21/docs/papers/2003/n1453.html
+   template<class T>
+   class ReferenceWrapper
+   {
+   public:
+      explicit ReferenceWrapper( T &t ) : t_( &t )
+      {
+      }
+
+      operator T&() const
+      {
+         return *t_;
+      }
+
+   private:
+      T *t_;
+   };
+
+   template<class T>
+   inline ReferenceWrapper<T> 
+   ref( T &t )
+   {
+      return ReferenceWrapper<T>( t );
+   }
+
+   template<class T>
+   inline ReferenceWrapper<const T>
+   cref( const T& t )
+   {
+      return ReferenceWrapper<const T>( t );
+   }
+
+   namespace Impl {
+"""
+
+for arg_count in xrange(0,max_arg_count+1):
+    print >> out
+    print >> out
+    types = TypeList( arg_count )
+    functor_base_name = 'Functor%dBase' % arg_count
+    printImplFunctorBase( out,
+                      functor_base_name,
+                      types.getReturnBaseTemplateDecl(),
+                      types.getParametersDecl(),
+                      'ReturnType' )
+    functor_name = 'Functor%d' % arg_count
+    printImplFunctor( out,
+                      functor_base_name,
+                      functor_name,
+                      types,
+                      False )
+    return_functor_name = 'FunctorR%d' % arg_count
+    printImplFunctor( out,
+                      functor_base_name,
+                      return_functor_name,
+                      types,
+                      True )
+    printImplMemFn( out,
+                    functor_base_name,
+                    'MemFn%d' % arg_count,
+                    types,
+                    False )
+    printImplMemFn( out,
+                    functor_base_name,
+                    'MemFnR%d' % arg_count,
+                    types,
+                    True )
+
+    printImplBind( out, types, False )
+    printImplBind( out, types, True )
+
+print >> out, """
+   } // namespace Impl
+"""
+
+for  arg_count in xrange(0,max_arg_count+1):
+    print >> out
+    print >> out
+    types = TypeList( arg_count )
+    impl_base_name = 'Functor%dBase' % arg_count
+    printFunctor( out,
+                  impl_base_name,
+                  'Functor%d' % arg_count,
+                  types,
+                  False )
+    printFunctor( out,
+                  impl_base_name,
+                  'FunctorR%d' % arg_count,
+                  types,
+                  True )
+
+#makeFn0: generator Functor0 for a functor
+#makeFnR0: generator Functor0R for a functor
+#makeCFn0: generator Functor0 for a c function
+#makeCFnR0: generator Functor0R for a c function
+#makeMemFn0: generator Functor0 for a member function (ptr, method)
+#makeMemFnR0: generator Functor0R for a member function (ptr, method)
+
+for arg_count in xrange(0,max_arg_count+1):
+    print >> out
+    types = TypeList( arg_count )
+    printFnGenerator( out, arg_count, types, False )
+    printFnGenerator( out, arg_count, types, True )
+    printCFnGenerator( out, types, False )
+    printCFnGenerator( out, types, True )
+    printMemFnGenerator( out, arg_count, types, False, 'ObjectType *' )
+    printMemFnGenerator( out, arg_count, types, False, 'CppTL::SharedPtr<ObjectType>' )
+    printMemFnGenerator( out, arg_count, types, True, 'ObjectType *' )
+    printMemFnGenerator( out, arg_count, types, True, 'CppTL::SharedPtr<ObjectType>' )
+    printBindGenerator( out, types, False )
+    printBindGenerator( out, types, True )
+
+for arg_count in xrange(1,max_arg_count+1):
+    types = TypeList( arg_count )
+    printMultipleBindGenerator( out, types, False )    
+#    printMultipleBindGenerator( out, types, True )
+
+print >> out, """
+} //namespace CppUT
+
+#endif // CPPUT_FUNCTOR_H_INCLUDED
+"""
+   
+out.close()    @
+
+
+1.4
+log
+@* fixed generator: should use CPPTL_TYPENAME instead of CPPUT_DEDUCED_TYPENAME
+@
+text
+@@
+
+
+1.3
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@d34 1
+a34 1
+        print >> out, '%stypedef CPPUT_DEDUCED_TYPENAME FunctorType::%s %s;' % ( indent,
+d209 1
+a209 1
+        deduced_typename = 'CPPUT_DEDUCED_TYPENAME '
+d253 1
+a253 1
+        arg_type = 'CPPUT_DEDUCED_TYPENAME FunctorType::%s' % getArgumentTypeName(index)
+d320 1
+a320 1
+    result_type = 'CPPUT_DEDUCED_TYPENAME FunctorType::result_type'
+d325 1
+a325 1
+        functor_template_params.append( 'CPPUT_DEDUCED_TYPENAME FunctorType::%s' % getArgumentTypeName(index) )
+d327 1
+a327 1
+        makefn_template_params = '<CPPUT_DEDUCED_TYPENAME FunctorType::result_type>'
+@
+
+
+1.2
+log
+@* updated functor.h generation script
+@
+text
+@d232 1
+a232 1
+      %sSmartPtr< %s > impl_;
+d280 1
+a280 1
+        basic_ptr_type = 'SmartPtr<ObjectType>'
+d491 1
+a491 1
+# include <cpput/smartptr.h>
+d603 1
+a603 1
+    printMemFnGenerator( out, arg_count, types, False, 'SmartPtr<ObjectType>' )
+d605 1
+a605 1
+    printMemFnGenerator( out, arg_count, types, True, 'SmartPtr<ObjectType>' )
+d617 1
+a617 1
+#endif CPPUT_FUNCTOR_H_INCLUDED
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d232 1
+a232 1
+      %sSmartPtr< %s >::Ptr impl_;
+d280 1
+a280 1
+        basic_ptr_type = 'boost::shared_ptr<ObjectType>'
+a490 1
+# include <cpput/config.h>
+d603 1
+a603 1
+    printMemFnGenerator( out, arg_count, types, False, 'const boost::shared_ptr<ObjectType> &' )
+d605 1
+a605 1
+    printMemFnGenerator( out, arg_count, types, True, 'const boost::shared_ptr<ObjectType> &' )
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

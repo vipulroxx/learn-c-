@@ -1,0 +1,1570 @@
+head	1.23;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.21
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.8
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.7
+	TG_AFTER_REMOVING_TESTCONTEXT:1.6
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.23
+date	2008.07.13.08.19.20;	author blep;	state Exp;
+branches;
+next	1.22;
+
+1.22
+date	2007.08.14.17.30.52;	author blep;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2006.06.05.13.22.58;	author blep;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2005.11.11.20.54.15;	author blep;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2005.11.09.20.04.06;	author blep;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2005.11.08.21.44.55;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2005.11.08.20.25.49;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2005.11.07.22.43.08;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2005.08.11.07.18.24;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2005.08.10.21.34.29;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2005.08.10.07.42.52;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2005.08.08.22.10.21;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2005.07.02.20.27.36;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2005.03.06.18.49.59;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.03.01.19.36.51;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.02.27.10.17.05;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2004.11.21.22.22.24;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.11.20.15.47.15;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.11.20.15.07.00;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.11.20.12.17.51;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.11.19.23.05.21;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.11.19.21.39.14;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.11.18.09.20.33;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.23
+log
+@- Added core framework for resource handling to test case, resource registry and test info. Not integrated with the test runner and no unit tests yet.
+@
+text
+@#include <cpput/testinfo.h>
+#include <cpput/resource.h>
+#include <cpptl/stringtools.h>
+#include <cpptl/thread.h>
+
+namespace CppUT {
+
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Class AssertionTrigger
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+namespace Impl {
+   AssertionTrigger AssertionTrigger::aborting;
+   AssertionTrigger AssertionTrigger::checking;
+
+   AssertionTrigger &
+   AssertionTrigger::operator +=( const CheckerFileLocation &fileLocation )
+   {
+      const char *file = fileLocation.file_;
+      unsigned int line = fileLocation.lineData_->line_;
+      const CheckerResult &result = *(fileLocation.lineData_->result_);
+      TestInfo::threadInstance().handleAssertion( file, line, result, this == &aborting );
+      return *this;
+   }
+} // end namespace Impl
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Class Assertion
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+
+Assertion::Assertion( Kind kind,
+                      const SourceLocation &sourceLocation )
+   : kind_( kind )
+   , location_( sourceLocation )
+   , isIgnoredFailure_( false )
+{
+}
+
+
+void 
+Assertion::setLocation( const SourceLocation &location )
+{
+   location_ = location;
+}
+
+
+const SourceLocation &
+Assertion::location() const
+{
+   return location_;
+}
+
+
+void 
+Assertion::setKind( Kind kind )
+{
+   kind_ = kind;
+}
+
+
+Assertion::Kind
+Assertion::kind() const
+{
+   return kind_;
+}
+
+
+void 
+Assertion::setIgnoredFailure()
+{
+   isIgnoredFailure_ = true;
+}
+
+bool 
+Assertion::isIgnoredFailure() const
+{
+   return isIgnoredFailure_;
+}
+
+
+void 
+Assertion::setMessages( const Message &messages )
+{
+   messages_ = messages;
+}
+
+
+const Message &
+Assertion::messages() const
+{
+   return messages_;
+}
+
+
+void 
+Assertion::setTestDataType( const std::string &type )
+{
+   testDataType_ = type;
+}
+
+
+std::string
+Assertion::testDataType() const
+{
+   return testDataType_.str();
+}
+
+
+void 
+Assertion::setTestData( const std::string &name,
+                        const Json::Value &value,
+                        const std::string &type )
+{
+   testData_["name"]["type"] = type;
+   testData_["name"]["value"] = value;
+}
+
+
+const Json::Value &
+Assertion::testData() const
+{
+   return testData_;
+}
+
+
+std::string
+Assertion::toString() const
+{
+   CppTL::StringBuffer buffer;
+   buffer += "* ";
+   if ( location().isValid() )
+   {
+      buffer += location().file_;
+      buffer += "(" + CppTL::toString( location().line_ ) + ") : ";
+   }
+   else
+      buffer += "unknwon failure location : ";
+
+   CppTL::ConstString failureType = kind() == fault ? "fault" 
+                                                    : "assertion";
+   buffer += "[failure type: " + failureType + "]\n";
+   if ( !messages().empty() )
+      buffer += "Messages:\n" + messages().toString();
+   if ( !testDataType().empty() )
+   {
+      buffer += "Test data type: " + testDataType() + "\n";
+      buffer += testData_.toStyledString() + "\n";
+   }
+   return buffer.c_str();
+}
+
+
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Class TestStatus
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+TestStatus::TestStatus( Status status )
+   : status_( status )
+   , assertionCount_( 0 )
+   , failedAssertionCount_( 0 )
+   , ignoredFailureCount_( 0 )
+{
+}
+
+void 
+TestStatus::setStatus( Status status )
+{
+   status_ = status;
+}
+
+TestStatus::Status 
+TestStatus::status() const
+{
+   return status_;
+}
+
+bool 
+TestStatus::hasFailed() const
+{
+   return status_ == failed;
+}
+
+bool 
+TestStatus::hasPassed() const
+{
+   return status_ == passed;
+}
+
+bool 
+TestStatus::wasSkipped() const
+{
+   return status_ == skipped;
+}
+
+void 
+TestStatus::setStatistics( const std::string &name,
+                           const Json::Value &value )
+{
+   statistics_[name] = value;
+}
+
+
+//Json::Value 
+//TestStatus::getStatistics( const CppTL::ConstString &name )
+//{
+//}
+
+void 
+TestStatus::addSpecific( const std::string &type,
+                         const Json::Value &value )
+{
+   specifics_[type] = value;
+}
+
+int 
+TestStatus::assertionCount() const
+{
+   return assertionCount_;
+}
+
+int 
+TestStatus::failedAssertionCount() const
+{
+   return failedAssertionCount_;
+}
+
+int 
+TestStatus::ignoredFailureCount() const
+{
+   return ignoredFailureCount_;
+}
+
+void 
+TestStatus::increaseAssertionCount( int delta )
+{
+   assertionCount_ += delta;
+}
+
+void 
+TestStatus::increaseFailedAssertionCount( int delta )
+{
+   failedAssertionCount_ += delta;
+   if ( failedAssertionCount_ > 0  &&  status_ != failed )
+      status_ = failed;
+}
+
+void 
+TestStatus::increaseIgnoredFailureCount( int delta )
+{
+   ignoredFailureCount_ += delta;
+}
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Class TestInfo
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+
+static CppTL::ThreadLocalStorage<TestInfoPtr> perThreadStaticData;
+
+TestInfo &
+TestInfo::threadInstance()
+{
+   TestInfoPtr &data = perThreadStaticData.get();
+   if ( !data )
+      data.reset( new TestInfo() );
+   return *data;
+}
+
+   
+TestInfo::TestInfo()
+   : assertionType_( abortingAssertion )
+   , updater_( 0 )
+{
+}
+
+
+void 
+TestInfo::setTestResultUpdater( TestResultUpdater &updater )
+{
+   updater_ = &updater;
+}
+
+
+void 
+TestInfo::removeTestResultUpdater()
+{
+   updater_ = 0;
+}
+
+void 
+TestInfo::startNewTest()
+{
+   testStatus_ = TestStatus( TestStatus::passed );
+   assertionType_ = abortingAssertion;
+   resources_.clear();
+}
+
+
+void 
+TestInfo::addResource( const AcquiredResourceHandlePtr &resource )
+{
+   resources_.insert( Resources::value_type( resource->name(), resource ) );
+}
+
+void 
+TestInfo::discardTestResources()
+{
+   Resources resources;
+   resources.swap( resources_ ); // releases resource once exiting this function
+
+   // tear down each resource
+   Resources::iterator itEnd = resources.end();
+   for ( Resources::iterator it = resources.begin(); it != itEnd; ++it )
+   {
+      AcquiredResourceHandlePtr &resource = it->second;
+      try
+      {
+         // Assertions are allowed in tearDown Ignore them as they have
+         // already been handled.
+         resource->tearDown(); 
+      }
+      catch ( const AbortingAssertionException & )
+      {
+      }
+      catch ( const SkipTestException & )
+      {
+      }
+   }
+}
+
+
+Resource &
+TestInfo::getResource( const ResourceName &name )
+{
+   Resources::iterator it = resources_.find( name );
+   if ( it == resources_.end() )
+   {
+      // @@todo check that resource name is correctly reported in failure message
+      testStatus_.setStatus( TestStatus::failed );
+      throw UndeclaredResourceException( name.c_str() );
+   }
+   AcquiredResourceHandlePtr &resource = it->second;
+   return resource->resource();
+}
+
+
+TestStatus &
+TestInfo::testStatus()
+{
+   return testStatus_;
+}
+
+
+void 
+TestInfo::handleAssertion( const char *file, 
+                           unsigned int line, 
+                           const CheckerResult &result,
+                           bool isAbortingAssertion )
+{
+   switch ( result.status_ )
+   {
+   case TestStatus::passed:   // do nothing (assertion count increased)
+      testStatus_.increaseAssertionCount();
+      break;
+   case TestStatus::failed:
+      {
+         testStatus_.increaseAssertionCount();
+         testStatus_.increaseFailedAssertionCount();
+
+         Assertion assertion( Assertion::assertion, SourceLocation( file, line ) );
+         assertion.setMessages( result.message_ );
+         if ( updater_ )
+            updater_->addResultAssertion( assertion );
+
+         if ( isAbortingAssertion )
+         {
+            std::string message;
+            if ( abortingAssertionMode_ != fastAbortingAssertion )
+               message = assertion.toString().c_str();
+            throw AbortingAssertionException( message );
+         }
+      }
+      break;
+   case TestStatus::skipped:
+      // @@todo handle this correctly.
+      break;
+   default:
+      CPPTL_DEBUG_ASSERT_UNREACHABLE;
+   }
+}
+
+
+void 
+TestInfo::handleUnexpectedException( const Assertion &fault )
+{
+   if ( updater_ )
+      updater_->addResultAssertion( fault );
+   testStatus_.setStatus( TestStatus::failed );
+}
+
+
+void 
+TestInfo::setAbortingAssertionMode( AbortingAssertionMode mode )
+{
+   abortingAssertionMode_ = mode;
+}
+
+
+void 
+TestInfo::log( const Json::Value &log )
+{
+   if ( updater_ )
+      updater_->addResultLog( log );
+}
+
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Class ScopedContextOverride
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+
+TestInfo::ScopedContextOverride::ScopedContextOverride()
+   : context_( perThreadStaticData.get() )
+{
+   perThreadStaticData.get().reset( new TestInfo() );
+}
+
+TestInfo::ScopedContextOverride::~ScopedContextOverride()
+{
+   perThreadStaticData = context_;
+}
+
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Class IgnoreFailureScopedContextOverride
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+
+TestInfo::IgnoreFailureScopedContextOverride::IgnoreFailureScopedContextOverride( 
+                                                   bool &assertionFailed )
+   : assertionFailed_( assertionFailed )
+   , assertion_( 0 )
+{
+   assertionFailed_ = false;
+   TestInfo::threadInstance().setTestResultUpdater( *this );
+}
+
+TestInfo::IgnoreFailureScopedContextOverride::~IgnoreFailureScopedContextOverride()
+{
+   TestStatus &testStatus = TestInfo::threadInstance().testStatus();
+   assertionFailed_ = !testStatus.hasPassed();
+   if ( assertionFailed_ )
+   {
+      context_->testStatus().increaseIgnoredFailureCount( testStatus.failedAssertionCount() );
+      if ( assertion_  &&  context_->updater_ )
+      {
+         perThreadStaticData = context_;     // restore context before calling callback
+         assertion_->setIgnoredFailure();
+         context_->updater_->addResultAssertion( *assertion_ );
+      }
+   }
+   delete assertion_;
+}
+
+void 
+TestInfo::IgnoreFailureScopedContextOverride::addResultLog( const Json::Value &log )
+{
+}
+
+
+void 
+TestInfo::IgnoreFailureScopedContextOverride::addResultAssertion( const Assertion &assertion )
+{
+   if ( !assertion_ )
+      assertion_ = new Assertion( assertion );
+}
+
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Short-hand functions in namespace CppUT
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+
+Resource &getResource( const ResourceName &name )
+{
+   return TestInfo::threadInstance().getResource( name );
+}
+
+
+void log( const Json::Value &log )
+{
+   TestInfo::threadInstance().log( log );
+}
+
+void log( const std::string &log )
+{
+   TestInfo::threadInstance().log( log );
+}
+
+void log( const char *log )
+{
+   TestInfo::threadInstance().log( log );
+}
+
+void log( const CppTL::ConstString &log )
+{
+   TestInfo::threadInstance().log( log.c_str() );
+}
+
+
+
+} // namespace CppUT
+@
+
+
+1.22
+log
+@   Modified assertion implementation to force evaluation of user
+condition expression first, while preserving delegation to
+function, overloading and optional parameters feature.
+   See CPPUT_BEGIN_ASSERTION_MACRO() documentation in testinfo.h for an example
+to update your custom assertion code.
+
+   New implementation rely on operator evaluation order and operator overloading. The trick is documented in CPPUT_BEGIN_ASSERTION_MACRO().
+@
+text
+@d2 1
+d302 49
+d494 5
+@
+
+
+1.21
+log
+@- synchronized with lastest jsoncpp.
+@
+text
+@d7 21
+a299 1
+   currentAssertion_ = Assertion();
+d312 4
+a315 4
+TestInfo::newAssertion( AssertionType type,
+                        const char *fileName,
+                        unsigned int lineNumber,
+                        const char *functionName )
+d317 9
+a325 7
+   currentAssertion_ = Assertion( Assertion::assertion, 
+                                  SourceLocation( fileName,
+                                                  lineNumber,
+                                                  functionName ) );
+   testStatus_.increaseAssertionCount();
+   assertionType_ = type;
+}
+d327 19
+a345 22
+
+Assertion &
+TestInfo::currentAssertion()
+{
+   return currentAssertion_;
+}
+
+
+void 
+TestInfo::realizeAssertion()
+{
+   testStatus_.increaseFailedAssertionCount();
+
+   if ( updater_ )
+      updater_->addResultAssertion( currentAssertion_ );
+
+   if ( assertionType_ == abortingAssertion )
+   {
+      std::string message;
+      if ( abortingAssertionMode_ != fastAbortingAssertion )
+         message = currentAssertion_.toString().c_str();
+      throw AbortingAssertionException( message );
+a444 22
+//void newAssertion( AssertionType type,
+//                     const char *fileName,
+//                     unsigned int lineNumber,
+//                     const char *functionName )
+//{
+//   TestInfo::data().newAssertion( type, fileName, lineNumber, functionName );
+//}
+
+
+Assertion &
+currentAssertion()
+{
+   return TestInfo::threadInstance().currentAssertion();
+}
+
+
+void realizeAssertion()
+{
+   TestInfo::threadInstance().realizeAssertion();
+}
+
+
+@
+
+
+1.20
+log
+@- added unit tests for TestInfo
+- fixed bug in CPPUT_IGNORE_FAILURE and exception guard.
+- added 'isIgnoredFailure' to Assertion.
+- lighttestrunner now print ignored failure and skipped tests.
+@
+text
+@d465 1
+a465 1
+   TestInfo::threadInstance().log( log );
+@
+
+
+1.19
+log
+@- added CPPUT_SKIP_TEST to skip the current test
+- added CPPUT_IGNORE_FAILURE( assertion ) to ignore a failure caused by an assertion, but count the failed assertion
+@
+text
+@d17 1
+d51 13
+d143 3
+d199 38
+a256 3
+   , assertionCount_( 0 )
+   , failedAssertionCount_( 0 )
+   , ignoredAssertionCount_( 0 )
+d268 7
+a279 3
+   assertionCount_ = 0;
+   failedAssertionCount_ = 0;
+   ignoredAssertionCount_ = 0;
+d285 1
+a285 1
+TestInfo::getUpdatedTestStatus()
+a286 2
+   if ( !testStatus_.hasFailed()  &&  failedAssertionCount_ > 0 )
+      testStatus_.setStatus( TestStatus::failed );
+d293 3
+a295 3
+                            const char *fileName,
+                            unsigned int lineNumber,
+                            const char *functionName )
+d298 4
+a301 4
+                                    SourceLocation( fileName,
+                                                   lineNumber,
+                                                   functionName ) );
+   ++assertionCount_;
+d316 1
+a316 1
+   ++failedAssertionCount_;
+a354 7
+void 
+TestInfo::ignoredFailure()
+{
+   ++ignoredAssertionCount_;
+}
+
+
+d375 46
+d458 5
+@
+
+
+1.18
+log
+@- changed most interface to use std::string instead of CppTL::ConstString
+- CppTL::ConstString is now an implementation detail and is used to store string in objects as it is thread-safe.
+@
+text
+@d150 12
+d204 1
+d223 1
+d301 7
+@
+
+
+1.17
+log
+@* replaced include/opentest/properties.h with include/json/value.h
+* replaced all occurrences of OpenTest::Value and OpenTest::Properties with Json::Value.
+@
+text
+@d64 1
+a64 1
+Assertion::setTestDataType( const CppTL::ConstString &type )
+d70 1
+a70 1
+const CppTL::ConstString &
+d73 1
+a73 1
+   return testDataType_;
+d78 1
+a78 1
+Assertion::setTestData( const CppTL::ConstString &name,
+d80 1
+a80 1
+                        const CppTL::ConstString &type )
+d94 1
+a94 1
+CppTL::ConstString 
+d117 1
+a117 1
+   return buffer;
+d151 1
+a151 1
+TestStatus::setStatistics( const CppTL::ConstString &name,
+d164 1
+a164 1
+TestStatus::addSpecific( const CppTL::ConstString &type,
+d339 5
+@
+
+
+1.16
+log
+@- replaced usage of OpenTest::Properties with Json::Value.
+  Json::Value provides a simpler interface and a standard *simple* serialization
+  format.
+- jsoncpp has been inlined in CppTL to make deploy easier and remove
+  an external dependency.
+@
+text
+@d79 1
+a79 1
+                        const OpenTest::Value &value,
+d87 1
+a87 1
+const OpenTest::Properties &
+d152 1
+a152 1
+                           const OpenTest::Value &value )
+d158 1
+a158 1
+//OpenTest::Value 
+d165 1
+a165 1
+                         const OpenTest::Value &value )
+d280 1
+a280 1
+TestInfo::log( const OpenTest::Value &log )
+d334 1
+a334 1
+void log( const OpenTest::Value &log )
+@
+
+
+1.15
+log
+@* Added log support in test result output
+* Removed unsued method in TestResultUpdater
+* Added CppUT::log demo example.
+@
+text
+@d115 1
+a115 1
+      buffer += testData_.toString() + "\n";
+@
+
+
+1.14
+log
+@* Replaced function in namespace TestInfo by exposing the TestInfoData class and renaming it TestInfo. TestInfo in now an exposed per thread singleton.
+* startNewTest() is now called from TestCase::runTest() instead of being the test runner responsability. There still a few call to this method in cpput bootstrap test (which use assertion without run a test case).
+@
+text
+@d339 5
+@
+
+
+1.13
+log
+@Made context related function private.
+@
+text
+@d20 1
+d27 1
+d34 1
+d41 1
+d48 1
+d55 1
+d62 1
+d69 1
+d76 1
+d86 1
+d93 1
+d120 2
+d172 1
+a172 1
+// Class TestInfoData
+d176 11
+d188 5
+a192 1
+class TestInfoData
+d194 1
+a194 8
+public:
+   TestInfoData()
+      : assertionType_( abortingAssertion )
+      , assertionCount_( 0 )
+      , failedAssertionCount_( 0 )
+      , updater_( 0 )
+   {
+   }
+a195 8
+   void startNewTest()
+   {
+      testStatus_ = TestStatus( TestStatus::passed );
+      currentAssertion_ = Assertion();
+      assertionCount_ = 0;
+      failedAssertionCount_ = 0;
+      assertionType_ = abortingAssertion;
+   }
+d197 5
+a201 3
+   void realizeAssertion()
+   {
+      ++failedAssertionCount_;
+d203 9
+a211 2
+      if ( updater_ )
+         updater_->addResultAssertion( currentAssertion_ );
+a212 8
+      if ( assertionType_ == abortingAssertion )
+      {
+         std::string message;
+         if ( abortingAssertionMode_ != fastAbortingAssertion )
+            message = currentAssertion_.toString().c_str();
+         throw AbortingAssertionException( message );
+      }
+   }
+d214 7
+a220 6
+   TestStatus &getUpdatedTestStatus()
+   {
+      if ( !testStatus_.hasFailed()  &&  failedAssertionCount_ > 0 )
+         testStatus_.setStatus( TestStatus::failed );
+      return testStatus_;
+   }
+a221 8
+   TestResultUpdater *updater_;
+   TestStatus testStatus_;
+   Assertion currentAssertion_;
+   AssertionType assertionType_;
+   AbortingAssertionMode abortingAssertionMode_;
+   unsigned int assertionCount_;
+   unsigned int failedAssertionCount_;
+};
+d223 13
+a235 5
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Namespace TestInfo
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+a236 2
+namespace TestInfo {
+   CppTL::ThreadLocalStorage<TestInfoDataPtr> staticData;
+d238 5
+a242 7
+   static TestInfoData &data()
+   {
+      TestInfoDataPtr &data = staticData.get();
+      if ( !data )
+         data.reset( new TestInfoData() );
+      return *data;
+   }
+a243 4
+   void setTestResultUpdater( TestResultUpdater &updater )
+   {
+      data().updater_ = &updater;
+   }
+d245 4
+a248 4
+   void startNewTest()
+   {
+      data().startNewTest();
+   }
+d250 2
+a251 12
+   void newAssertion( AssertionType type,
+                      const char *fileName,
+                      unsigned int lineNumber,
+                      const char *functionName )
+   {
+      data().currentAssertion_ = Assertion( Assertion::assertion, 
+                                            SourceLocation( fileName,
+                                                            lineNumber,
+                                                            functionName ) );
+      ++(data().assertionCount_);
+      data().assertionType_ = type;
+   }
+d253 1
+a253 1
+   void setAssertionType( AssertionType type )
+d255 4
+a258 1
+      data().assertionType_ = type;
+d260 1
+a261 4
+   AssertionType assertionType()
+   {
+      return data().assertionType_;
+   }
+d263 7
+a269 4
+   void realizeAssertion()
+   {
+      data().realizeAssertion();
+   }
+a270 5
+   void log( const OpenTest::Value &log )
+   {
+      if ( data().updater_ )
+         data().updater_->addResultLog( log );
+   }
+d272 5
+a276 6
+   void handleUnexpectedException( const Assertion &fault )
+   {
+      if ( data().updater_ )
+         data().updater_->addResultAssertion( fault );
+      data().testStatus_.setStatus( TestStatus::failed );
+   }
+a277 4
+   void setAbortingAssertionMode( AbortingAssertionMode mode )
+   {
+      data().abortingAssertionMode_ = mode;
+   }
+d279 6
+a285 5
+   Assertion &
+   currentAssertion()
+   {
+      return data().currentAssertion_;
+   }
+d287 5
+a291 5
+   TestStatus &
+   getUpdatedTestStatus()
+   {
+      return data().getUpdatedTestStatus();
+   }
+d293 5
+d299 4
+d307 1
+a307 1
+// Class ScopedContextOverride
+a310 5
+   ScopedContextOverride::ScopedContextOverride()
+      : context_( staticData.get() )
+   {
+      staticData.get().reset( new TestInfoData() );
+   }
+d312 20
+a331 4
+   ScopedContextOverride::~ScopedContextOverride()
+   {
+      staticData = context_;
+   }
+d334 4
+a337 1
+} // namespace TestInfo
+@
+
+
+1.12
+log
+@Rewrote failure reporting during test. It now provides more structure while still providing some flexibility.
+@
+text
+@a283 12
+   TestInfoDataPtr saveAndResetContext()
+   {
+      TestInfoDataPtr oldData = staticData.get();
+      staticData.get().reset( new TestInfoData() );
+      return oldData;
+   }
+
+   void restoreContext( const TestInfoDataPtr &oldContext )
+   {
+      staticData = oldContext;
+   }
+
+d312 1
+a312 1
+      : context_( saveAndResetContext() )
+d314 1
+d319 1
+a319 1
+      restoreContext( context_ );
+@
+
+
+1.11
+log
+@* Added a simple test runner that does not rely on the open test framework to run cppunit2 tests.
+* added CppTL::ConstCharView to wrapper const char *strings.
+* added CppTL::quoteMultiLineString()
+* string assertion output actual and expected using quoteMultiLineString().
+* added serialize unit test for basic Properties
+* opentest tests now use the LightTestRunner.
+@
+text
+@d2 1
+d5 97
+a101 2
+namespace {
+   struct CompactLocation
+d103 27
+a129 8
+      CompactLocation( const char *file = 0,
+                       const char *function = 0,
+                       unsigned int line =0 )
+         : file_( file )
+         , function_( function )
+         , line_( line )
+      {
+      }
+d131 5
+a135 6
+      void clear()
+      {
+         file_ = 0;
+         function_ = 0;
+         line_ = 0;
+      }
+d137 5
+a141 4
+      const char *file_;
+      const char *function_;
+      unsigned int line_;
+   };
+d144 12
+a155 1
+namespace CppUT {
+d177 2
+a178 2
+      result_.clear();
+      assertion_.clear();
+a181 14
+      assertionLocation_.clear();
+   }
+
+   void updateTestStatistics()
+   {
+      TestInfo::mergeInResult( "statistics/assertions", assertionCount_ );
+   }
+
+   void newAssertion()
+   {
+      assertionType_ = abortingAssertion;
+      assertionLocation_.clear();
+      assertion_.clear();
+      ++assertionCount_;
+d188 3
+a190 11
+      OpenTest::Properties assertion = assertion_;
+      if ( assertionLocation_.file_ )
+      {
+         assertion["location"]["file"] = assertionLocation_.file_;
+         assertion["location"]["line"] = assertionLocation_.line_;
+      }
+      if ( assertionLocation_.function_ )
+         assertion["location"]["function"] = assertionLocation_.function_;
+      TestInfo::appendToResult( "assertions", assertion ); // @@todo Move appendToResult here
+      if ( !assertion.has( "failure_type" ) )
+         assertion["failure_type"] = "assertion";
+d195 1
+a195 1
+            message = result_.toString().c_str();
+d200 7
+d208 2
+a209 2
+   OpenTest::Properties result_;
+   OpenTest::Properties assertion_;
+a210 1
+   CompactLocation assertionLocation_;
+a213 1
+
+a242 10
+   void updateTestStatistics()
+   {
+      data().updateTestStatistics();
+   }
+
+   OpenTest::PropertiesAccessor result()
+   {
+      return data().result_.accessor();
+   }
+
+d248 5
+a252 1
+      data().newAssertion();
+a253 1
+      data().assertionLocation_ = CompactLocation( fileName, functionName, lineNumber );
+a265 17
+   OpenTest::Properties &currentAssertion()
+   {
+      return data().assertion_;
+   }
+
+
+   OpenTest::Properties &currentAssertionActual()
+   {
+      return currentAssertion()["actual"].asProperties();
+   }
+
+
+   OpenTest::Properties &currentAssertionExpected()
+   {
+      return currentAssertion()["expected"].asProperties();
+   }
+
+d271 1
+a271 1
+   unsigned int assertionCount()
+a272 46
+      return data().assertionCount_;
+   }
+
+   unsigned int failedAssertionCount()
+   {
+      return result()["assertions"].listSize();
+   }
+
+   unsigned int faultCount()
+   {
+      return result()["faults"].listSize();
+   }
+
+   bool testHasFailed()
+   {
+      const OpenTest::PropertiesAccessor &accessor = result();
+      return accessor["assertions"].hasList()  
+             ||  accessor["faults"].hasList();
+   }
+
+   void log( const CppTL::ConstString &text )
+   {
+      appendToResult( "logs", text );
+   }
+
+   void appendFaultToResult( const OpenTest::Properties &fault )
+   {
+      OpenTest::Properties actualFault = fault;
+      if ( !actualFault.has( "failure_type" ) )
+         actualFault["failure_type"] = "fault";
+      appendToResult( "faults", actualFault );
+   }
+
+
+   void mergeInResult( const OpenTest::Properties &result )
+   {
+      data().result_.mergeReplacingExisting( result );
+      if ( data().updater_ )
+         data().updater_->mergeInResult( result );
+   }
+
+
+   void mergeInResult( const OpenTest::PropertyPath &path,
+                       const OpenTest::Value &value )
+   {
+      data().result_[path] = value;
+d274 1
+a274 1
+         data().updater_->mergeInResult( path, value );
+d277 1
+a277 2
+   void appendToResult( const OpenTest::PropertyPath &path,
+                        const OpenTest::Value &value )
+a278 1
+      data().result_[path].append( value );
+d280 2
+a281 1
+         data().updater_->appendToResult( path, value );
+d302 15
+@
+
+
+1.10
+log
+@* moved cpput/thread.h to cpptl/thread.h
+* simplified thread-local storage access.
+@
+text
+@d45 1
+d96 1
+a96 1
+   TestResultUpdaterPtr updater_;
+d124 1
+a124 1
+   void setTestResultUpdater( const TestResultUpdaterPtr &updater )
+d126 1
+a126 1
+      data().updater_ = updater;
+@
+
+
+1.9
+log
+@* newAssertion() now takes the assertion type and location as parameter
+* added checking assertion macros
+@
+text
+@d2 1
+a2 1
+#include <cpput/thread.h>
+d113 1
+a113 2
+//   static TestInfoDataPtr staticData( new TestInfoData() );
+   ThreadLocalStorage<TestInfoDataPtr> staticData;
+d115 1
+a115 1
+   static TestInfoDataPtr dataPtr()
+d117 1
+a117 1
+      const TestInfoDataPtr &data = staticData.get();
+d119 2
+a120 15
+      {
+         staticData.set( TestInfoDataPtr( new TestInfoData() ) );
+         return staticData.get();
+      }
+      return data;
+   }
+
+   static TestInfoData &data()
+   {
+      return *dataPtr();
+   }
+
+   static void setData( const TestInfoDataPtr &data )
+   {
+      staticData = data;
+d247 2
+a248 2
+      TestInfoDataPtr oldData = dataPtr();
+      setData( TestInfoDataPtr( new TestInfoData() ) );
+d254 1
+a254 1
+      setData( oldContext );
+@
+
+
+1.8
+log
+@* use CppTL::ConstString instead of std::string for thread-safety
+@
+text
+@d157 4
+a160 1
+   void newAssertion()
+d163 2
+a176 7
+   void setAssertionLocation( const char *fileName,
+                              unsigned int lineNumber,
+                              const char *functionName )
+   {
+      data().assertionLocation_ = CompactLocation( fileName, functionName, lineNumber );
+   }
+
+@
+
+
+1.7
+log
+@* added api for logging
+@
+text
+@d90 1
+a90 1
+            message = result_.toString();
+d223 1
+a223 1
+   void log( const std::string &text )
+@
+
+
+1.6
+log
+@* added quick accessor for actual/expected
+@
+text
+@d84 2
+a85 1
+
+d223 5
+d230 4
+a233 1
+      appendToResult( "faults", fault );
+@
+
+
+1.5
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@d183 12
+a221 2
+
+
+@
+
+
+1.4
+log
+@* moved the assertion implementation to using TestInfo.
+* added assertion (tested/failed) counter to TestInfo.
+@
+text
+@d58 5
+d146 5
+d188 1
+a188 1
+   unsigned int CPPUT_API assertionCount()
+d193 6
+a198 1
+   unsigned int CPPUT_API failedAssertionCount()
+d200 1
+a200 1
+      return data().failedAssertionCount_;
+d203 15
+@
+
+
+1.3
+log
+@* added aborting assertion mode to optional carry a string containing the properties in the exception.
+@
+text
+@d16 7
+d31 7
+d43 24
+d68 19
+d95 3
+d100 5
+d138 1
+a138 1
+      data().result_.clear();
+d148 1
+a148 3
+      data().assertion_.clear();
+      data().assertionType_ = abortingAssertion;
+      data().assertionLocation_ = CompactLocation();
+a172 4
+   /// Realize the current assertion.
+   /// Add data about the current assertion to the test result.
+   /// @@exception AbortingAssertionException If assertionType was set to
+   ///            abortingAssertion.
+d175 7
+a181 9
+      OpenTest::Properties assertion = data().assertion_;
+      if ( data().assertionLocation_.file_ )
+      {
+         assertion["location"]["file"] = data().assertionLocation_.file_;
+         assertion["location"]["line"] = data().assertionLocation_.line_;
+      }
+      if ( data().assertionLocation_.function_ )
+         assertion["location"]["function"] = data().assertionLocation_.function_;
+      appendToResult( "assertions", assertion );
+d183 3
+a185 7
+      if ( data().assertionType_ == abortingAssertion )
+      {
+         std::string message;
+         if ( data().abortingAssertionMode_ != fastAbortingAssertion )
+            message = data().result_.toString();
+         throw AbortingAssertionException( message );
+      }
+d230 17
+@
+
+
+1.2
+log
+@* modified TestRunner/TestDriver protocol to allow incremental result properties update.
+@
+text
+@d2 1
+d37 1
+d42 2
+a43 1
+   static TestInfoDataPtr staticData( new TestInfoData() );
+d45 1
+a45 1
+   static const TestInfoDataPtr &dataPtr()
+d47 7
+a53 1
+      return staticData;
+d127 6
+a132 1
+         throw AbortingAssertionException( "" );
+d171 5
+@
+
+
+1.1
+log
+@* started implementing assertion support for both checking and aborting assertion
+* TestInfo to send incremental update on the test result to the test driver (logging...)
+@
+text
+@d121 9
+a129 1
+   void mergeInResult( const std::string &path,
+d137 1
+a137 1
+   void appendToResult( const std::string &path,
+@
+

@@ -1,0 +1,177 @@
+head	1.3;
+access;
+symbols
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2004.11.20.15.06.59;	author blep;	state dead;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.31.13.21.46;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.26;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.26;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@#ifndef CPPUT_LOCATION_H_INCLUDED
+# define CPPUT_LOCATION_H_INCLUDED
+
+# include <cpput/config.h>
+# include <sstream>
+# include <string>
+
+
+namespace CppUT {
+
+/// \internal: copy constructor must be thread-safe (be wary of ref counted std::string).
+class CPPUT_API Location
+{
+public:
+   Location()
+      : fileName_( 0 )
+      , lineNumber_( -1 )
+      , functionName_( 0 )
+   {
+   }
+
+   Location( const char *fileName,
+             int lineNumber,
+             const char *functionName = 0 )
+   {
+      fileName_ = fileName;
+      lineNumber_ = lineNumber;
+      functionName_ = functionName;
+   }
+
+   bool isValid() const
+   {
+      return fileName_  &&  lineNumber_ != -1;
+   }
+
+   std::string fileName() const
+   {
+      return std::string( fileName_ ? fileName_ : "" );
+   }
+
+   int lineNumber() const
+   {
+      return lineNumber_;
+   }
+
+   std::string functionName() const
+   {
+      return std::string( functionName_ ? functionName_ : "" );
+   }
+
+   bool hasFunctionName() const
+   {
+      return functionName_ != 0;
+   }
+
+   std::string toString() const
+   {
+      std::ostringstream s;
+      s  <<  fileName_  <<  "("  <<  lineNumber_  << ")";
+      return s.str();
+   }
+
+private:
+   const char *fileName_;
+   int lineNumber_;
+   const char *functionName_;
+};
+
+
+# define CPPUT_MAKE_CURRENT_LOCATION() \
+   ::CppUT::Location( __FILE__, __LINE__ )
+
+
+} // namespace CppUT
+
+
+
+#endif // CPPUT_LOCATION_H_INCLUDED
+@
+
+
+1.2
+log
+@* removed LocationData as it is no longer needed
+@
+text
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d11 2
+a12 9
+struct CPPUT_API LocationData
+{
+   const char *fileName_;
+   int lineNumber_;
+   const char *functionName_;
+};
+
+
+class CPPUT_API Location : public LocationData
+d16 3
+a19 3
+      fileName_ = 0;
+      lineNumber_ = -1;
+      functionName_ = 0;
+a30 7
+   Location( const LocationData &data )
+   {
+      fileName_ = data.fileName_;
+      lineNumber_ = data.lineNumber_;
+      functionName_ = data.functionName_;
+   }
+
+d38 1
+a38 1
+      return fileName_;
+d62 5
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

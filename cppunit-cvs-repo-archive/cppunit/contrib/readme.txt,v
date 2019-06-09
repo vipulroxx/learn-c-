@@ -1,0 +1,190 @@
+head	1.4;
+access;
+symbols
+	REL_1_12_1:1.4
+	REL_1_11_6:1.4
+	REL_1_11_4:1.4
+	REL_1_11_0:1.4
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.3
+	REL_1_9_4:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.4
+date	2005.06.14.21.59.34;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.21.12.32.12;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.18.09.32.18;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.17.22.27.27;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* contrib/xml-xsl/cppunit2junit.txt
+* contrib/xml-xsl/cppunit2junit.xsl
+* contrib/readme.txt: XSLT for compatibility with Ant junit xml formatter.
+Patch #1112053 contributed by Norbert Barbosa.
+@
+text
+@What's in those files:
+
+bc5/:
+	* bc5-makefile.zip: makefile for CppUnit with Borland C++ 5.5 free compiler.
+	  contributed by 'cuppa' project team (http://sourceforge.jp/projects/cuppa/).
+	  See instruction  'readme_en.txt' in the zip.
+
+msvc/:
+
+	* CppUnit.WWTpl: a template Workspace Whiz! which create a new class 
+and add the new files to the project. You can specify that the class is a 
+CppUnit testcase and all the macro will be defined to register the test case
+and declare the test suite. Workspace Whiz! is an add-ins for VC++. It can
+be found at: http://www.workspacewhiz.com/.
+
+	* AddingUnitTestMethod.dsm: a set of VC++ macro to add unit test
+using helper macros.
+
+xml-xsl/:
+
+	* report.xsl: a xml style sheet contributed by 'cuppa' project team 
+(http://sourceforge.jp/projects/cuppa/)  to transform  CppUnit XML output into 
+HTML. Windows user can test it by running tests.xml (require Internet Explorer 
+5.0+).
+
+    * cppunit2junit.xsl: XSLT for compatibility with Ant junit xml formatter
+	  (patch #1112053 contributed by BARBOSA Norbert. 
+	   See cppunit2junit.txt for details).@
+
+
+1.3
+log
+@* contrib/bc5/bcc-makefile.zip: updated, generic makefile for
+  Borland 5.5, contributed by project cuppa.
+
+* examples/cppunittest/*Suite.h: integrated Jeffrey Morgan's patch,
+  to remove warning with gcc.
+@
+text
+@d24 5
+a28 1
+5.0+).@
+
+
+1.2
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d6 1
+a6 2
+	  Tt produce cppunit release/debug lib & dll. See instruction 
+	  'readme_en.txt' in the zip.
+@
+
+
+1.1
+log
+@* bumped version to 1.9.3
+
+* FAQ: added question about 4786 warning on VC++.
+
+* NEWS: updated.
+
+* contrib/msvc/readme.txt: moved to contrib/readme.txt.
+
+* contrib/xml-xsl/report.xsl: added XML style sheet contributed by
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for
+  startTestRun()/endTestRun().
+
+* examples/simple/*: added. A simple example.
+
+* include/cppunit/BriefTestProgressListener.h:
+* src/cppunit/BriefTestProgressListener.cpp: added. Verbose progess listener
+  that print the test name before running the test.
+
+* include/cppunit/TestListener.h: added startTestRun()/endTestRun().
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: added runTest(), to be called to run
+  a test by test runner.
+
+* src/cppunit/TextTestRunner.cpp:
+* src/cppunit/TestRunner.cpp: updated to use TestResult::runTest().
+
+* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added. Managers for all loaded plug-ins.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: renamed TestPlugInAdapter. All
+  implementations are empty.
+
+* include/cppunit/plugin/TestPlugInSuite.h: removed.
+* src/cppunit/TestPlugInSuite.cpp: removed. Replaced by PlugInManager.
+
+* include/cppunit/plugin/TestPlugIn.h: rewrote the plug-in interface to
+  provide more versatility. updated macros to match new interface.
+
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestFactoryRegistry.cpp: Added unregisterFactory().
+  Added convenience method addRegistry(). Rewrote registry life cycle
+  management. AutoRegisterSuite can now detect that the registry has been
+  destroy and not call to it to unregister its test factory.
+
+* include/cppunit/extensions/AutoRegisterTest.h: on destruction, the registered
+  factory is unregistered from the registry.
+
+* include/cppunit/extensions/HelperMacros.h: added macros
+  CPPUNIT_REGISTRY_ADD_TO_DEFAULT and CPPUNIT_REGISTRY_ADD to help
+  build test suite hierarchy.
+
+* src/cppunit/msvc/DllPlugInTester/*: moved to src/cppunit/DllPlugInTester/.
+
+* src/cppunit/DllPlugInTester/DllPlugInTester.cpp: removed UNICODE stuffs. Use
+  the PlugInManager instead of PlugInTestSuite. Simplified: only one test on
+  command line, but many DLL can be specified. Added configurations to link
+  against cppunit dll, those are now the default configuration (static linking
+  don't make much sense for plug-in).
+@
+text
+@d3 6
+@
+

@@ -1,0 +1,223 @@
+head	1.3;
+access;
+symbols
+	REL_1_9_4:1.2
+	REL_1_9_0:1.2
+	REL_1_8_0:1.2
+	REL_1_7_8:1.2
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.3
+date	2002.04.20.21.54.36;	author blep;	state dead;
+branches;
+next	1.2;
+
+1.2
+date	2002.03.25.22.35.33;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.01.19.34.42;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@; CLW file contains information for the MFC ClassWizard
+
+[General Info]
+Version=1
+LastClass=CppUnitTestAppDlg
+LastTemplate=CDialog
+NewFileInclude1=#include "stdafx.h"
+NewFileInclude2=#include "CppUnitTestApp.h"
+
+ClassCount=4
+Class1=CppUnitTestApp
+Class2=CppUnitTestAppDlg
+Class3=CAboutDlg
+
+ResourceCount=5
+Resource1=IDD_ABOUTBOX
+Resource2=IDR_MAINFRAME
+Resource3=IDD_CPPUNITTESTAPP_DIALOG
+Resource4=IDD_CPPUNITTESTAPP_DIALOG (English (U.S.))
+Resource5=IDD_ABOUTBOX (English (U.S.))
+
+[CLS:CppUnitTestApp]
+Type=0
+HeaderFile=CppUnitTestApp.h
+ImplementationFile=CppUnitTestApp.cpp
+Filter=N
+
+[CLS:CppUnitTestAppDlg]
+Type=0
+HeaderFile=CppUnitTestAppDlg.h
+ImplementationFile=CppUnitTestAppDlg.cpp
+Filter=D
+
+[CLS:CAboutDlg]
+Type=0
+HeaderFile=CppUnitTestAppDlg.h
+ImplementationFile=CppUnitTestAppDlg.cpp
+Filter=D
+
+[DLG:IDD_ABOUTBOX]
+Type=1
+ControlCount=4
+Control1=IDC_STATIC,static,1342177283
+Control2=IDC_STATIC,static,1342308352
+Control3=IDC_STATIC,static,1342308352
+Control4=IDOK,button,1342373889
+Class=CAboutDlg
+
+
+[DLG:IDD_CPPUNITTESTAPP_DIALOG]
+Type=1
+ControlCount=3
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_STATIC,static,1342308352
+Class=CppUnitTestAppDlg
+
+[DLG:IDD_CPPUNITTESTAPP_DIALOG (English (U.S.))]
+Type=1
+Class=?
+ControlCount=3
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_STATIC,static,1342308352
+
+[DLG:IDD_ABOUTBOX (English (U.S.))]
+Type=1
+Class=?
+ControlCount=4
+Control1=IDC_STATIC,static,1342177283
+Control2=IDC_STATIC,static,1342308480
+Control3=IDC_STATIC,static,1342308352
+Control4=IDOK,button,1342373889
+
+@
+
+
+1.2
+log
+@* include/cppunit/makefile.am: removed TestRegistry.h
+
+* include/cppunit/TestRegistry.h: removed. Obsolete, replaced by
+TestFactoryRegistry.
+
+* src/cppunit/makefile.am: removed TestRegistry.cpp. Added cppunit_dll.dsp.
+
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/SynchronizedObject.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TextOutputter.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestResult.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/TestFactory.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: minor doc update.
+
+* include/cppunit/TestFixture.h: added DLL export.
+
+* include/cppunit/msvc6/TestPlugInInterface.h: updated doc. Added automatic
+exportation of TestPlugIn publishing function.
+
+* src/cppunit/TestCase.cpp:
+* include/cppunit/TestCase.h: inherits setUp() and tearDown() from
+class TestFixture.
+@
+text
+@@
+
+
+1.1
+log
+@* added project cppunittest to examples/: unit tests to test cppunit. The
+  main file is CppUnitTestMain.cpp. Unit tests have been implemented
+  for TestCaller and TestListener.
+* added project CppUnitTestApp to examples/msvc6: graphical runner for
+  cppunittest.
+* added TestListener to TestResult. It is a port of junit TestListener.
+* updated some .cvsignore to ignore files generated with VC++.
+@
+text
+@d19 2
+a20 2
+Resource4=IDD_ABOUTBOX (English (U.S.))
+Resource5=IDD_CPPUNITTESTAPP_DIALOG (English (U.S.))
+@
+

@@ -1,0 +1,698 @@
+head	1.17;
+access;
+symbols
+	REL_1_12_1:1.17
+	REL_1_11_6:1.17
+	REL_1_11_4:1.17
+	REL_1_11_0:1.17
+	TG_CPPUNIT_NO_STREAM_AFTER:1.16
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.14
+	REL_1_10_2:1.14
+	REL_1_10_0:1.14
+	REL_1_9_14:1.14
+	REL_1_9_12:1.14
+	BRANCH_1_9_12:1.14.0.2
+	TG_BRANCH_1_9_12:1.14
+	TG_BEFORE_HPUX_PLUGIN:1.14
+	TG_BEFORE_SUN4_PORT:1.14
+	REL_1_9_10:1.14
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.12
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.12
+	REL_1_9_6:1.12
+	REL_1_9_4:1.12
+	REL_1_9_0:1.11
+	REL_1_8_0:1.11
+	REL_1_7_8:1.10
+	REL_1_7_3:1.10
+	REL_1_7_1:1.10
+	REL_1_6_2:1.10
+	BRANCH_1_6:1.10.0.2
+	REL_1_6_1:1.10
+	REL_1_6_0:1.10
+	REL_1_5_5:1.8
+	REL_1_5_4:1.5
+	initial:1.1.1.1
+	e-s:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.17
+date	2005.02.23.07.34.40;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2004.06.25.11.11.45;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2004.06.25.10.41.26;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2002.07.14.19.48.31;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2002.07.10.18.50.02;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2002.04.19.14.11.37;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2002.03.27.17.56.44;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2001.06.02.22.29.52;	author smr99;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2001.05.19.11.29.11;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2001.05.06.20.04.02;	author bastiaan;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.05.06.17.20.00;	author bastiaan;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.04.19.20.39.44;	author bastiaan;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.04.13.16.44.48;	author bastiaan;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2000.10.13.19.39.27;	author e-s;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2000.10.13.18.27.59;	author e-s;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2000.10.11.18.54.24;	author e-s;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2000.10.05.18.37.29;	author e-s;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2000.10.05.18.37.29;	author e-s;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.17
+log
+@* examples/hierarchy/BoardGameTest.h:
+* examples/hierarchy/ChessTest.h: fixed compilation issue, prefixed access
+  to class member with 'this' (inheriting from template parameter
+  dependent class).
+@
+text
+@#ifndef __BOARDGAMETEST_H__
+#define __BOARDGAMETEST_H__
+
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/portability/Stream.h>
+
+template<class GAMECLASS> 
+class BoardGameTest : public CPPUNIT_NS::TestFixture 
+{
+  CPPUNIT_TEST_SUITE( BoardGameTest );
+  CPPUNIT_TEST( testReset );
+  CPPUNIT_TEST( testResetShouldFail );
+  CPPUNIT_TEST_SUITE_END();
+protected:
+  GAMECLASS	*m_game;
+  
+public:
+  BoardGameTest()
+  {
+  }
+
+  int countTestCases () const
+  { 
+    return 1; 
+  }
+  
+  void setUp() 
+  { 
+    this->m_game = new GAMECLASS; 
+  }
+  
+  void tearDown()
+  { 
+    delete this->m_game; 
+  }
+  
+  void testReset() 
+  { 
+    CPPUNIT_ASSERT( this->m_game->reset() );
+  }
+
+  void testResetShouldFail() 
+  { 
+    CPPUNIT_NS::stdCOut() << "The following test fails, this is intended:" << "\n";
+    CPPUNIT_ASSERT( !this->m_game->reset() );
+  }
+};
+
+#endif
+@
+
+
+1.16
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@d29 1
+a29 1
+    m_game = new GAMECLASS; 
+d34 1
+a34 1
+    delete m_game; 
+d39 1
+a39 1
+    CPPUNIT_ASSERT( m_game->reset() );
+d45 1
+a45 1
+    CPPUNIT_ASSERT( !m_game->reset() );
+@
+
+
+1.15
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@d5 1
+a5 1
+#include <cppunit/Portability/Stream.h>
+@
+
+
+1.14
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d5 1
+a5 1
+#include <iostream>
+d44 1
+a44 1
+    std::cout << "The following test fails, this is intended:" << std::endl;
+@
+
+
+1.13
+log
+@* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/Orthodox.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h:
+* include/cppunit/TestCaller.h:
+* examples/hierarchy/BoardGameTest.h:
+* examples/hierarchy/ChessTest.h: replaced usage of 'typename' in template
+  declaration with 'class'.
+
+* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to use the generic TestRunner.
+  Removed methods runTestByName() and runTest(). Inherits
+  CppUnit::TestRunner.
+
+* include/cppunit/extensions/TestSuiteBuilder.h: removed templatized method
+  addTestCallerForException(). It is no longer used since release 1.9.8.
+
+* examples/cppunittest/MockTestCase.h
+* examples/cppunittest/MockTestCase.cpp: removed the usage of 'mutable'
+  keyword.
+@
+text
+@d8 1
+a8 1
+class BoardGameTest : public CppUnit::TestFixture 
+@
+
+
+1.12
+log
+@* src/cppunit/PlugInManager.cpp: fixed bug in unload().
+
+* include/cppunit/TypeInfoHelper.h:
+* src/cppunit/TypeInfoHelper.cpp: Implementation is now always available
+  is CPPUNIT_HAVE_RTTI is not 0. This removes the need to use
+  different libraries. CPPUNIT_USE_TYPEINFO_NAME can be set on a
+  case by case basis for HelperMacros.
+
+* src/cppunit/TestFactoryRegistry.cpp: removed unused include of
+  TypeInfoHelper.h.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: used endTest() instead
+  of done() to finalize.
+
+* src/msvc6/TestPlugInRunner/TestPlugIn.h:
+* src/msvc6/TestPlugInRunner/TestPlugIn.cpp: updated to use the
+  new test plug-in system.
+
+* examples/simple/SimplePlugIn.cpp:
+* examples/simple/simple_plugin.dsp: crossplatform test plug-in
+  example using 'simple'.
+
+* examples/msvc6/EasyTestPlugIn/*: projects replaced with the
+  crossplatform projecct examples/simple/simple_plugin.dsp.
+@
+text
+@d7 1
+a7 1
+template<typename GAMECLASS> 
+@
+
+
+1.11
+log
+@* makefile.am: added src/CppUnitLibraries.dsw, new contribution, and
+src/qttestrunner.
+
+* TODO: updated (doc).
+
+* contrib/msvc/AddingUnitTestMethod.dsm: added, submitted by
+bloodchen@@hotmail.com.
+
+* constrib/msvc/readme.txt: updated.
+
+* include/cppunit/TestAsserter.h:
+* include/cppunit/SourceLine.h: updated doc.
+
+* include/cppunit/TestCaller.h: reindented. updated doc.
+
+* include/cppunit/extensions/HelperMacros.h: relaxed constraint on fixture.
+Fixture base class may be TestFixture instead of TestCase.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.h: TestCase inherits TestFixture for setUp() and
+tearDown() definition. Moved documentation to TestFixture.
+
+* include/cppunit/TestFixture.h: updated documentation.
+
+* include/cppunit/TestRegistry.h:
+* src/cppunit/TestRegistry.cpp: Removed. Replaced by TestFactoryRegistry.
+
+* include/cppunit/TextTestRunner.h:
+* src/cppunit/TextTestRunner.cpp: made printing progress using a
+TextTestProgressListener optional.
+
+* examples\cppunittest\ExceptionTest.h:
+* examples\cppunittest\HelperMacrosTest.h:
+* examples\cppunittest\HelperMacrosTest.cpp:
+* examples\cppunittest\NotEqualException.h:
+* examples\cppunittest\OrthodoxTest.h:
+* examples\cppunittest\RepeatedTest.h:
+* examples\cppunittest\TestAssertTest.h:
+* examples\cppunittest\TestCallerTest.h:
+* examples\cppunittest\TestDecoratorTest.h:
+* examples\cppunittest\TestFailureTest.h:
+* examples\cppunittest\TestResultCollectorTest.h:
+* examples\cppunittest\TestResultTest.h:
+* examples\cppunittest\TestSetUpTest.h:
+* examples\cppunittest\TestSuiteTest.h:
+* examples\cppunittest\XmlOutputterTest.h:
+* examples\cppunittest\XmlOutputterTest.cpp:
+* examples\cppunittest\XmlUniformizerTest.h:
+* examples\cppunittest\XmlUniformizerTest.cpp: changed base class for fixture
+from TestCase to TestFixture.
+
+* examples\hierarchy\BoardGameTest.h:
+* examples\hierarchy\ChessTest.h:
+* examples\hierarchy\main.cpp: updated to use HelperMacros for correct
+fixture instantiation (the ChessBoard::testReset test case was using
+BoardGame fixture instance instead of ChessBoard).
+@
+text
+@d5 1
+@
+
+
+1.10
+log
+@Change to templatized TestAssert::assertEquals() and the new CPPUNIT_ASSERT* macros
+@
+text
+@d4 1
+a4 3
+#include <cppunit/TestCaller.h>
+#include <cppunit/TestCase.h>
+#include <cppunit/TestSuite.h>
+d7 13
+a19 8
+class BoardGameTest : public CppUnit::TestCase {
+  protected:
+    GAMECLASS	*m_game;
+    
+  public:
+    BoardGameTest (std::string name) : CppUnit::TestCase (name) 
+    {
+    }
+d21 19
+a39 7
+    virtual void registerTests(CppUnit::TestSuite *suite) 
+    {
+      suite->addTest (new CppUnit::TestCaller<BoardGameTest<GAMECLASS> > ("testReset", 
+         &BoardGameTest<GAMECLASS>::testReset, *this)); 
+      suite->addTest (new CppUnit::TestCaller<BoardGameTest<GAMECLASS> > ("testReset", 
+         &BoardGameTest<GAMECLASS>::testResetShouldFail, *this)); 
+    }
+d41 5
+a45 28
+    BoardGameTest()
+    {
+    }
+
+    int countTestCases () const
+    { return 1; }
+    
+    void setUp () 
+    { 
+      m_game = new GAMECLASS; 
+    }
+    
+    void tearDown ()
+    { 
+      delete m_game; 
+    }
+    
+    void testReset () 
+    { 
+      CPPUNIT_ASSERT( m_game->reset() );
+    }
+
+    void testResetShouldFail () 
+    { 
+      std::cout << "The following test fails, this is intended:" << std::endl;
+      CPPUNIT_ASSERT( !m_game->reset() );
+    }
+    
+@
+
+
+1.9
+log
+@  * Merged Steve M. Robbins patch to replace assertImplementation with assert in hierarchy example.
+  * Added a TextTestRunner to runner tests. It is based on Michael Feather's version, but have been rewriten.
+  * Removed traces that printed the test name in TextTestResult while running.
+  * Added the test name to error and failure report in TextTestResult.
+  * Updated hierarchy example to use TextTestRunner.
+@
+text
+@d45 1
+a45 1
+      assert( m_game->reset() );
+d51 1
+a51 1
+      assert( !m_game->reset() );
+@
+
+
+1.8
+log
+@Added constructors to TestCaller which accept an already constucted Fixture.
+@
+text
+@d45 1
+a45 1
+      assertImplementation (m_game->reset (),"m_game->reset ()",__LINE__,__FILE__); 
+d51 1
+a51 1
+      assertImplementation (!m_game->reset (),"!m_game->reset ()",__LINE__,__FILE__); 
+@
+
+
+1.7
+log
+@use 'typename' in templates, instead of 'class'.
+give complete types in registerTests().
+@
+text
+@d4 3
+a6 9
+#include "cppunit/TestCaller.h"
+
+#ifndef CPPUNIT_TESTCASE_H
+#include "cppunit/TestCase.h"
+#endif
+
+#ifndef CPPUNIT_TESTSUITE_H
+#include "cppunit/TestSuite.h"
+#endif
+d21 1
+a21 1
+         &BoardGameTest<GAMECLASS>::testReset)); 
+d23 1
+a23 1
+         &BoardGameTest<GAMECLASS>::testResetShouldFail)); 
+@
+
+
+1.6
+log
+@Added MSVC++ workspace and project files.
+@
+text
+@d14 1
+a14 1
+template<class GAMECLASS> 
+d26 1
+a26 1
+      suite->addTest (new CppUnit::TestCaller<BoardGameTest> ("testReset", 
+d28 1
+a28 1
+      suite->addTest (new CppUnit::TestCaller<BoardGameTest> ("testReset", 
+@
+
+
+1.5
+log
+@Merged patch #403542 by Tim Jansen <timj@@systembureau.com>.
+Fixes bug #220207: "const" problem with countTestCases.
+Fixes 'TestSuite::deleteContent() clear vector'
+Fixes 'Fix: TestCaller registered Fixture' (see patch #403541).
+Fixes bug #415219: example did not test anything.
+@
+text
+@d20 1
+a20 1
+    BoardGameTest (string name) : CppUnit::TestCase (name) 
+d56 1
+a56 1
+      cout << "The following test fails, this is intended:" << endl;
+@
+
+
+1.4
+log
+@removed debugging stuff.
+@
+text
+@d23 11
+a33 4
+    
+    BoardGameTest (CppUnit::TestSuite *suite) 
+    { 
+      suite->addTest (new CppUnit::TestCaller<BoardGameTest> ("testReset", testReset)); 
+d35 1
+a35 1
+    
+d56 1
+@
+
+
+1.3
+log
+@specified names for tests.
+@
+text
+@a13 2
+#include <stdio.h>
+
+a28 7
+    void runTest () 
+    { 
+      printf("runTest()\n");
+      testReset();
+      testResetShouldFail();
+    }
+    
+a43 1
+      printf("assertImpl()\n");
+a44 1
+      printf("assertImpl() end\n");
+a48 1
+      printf("!assertImpl()\n");
+a49 1
+      printf("!assertImpl end()\n");
+@
+
+
+1.2
+log
+@Makefile for all examples.
+@
+text
+@d14 2
+d23 2
+a24 1
+    {}
+d26 1
+a26 1
+    BoardGameTest (CppUnit::TestSuite *suite) : CppUnit::TestCase ("") 
+d31 7
+d42 3
+a44 1
+    { m_game = new GAMECLASS; }
+d47 3
+a49 1
+    { delete m_game; }
+d52 12
+a63 1
+    { assert (m_game->reset ()); }
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d4 1
+a4 1
+#include "TestCaller.h"
+d7 5
+a11 1
+#include "TestCase.h"
+d15 1
+a15 1
+class BoardGameTest : public TestCase {
+d20 1
+a20 1
+    BoardGameTest (string name) : TestCase (name) 
+d23 1
+a23 1
+    BoardGameTest (TestSuite *suite) : TestCase ("") 
+d25 1
+a25 1
+      suite->addTest (new TestCaller<BoardGameTest> ("testReset", testReset)); 
+d27 3
+@
+
+
+1.1.1.1
+log
+@initial check in.
+@
+text
+@@

@@ -1,0 +1,55 @@
+head     1.1;
+branch   1.1.1;
+access   ;
+symbols  initial:1.1.1.1 cppunit:1.1.1;
+locks    ; strict;
+comment  @# @;
+
+
+1.1
+date     2002.04.18.23.09.59;  author blep;  state Exp;
+branches 1.1.1.1;
+next     ;
+
+1.1.1.1
+date     2002.04.18.23.09.59;  author blep;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+
+1.1
+log
+@Initial revision
+@
+text
+@To install/uninstall a documentation:
+
+run MSDNIntegrator with the INI file on the command line:
+
+MSDNIntegrator.exe MSDN-CppUnit.INI
+
+A dialog will open, all fields should be initialized. 
+
+Press 'Integrate with MSDN' to integrate the documentation with MSDN, 
+'Remove' to remove the documentation from MSDN. Both commands take effects when MSDN 
+is restarted.
+
+Enojy,
+Baptiste.
+
+--
+Baptiste Lepilleur <gaiacrtn@@free.>
+http://gaiacrtn.free.fr/index.html@
+
+
+1.1.1.1
+log
+@Initial import
+@
+text
+@@

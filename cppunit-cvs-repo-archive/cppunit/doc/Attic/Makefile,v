@@ -1,0 +1,58 @@
+head	1.2;
+access;
+symbols
+	initial:1.1.1.1 e-s:1.1.1;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2001.04.13.22.51.31;	author bastiaan;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2000.10.05.18.37.28;	author e-s;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2000.10.05.18.37.28;	author e-s;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@Document generation is now autoconfed. (copied from log4cpp autoconf/automake).
+Added doc subdir to dist.
+Upped version number to 1.5.3.
+@
+text
+@.PHONY: docs
+
+docs:
+	doxygen
+
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@@
+
+
+1.1.1.1
+log
+@initial check in.
+@
+text
+@@

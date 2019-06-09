@@ -1,0 +1,555 @@
+head	1.7;
+access;
+symbols
+	REL_1_12_1:1.7
+	REL_1_11_6:1.7
+	REL_1_11_4:1.7
+	REL_1_11_0:1.7
+	TG_CPPUNIT_NO_STREAM_AFTER:1.7
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.7
+	REL_1_10_2:1.7
+	REL_1_10_0:1.7
+	REL_1_9_14:1.7
+	REL_1_9_12:1.7
+	BRANCH_1_9_12:1.7.0.2
+	TG_BRANCH_1_9_12:1.7
+	TG_BEFORE_HPUX_PLUGIN:1.7
+	TG_BEFORE_SUN4_PORT:1.7
+	REL_1_9_10:1.7
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.3
+	REL_1_9_4:1.3
+	REL_1_9_0:1.3
+	REL_1_8_0:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.7
+date	2002.07.14.19.48.32;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.07.10.18.50.02;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.13.15.12.53;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.12.19.28.47;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.10.15.21.24;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@#ifndef CPPUNIT_UI_TEXT_TESTRUNNER_H
+#define CPPUNIT_UI_TEXT_TESTRUNNER_H
+
+#include <cppunit/ui/text/TextTestRunner.h>
+
+
+#if defined(CPPUNIT_HAVE_NAMESPACES)
+
+CPPUNIT_NS_BEGIN
+namespace TextUi
+{
+
+  /*! Text TestRunner (DEPRECATED).
+   * \deprecated Use TextTestRunner instead.
+   */
+  typedef TextTestRunner TestRunner;
+
+}
+CPPUNIT_NS_END
+
+#endif // defined(CPPUNIT_HAVE_NAMESPACES)
+
+
+#endif  // CPPUNIT_UI_TEXT_TESTRUNNER_H
+@
+
+
+1.6
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d6 3
+d10 2
+d13 4
+d18 2
+a19 6
+/*!
+ * \brief A text mode test runner.
+ * \ingroup ExecutingTest
+ * \deprecated Use CppUnit::TextUi::TestRunner instead.
+ */
+typedef CPPUNIT_NS::TextUi::TestRunner TextTestRunner;
+d21 1
+a22 1
+CPPUNIT_NS_END
+@
+
+
+1.5
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d4 1
+a4 6
+// Notes: this class is implemented in TextTestRunner.cpp.
+
+#include <cppunit/Portability.h>
+#include <string>
+#include <vector>
+#include <cppunit/TestRunner.h>
+a8 10
+class Outputter;
+class Test;
+class TestSuite;
+class TextOutputter;
+class TestResult;
+class TestResultCollector;
+
+namespace TextUi
+{
+
+a10 1
+ * \ingroup WritingTestResult
+d12 1
+a12 37
+ *
+ * The test runner manage the life cycle of the added tests.
+ *
+ * The test runner can run only one of the added tests or all the tests. 
+ *
+ * TestRunner prints out a trace as the tests are executed followed by a
+ * summary at the end. The trace and summary print are optional.
+ *
+ * Here is an example of use:
+ *
+ * \code
+ * CppUnit::TextUi::TestRunner runner;
+ * runner.addTest( ExampleTestCase::suite() );
+ * runner.run( "", true );    // Run all tests and wait
+ * \endcode
+ *
+ * The trace is printed using a TextTestProgressListener. The summary is printed
+ * using a TextOutputter. 
+ *
+ * You can specify an alternate Outputter at construction
+ * or later with setOutputter(). 
+ *
+ * After construction, you can register additional TestListener to eventManager(),
+ * for a custom progress trace, for example.
+ *
+ * \code
+ * CppUnit::TextUi::TestRunner runner;
+ * runner.addTest( ExampleTestCase::suite() );
+ * runner.setOutputter( CppUnit::CompilerOutputter::defaultOutputter( 
+ *                          &runner.result(),
+ *                          std::cerr ) );
+ * MyCustomProgressTestListener progress;
+ * runner.eventManager().addListener( &progress );
+ * runner.run( "", true );    // Run all tests and wait
+ * \endcode
+ *
+ * \see CompilerOutputter, XmlOutputter, TextOutputter.
+d14 1
+a14 30
+class CPPUNIT_API TestRunner : public CPPUNIT_NS(TestRunner)
+{
+public:
+  // Work around VC++ bug (class has same name as parent)
+  typedef CPPUNIT_NS(TestRunner) SuperClass;
+
+  TestRunner( Outputter *outputter =NULL );
+
+  virtual ~TestRunner();
+
+  bool run( std::string testPath ="",
+            bool doWait = false,
+            bool doPrintResult = true,
+            bool doPrintProgress = true );
+
+  void setOutputter( Outputter *outputter );
+
+  TestResultCollector &result() const;
+
+  TestResult &eventManager() const;
+
+protected:
+  virtual void wait( bool doWait );
+  virtual void printResult( bool doPrintResult );
+
+  TestResultCollector *m_result;
+  TestResult *m_eventManager;
+  Outputter *m_outputter;
+};
+
+a15 1
+} // namespace TextUi
+@
+
+
+1.4
+log
+@* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/Orthodox.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h:
+* include/cppunit/TestCaller.h:
+* examples/hierarchy/BoardGameTest.h:
+* examples/hierarchy/ChessTest.h: replaced usage of 'typename' in template
+  declaration with 'class'.
+
+* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to use the generic TestRunner.
+  Removed methods runTestByName() and runTest(). Inherits
+  CppUnit::TestRunner.
+
+* include/cppunit/extensions/TestSuiteBuilder.h: removed templatized method
+  addTestCallerForException(). It is no longer used since release 1.9.8.
+
+* examples/cppunittest/MockTestCase.h
+* examples/cppunittest/MockTestCase.cpp: removed the usage of 'mutable'
+  keyword.
+@
+text
+@d11 2
+a12 1
+namespace CppUnit {
+d66 1
+a66 1
+class CPPUNIT_API TestRunner : public CppUnit::TestRunner
+d70 1
+a70 1
+  typedef CppUnit::TestRunner SuperClass;
+d99 1
+a99 1
+} // namespace CppUnit
+@
+
+
+1.3
+log
+@* NEWS: updated
+
+* doc/other_documentation.dox: addded new module for test plug-in.
+
+* include/msvc6/DSPlugin/TestRunnerDSPlugin.h:
+* include/msvc6/DSPlugin/TestRunnerDSPlugin_i.c: added. Those file are
+  generated by project src/msvc/DSPlugin. They are provided to allow
+  compilation of TestRunner without compiling DSPlugIn which does not
+  build on VC++ 7.
+
+* examples/examples.dsw: removed DSPlugIn for workspace (fail to build
+  with VC++ 7). Added DllPlugInTester.dsp to workspace.
+
+* examples/msvc6/TestPlugIn/TestPlugIn.dsp: added post-build unit testing
+  using the new DllPlugInTester.
+
+* examples/msvc6/EasyTestPlugIn/*: a new project that
+  demonstrates the use of CPPUNIT_TESTPLUGIN_IMPL to create a test plug-in.
+
+* src/cppunit/cppunit.dsw:
+* src/TestPlugInRunner.dsw:
+* src/TestRunner.dsw: removed. Should use src/CppUnitLibraries.dsw instead.
+
+* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: removed findTestName() method. Replaced
+  by Test::findTest().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp:
+* src/msvc6/DSPlugIn/DSAddIn.h: changed include for add-in. MIDL generates
+  files in sub-directory ToAddToDistribution. Generated file should be
+  copied to include/msvc6/DSPlugin when modified. This remove the dependecy
+  of MfcTestRunner on DSPlugIn.
+
+* src/msvc6/testrunner/ListCtrlFormatter.h:
+* src/msvc6/testrunner/ListCtrlFormatter.cpp: added GetNextColumnIndex().
+
+* src/msvc6/testrunner/src/TestRunnerDlg.h:
+* src/msvc6/testrunner/src/TestRunnerDlg.cpp: set column number in
+  MsDevCallerListCtrl when initializing the list.
+
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.cpp: column indexes for
+  file and line number are no longer static. Added methods to set those
+  indexes. Changed DSPlugIn header name.
+
+* include/msvc6/testrunner/TestPlugInInterface.h: fixed inclusion of
+  windows header for WINAPI. Added macro CPPUNIT_TESTPLUGIN_IMPL to
+  automatically implements a test plug-in.
+
+* src/msvc6/DllPlugInTester/*: added new project. A application to test DLL
+  and report using CompilerOutputter. Target for post-build testing and
+  debugging of DLL.
+@
+text
+@d4 2
+d9 1
+d65 1
+a65 1
+class CPPUNIT_API TestRunner
+d68 3
+d75 1
+a75 1
+  bool run( std::string testName ="",
+a79 2
+  void addTest( Test *test );
+
+a86 4
+  virtual bool runTest( Test *test,
+                        bool doPrintProgress );
+  virtual bool runTestByName( std::string testName,
+                              bool printProgress );
+a89 1
+  TestSuite *m_suite;
+@
+
+
+1.2
+log
+@* Makefile.am: added examples/qt to tar ball release.
+
+* TODO: heavily updated.
+
+* contrib/msvc/CppUnit*.wwtpl: changed base class for unit test to TestFixture.
+
+* include/cppunit/Test.h: removed toString() method. Not used by the framework
+  and source of confusions with getName().
+  Added getChildTestCount() and getChildTestAt(), introducing the composite pattern
+  at top level. Added utility methods findTest() and findTestPath().
+
+* src/cppunit/Test.cpp: added. Implementation of new utility methods.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: inherits TestLeaf. Removed toString(), run(void) and
+  defaultResult(). Removed default constructor.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestSuite.cpp: fixed some includes that used "" instead of <>.
+
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: added. Common implementation of Test for composite
+  tests (TestSuite).
+
+* include/cppunit/TestFailure.h:
+* src/cppunit/TestFailure.cpp: removed toString().
+
+* include/cppunit/TestLeaf.h:
+* src/cppunit/TestLeaf.cpp: added. Common implementation of Test for single test
+  (TestCase).
+
+* include/cppunit/TestListener.h: added TimingListener example to documentation.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: added. List of test traversed to access a test in the
+  test hierarchy.
+
+* include/cppunit/TestRunner.h: added. Generic TestRunner.
+
+* src/cppunit/TestRunner.cpp: moved to TextTestRunner.cpp. Added new implementation
+  of includecppunit/TestRunner.h.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: inherits TestComposite and implements new Test
+  interface. Removed toString().
+
+* src/cppunit/TextTestRunner.cpp: moved from TestRunner.cpp. Implementation of
+  include/cppunit/ui/text/TestRunner.h.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* src/cppunit/RepeatedTest.cpp: removed toString().
+
+* include/cppunit/extensions/TestDecorator.h: inherits TestLeaf.
+  Removed toString()
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h: XML outputter now escape node content.
+  Add unit test for that bug (#540944). Added style sheet support. Modified
+  XML structure: failure message as its own element.
+
+* src/msvc/testrunner/TestRunnerModel.h:
+* src/msvc/testrunner/TestRunnerModel.cpp: used Test::findTest() to find a test
+  by name instead of using RTTI. Added toAnsiString() for convertion when
+  compiling as UNICODE.
+
+* src/msvc/testrunner/TreeHierarchyDlg.h:
+* src/msvc/testrunner/TreeHierarchyDlg.cpp: used new composite interface of Test
+  to explorer the test hierarchy instead of RTTI.
+
+* examples/cppunittest/TestPathTest.h:
+* examples/cppunittest/TestPathTest.cpp: added, unit tests for TestPath.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: added test for TestLeaf.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: added test for TestComposite and
+  new Test interface.
+@
+text
+@a89 2
+  virtual Test *findTestByName( std::string name ) const;
+
+@
+
+
+1.1
+log
+@* include/cppunitui/: moved to include/cppunit/ui (fix unix install problem).
+
+* doc/cookbook.dox:
+* examples/cppunittest/CppUnitTestMain.cpp:
+* examples/msvc/CppUnitTestApp/HostApp.cpp:
+* examples/msvc/HostApp/HostApp.cpp:
+* examples/qt/Main.Cpp:
+* examples/src/cppunit/TestRunner.cpp:
+* examples/src/msvc6/TestRunner/TestRunner.cpp:
+* examples/src/qttestrunner/TestRunner.cpp: updated to use <cppunit/ui/...>
+instead of <cppunitui/...> in include directives.
+
+* doc/CppUnit-win.dox: generated documentation give the include path at the
+bottom of the page for each class.
+
+* NEWS: added compatibility break for 1.7.10 users.
+@
+text
+@d1 2
+a2 2
+#ifndef CPPUNITUI_TEXT_TESTRUNNER_H
+#define CPPUNITUI_TEXT_TESTRUNNER_H
+d103 1
+a103 1
+#endif  // CPPUNITUI_TEXT_TESTRUNNER_H
+@
+

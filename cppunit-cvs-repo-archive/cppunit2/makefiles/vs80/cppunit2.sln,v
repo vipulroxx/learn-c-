@@ -1,0 +1,80 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2007.08.16.15.51.04;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@   Added initial support for column fixture supported by fitness. Still missing
+automatic type convertion and correct reporting of error with regard to
+originating cell.
+@
+text
+@Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpptl_lib", "cpptl_lib.vcproj", "{4037D758-74CD-412B-B67C-BA3CA89FEF28}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpput_lib", "cpput_lib.vcproj", "{79273A0D-700E-4AFA-B7F2-14D4CC325521}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpput_test", "cpput_test.vcproj", "{2506991E-13CA-49C9-8686-AACDE35C21B6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4037D758-74CD-412B-B67C-BA3CA89FEF28} = {4037D758-74CD-412B-B67C-BA3CA89FEF28}
+		{79273A0D-700E-4AFA-B7F2-14D4CC325521} = {79273A0D-700E-4AFA-B7F2-14D4CC325521}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "example", "example.vcproj", "{0DCDB99D-0591-4C6E-95C2-74B2EDABC338}"
+	ProjectSection(ProjectDependencies) = postProject
+		{79273A0D-700E-4AFA-B7F2-14D4CC325521} = {79273A0D-700E-4AFA-B7F2-14D4CC325521}
+		{2506991E-13CA-49C9-8686-AACDE35C21B6} = {2506991E-13CA-49C9-8686-AACDE35C21B6}
+		{4037D758-74CD-412B-B67C-BA3CA89FEF28} = {4037D758-74CD-412B-B67C-BA3CA89FEF28}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		dummy|Win32 = dummy|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4037D758-74CD-412B-B67C-BA3CA89FEF28}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4037D758-74CD-412B-B67C-BA3CA89FEF28}.Debug|Win32.Build.0 = Debug|Win32
+		{4037D758-74CD-412B-B67C-BA3CA89FEF28}.dummy|Win32.ActiveCfg = Debug|Win32
+		{4037D758-74CD-412B-B67C-BA3CA89FEF28}.dummy|Win32.Build.0 = Debug|Win32
+		{4037D758-74CD-412B-B67C-BA3CA89FEF28}.Release|Win32.ActiveCfg = Release|Win32
+		{4037D758-74CD-412B-B67C-BA3CA89FEF28}.Release|Win32.Build.0 = Release|Win32
+		{79273A0D-700E-4AFA-B7F2-14D4CC325521}.Debug|Win32.ActiveCfg = Debug|Win32
+		{79273A0D-700E-4AFA-B7F2-14D4CC325521}.Debug|Win32.Build.0 = Debug|Win32
+		{79273A0D-700E-4AFA-B7F2-14D4CC325521}.dummy|Win32.ActiveCfg = Debug|Win32
+		{79273A0D-700E-4AFA-B7F2-14D4CC325521}.dummy|Win32.Build.0 = Debug|Win32
+		{79273A0D-700E-4AFA-B7F2-14D4CC325521}.Release|Win32.ActiveCfg = Release|Win32
+		{79273A0D-700E-4AFA-B7F2-14D4CC325521}.Release|Win32.Build.0 = Release|Win32
+		{2506991E-13CA-49C9-8686-AACDE35C21B6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2506991E-13CA-49C9-8686-AACDE35C21B6}.Debug|Win32.Build.0 = Debug|Win32
+		{2506991E-13CA-49C9-8686-AACDE35C21B6}.dummy|Win32.ActiveCfg = Debug|Win32
+		{2506991E-13CA-49C9-8686-AACDE35C21B6}.dummy|Win32.Build.0 = Debug|Win32
+		{2506991E-13CA-49C9-8686-AACDE35C21B6}.Release|Win32.ActiveCfg = Release|Win32
+		{2506991E-13CA-49C9-8686-AACDE35C21B6}.Release|Win32.Build.0 = Release|Win32
+		{0DCDB99D-0591-4C6E-95C2-74B2EDABC338}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0DCDB99D-0591-4C6E-95C2-74B2EDABC338}.Debug|Win32.Build.0 = Debug|Win32
+		{0DCDB99D-0591-4C6E-95C2-74B2EDABC338}.dummy|Win32.ActiveCfg = Debug|Win32
+		{0DCDB99D-0591-4C6E-95C2-74B2EDABC338}.dummy|Win32.Build.0 = Debug|Win32
+		{0DCDB99D-0591-4C6E-95C2-74B2EDABC338}.Release|Win32.ActiveCfg = Release|Win32
+		{0DCDB99D-0591-4C6E-95C2-74B2EDABC338}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
+@

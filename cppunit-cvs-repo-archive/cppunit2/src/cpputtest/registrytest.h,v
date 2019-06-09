@@ -1,0 +1,212 @@
+head	1.7;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.6
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.3
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.3
+	TG_AFTER_REMOVING_TESTCONTEXT:1.3
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.3
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.3
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.7
+date	2008.07.08.20.42.00;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2005.11.13.10.12.01;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.11.08.23.25.31;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.02.27.15.27.09;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.11.17.08.59.34;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.27.23.37.22;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@- Fixed bug in Registry::remove() when a suite had multiple child suites.
+- Added Registry suite removal tests
+@
+text
+@#ifndef CPPUT_REGISTRYTEST_H_INCLUDED
+ #define CPPUT_REGISTRYTEST_H_INCLUDED
+
+# include <cpptl/sharedptr.h>
+# include <cpput/assertcommon.h>
+# include <cpput/testfixture.h>
+# include <cpput/registry.h>
+# include <set>
+
+
+class RegistryTest : public CppUT::TestFixture
+{
+public:
+   CPPUT_TESTSUITE_BEGIN( RegistryTest );
+   CPPUT_TEST( testCreateDefaultTests );
+   CPPUT_TEST( testAddTestToDefault );
+   CPPUT_TEST( testAddTestToNamed );
+   CPPUT_TEST( testAddAndRemoveChild );
+   CPPUT_TEST( testAutoRemoveByTestFactoryId );
+   CPPUT_TEST( testStaticRegistration );
+   CPPUT_TESTSUITE_END();
+   
+   void setUp();
+
+   void tearDown();
+
+   void testCreateDefaultTests();
+
+   void testAddTestToDefault();
+
+   void testAddTestToNamed();
+
+   void testAddAndRemoveChild();
+
+   void testAutoRemoveByTestFactoryId();
+
+   void testStaticRegistration();
+
+private:
+   CppUT::TestPtr makeTest( const std::string &testName );
+
+   void runTest( const std::string &testName );
+
+   void runTestSuite( CppUT::TestSuitePtr suite );
+
+   CppUT::TestFactory makeTestFactory( const std::string &testName );
+
+   static bool containsTestNamed( const CppUT::TestSuitePtr &suite,
+                                  const std::string &name );
+
+   std::set<std::string> testNames_;
+
+   CppTL::SharedPtr<CppUT::Registry> registry_;
+};
+
+
+#endif // CPPUT_REGISTRYTEST_H_INCLUDED
+@
+
+
+1.6
+log
+@- renamed include/cpput/assert.h to include/cpput/assertcommon.h. This avoid clash with include <assert.h> in doxygen documentation
+- most Impl namespaces are now hidden from documentation using \cond and \endcond.
+@
+text
+@d18 2
+a19 1
+   CPPUT_TEST( testAddChild );
+d33 3
+a35 1
+   void testAddChild();
+@
+
+
+1.5
+log
+@- fixed static registration macro for Registry
+- static registration macros must no longer be followed by a semi-colon
+  (therefore we get compiler error if registry.h was not included)
+- allow registration macros to work with class implenting suite() or suite( const std::string &).
+@
+text
+@d5 1
+a5 1
+# include <cpput/assert.h>
+@
+
+
+1.4
+log
+@* ported the Registry tests back to the new framework architecture.
+@
+text
+@d19 1
+d34 2
+d45 3
+@
+
+
+1.3
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@d38 2
+@
+
+
+1.2
+log
+@* SmartPtr now subclass boost::shared_ptr to make templated function
+  overloading easier.
+* Added our own smart pointer implementation
+* Added AtomicCounter as implementation detail.
+  Can use boost::detail::atomic_counter.
+@
+text
+@d4 1
+a4 1
+# include <cpput/smartptr.h>
+d42 1
+a42 1
+   CppUT::SmartPtr<CppUT::Registry> registry_;
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d42 1
+a42 1
+   CppUT::SmartPtr<CppUT::Registry>::Ptr registry_;
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

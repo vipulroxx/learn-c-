@@ -1,0 +1,657 @@
+head	1.9;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.8
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.2
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.1.1.1
+	TG_AFTER_REMOVING_TESTCONTEXT:1.1.1.1
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.1.1.1
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.1.1.1
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.9
+date	2007.08.15.11.20.57;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.11.11.23.23.48;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.11.09.21.40.29;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2005.11.08.23.25.31;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.11.08.21.44.54;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.03.03.20.57.14;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.02.27.14.38.26;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.02.27.10.15.41;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.28;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.28;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.9
+log
+@   Added support for light test fixture (a la CppUnitLite).
+See lightfixture.h and example/light_fixture.
+   Added support for direct declaration and registration of test in plain C
+function. See testfunction.h and example/test_function.
+@
+text
+@#ifndef CPPUT_REGISTRY_H_INCLUDED
+# define CPPUT_REGISTRY_H_INCLUDED
+
+# include <cpput/forwards.h>
+# include <cpptl/conststring.h>
+# include <cpptl/functor.h>
+# include <deque>
+# include <map>
+
+
+namespace CppUT {
+
+/*! \ingroup group_testregistry
+*/
+typedef CppTL::Functor0R<TestPtr> TestFactory;
+
+/*! \ingroup group_testregistry
+*/
+typedef int TestFactoryId;
+
+
+/*! \ingroup group_testregistry
+ * Static registry for all tests.
+ * Any suite or test added to the registry by a dynamic library that contains test should
+ * be removed using remove(). Helper macros take carre of this.
+ */
+class CPPUT_API Registry
+{
+public:
+   static std::string defaultParentSuiteName();
+
+   static Registry &instance();
+
+   Registry();
+
+   void addChild( const std::string &parentSuiteName,
+                  const std::string &childSuiteName );
+   void addChildToDefault( const std::string &childSuiteName );
+
+   bool removeChild( const std::string &parentSuiteName,
+                     const std::string &childSuiteName );
+
+   TestFactoryId add( const std::string &parentSuiteName,
+                      const TestFactory &testFactory );
+   TestFactoryId add( const std::string &parentSuiteName,
+                      TestPtr (*factory)() );
+   TestFactoryId add( const std::string &parentSuiteName,
+                      TestPtr (*factory)( const std::string &suiteName ),
+                      const std::string &suiteName = std::string("") );
+
+   TestFactoryId addToDefault( const TestFactory &testFactory );
+   TestFactoryId addToDefault( TestPtr (*factory)() );
+   TestFactoryId addToDefault( TestPtr (*factory)( const std::string &suiteName ),
+                               const std::string &suiteName = std::string("") );
+
+   bool remove( TestFactoryId testFactoryId );
+
+   TestSuitePtr createTests( const std::string &suiteName ) const;
+
+   TestSuitePtr createDefaultTests() const;
+
+   void addCreatedTests( const std::string &suiteName,
+                         const TestSuitePtr &suite ) const;
+
+private:
+   void addChildSuite( const std::string &suiteName, 
+                       const TestSuitePtr &suite ) const;
+
+   void addSuiteRegisteredTests( const std::string &suiteName, 
+                                 const TestSuitePtr &suite ) const;
+
+   TestFactoryId nextFactoryId();
+
+   typedef std::pair<TestFactory, TestFactoryId> TestFactoryWithId;
+   
+   typedef std::deque<TestFactoryWithId> TestFactories;
+   typedef std::map<CppTL::ConstString,TestFactories> TestFactoryRegistry;
+   TestFactoryRegistry registry_;
+
+   typedef std::multimap<CppTL::ConstString,CppTL::ConstString> ParentChildRelationShips;
+   ParentChildRelationShips relations_;
+
+   typedef std::map<TestFactoryId,CppTL::ConstString> TestFactoryParentSuiteById;
+   TestFactoryParentSuiteById parentSuiteById_;
+
+   TestFactoryId nextId_;
+};
+
+
+namespace Impl {
+   
+   enum RegisterToNamedSuiteTag {
+      registerToNamedSuite
+   };
+
+} // namespace Impl
+
+
+/*! \ingroup group_testregistry
+*/
+template<class SuiteType>
+class SuiteRegisterer
+{
+public:
+   SuiteRegisterer()
+   {
+      testFactoryId_ = Registry::instance().addToDefault( &SuiteType::suite );
+   }
+
+   SuiteRegisterer( const std::string &suiteName )
+   {
+      testFactoryId_ = Registry::instance().addToDefault( &SuiteType::suite, 
+                                                          suiteName );
+   }
+
+   SuiteRegisterer( Impl::RegisterToNamedSuiteTag,
+                    const std::string &parentSuiteName )
+   {
+      testFactoryId_ = Registry::instance().add( parentSuiteName,
+                                                 &SuiteType::suite );
+   }
+
+   SuiteRegisterer( Impl::RegisterToNamedSuiteTag,
+                    const std::string &parentSuiteName, 
+                    const std::string &suiteName )
+   {
+      testFactoryId_ = Registry::instance().add( parentSuiteName,
+                                                 &SuiteType::suite,
+                                                 suiteName );
+   }
+
+   ~SuiteRegisterer()
+   {
+      Registry::instance().remove( testFactoryId_ );
+   }
+
+protected:
+   SuiteRegisterer( TestFactoryId testFactoryId ):
+         testFactoryId_( testFactoryId )
+   {
+   }
+
+private:
+   TestFactoryId testFactoryId_;
+};
+
+
+
+/*! \ingroup group_testregistry
+*/
+#define CPPUT_REGISTER_NAMED_SUITE_TO_DEFAULT( TestFixtureType, suiteName )  \
+  static CppUT::SuiteRegisterer< TestFixtureType >                           \
+             CPPTL_MAKE_UNIQUE_NAME(cpputSuiteRegisterer )(suiteName);
+
+
+/*! \ingroup group_testregistry
+*/
+#define CPPUT_REGISTER_SUITE_TO_DEFAULT( TestFixtureType )                   \
+  static CppUT::SuiteRegisterer< TestFixtureType >                           \
+             CPPTL_MAKE_UNIQUE_NAME(cpputSuiteRegisterer );
+
+
+/*! \ingroup group_testregistry
+*/
+#define CPPUT_REGISTER_SUITE_IN( TestFixtureType, parentSuiteName )          \
+  static CppUT::SuiteRegisterer< TestFixtureType >                           \
+             CPPTL_MAKE_UNIQUE_NAME(cpputSuiteRegisterer)(                   \
+                     CppUT::Impl::registerToNamedSuite,                      \
+                     parentSuiteName );
+
+
+/*! \ingroup group_testregistry
+*/
+#define CPPUT_REGISTER_NAMED_SUITE_IN( TestFixtureType,                      \
+                                       parentSuiteName,                      \
+                                       suiteName )                           \
+  static CppUT::SuiteRegisterer< TestFixtureType >                           \
+             CPPTL_MAKE_UNIQUE_NAME(cpputSuiteRegisterer )(                  \
+                     CppUT::Impl::registerToNamedSuite,                      \
+                     parentSuiteName,                                        \
+                     suiteName );
+
+/*! \ingroup group_testregistry
+*/
+class SuiteRelationshipRegisterer
+{
+public:
+   explicit SuiteRelationshipRegisterer( const std::string &childSuiteName )
+      : childSuiteName_( childSuiteName )
+      , parentSuiteName_( Registry::defaultParentSuiteName() )
+   {
+      Registry::instance().addChildToDefault( childSuiteName );
+   }
+
+   SuiteRelationshipRegisterer( const std::string &parentSuiteName,
+                                const std::string &childSuiteName )
+      : parentSuiteName_( parentSuiteName )
+      , childSuiteName_( childSuiteName )
+   {
+      Registry::instance().addChild( parentSuiteName, childSuiteName );
+   }
+
+   ~SuiteRelationshipRegisterer()
+   {
+      Registry::instance().removeChild( parentSuiteName_.str(), 
+                                        childSuiteName_.str() );
+   }
+
+private:
+   CppTL::ConstString parentSuiteName_;
+   CppTL::ConstString childSuiteName_;
+};
+
+
+/*! \ingroup group_testregistry
+*/
+#define CPPUT_REGISTER_SUITE_RELATIONSHIP( parentSuiteName, childSuiteName ) \
+   static ::CppUT::SuiteRelationshipRegisterer                               \
+             CPPTL_MAKE_UNIQUE_NAME(cpputSuiteRelationShipRegisterer )(      \
+                                            parentSuiteName,                 \
+                                            childSuiteName )
+
+
+/*! \ingroup group_testregistry
+*/
+#define CPPUT_REGISTER_SUITE_RELATIONSHIP_TO_DEFAULT( childSuiteName )       \
+   static ::CppUT::SuiteRelationshipRegisterer                               \
+             CPPTL_MAKE_UNIQUE_NAME(cpputSuiteRelationShipRegisterer )(      \
+                                            childSuiteName )
+
+
+// Plain C function tests
+
+/*! \ingroup group_testregistry
+ * \brief Helper object used to statically register a TestFactory.
+ */
+class TestFactoryRegisterer
+{
+public:
+   typedef TestPtr (*FactoryFn)();
+
+   TestFactoryRegisterer( FactoryFn testFactory )
+   {
+      testFactoryId_ = Registry::instance().addToDefault( CppTL::cfn0r<TestPtr>(testFactory) );
+   }
+
+   TestFactoryRegisterer( TestFactory testFactory )
+   {
+      testFactoryId_ = Registry::instance().addToDefault( testFactory );
+   }
+
+   TestFactoryRegisterer( TestFactory testFactory, const std::string &parentSuiteName )
+   {
+      testFactoryId_ = Registry::instance().add( parentSuiteName, testFactory );
+   }
+
+   TestFactoryRegisterer( FactoryFn testFactory, const std::string &parentSuiteName )
+   {
+      testFactoryId_ = Registry::instance().add( parentSuiteName, CppTL::cfn0r<TestPtr>(testFactory) );
+   }
+
+   ~TestFactoryRegisterer()
+   {
+      Registry::instance().remove( testFactoryId_ );
+   }
+
+private:
+   TestFactoryId testFactoryId_;
+};
+
+/*! \ingroup group_testregistry
+ * \brief Register the specified TestFactory in the default Registry suite.
+ */
+#define CPPUT_REGISTER_TESTFACTORY_TO_DEFAULT( testFactory )               \
+   static ::CppUT::TestFactoryRegisterer                                   \
+      CPPTL_MAKE_UNIQUE_NAME(cpputTestFactoryRegisterer)( testFactory )
+
+/*! \ingroup group_testregistry
+ * \brief Register the specified TestFactory in the specified Registry suite.
+ */
+#define CPPUT_REGISTER_TESTFACTORY_IN( testFactory, parentSuiteName )      \
+   static ::CppUT::TestFactoryRegisterer                                   \
+      CPPTL_MAKE_UNIQUE_NAME(cpputTestFactoryRegisterer)( testFactory, parentSuiteName )
+
+} // namespace CppUT
+
+
+#endif // CPPUT_REGISTRY_H_INCLUDED
+@
+
+
+1.8
+log
+@Rough documentation: placed most function/class/macro in group.
+@
+text
+@d23 4
+a26 1
+*/
+d38 1
+d188 7
+d218 1
+a218 1
+  static CppUT::SuiteRelationshipRegisterer                                  \
+d227 24
+a250 3
+   CPPUT_REGISTER_SUITE_RELATIONSHIP(                                        \
+         CppUT::Registry::instance().getDefaultName(),                       \
+         childSuiteName )
+d252 32
+@
+
+
+1.7
+log
+@- simplified ...SUITE_IN macros.
+@
+text
+@d13 2
+d17 2
+d22 2
+d95 2
+d145 2
+d152 2
+d159 2
+d168 2
+d179 2
+d204 2
+d213 2
+@
+
+
+1.6
+log
+@- fixed static registration macro for Registry
+- static registration macros must no longer be followed by a semi-colon
+  (therefore we get compiler error if registry.h was not included)
+- allow registration macros to work with class implenting suite() or suite( const std::string &).
+@
+text
+@d82 3
+a84 1
+   struct RegisterToNamedSuiteTag {};
+d149 2
+a150 2
+             CPPTL_MAKE_UNIQUE_NAME(cpputSuiteRegisterer )(                  \
+                     CppUT::Impl::RegisterToNamedSuiteTag(),                 \
+d159 2
+a160 2
+                     CppUT::Impl::RegisterToNamedSuiteTag(),                 \
+                     parentSuiteName,                                              \
+@
+
+
+1.5
+log
+@- changed most interface to use std::string instead of CppTL::ConstString
+- CppTL::ConstString is now an implementation detail and is used to store string in objects as it is thread-safe.
+@
+text
+@d35 5
+d42 3
+d91 1
+a91 1
+   SuiteRegisterer( const std::string &suiteName = "" )
+d93 14
+a106 1
+      registerSuite( suiteName, "" );
+d111 1
+a111 1
+                    const std::string &suiteName = std::string( "" ) )
+d113 3
+a115 1
+      registerSuite( suiteName, parentSuiteName );
+d124 2
+a125 2
+   void registerSuite( const std::string &suiteName,
+                       const std::string &parentSuiteName )
+a126 4
+      CppTL::ConstString suiteNameByValue( suiteName );
+      TestFactory factory = CppTL::bind_cfnr<TestPtr>( &SuiteType::suite, 
+                                                       suiteNameByValue );
+      testFactoryId_ = Registry::instance().add( parentSuiteName, factory );
+d137 1
+a137 1
+             CPPTL_MAKE_UNIQUE_NAME(cpputSuiteRegisterer )(suiteName)
+d142 1
+a142 1
+             CPPTL_MAKE_UNIQUE_NAME(cpputSuiteRegisterer )(#TestFixtureType)
+d147 3
+a149 2
+             CPPTL_MAKE_UNIQUE_NAME(cpputSuiteRegisterer )(parentSuiteName,\
+                                            Impl::RegisterToNamedSuiteTag() )
+d156 4
+a159 3
+             CPPTL_MAKE_UNIQUE_NAME(cpputSuiteRegisterer )(parentSuiteName,\
+                                            suiteName,                       \
+                                            Impl::RegisterToNamedSuiteTag() )
+d186 1
+a186 1
+             CPPTL_MAKE_UNIQUE_NAME(cpputSuiteRelationShipRegisterer )(    \
+@
+
+
+1.4
+log
+@* renamed and moved macro CPPUT_MAKE_UNIQUE_NAME to cpptl library.
+@
+text
+@d21 1
+a21 1
+   static CppTL::ConstString defaultParentSuiteName();
+d27 2
+a28 2
+   void addChild( const CppTL::ConstString &parentSuiteName,
+                  const CppTL::ConstString &childSuiteName );
+d30 2
+a31 2
+   bool removeChild( const CppTL::ConstString &parentSuiteName,
+                     const CppTL::ConstString &childSuiteName );
+d33 1
+a33 1
+   TestFactoryId add( const CppTL::ConstString &parentSuiteName,
+d40 1
+a40 1
+   TestSuitePtr createTests( const CppTL::ConstString &suiteName ) const;
+d44 1
+a44 1
+   void addCreatedTests( const CppTL::ConstString &suiteName,
+d48 1
+a48 1
+   void addChildSuite( const CppTL::ConstString &suiteName, 
+d51 1
+a51 1
+   void addSuiteRegisteredTests( const CppTL::ConstString &suiteName, 
+d83 1
+a83 1
+   SuiteRegisterer( const CppTL::ConstString &suiteName = "" )
+d89 2
+a90 2
+                    const CppTL::ConstString &parentSuiteName, 
+                    const CppTL::ConstString &suiteName = CppTL::ConstString( "" ) )
+d101 2
+a102 2
+   void registerSuite( const CppTL::ConstString &suiteName,
+                       const CppTL::ConstString &parentSuiteName )
+a106 2
+      if ( parentSuiteName == "" )
+         parentSuiteName == Registry::defaultParentSuiteName();
+d143 2
+a144 2
+   SuiteRelationshipRegisterer( const CppTL::ConstString &parentSuiteName,
+                                const CppTL::ConstString &childSuiteName )
+d153 2
+a154 1
+      Registry::instance().removeChild( parentSuiteName_, childSuiteName_ );
+@
+
+
+1.3
+log
+@* changed cppunit 2 to use the new functors (cpptl/functor.h). bind_cfn & bind_memfn simplified some of the test code.
+@
+text
+@d120 1
+a120 1
+             CPPUT_MAKE_UNIQUE_NAME(cpputSuiteRegisterer )(suiteName)
+d125 1
+a125 1
+             CPPUT_MAKE_UNIQUE_NAME(cpputSuiteRegisterer )(#TestFixtureType)
+d130 1
+a130 1
+             CPPUT_MAKE_UNIQUE_NAME(cpputSuiteRegisterer )(parentSuiteName,\
+d138 1
+a138 1
+             CPPUT_MAKE_UNIQUE_NAME(cpputSuiteRegisterer )(parentSuiteName,\
+d166 1
+a166 1
+             CPPUT_MAKE_UNIQUE_NAME(cpputSuiteRelationShipRegisterer )(    \
+@
+
+
+1.2
+log
+@* use CppTL::ConstString instead of std::string for thread-safety
+@
+text
+@d6 1
+a6 1
+# include <cpput/functor.h>
+d13 1
+a13 1
+typedef FunctorR0<TestPtr> TestFactory;
+d105 2
+a106 3
+      TestFactory factory = makeFnR0<TestPtr>( 
+         bindR1( makeCFnR1<TestPtr, CppTL::ConstString>( &SuiteType::suite ), 
+                 suiteNameByValue ) );
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a3 1
+# include <cpput/config.h>
+d5 1
+d21 1
+a21 1
+   static std::string defaultParentSuiteName();
+d27 2
+a28 2
+   void addChild( const std::string &parentSuiteName,
+                  const std::string &childSuiteName );
+d30 2
+a31 2
+   bool removeChild( const std::string &parentSuiteName,
+                     const std::string &childSuiteName );
+d33 1
+a33 1
+   TestFactoryId add( const std::string &parentSuiteName,
+d40 1
+a40 1
+   TestSuitePtr createTests( const std::string &suiteName ) const;
+d44 1
+a44 1
+   void addCreatedTests( const std::string &suiteName,
+d48 1
+a48 1
+   void addChildSuite( const std::string &suiteName, 
+d51 1
+a51 1
+   void addSuiteRegisteredTests( const std::string &suiteName, 
+d59 1
+a59 1
+   typedef std::map<std::string,TestFactories> TestFactoryRegistry;
+d62 1
+a62 1
+   typedef std::multimap<std::string,std::string> ParentChildRelationShips;
+d65 1
+a65 1
+   typedef std::map<TestFactoryId,std::string> TestFactoryParentSuiteById;
+d83 1
+a83 1
+   SuiteRegisterer( const std::string &suiteName = "" )
+d89 2
+a90 2
+                    const std::string &parentSuiteName, 
+                    const std::string &suiteName = std::string( "" ) )
+d101 2
+a102 2
+   void registerSuite( const std::string &suiteName,
+                       const std::string &parentSuiteName )
+d104 1
+a104 1
+      std::string suiteNameByValue( suiteName );
+d106 1
+a106 1
+         bindR1( makeCFnR1<TestPtr, std::string>( &SuiteType::suite ), 
+d146 2
+a147 2
+   SuiteRelationshipRegisterer( const std::string &parentSuiteName,
+                                const std::string &childSuiteName )
+d160 2
+a161 2
+   std::string parentSuiteName_;
+   std::string childSuiteName_;
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

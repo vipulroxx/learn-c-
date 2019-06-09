@@ -1,0 +1,229 @@
+head	1.3;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2006.09.03.07.15.49;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.11.11.23.23.48;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.08.06.22.24.52;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@- added support to declare test case association to a given group in test fixture.
+@
+text
+@#ifndef CPPUT_EXTENDEDDATA_H_INCLUDED
+# define CPPUT_EXTENDEDDATA_H_INCLUDED
+
+# include <cpput/forwards.h>
+# include <string>
+
+
+namespace CppUT {
+
+
+/*! \brief Helper to set test extended data (description, time-out, dependencies...)
+ * \ingroup group_testfixture
+ * 
+ * Example of usage:
+ * \code
+ * class SomeClass : public TestExtendedDataFactory {
+ * public:
+ *    static void enrichTest( Test &test ) {
+ *       CppUT::TestExtendedDataHelper( test )( describe( "Test conversion" ),
+ *                                              timeOut( 30.0 ),
+ *                                              depends( "testInit" ) );
+ *    }
+ * };
+ * \endcode
+ *
+ * The above code sample is equivalent to:
+ *
+ * \code
+ * static void enrichTest( Test &test ) {
+ *    test.setDescription( "Test conversion" );
+ *    test.setTimeOut( 30.0 );
+ *    test.setDependenciesFromPackedString( "testInit" );
+ * }
+ * \endcode
+ *
+ * The only purpose of this class is to make it easy to set test properties without
+ * direct access to the test object. It is used to implement the macro
+ * \link CPPUT_TEST_WITH_SPECIFICS() \endlink.
+ * \ingroup group_testfixture
+ */
+class TestExtendedDataHelper
+{
+public:
+   TestExtendedDataHelper( Test &test );
+   virtual ~TestExtendedDataHelper();
+
+   Test &operator()( const TestExtendedData &data ) const;
+
+private:
+   Test &test_;
+};
+
+
+/*! \ingroup group_testfixture
+ */
+class CPPUT_API TestExtendedData
+{
+public:
+   virtual ~TestExtendedData();
+
+   virtual void apply( Test &test ) const = 0;
+
+   TestExtendedDataList operator ,( const TestExtendedData &other ) const;
+};
+
+
+/*! \ingroup group_testfixture
+ */
+class TestExtendedDataList : public TestExtendedData
+{
+public:
+   TestExtendedDataList( const TestExtendedData &left,
+                              const TestExtendedData &right );
+public: // overridden from TestExtendedData
+   void apply( Test &test ) const;
+
+private:
+   const TestExtendedData &left_;
+   const TestExtendedData &right_;
+};
+
+
+/*! \ingroup group_testfixture
+ */
+class CPPUT_API DescriptionData : public TestExtendedData
+{
+public:
+   DescriptionData( const std::string &description );
+
+public: // overridden from TestExtendedData
+   void apply( Test &test ) const;
+
+private:
+   std::string description_;
+};
+
+
+/*! \ingroup group_testfixture
+ */
+class CPPUT_API TimeOutData : public TestExtendedData
+{
+public:
+   TimeOutData( double timeOutInSeconds );
+
+public: // overridden from TestExtendedData
+   void apply( Test &test ) const;
+
+private:
+   double timeOutInSeconds_;
+};
+
+
+/*! \ingroup group_testfixture
+ */
+class CPPUT_API DependenciesData : public TestExtendedData
+{
+public:
+   DependenciesData(  const std::string &dependencies  );
+
+public: // overridden from TestExtendedData
+   void apply( Test &test ) const;
+private:
+   std::string dependencies_;
+};
+
+
+/*! \ingroup group_testfixture
+ */
+class CPPUT_API GroupData : public TestExtendedData
+{
+public:
+   GroupData(  const std::string &groupName );
+
+public: // overridden from TestExtendedData
+   void apply( Test &test ) const;
+private:
+   std::string groupName_;
+};
+
+
+/*! \ingroup group_testfixture
+ */
+class CPPUT_API TestExtendedDataFactory
+{
+public:
+   virtual ~TestExtendedDataFactory();
+
+   static DescriptionData describe( const std::string &description );
+
+   static TimeOutData timeOut( double timeOutInSeconds );
+
+   static DependenciesData depends( const std::string &dependencies );
+
+   static GroupData group( const std::string &groupName );
+};
+
+
+} // namespace CppUT
+
+
+#endif // CPPUT_EXTENDEDDATA_H_INCLUDED
+@
+
+
+1.2
+log
+@Rough documentation: placed most function/class/macro in group.
+@
+text
+@d129 14
+d153 2
+@
+
+
+1.1
+log
+@Added possibility to add test to a fixture and set its description and time-out (and other specifics).
+@
+text
+@d11 2
+a12 1
+/** \brief Helper to set test extended data (description, time-out, dependencies...)
+d34 1
+a34 1
+ * \end
+d38 2
+a39 1
+ * \link CPPUT_TEST_WITH_SPECIFICS().
+d54 2
+d67 2
+d83 2
+d98 2
+d113 2
+d127 2
+@
+

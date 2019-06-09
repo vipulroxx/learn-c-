@@ -1,0 +1,54 @@
+head	1.2;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.2
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.2
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.2
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2004.01.27.23.37.22;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.21.13.55;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* SmartPtr now subclass boost::shared_ptr to make templated function
+  overloading easier.
+* Added our own smart pointer implementation
+* Added AtomicCounter as implementation detail.
+  Can use boost::detail::atomic_counter.
+@
+text
+@*.ncb
+*.sln.old
+*.opt
+
+@
+
+
+1.1
+log
+@* added .cvsignore files and a bit of documentation.
+@
+text
+@d2 2
+a3 1
+*.old
+@
+

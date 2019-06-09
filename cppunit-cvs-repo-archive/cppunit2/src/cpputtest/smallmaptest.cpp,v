@@ -1,0 +1,364 @@
+head	1.3;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.3
+date	2007.08.14.17.30.52;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2006.09.06.19.23.26;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2006.06.05.12.09.26;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@   Modified assertion implementation to force evaluation of user
+condition expression first, while preserving delegation to
+function, overloading and optional parameters feature.
+   See CPPUT_BEGIN_ASSERTION_MACRO() documentation in testinfo.h for an example
+to update your custom assertion code.
+
+   New implementation rely on operator evaluation order and operator overloading. The trick is documented in CPPUT_BEGIN_ASSERTION_MACRO().
+@
+text
+@#include "smallmaptest.h"
+#include <cpput/assertcommon.h>
+
+int SmallMapTest::keyset1[10] = { 0, 1, 3, 7, 8, 
+                                  12, 18, 20, 21, 23 };
+int SmallMapTest::keyset2[10] = { 16, 2, 15, 1, 0, 
+                                  18, 97, 5, 6, 7 };
+int SmallMapTest::keyset3[4] =  {        15, 1, 
+                                  18,           7 };
+
+
+#define LOCAL_CHECK_ERASE_RANGE \
+   CPPUT_BEGIN_CHECKING_MACRO() checkEraseRange
+
+#define LOCAL_CHECK_ERASE_ITERATOR \
+   CPPUT_BEGIN_CHECKING_MACRO() checkEraseIterator
+
+
+
+CppUT::CheckerResult
+SmallMapTest::checkEraseRange( int minSeed, int maxSeed, int beginRange, int endRange)
+{
+   CppUT::CheckerResult result;
+   result.compose( CppUT::checkTrue( beginRange >= minSeed  &&  beginRange <= maxSeed ) );
+   result.compose( CppUT::checkTrue( endRange >= minSeed  &&  endRange <= maxSeed ) );
+   result.compose( CppUT::checkTrue( beginRange <= endRange ) );
+   result.compose( CppUT::checkTrue( minSeed <= maxSeed ) );
+   // @@todo fix this and skip following if result has failed.
+   SmallMapIntInt sm;
+   for ( int generator = minSeed; generator < maxSeed; ++generator )
+      sm.insert( IntInt( generator, generator * 101 ) );
+   sm.erase( sm.begin() + (beginRange - minSeed), 
+             sm.begin() + (endRange - minSeed));
+   for ( int checker = minSeed; checker < maxSeed; ++checker )
+   {
+      CppTL::ConstString msg = "Checking key: " + CppTL::toString( checker );
+      int expected = (checker >= beginRange  &&  checker < endRange) ? 0 : 1;
+      result.compose( CppUT::checkEquals( expected, sm.count(checker), msg ) );
+   }
+   result.compose( CppUT::checkEquals( maxSeed-minSeed - (endRange-beginRange), sm.size() ) );
+   return result;
+}
+
+
+CppUT::CheckerResult  
+SmallMapTest::checkEraseIterator( int minSeed, int maxSeed, int value )
+{
+   CppUT::CheckerResult result;
+   CppUT::checkTrue( minSeed <= maxSeed &&  value >= minSeed  &&  value < maxSeed );
+   SmallMapIntInt sm;
+   for ( int generator = minSeed; generator < maxSeed; ++generator )
+      sm.insert( IntInt( generator, generator * 101 ) );
+   sm.erase( sm.begin() + (value - minSeed) );
+   for ( int checker = minSeed; checker < maxSeed; ++checker )
+   {
+      CppTL::ConstString msg = "Checking key: " + CppTL::toString( checker );
+      int expected = (checker == value) ? 0 : 1;
+      result.compose( CppUT::checkEquals( expected, sm.count(checker), msg ) );
+   }
+   result.compose( CppUT::checkEquals( maxSeed-minSeed - 1, sm.size() ) );
+   return result;
+}
+
+
+void 
+SmallMapTest::testDefaultConstructor()
+{
+   SmallMapIntInt sm;
+   CPPUT_CHECK_EXPR( sm.empty() );
+   CPPUT_CHECK_EQUAL( 0, sm.size() );
+   CPPUT_CHECK_EQUAL( 0, sm.count(1234) );
+}
+
+
+void 
+SmallMapTest::testOneInsert()
+{
+   SmallMapIntInt sm;
+   CppTL::Pair<SmallMapIntInt::iterator,bool> result = sm.insert( IntInt( 3,33 ) );
+   CPPUT_CHECK_EXPR( result.second );
+   CPPUT_CHECK_EXPR( result.first == sm.begin() );
+   CPPUT_CHECK_EXPR_FALSE( sm.empty() );
+   CPPUT_CHECK_EQUAL( 1, sm.size() );
+   CPPUT_CHECK_EQUAL( 1, sm.count(3) );
+   CPPUT_ASSERT_EXPR( sm.begin() == sm.find(3) );
+   CPPUT_CHECK_EQUAL( 33, sm.find(3)->second );
+}
+
+
+void 
+SmallMapTest::testOrderedInserts()
+{
+   SmallMapIntInt sm;
+   // Checks multiple inserts in order
+   const int factor = 11;
+   for ( int index1 =0; index1 < CPPTL_ARRAY_SIZE(keyset1); ++index1 )
+   {
+      CppTL::ConstString msg = "Checking key: " + CppTL::toString( keyset1[index1] );
+      CppTL::Pair<SmallMapIntInt::iterator,bool> result = 
+         sm.insert( IntInt( keyset1[index1], keyset1[index1] * factor ) );
+      CPPUT_CHECK_EXPR( result.second );
+      CPPUT_CHECK( result.first == sm.begin() + index1, msg );
+   }
+   CPPUT_CHECK_EXPR_FALSE( sm.empty() );
+   CPPUT_CHECK_EQUAL( CPPTL_ARRAY_SIZE(keyset1), sm.size() );
+   // Checks look-up of inserted values, and the 'ordered' property of the map
+   for ( int index2 =0; index2 < CPPTL_ARRAY_SIZE(keyset1); ++index2 )
+   {
+      CppTL::ConstString msg = "Checking key: " + CppTL::toString( keyset1[index2] );
+      CPPUT_CHECK_EQUAL( 1, sm.count(keyset1[index2]), msg );
+      CPPUT_CHECK( sm.find(keyset1[index2]) != sm.end(), msg );
+      CPPUT_CHECK_EQUAL( keyset1[index2], sm.find(keyset1[index2])->first, msg );
+      // unlike std::map, operator[] preserve existing value.
+      CPPUT_CHECK_EQUAL( keyset1[index2]*11, sm[keyset1[index2]], msg );
+      CPPUT_CHECK_EQUAL( keyset1[index2], sm.begin()[index2].first );
+   }
+}
+
+
+void 
+SmallMapTest::testUnorderedInserts()
+{
+   SmallMapIntInt sm;
+   // Checks multiple inserts in order
+   const int factor = 11;
+   for ( int index1 =0; index1 < CPPTL_ARRAY_SIZE(keyset2); ++index1 )
+      sm.insert( IntInt( keyset2[index1], keyset2[index1] * factor ) );
+   CPPUT_CHECK_EXPR_FALSE( sm.empty() );
+   CPPUT_ASSERT_EQUAL( CPPTL_ARRAY_SIZE(keyset2), sm.size() );
+   // Checks look-up of inserted values, and the 'ordered' property of the map
+   for ( int index2 =0; index2 < CPPTL_ARRAY_SIZE(keyset2); ++index2 )
+   {
+      CppTL::ConstString msg = "Checking key: " + CppTL::toString( keyset2[index2] );
+      CPPUT_CHECK_EQUAL( 1, sm.count(keyset2[index2]), msg );
+      CPPUT_CHECK( sm.find(keyset2[index2]) != sm.end(), msg );
+      CPPUT_CHECK_EQUAL( keyset2[index2], sm.find(keyset2[index2])->first, msg );
+      CPPUT_CHECK_EQUAL( keyset2[index2]*11, sm[keyset2[index2]], msg );
+   }
+   // Checks that the map is ordered
+   SmallMapIntInt::iterator it = sm.begin();
+   SmallMapIntInt::iterator itEnd = sm.end() - 1;
+   for ( ; it != itEnd; ++it )
+      CPPUT_CHECK( it->first < it[1].first );
+}
+
+
+void 
+SmallMapTest::testDuplicateInserts()
+{
+   SmallMapIntInt sm;
+   CppTL::Pair<SmallMapIntInt::iterator,bool> result;
+   result = sm.insert( IntInt(1,11) );
+   CPPUT_ASSERT( result.second == true );
+   CPPUT_ASSERT( result.first == sm.begin() );
+
+   result = sm.insert( IntInt(3,33) );
+   CPPUT_ASSERT( result.second == true );
+   CPPUT_ASSERT( result.first == sm.begin()+1 );
+
+   result = sm.insert( IntInt(2,22) );
+   CPPUT_ASSERT( result.second == true );
+   CPPUT_ASSERT( result.first == sm.begin()+1 );
+
+   result = sm.insert( IntInt(1,777) );
+   CPPUT_CHECK( result.second == false );
+   CPPUT_CHECK( result.first == sm.begin() );
+   CPPUT_CHECK_EQUAL( 1, result.first->first );
+   CPPUT_CHECK_EQUAL( 11, result.first->second );
+
+   result = sm.insert( IntInt(2,777) );
+   CPPUT_CHECK( result.second == false );
+   CPPUT_CHECK( result.first == sm.begin()+1 );
+   CPPUT_CHECK_EQUAL( 2, result.first->first );
+   CPPUT_CHECK_EQUAL( 22, result.first->second );
+
+   result = sm.insert( IntInt(3,777) );
+   CPPUT_CHECK( result.second == false );
+   CPPUT_CHECK( result.first == sm.begin()+2 );
+   CPPUT_CHECK_EQUAL( 3, result.first->first );
+   CPPUT_CHECK_EQUAL( 33, result.first->second );
+}
+
+
+void 
+SmallMapTest::testInsertWithHint()
+{
+   SmallMapIntInt smBegin;
+   SmallMapIntInt smMid;
+   SmallMapIntInt smLast;
+   SmallMapIntInt smEnd;
+   // Checks multiple inserts in order
+   const int factor = 11;
+   for ( int index1 =0; index1 < CPPTL_ARRAY_SIZE(keyset1); ++index1 )
+   {
+      CppTL::ConstString msg = "Checking key: " + CppTL::toString( keyset1[index1] );
+      IntInt item( keyset1[index1], keyset1[index1] * factor );
+
+      SmallMapIntInt::iterator itBegin = smBegin.begin();
+      SmallMapIntInt::iterator resultItBegin = smBegin.insert( itBegin, item );
+      CPPUT_CHECK( resultItBegin == smBegin.begin() + index1, msg );
+      CPPUT_CHECK_EQUAL( item.first, resultItBegin->first, msg );
+
+      SmallMapIntInt::iterator itMid = smMid.begin() + (index1 / 2);
+      SmallMapIntInt::iterator resultItMid = smMid.insert( itMid, item );
+
+      SmallMapIntInt::iterator itLast = smLast.begin() + CPPTL_MAX(0, index1-1);
+      SmallMapIntInt::iterator resultItLast = smLast.insert( itLast, item );
+
+      SmallMapIntInt::iterator itEnd = smEnd.end();
+      SmallMapIntInt::iterator resultItEnd = smEnd.insert( itEnd, item );
+   }
+   CPPUT_ASSERT_EQUAL( CPPTL_ARRAY_SIZE(keyset1), smBegin.size() );
+   CPPUT_ASSERT_EQUAL( CPPTL_ARRAY_SIZE(keyset1), smMid.size() );
+   CPPUT_ASSERT_EQUAL( CPPTL_ARRAY_SIZE(keyset1), smLast.size() );
+   CPPUT_ASSERT_EQUAL( CPPTL_ARRAY_SIZE(keyset1), smEnd.size() );
+
+   // Checks look-up of inserted values, and the 'ordered' property of the map
+   for ( int index2 =0; index2 < CPPTL_ARRAY_SIZE(keyset1); ++index2 )
+   {
+      CppTL::ConstString msg = "Checking key: " + CppTL::toString( keyset1[index2] );
+      CPPUT_CHECK_EQUAL( keyset1[index2], smBegin.begin()[index2].first );
+      CPPUT_CHECK_EQUAL( keyset1[index2], smMid.begin()[index2].first );
+      CPPUT_CHECK_EQUAL( keyset1[index2], smLast.begin()[index2].first );
+      CPPUT_CHECK_EQUAL( keyset1[index2], smEnd.begin()[index2].first );
+   }
+}
+
+
+void 
+SmallMapTest::testErase()
+{
+   SmallMapIntInt sm;
+   // Checks multiple inserts in order
+   const int factor = 11;
+   for ( int index1 =0; index1 < CPPTL_ARRAY_SIZE(keyset2); ++index1 )
+      sm.insert( IntInt( keyset2[index1], keyset2[index1] * factor ) );
+   CPPUT_CHECK_EXPR_FALSE( sm.empty() );
+   CPPUT_ASSERT_EQUAL( CPPTL_ARRAY_SIZE(keyset2), sm.size() );
+
+   // erase some items [single: begin, last, middle]; range[middle, middle]
+   sm.erase( 97 );
+   sm.erase( 0 );
+   CPPUT_ASSERT( sm.find(16) != sm.end() );
+   sm.erase( sm.find(16) );
+   sm.erase( sm.find(5), sm.find(5) + 1 );
+   sm.erase( sm.begin() + 1, sm.begin() + 3 );
+
+   // Checks look-up of inserted values, and the 'ordered' property of the map
+   for ( int index2 =0; index2 < CPPTL_ARRAY_SIZE(keyset3); ++index2 )
+   {
+      CppTL::ConstString msg = "Checking key: " + CppTL::toString( keyset3[index2] );
+      CPPUT_CHECK_EQUAL( 1, sm.count(keyset3[index2]), msg );
+      CPPUT_CHECK( sm.find(keyset3[index2]) != sm.end(), msg );
+      CPPUT_CHECK_EQUAL( keyset3[index2], sm.find(keyset3[index2])->first, msg );
+      CPPUT_CHECK_EQUAL( keyset3[index2]*11, sm[keyset3[index2]], msg );
+   }
+   // Checks that the map is ordered
+   SmallMapIntInt::iterator it = sm.begin();
+   SmallMapIntInt::iterator itEnd = sm.end() - 1;
+   for ( ; it != itEnd; ++it )
+      CPPUT_CHECK( it->first < it[1].first );
+
+   // Most case involving range erase
+   LOCAL_CHECK_ERASE_RANGE( 1,10, 1, 1 ); // empty range at beginning
+   LOCAL_CHECK_ERASE_RANGE( 1,10, 5, 5 ); // empty range in the middle
+   LOCAL_CHECK_ERASE_RANGE( 1,10, 10, 10 ); // empty range at end
+   LOCAL_CHECK_ERASE_ITERATOR( 1, 7, 1 ); // erase first item using iterator
+   LOCAL_CHECK_ERASE_ITERATOR( 1, 7, 3 ); // erase middle item using iterator
+   LOCAL_CHECK_ERASE_ITERATOR( 1, 7, 6 ); // erase last item using iterator
+}
+
+@
+
+
+1.2
+log
+@- made atomic counter copyable
+- added implementation of CPPTL_ assertions.
+- fixed wrong assertions in smallmap.h
+- fixed buggy iterator usage in smallmaptest.
+- no longer require a library to use cpptl threads.
+@
+text
+@d20 1
+a20 1
+void 
+d23 6
+a28 4
+   CppUT::checkTrue( beginRange >= minSeed  &&  beginRange <= maxSeed );
+   CppUT::checkTrue( endRange >= minSeed  &&  endRange <= maxSeed );
+   CppUT::checkTrue( beginRange <= endRange );
+   CppUT::checkTrue( minSeed <= maxSeed );
+d38 1
+a38 1
+      CppUT::checkEquals( expected, sm.count(checker), msg );
+d40 2
+a41 1
+   CppUT::checkEquals( maxSeed-minSeed - (endRange-beginRange), sm.size() );
+d45 1
+a45 1
+void 
+d48 1
+d58 1
+a58 1
+      CppUT::checkEquals( expected, sm.count(checker), msg );
+d60 2
+a61 1
+   CppUT::checkEquals( maxSeed-minSeed - 1, sm.size() );
+@
+
+
+1.1
+log
+@* added CppTL:SmallMap, a std::map like container that use a sorted vector to hold item.
+@
+text
+@d30 2
+a31 2
+   sm.erase( sm.begin() + beginRange - minSeed, 
+             sm.begin() + endRange - minSeed);
+d49 1
+a49 1
+   sm.erase( sm.begin() + value - minSeed );
+@
+

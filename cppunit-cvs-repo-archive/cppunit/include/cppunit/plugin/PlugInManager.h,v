@@ -1,0 +1,500 @@
+head	1.7;
+access;
+symbols
+	REL_1_12_1:1.7
+	REL_1_11_6:1.7
+	REL_1_11_4:1.7
+	REL_1_11_0:1.6
+	TG_CPPUNIT_NO_STREAM_AFTER:1.6
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.6
+	REL_1_10_2:1.6
+	REL_1_10_0:1.6
+	REL_1_9_14:1.6
+	REL_1_9_12:1.6
+	BRANCH_1_9_12:1.6.0.2
+	TG_BRANCH_1_9_12:1.6
+	TG_BEFORE_HPUX_PLUGIN:1.6
+	TG_BEFORE_SUN4_PORT:1.6
+	REL_1_9_10:1.6
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.7
+date	2005.08.02.17.46.58;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.08.29.19.27.07;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.08.27.21.51.18;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.06.14.20.21.00;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.17.22.27.28;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@* fixed documentation typo.
+@
+text
+@#ifndef CPPUNIT_PLUGIN_PLUGINMANAGER_H
+#define CPPUNIT_PLUGIN_PLUGINMANAGER_H
+
+#include <cppunit/Portability.h>
+
+#if !defined(CPPUNIT_NO_TESTPLUGIN)
+
+#if CPPUNIT_NEED_DLL_DECL
+#pragma warning( push )
+#pragma warning( disable: 4251 )  // X needs to have dll-interface to be used by clients of class Z
+#endif
+
+#include <cppunit/plugin/PlugInParameters.h>
+struct CppUnitTestPlugIn;
+
+CPPUNIT_NS_BEGIN
+
+
+class DynamicLibraryManager;
+class TestResult;
+class XmlOutputter;
+
+
+/*! \brief Manges TestPlugIn.
+ */
+class CPPUNIT_API PlugInManager
+{
+public:
+  /*! Constructs a PlugInManager object.
+   */
+  PlugInManager();
+
+  /// Destructor.
+  virtual ~PlugInManager();
+
+  /*! \brief Loads the specified plug-in.
+   *
+   * After being loaded, the CppUnitTestPlugIn::initialize() is called.
+   *
+   * \param libraryFileName Name of the file that contains the TestPlugIn.
+   * \param parameters List of string passed to the plug-in.
+   * \return Pointer on the DynamicLibraryManager associated to the library.
+   *         Valid until the library is unloaded. Never \c NULL.
+   * \exception DynamicLibraryManagerException is thrown if an error occurs during loading.
+   */
+  void load( const std::string &libraryFileName,
+             const PlugInParameters &parameters = PlugInParameters() );
+
+  /*! \brief Unloads the specified plug-in.
+   * \param libraryFileName Name of the file that contains the TestPlugIn passed
+   *                        to a previous call to load().
+   */
+  void unload( const std::string &libraryFileName );
+
+  /*! \brief Gives a chance to each loaded plug-in to register TestListener.
+   *
+   * For each plug-in, call CppUnitTestPlugIn::addListener().
+   */
+  void addListener( TestResult *eventManager );
+
+  /*! \brief Gives a chance to each loaded plug-in to unregister TestListener.
+   * For each plug-in, call CppUnitTestPlugIn::removeListener().
+   */
+  void removeListener( TestResult *eventManager );
+
+  /*! \brief Provides a way for the plug-in to register some XmlOutputterHook.
+   */
+  void addXmlOutputterHooks( XmlOutputter *outputter );
+
+  /*! \brief Called when the XmlOutputter is destroyed.
+   * 
+   * Can be used to free some resources allocated by addXmlOutputterHooks().
+   */
+  void removeXmlOutputterHooks();
+
+protected:
+  /*! \brief (INTERNAL) Information about a specific plug-in.
+   */
+  struct PlugInInfo
+  {
+    std::string m_fileName;
+    DynamicLibraryManager *m_manager;
+    CppUnitTestPlugIn *m_interface;
+  };
+
+  /*! Unloads the specified plug-in.
+   * \param plugIn Information about the plug-in.
+   */
+  void unload( PlugInInfo &plugIn );
+
+private:
+  /// Prevents the use of the copy constructor.
+  PlugInManager( const PlugInManager &copy );
+
+  /// Prevents the use of the copy operator.
+  void operator =( const PlugInManager &copy );
+
+private:
+  typedef CppUnitDeque<PlugInInfo> PlugIns;
+  PlugIns m_plugIns;
+};
+
+
+CPPUNIT_NS_END
+
+#if CPPUNIT_NEED_DLL_DECL
+#pragma warning( pop )
+#endif
+
+#endif // !defined(CPPUNIT_NO_TESTPLUGIN)
+
+
+#endif  // CPPUNIT_PLUGIN_PLUGINMANAGER_H
+@
+
+
+1.6
+log
+@* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/Protector.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestPath.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* include/cppunit/plugin/PlugInManager.h:
+* include/cppunit/plugin/PlugInParameters.h:
+* include/cppunit/TestPlugIn.h:
+* src/cppunit/DefaultProtector.h:
+* src/cppunit/ProtectorChain.h:
+* src/cppunit/ProtectorContext.h:
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestResult.cpp: fixed a dew documentation bugs.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: moved documentation to header.
+@
+text
+@d44 1
+a44 1
+   * \exception DynamicLibraryManager is thrown if an error occurs during loading.
+@
+
+
+1.5
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d36 1
+a36 1
+  /*! Loads the specified plug-in.
+d49 1
+a49 1
+  /*! Unloads the specified plug-in.
+d55 1
+a55 1
+  /*! Gives a chance to each loaded plug-in to register TestListener.
+d61 1
+a61 1
+  /*! Gives a chance to each loaded plug-in to unregister TestListener.
+d66 1
+a66 1
+  /*! Provides a way for the plug-in to register some XmlOutputterHook.
+d70 1
+a70 1
+  /*! Called when the XmlOutputter is destroyed.
+@
+
+
+1.4
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d13 1
+a13 1
+#include <cppunit/plugin/Parameters.h>
+d47 1
+a47 1
+             const Parameters &parameters = Parameters() );
+@
+
+
+1.3
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d77 2
+d99 1
+a99 1
+  typedef std::deque<PlugInInfo> PlugIns;
+@
+
+
+1.2
+log
+@* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added two methods to use the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugIn.h: added two methods to the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugInAdapter.h:
+* src/cppunit/plugin/TestPlugInAdapter.cpp: renamed TestPlugInDefaultImpl.
+  Added empty implementation for Xml outputter hook methods.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/tools/StringTools.cpp: added. Functions to manipulate string
+  (conversion, wrapping...)
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/XmlElement.cpp: renamed addNode() to addElement(). Added
+  methods to walk and modify XmlElement (for hook). Added documentation.
+  Use StringTools.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: added hook calls & management.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: added. Hook to customize XML output.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: call plug-in XmlOutputterHook
+  when writing XML output. Modified so that memory is freed before
+  unloading the test plug-in (caused crash when freeing the XmlDocument).
+
+* examples/ReadMe.txt:
+* examples/ClockerPlugIn/ReadMe.txt: added details about the plug-in
+  (usage, xml content...)
+
+* examples/ClockerPlugIn/ClockerModel.h:
+* examples/ClockerPlugIn/ClockerModel.cpp: extracted from ClockerListener.
+  Represents the test hierarchy and tracked time for each test.
+
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/ClockerListener.cpp: extracted test hierarchy
+  tracking to ClockerModel. Replaced the 'flat' view option with a 'text'
+  option to print the timed test tree to stdout.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp: updated to hook the XML
+  output and use the new classes.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: added. XmlOutputterHook to
+  includes the timed test hierarchy and test timing in the XML output.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added new test cases.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: added tests for
+  XmlOutputterHook.
+@
+text
+@d16 2
+a17 2
+namespace CppUnit
+{
+d102 1
+a102 2
+} //  namespace CppUnit
+
+@
+
+
+1.1
+log
+@* bumped version to 1.9.3
+
+* FAQ: added question about 4786 warning on VC++.
+
+* NEWS: updated.
+
+* contrib/msvc/readme.txt: moved to contrib/readme.txt.
+
+* contrib/xml-xsl/report.xsl: added XML style sheet contributed by
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for
+  startTestRun()/endTestRun().
+
+* examples/simple/*: added. A simple example.
+
+* include/cppunit/BriefTestProgressListener.h:
+* src/cppunit/BriefTestProgressListener.cpp: added. Verbose progess listener
+  that print the test name before running the test.
+
+* include/cppunit/TestListener.h: added startTestRun()/endTestRun().
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: added runTest(), to be called to run
+  a test by test runner.
+
+* src/cppunit/TextTestRunner.cpp:
+* src/cppunit/TestRunner.cpp: updated to use TestResult::runTest().
+
+* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added. Managers for all loaded plug-ins.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: renamed TestPlugInAdapter. All
+  implementations are empty.
+
+* include/cppunit/plugin/TestPlugInSuite.h: removed.
+* src/cppunit/TestPlugInSuite.cpp: removed. Replaced by PlugInManager.
+
+* include/cppunit/plugin/TestPlugIn.h: rewrote the plug-in interface to
+  provide more versatility. updated macros to match new interface.
+
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestFactoryRegistry.cpp: Added unregisterFactory().
+  Added convenience method addRegistry(). Rewrote registry life cycle
+  management. AutoRegisterSuite can now detect that the registry has been
+  destroy and not call to it to unregister its test factory.
+
+* include/cppunit/extensions/AutoRegisterTest.h: on destruction, the registered
+  factory is unregistered from the registry.
+
+* include/cppunit/extensions/HelperMacros.h: added macros
+  CPPUNIT_REGISTRY_ADD_TO_DEFAULT and CPPUNIT_REGISTRY_ADD to help
+  build test suite hierarchy.
+
+* src/cppunit/msvc/DllPlugInTester/*: moved to src/cppunit/DllPlugInTester/.
+
+* src/cppunit/DllPlugInTester/DllPlugInTester.cpp: removed UNICODE stuffs. Use
+  the PlugInManager instead of PlugInTestSuite. Simplified: only one test on
+  command line, but many DLL can be specified. Added configurations to link
+  against cppunit dll, those are now the default configuration (static linking
+  don't make much sense for plug-in).
+@
+text
+@d21 1
+d65 10
+@
+

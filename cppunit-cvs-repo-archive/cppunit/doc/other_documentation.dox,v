@@ -1,0 +1,872 @@
+head	1.18;
+access;
+symbols
+	REL_1_12_1:1.18
+	REL_1_11_6:1.17
+	REL_1_11_4:1.17
+	REL_1_11_0:1.16
+	TG_CPPUNIT_NO_STREAM_AFTER:1.16
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.16
+	REL_1_10_2:1.16
+	REL_1_10_0:1.16
+	REL_1_9_14:1.16
+	REL_1_9_12:1.16
+	BRANCH_1_9_12:1.16.0.2
+	TG_BRANCH_1_9_12:1.16
+	TG_BEFORE_HPUX_PLUGIN:1.16
+	TG_BEFORE_SUN4_PORT:1.15
+	REL_1_9_10:1.15
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.15
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.14
+	REL_1_9_6:1.13
+	REL_1_9_4:1.11
+	REL_1_9_0:1.9
+	REL_1_8_0:1.8
+	REL_1_7_8:1.7
+	REL_1_7_3:1.7
+	REL_1_7_1:1.7
+	REL_1_6_2:1.5
+	BRANCH_1_6:1.5.0.2
+	REL_1_6_1:1.5
+	REL_1_6_0:1.4
+	REL_1_5_5:1.2
+	REL_1_5_4:1.2
+	initial:1.1.1.1
+	e-s:1.1.1;
+locks; strict;
+comment	@# @;
+
+
+1.18
+date	2006.06.29.19.41.20;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2005.07.30.06.57.03;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2002.09.23.05.43.50;	author jeh;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2002.06.13.18.17.41;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2002.06.13.15.31.00;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2002.04.21.12.32.12;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2002.04.21.10.57.52;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2002.04.17.22.27.28;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2002.04.15.15.17.47;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2002.04.13.15.12.53;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2002.03.28.15.47.07;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.10.21.21.20.25;	author smr99;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.10.02.06.49.27;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.09.30.22.36.08;	author smr99;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.09.23.06.09.15;	author smr99;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.05.29.03.18.54;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.04.14.00.51.17;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2000.10.05.18.37.28;	author e-s;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2000.10.05.18.37.28;	author e-s;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.18
+log
+@- updated e-mail.
+@
+text
+@/**
+ \mainpage
+ 
+ \section _history History
+ The first port of JUnit to C++ was done
+ by Michael Feathers. His versions
+ can be found on the 
+ <a href="http://www.xprogramming.com/software.htm">
+ XProgramming software page</a>. They are os-specific,
+ so Jerome Lacoste provided a port to Unix/Solaris.
+ His version can be found on the same page.
+ The %CppUnit project has combined and built on this work.
+
+ \section _usage Usage
+ Take a look into the \ref cppunit_cookbook.
+ It gives a quick start into using this 
+ testing framework. <a href="modules.html">Modules</a> give
+ you a organized view of %CppUnit classes.
+
+ (Notes to newbies, you may want to check out \ref money_example,
+ a work in progress, but the project is provided with %CppUnit).
+
+ For a discussion on %CppUnit, check 
+ <a href="http://c2.com/cgi/wiki?CppUnit">
+ the WikiWiki Pages on CppUnit</a>. There you can also
+ find the original versions and various ports to other
+ OSses and languages.
+ 
+ \section _license License
+ This library is released under
+ the GNU
+ <a href="http://www.gnu.org/copyleft/lesser.html">
+ Lesser General Public License</a>.
+
+ \author Eric Sommerlade (sommerlade@@gmx.net)
+ \author Michael Feathers (mfeathers@@objectmentor.com)
+ \author Jerome Lacoste (lacostej@@altern.org)
+ \author Baptiste Lepilleur <blep@@users.sourceforge.net>
+ \author Bastiaan Bakker <bastiaan.bakker@@lifeline.nl>
+ \author Steve Robbins <smr99@@sourceforge.net>
+ */
+
+
+
+/*! \defgroup WritingTestFixture Writing test fixture
+ */
+
+/*! \defgroup Assertions Making assertions
+ */
+
+/*! \defgroup CreatingTestSuite Creating TestSuite
+ */
+
+/*! \defgroup ExecutingTest Executing test
+ */
+
+/*! \defgroup TrackingTestExecution Tracking test execution
+ */
+
+/*! \defgroup WritingTestResult Writing test result
+ */
+
+/*! \defgroup BrowsingCollectedTestResult Browsing collected test result
+ */
+
+/*! \defgroup CreatingNewAssertions Creating custom assertions
+ */
+
+/*! \defgroup WritingTestPlugIn Writing Test Plug-in
+ *
+ * Creating a test plug-in is really simple:
+ * - make your project a dynamic library (with VC++, choose Win32 Dynamic Library in
+ *   the project wizard), and link against the dynamic library version of %CppUnit
+ *   (cppunit*_dll.lib for VC++).
+ * - in a cpp file, include TestPlugIn.h, and use the macro CPPUNIT_PLUGIN_IMPLEMENT()
+ *   to declare the test plug-in.
+ * - That's it, you're done! All the tests registered using the TestFactoryRegistry,
+ *   CPPUNIT_TEST_SUITE_NAMED_REGISTRATION, or CPPUNIT_TEST_SUITE_REGISTRATION will
+ *   be visible to other plug-in and to the DllPlugInRunner.
+ *
+ * Example:
+ * \code
+ * #include <cppunit/include/plugin/TestPlugIn.h>
+ *
+ * CPPUNIT_PLUGIN_IMPLEMENT();
+ * \endcode
+ *
+ * The interface CppUnitTestPlugIn is automatically implemented by the previous
+ * macro. You can define your own implementation.
+ *
+ * To provide your custom implementation of the plug-in interface, you must:
+ * - create a class that implements the CppUnitTestPlugIn interface
+ * - use CPPUNIT_PLUGIN_EXPORTED_FUNCTION_IMPL() with your class to export
+ *   the plug-in interface
+ * - implements the 'main' function with CPPUNIT_PLUGIN_IMPLEMENT_MAIN().
+ *
+ * Some of the reason you may want to do this:
+ * - You do not use the TestFactoryRegistry to register your test.
+ * - You want to create a custom listener to use with DllPlugInRunner.
+ * - You want to do initialize some globale resources before running the test
+ *   (setting up COM for example).
+ *   
+ * See CppUnitTestPlugIn for further detail on how to do this.
+ *
+ * Creating your own test plug-in with VC++:
+ * - Create a new "Win32 Dynamic Library" project, choose the empty template
+ * - For the Debug Configuration, add cppunitd_dll.lib to 
+ *   'Project Settings/Link/Object/Libariries modules', and for the Release
+ *   Configuration, add cppunit_dll.lib.
+ * - For All Configuration, in 'C++/Preprocessor/Preprocessors definitions',
+ *   add the symbol 'CPPUNIT_DLL' at the end of the line (it means that
+ *   you are linking against cppunit dll).
+ * - Create a 'main' file that contains:
+\verbatim
+#include <cppunit/plugin/TestPlugIn.h>
+
+CPPUNIT_PLUGIN_IMPLEMENT();\endverbatim
+ * - Add your tests
+ * - You're done !
+ *
+ * See examples/simple/simple_plugin.dsp for an example.
+ *
+ * Notes to VC++ users: 
+ * - you can run a post-build check on the plug-in. Add the following line to your
+ *   post-build tab: "DllPlugInTesterd_dll.exe $(TargetPath)". DllPlugInTesterd_dll.exe
+ *   need to be some place were it can be found (path, ...), or you need to
+ *   indicate the correct path. 
+ *   $(TargetPath) is the filename of your plug-in.
+ * - you can debug your DLL, set the executable for debug session to the plug-in 
+ *   runner, and the name of the DLL in the program arguments ($(xxx) won't work
+ *   this time).
+ *
+ * How does it works ?
+ *
+ * When %CppUnit is linked as a DLL, the singleton used for the TestFactoryRegistry
+ * is the same for the plug-in runner (also linked against %CppUnit DLL). This means
+ * that the tests registered with the macros (at static initialization) are 
+ * registered in the same registry. As soon as a DLL is loaded by the PlugInManager,
+ * the DLL static variable are constructed and the test registered to the 
+ * TestFactoryRegistry.
+ *
+ * After loading the DLL, the PlugInManager look-up a specific function exported by
+ * the DLL. That function returns a pointer on the plug-in interface, which is later
+ * used by the PlugInManager.
+ *
+ * \see CreatingTestSuite.
+ */@
+
+
+1.17
+log
+@* fixed typo.
+@
+text
+@d38 1
+a38 1
+ \author Baptiste Lepilleur <gaiacrtn@@free.fr>
+@
+
+
+1.16
+log
+@Removed myself <J.E. Hoffmann> from all copyrights and AUTHOR files.
+@
+text
+@d89 1
+a89 1
+ * macro. You can define your one implementation.
+@
+
+
+1.15
+log
+@* include/cppunit/NotEqualException.h:
+* src/cppunit/NotEqualException.cpp: removed.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: removed 'type' related stuffs.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: delegate printing to TextOutputter.
+
+* examples/simple/ExampleTestCase.h:
+* examples/simple/ExampleTestCase.cpp: reindented.
+
+* src/qttestrunner/build:
+* src/qttestrunner/qttestrunner.pro:
+* src/qttestrunner/TestBrowserDlgImpl.h:
+* src/qttestrunner/TestRunnerModel.h: applied Thomas Neidhart's patch,
+  'Some minor fixes to compile QTTestrunner under Linux.'.
+@
+text
+@a37 1
+ \author J.E. Hoffmann <je-h@@gmx.net>                  
+@
+
+
+1.14
+log
+@* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: added functions that take a Message as a
+  parameter. Existing function have a short description indicating
+  an assertion failure.
+
+* include/cppunit/CompilerOuputter.h:
+* src/cppunit/CompilerOuputter.cpp: removed printNotEqualMessage() and
+  printDefaultMessage(). Updated to use Message.
+
+* include/cppunit/Message.h:
+* src/cppunit/Message.cpp: added. Represents a message associated to an
+  Exception.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: the message associated to the exception is now
+  stored as a Message instead of a string.
+
+* include/cppunit/NotEqualException.cpp: constructs a Message instead of a
+  string.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: updated to use Asserter functions that
+  take a message when pertinent (CPPUNIT_FAIL...).
+
+* include/cppunit/TestCaller.h:
+* src/cppunit/TestCaller.cpp: exception not caught failure has a better
+  short description.
+
+* src/cppunit/TestCase.cpp: better short description when setUp() or
+  tearDown() fail.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replace '\n' in failure message
+  with space.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/NotEqualExceptionTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated to use Exception/Message.
+
+* examples/cppunittest/MessageTest.h:
+* examples/cppunittest/MessageTest.cpp: added. Unit test for Message.
+@
+text
+@d106 2
+a107 2
+ * Creating you test plug-in with VC++:
+ * - Creates a new "Win32 Dynamic Library" project, choose the empty template
+d114 1
+a114 1
+ * - Creates a 'main' file that contains:
+d119 1
+a119 1
+ * - Adds your tests
+@
+
+
+1.13
+log
+@* contrib/bc5/bcc-makefile.zip: updated, generic makefile for
+  Borland 5.5, contributed by project cuppa.
+
+* examples/cppunittest/*Suite.h: integrated Jeffrey Morgan's patch,
+  to remove warning with gcc.
+@
+text
+@d74 1
+a74 1
+ *   the project wizard), and link against the dynamic library version of CppUnit
+d136 2
+a137 2
+ * When CppUnit is linked as a DLL, the singleton used for the TestFactoryRegistry
+ * is the same for the plug-in runner (also linked against CppUnit DLL). This means
+@
+
+
+1.12
+log
+@* src/DllPlugInTester/makefile.am: removed ld.so from LDADD flags.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: rewrote, fixed problem
+  with double quotes in command line...
+
+* src/DllPlugInTester/CommandLineParserTest.h:
+* src/DllPlugInTester/CommandLineParserTest.cpp:
+* src/DllPlugInTester/DllPlugInTesterTest.cpp: added, unit tests for
+  CommandLineParser.
+
+* src/msvc6/TestPlugIn/*: removed.
+@
+text
+@d106 18
+d126 4
+a129 3
+ *   post-build tab: "..\..\..\lib\DllPlugInTesterd_dll.exe $(TargetPath)". Of course,
+ *   you need to update the path to the plug-in runner. $(TargetPath) is the filename
+ *   of your plug-in.
+@
+
+
+1.11
+log
+@* bumped version to 1.9.3
+
+* FAQ: added question about 4786 warning on VC++.
+
+* NEWS: updated.
+
+* contrib/msvc/readme.txt: moved to contrib/readme.txt.
+
+* contrib/xml-xsl/report.xsl: added XML style sheet contributed by
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for
+  startTestRun()/endTestRun().
+
+* examples/simple/*: added. A simple example.
+
+* include/cppunit/BriefTestProgressListener.h:
+* src/cppunit/BriefTestProgressListener.cpp: added. Verbose progess listener
+  that print the test name before running the test.
+
+* include/cppunit/TestListener.h: added startTestRun()/endTestRun().
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: added runTest(), to be called to run
+  a test by test runner.
+
+* src/cppunit/TextTestRunner.cpp:
+* src/cppunit/TestRunner.cpp: updated to use TestResult::runTest().
+
+* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added. Managers for all loaded plug-ins.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: renamed TestPlugInAdapter. All
+  implementations are empty.
+
+* include/cppunit/plugin/TestPlugInSuite.h: removed.
+* src/cppunit/TestPlugInSuite.cpp: removed. Replaced by PlugInManager.
+
+* include/cppunit/plugin/TestPlugIn.h: rewrote the plug-in interface to
+  provide more versatility. updated macros to match new interface.
+
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestFactoryRegistry.cpp: Added unregisterFactory().
+  Added convenience method addRegistry(). Rewrote registry life cycle
+  management. AutoRegisterSuite can now detect that the registry has been
+  destroy and not call to it to unregister its test factory.
+
+* include/cppunit/extensions/AutoRegisterTest.h: on destruction, the registered
+  factory is unregistered from the registry.
+
+* include/cppunit/extensions/HelperMacros.h: added macros
+  CPPUNIT_REGISTRY_ADD_TO_DEFAULT and CPPUNIT_REGISTRY_ADD to help
+  build test suite hierarchy.
+
+* src/cppunit/msvc/DllPlugInTester/*: moved to src/cppunit/DllPlugInTester/.
+
+* src/cppunit/DllPlugInTester/DllPlugInTester.cpp: removed UNICODE stuffs. Use
+  the PlugInManager instead of PlugInTestSuite. Simplified: only one test on
+  command line, but many DLL can be specified. Added configurations to link
+  against cppunit dll, those are now the default configuration (static linking
+  don't make much sense for plug-in).
+@
+text
+@d20 3
+@
+
+
+1.10
+log
+@* NEWS: updated.
+
+* configure.in: added include/cppunit/config/Makefile and
+  include/cppunit/plugin/Makefile to the list of target.
+
+* doc/CppUnit-win.dox: enabled generation of HTML Help documentation.
+
+* include/cppunit/config/Makefile.am:
+* include/cppunit/plugin/Makefile.am: added.
+
+* include/cppunit/config-bcb5.h:
+* include/cppunit/config-msvc6.h:
+* include/cppunit/config-mac.h: moved to include/cppunit/config/.
+
+* include/cppunit/Portability.h: updated config files location. Added macros
+  CPPUNIT_STRINGIZE and CPPUNIT_JOIN (implementation adapted from boost.org).
+  Added macro CPPUNIT_MAKE_UNIQUE_NAME.
+
+* include/cppunit/Test.h: modified methods order.
+
+* include/cppunit/extensions/HelperMacros.h: renamed macro
+  __CPPUNIT_MAKE_UNIQUE_NAME to CPPUNIT_MAKE_UNIQUE_NAME and moved its
+  definition to include/cppunit/Portability.h.
+
+* include/cppunit/extensions/TestDecorator.h: Inherits Test instead of TestLeaf.
+
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* src/cppunit/DynamicLibraryManager.cpp: added. DLL manager (load & lookup
+  symbol).
+
+* src/cppunit/BeOsDynamicLibraryManager.cpp:
+* src/cppunit/UnixDynamicLibraryManager.cpp:
+* src/cppunit/Win32DynamicLibraryManager.cpp: added. Implementation of
+  platform dependent methods of DynamicLibraryManager.
+
+* include/cppunit/plugin/DynamicLibraryManagerException.h:
+* src/cppunit/DynamicLibraryManagerException.cpp: added. Exception thrown
+  by DynamicLibraryManager.
+
+* include/cppunit/plugin/TestPlugIn.h: added. CppUnitTestPlugIn interface
+  definition. Helper macros to implements plug-in.
+
+* include/cppunit/plugin/TestPlugInSuite.h:
+* src/cppunit/plugin/TestPlugInSuite.cpp: added. A suite to wrap a test
+  plug-in.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: added. A default implementation
+  of the test plug-in interface.
+
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp: updated to use the
+  new TestPlugIn.
+
+* examples/cppunittest/TestResultCollectorTest.cpp: fixed typo.
+@
+text
+@d71 7
+a77 4
+ *   the project wizard).
+ * - in a cpp file, include TestPlugIn.h, and use the macro CPPUNIT_PLUGIN_IMPLEMENT
+ *   passing your plug-in root suite name to declare the test plug-in.
+ * - That's it, you're done!
+d83 1
+a83 1
+ * CPPUNIT_PLUGIN_IMPLEMENT( "My test plug-in root suite name" );
+d86 2
+a87 2
+ * The default implementation of the CppUnitTestPlugIn interface use the default
+ * TestFactoryRegistry to retreive the root test suite of the plug-in.
+d89 1
+a89 1
+ * To provide your custom implementation of the plug-in, you must:
+d95 31
+a125 1
+ * See implementation of macro CPPUNIT_PLUGIN_IMPLEMENT() for an example.
+@
+
+
+1.9
+log
+@* NEWS: updated
+
+* doc/other_documentation.dox: addded new module for test plug-in.
+
+* include/msvc6/DSPlugin/TestRunnerDSPlugin.h:
+* include/msvc6/DSPlugin/TestRunnerDSPlugin_i.c: added. Those file are
+  generated by project src/msvc/DSPlugin. They are provided to allow
+  compilation of TestRunner without compiling DSPlugIn which does not
+  build on VC++ 7.
+
+* examples/examples.dsw: removed DSPlugIn for workspace (fail to build
+  with VC++ 7). Added DllPlugInTester.dsp to workspace.
+
+* examples/msvc6/TestPlugIn/TestPlugIn.dsp: added post-build unit testing
+  using the new DllPlugInTester.
+
+* examples/msvc6/EasyTestPlugIn/*: a new project that
+  demonstrates the use of CPPUNIT_TESTPLUGIN_IMPL to create a test plug-in.
+
+* src/cppunit/cppunit.dsw:
+* src/TestPlugInRunner.dsw:
+* src/TestRunner.dsw: removed. Should use src/CppUnitLibraries.dsw instead.
+
+* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: removed findTestName() method. Replaced
+  by Test::findTest().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp:
+* src/msvc6/DSPlugIn/DSAddIn.h: changed include for add-in. MIDL generates
+  files in sub-directory ToAddToDistribution. Generated file should be
+  copied to include/msvc6/DSPlugin when modified. This remove the dependecy
+  of MfcTestRunner on DSPlugIn.
+
+* src/msvc6/testrunner/ListCtrlFormatter.h:
+* src/msvc6/testrunner/ListCtrlFormatter.cpp: added GetNextColumnIndex().
+
+* src/msvc6/testrunner/src/TestRunnerDlg.h:
+* src/msvc6/testrunner/src/TestRunnerDlg.cpp: set column number in
+  MsDevCallerListCtrl when initializing the list.
+
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.cpp: column indexes for
+  file and line number are no longer static. Added methods to set those
+  indexes. Changed DSPlugIn header name.
+
+* include/msvc6/testrunner/TestPlugInInterface.h: fixed inclusion of
+  windows header for WINAPI. Added macro CPPUNIT_TESTPLUGIN_IMPL to
+  automatically implements a test plug-in.
+
+* src/msvc6/DllPlugInTester/*: added new project. A application to test DLL
+  and report using CompilerOutputter. Target for post-build testing and
+  debugging of DLL.
+@
+text
+@d68 25
+@
+
+
+1.8
+log
+@* doc/cookbook.html: removed. Replaced by cookbook.doc.
+
+* doc/cookbook.dox: added, conversion of cookbook.html to Doxygen format.
+
+* doc/other_documentation.dox: added groups definition.
+
+* doc/Makefile.am: replaced cookbook.html by cookbook.dox
+
+* doc/Doxyfile.in: added predefined CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION.
+Replaced cookbook.html by cookbook.dox.
+
+* include/cppunitui/mfc/TestRunner.h: added, extracted from
+include/msvc6/testrunner/TestRunner.h. Moved class TestRunner to namespace
+CppUnit::MfcUi.
+
+* include/msvc6/testrunner/TestRunner.h: deprecated. A simple typedef to
+CppUnit::MfcUi::TestRunner.
+
+* include/textui/TestRuner.h: added, extracted from
+include/cppunit/TextTestRunner.h.
+
+* src/cppunit/TextTestRunner.cpp: renamed TestRunner.cpp. Moved into
+namespace CppUnit::TextUi.
+
+* src/msvc6/testruner/TestRunner.cpp: moved into namespace CppUnit::MfcUi.
+
+* src/cppunit/CompilerOutputter.cpp: removed printing "- " before
+NotEqualException addional message, for consistency between different
+TestRunner (Mfc,Text...)
+
+* include/cppunit/Asserter.h:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/Outputter.h:
+* include/cppunit/SourceLine.h:
+* include/cppunit/TestAssert.h:
+* include/cppunit/TestCaller.h:
+* include/cppunit/TestFailure.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: doc update. organization
+in groups.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.cpp:
+* examples/msvc6/HostApp/HostApp.cpp: updated to use
+CppUnit::MfcUi::TestRunner.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use
+CppUnit::TextUi::TestRunner.
+@
+text
+@d66 3
+@
+
+
+1.7
+log
+@Commit of 1.7.1 release.
+@
+text
+@d15 1
+a15 2
+ Take a look into 
+ the %CppUnit <a href="cookbook.html">cookbook</a>.
+d17 3
+a19 1
+ testing framework.
+d39 26
+@
+
+
+1.6
+log
+@* NEWS : updated.
+
+* doc/other_documentation.dox : added all the authors to the list of
+authors.
+
+* examples/cppunittest/HelperMacrosTest.*: added unit tests for
+CPPUNIT_TEST_FAIL & CPPUNIT_TEST_EXCEPTION.
+
+* examples/cppunittest/TestAssertTest.*: added unit tests for
+CPPUNIT_FAIL. Corrected spelling error. Relaxed constraint on message
+produced by CPPUNIT_ASSERT_MESSAGE. Refactored some tests.
+
+* include/cppunit/extensions/HelperMacros.h : added macro
+CPPUNIT_TEST_EXCEPTION to create a test case for the specified method
+that must throw an exception of the specified type.
+
+* include/cppunit/extensions/TestSuiteBuilder.h : made makeTestName() public.
+Added addTestCallerForException() to add a test case expecting an exception of
+the specified type to be caught.
+
+* include/cppunit/TestAssert.h : added macro CPPUNIT_FAIL as a
+shortcut for CPPUNIT_ASSERT_MESSAGE( message, false ).
+@
+text
+@d12 1
+a12 1
+ The CppUnit project has combined and built on this work.
+d16 1
+a16 1
+ the CppUnit <a href="cookbook.html">cookbook</a>.
+d19 1
+a19 1
+ For a discussion on CppUnit, check 
+@
+
+
+1.5
+log
+@Tweak the HTML docs.  Link to FAQ.
+@
+text
+@d34 4
+@
+
+
+1.4
+log
+@Polishing for 1.6.0 release.
+@
+text
+@a30 3
+
+ 
+ 
+@
+
+
+1.3
+log
+@Documentation mods.
+@
+text
+@d12 1
+a12 4
+ Now this is an attempt to combine efforts on further 
+ development of the library. This version is heavily 
+ based on the previous ones, e.g. most of the
+ documentation in the code was written by Michael Feathers.
+d16 1
+a16 1
+ the CppUnit <a href="../cookbook.html">cookbook</a>.
+d27 5
+a31 14
+ the <a href="http://www.gnu.org/copyleft/lesser.html">LGPL</a>.
+ The previous versions (as mentioned in section \ref _history) 
+ had a different license, but the LGPL complies to its 
+ requirements.
+ 
+ \section _changes Changes
+ - Now there is a CppUnit namespace.
+ - CppUnit::TestCase objects register themselves
+   in the CppUnit::TestRegistry, which
+   can be used by a CppUnit::TestRunner.
+ - the CppUnit::TestRunner is factored out of the library.
+ - the global defines have been 
+   converted into const objects.
+ - the Guards.h file is not needed anymore.
+a32 6
+ \section _whats_next What's next?
+ - The CppUnit::Test::getName() method
+   will be used to 
+   register CppUnit::Test objects in a CppUnit::TestSuite or
+   the registry.
+ - The library will be made const consistent.
+@
+
+
+1.2
+log
+@'unix cookbook' -> 'CppUnit cookbook'.
+@
+text
+@d19 1
+a19 1
+ <a href="../cookbook.html">the CppUnit cookbook</a>.
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d19 1
+a19 1
+ <a href="../cookbook.html">the unix cookbook</a>.
+@
+
+
+1.1.1.1
+log
+@initial check in.
+@
+text
+@@

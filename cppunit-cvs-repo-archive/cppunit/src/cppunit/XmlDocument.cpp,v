@@ -1,0 +1,295 @@
+head	1.6;
+access;
+symbols
+	REL_1_12_1:1.6
+	REL_1_11_6:1.5
+	REL_1_11_4:1.5
+	REL_1_11_0:1.4
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.6
+date	2007.01.12.05.56.34;	author smr99;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.10.13.20.13.16;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.09.01.20.17.36;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.08.27.21.51.18;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.07.12.05.59.58;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.05.23.18.38.39;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@Arrange class initializers in correct order.
+@
+text
+@#include <cppunit/config/SourcePrefix.h>
+#include <cppunit/tools/XmlDocument.h>
+#include <cppunit/tools/XmlElement.h>
+
+
+CPPUNIT_NS_BEGIN
+
+
+XmlDocument::XmlDocument( const std::string &encoding,
+                          const std::string &styleSheet )
+  : m_styleSheet( styleSheet )
+  , m_rootElement( new XmlElement( "DummyRoot" ) )
+  , m_standalone( true )
+{
+  setEncoding( encoding );
+}
+
+
+XmlDocument::~XmlDocument()
+{
+  delete m_rootElement;
+}
+
+
+
+std::string 
+XmlDocument::encoding() const
+{
+  return m_encoding;
+}
+
+
+void 
+XmlDocument::setEncoding( const std::string &encoding )
+{
+  m_encoding = encoding.empty() ? std::string("ISO-8859-1") : encoding;
+}
+
+
+std::string 
+XmlDocument::styleSheet() const
+{
+  return m_styleSheet;
+}
+
+
+void 
+XmlDocument::setStyleSheet( const std::string &styleSheet )
+{
+  m_styleSheet = styleSheet;
+}
+
+
+bool
+XmlDocument::standalone() const
+{
+  return m_standalone;
+}
+
+
+void
+XmlDocument::setStandalone( bool standalone )
+{
+  m_standalone = standalone;
+}
+
+
+void 
+XmlDocument::setRootElement( XmlElement *rootElement )
+{
+  if ( rootElement == m_rootElement )
+    return;
+
+  delete m_rootElement;
+  m_rootElement = rootElement;
+}
+
+
+XmlElement &
+XmlDocument::rootElement() const
+{
+  return *m_rootElement;
+}
+
+
+std::string 
+XmlDocument::toString() const
+{
+  std::string asString = "<?xml version=\"1.0\" "
+                         "encoding='" + m_encoding + "'";
+  if ( m_standalone )
+      asString += " standalone='yes'";
+
+  asString += " ?>\n"; 
+
+  if ( !m_styleSheet.empty() )
+    asString += "<?xml-stylesheet type=\"text/xsl\" href=\"" + m_styleSheet + "\"?>\n";
+
+  asString += m_rootElement->toString();
+
+  return asString;
+}
+
+
+CPPUNIT_NS_END
+
+@
+
+
+1.5
+log
+@* removed most warning when compiling with vc++ 6sp6.
+@
+text
+@d11 2
+a12 2
+  : m_rootElement( new XmlElement( "DummyRoot" ) )
+  , m_styleSheet( styleSheet )
+@
+
+
+1.4
+log
+@* include/cppunit/XmlOutputter.h:
+* include/cppunit/tools/XmlDocument.h
+* src/cppunit/XmlDocument.cpp:
+* src/cppunit/XmlOutputter.cpp: integrated patch #997006 from Akos Maroy.
+  This patch makes the 'standalone' attribute in XML header optional.
+@
+text
+@d1 1
+@
+
+
+1.3
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d12 1
+d53 14
+d89 5
+a93 1
+                         "encoding='" + m_encoding + "' standalone='yes' ?>\n";
+@
+
+
+1.2
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d34 1
+a34 1
+  m_encoding = encoding.empty() ? "ISO-8859-1" : encoding;
+@
+
+
+1.1
+log
+@* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: extracted class XmlOutputter::Node to
+XmlElement. Extracted xml 'prolog' generation to XmlDocument.
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/tools/XmlElement.cpp: added, extracted from XmlOutputter::Node.
+
+* include/cppunit/tools/XmlDocument.h:
+* src/cppunit/tools/XmlDocument.cpp: added, extracted from XmlOutputter. Handle
+XML document prolog (encoding & style-sheet) and manage the root element.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: bug fix, flag --xsl was ignored.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated for XmlOuputter changes.
+extracted tests for XmlOutputter::Node to XmlElementTest
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added, tests extracted from
+XmlOutputterTest.
+@
+text
+@d5 1
+a5 4
+namespace CppUnit
+{
+
+
+d85 1
+a85 1
+} //  namespace CppUnit
+@
+

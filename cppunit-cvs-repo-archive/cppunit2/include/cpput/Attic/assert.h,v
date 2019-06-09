@@ -1,0 +1,1074 @@
+head	1.19;
+access;
+symbols
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.7
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.6
+	TG_AFTER_REMOVING_TESTCONTEXT:1.6
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.4
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.4
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.19
+date	2005.11.13.10.12.01;	author blep;	state dead;
+branches;
+next	1.18;
+
+1.18
+date	2005.11.12.20.55.46;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2005.11.11.23.23.48;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2005.11.11.20.54.15;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2005.11.09.20.04.06;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2005.11.08.21.44.54;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2005.09.06.07.17.36;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2005.08.10.21.34.29;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2005.08.08.22.10.20;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2005.03.06.18.38.03;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.03.01.19.36.51;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.02.28.21.36.19;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.02.27.10.15.41;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.11.20.15.06.59;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.11.20.12.17.50;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.08.04.08.42.22;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.08.04.08.01.14;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.02.07.19.17.56;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.23;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.23;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.19
+log
+@- renamed include/cpput/assert.h to include/cpput/assertcommon.h. This avoid clash with include <assert.h> in doxygen documentation
+- most Impl namespaces are now hidden from documentation using \cond and \endcond.
+@
+text
+@#ifndef CPPUT_ASSERT_H_INCLUDED
+# define CPPUT_ASSERT_H_INCLUDED
+
+# include <cpput/equality.h>
+# include <cpput/message.h>
+# include <cpput/stringize.h>
+# include <cpput/testinfo.h>
+# include <cpput/translate.h>
+# include <cpptl/typename.h>
+
+namespace CppUT
+{
+   void CPPUT_API fail( const Message &message = translate( "Assertion failed." ) );
+
+   void CPPUT_API checkTrue( bool shouldBeTrue,
+                             const Message &message = Message() );
+
+   void CPPUT_API checkFalse( bool shouldBeFalse,
+                              const Message &message = Message() );
+
+   void CPPUT_API checkAssertionFail( bool assertionFailed,
+                                      const Message &message = Message() );
+
+   void CPPUT_API checkAssertionPass( bool assertionFailed,
+                                      const Message &message = Message() );
+
+   Message CPPUT_API buildEqualityFailedMessage( const std::string &expected,
+                                                 const std::string &actual,
+                                                 const Message &message = Message() );
+
+   template<typename FirstType
+           ,typename SecondType>
+   Message makeEqualityFailedMessage( const FirstType &expected,
+                                      const SecondType &actual,
+                                      const Message &message = Message() )
+                     
+   {
+      std::string strExpected = stringize( expected );
+      std::string strActual = stringize( actual );
+      return buildEqualityFailedMessage( strExpected, strActual, message );
+   }
+
+   template<typename FirstType
+           ,typename SecondType
+           ,typename EqualityFunctorType>
+   void checkEquals( const FirstType &expected,
+                     const SecondType &actual,
+                     EqualityFunctorType equality,
+                     const Message &message )
+   {
+      if ( equality( expected, actual ) )
+         return;
+
+      fail( makeEqualityFailedMessage( expected, actual, message ) );
+   }
+
+   template<typename FirstType
+           ,typename SecondType>
+   void checkEquals( const FirstType &expected,
+                     const SecondType &actual,
+                     const Message &message = Message() )
+   {
+      if ( equalityTest( expected, actual ) )
+         return;
+
+      fail( makeEqualityFailedMessage( expected, actual, message ) );
+   }
+
+   Message CPPUT_API buildUnequalityFailedMessage( const std::string &expected,
+                                                   const std::string &actual,
+                                                   const Message &message = Message() );
+
+   template<typename FirstType
+           ,typename SecondType>
+   Message makeUnequalityFailedMessage( const FirstType &expected,
+                                        const SecondType &actual,
+                                        const Message &message = Message() )
+                     
+   {
+      std::string strExpected = stringize( expected );
+      std::string strActual = stringize( actual );
+      return buildUnequalityFailedMessage( strExpected, strActual, message );
+   }
+
+   template<typename FirstType
+           ,typename SecondType
+           ,typename EqualityFunctorType>
+   void checkNotEquals( const FirstType &expected,
+                        const SecondType &actual,
+                        EqualityFunctorType equality,
+                        const Message &message )
+   {
+      if ( !( equality( expected, actual ) ) )
+         return;
+
+      fail( makeUnequalityFailedMessage( expected, actual, message ) );
+   }
+
+   template<typename FirstType
+           ,typename SecondType>
+   void checkNotEquals( const FirstType &expected,
+                        const SecondType &actual,
+                        const Message &message = Message() )
+   {
+      if ( !( equalityTest( expected, actual ) ) )
+         return;
+
+      fail( makeUnequalityFailedMessage( expected, actual, message ) );
+   }
+
+   void CPPUT_API checkDoubleEquals( double expected, 
+                                     double actual, 
+                                     double tolerance, 
+                                     const Message &message = Message() );
+
+   void CPPUT_API skipCurrentTest();
+
+} // namespace CppUT
+
+
+/*! Starts either an aborting assertion or a checking assertion macro.
+ * \ingroup group_custom_assertions
+ * \internal
+ * __func__ should contains the current fonction name on many compiler (C99 compiler extension). See:
+ * http://publib.boulder.ibm.com/infocenter/pseries/index.jsp?topic=/com.ibm.vacpp7a.doc/language/ref/clrc02predefined_identifiers.htm
+ * Available if __C99__FUNC__ is defined:
+ * http://publib.boulder.ibm.com/infocenter/pseries/index.jsp?topic=/com.ibm.vacpp7a.doc/language/ref/clrapxaix_macros.htm
+ */
+# define CPPUT_CHECK_POINT( assertionType )                                  \
+   ::CppUT::TestInfo::threadInstance().newAssertion( ::CppUT::assertionType, \
+                                                       __FILE__,             \
+                                                       __LINE__ )
+/*! Starts an aborting assertion macro.
+ * \ingroup group_custom_assertions
+ */
+# define CPPUT_BEGIN_ASSERTION_MACRO() \
+   CPPUT_CHECK_POINT( abortingAssertion ),
+
+/*! Starts a checking assertion macro.
+ * \ingroup group_custom_assertions
+ */
+# define CPPUT_BEGIN_CHECKING_MACRO() \
+   CPPUT_CHECK_POINT( checkingAssertion ),
+
+// basic assertions
+
+
+/*! \brief Always fails with the given message.
+ * \ingroup group_assertions
+ * \see CppUT::fail
+ */
+# define CPPUT_FAIL              \
+   CPPUT_BEGIN_ASSERTION_MACRO() \
+   ::CppUT::fail
+
+/*! \brief Asserts that an expression evaluate to true.
+ * \ingroup group_assertions
+ * \see CppUT::checkTrue
+ */
+# define CPPUT_ASSERT            \
+   CPPUT_BEGIN_ASSERTION_MACRO() \
+   ::CppUT::checkTrue
+
+/*! \brief Checks that an expression evaluate to true.
+ * \ingroup group_assertions
+ * \see CppUT::checkTrue
+ */
+# define CPPUT_CHECK            \
+   CPPUT_BEGIN_CHECKING_MACRO() \
+   ::CppUT::checkTrue
+
+/*! \brief Asserts that an expression evaluate to true.
+ * \ingroup group_assertions
+ * The expression source code is written in the assertion diagnostic in case of failure.
+ * \see CppUT::checkTrue
+ */
+# define CPPUT_ASSERT_EXPR( expression )     \
+   CPPUT_ASSERT( (expression), #expression )
+
+/*! \brief Checks that an expression evaluate to true.
+ * \ingroup group_assertions
+ * The expression source code is written in the assertion diagnostic in case of failure.
+ * \see CppUT::checkTrue
+ */
+# define CPPUT_CHECK_EXPR( expression )     \
+   CPPUT_CHECK( (expression), #expression )
+
+/*! \brief Asserts that an expression evaluate to false.
+ * \ingroup group_assertions
+ * \see CppUT::checkFalse
+ */
+# define CPPUT_ASSERT_FALSE      \
+   CPPUT_BEGIN_ASSERTION_MACRO() \
+   ::CppUT::checkFalse
+
+/*! \brief Checks that an expression evaluate to false.
+ * \ingroup group_assertions
+ * \see CppUT::checkFalse
+ */
+# define CPPUT_CHECK_FALSE      \
+   CPPUT_BEGIN_CHECKING_MACRO() \
+   ::CppUT::checkFalse
+
+/*! \brief Asserts that an expression evaluate to false.
+ * \ingroup group_assertions
+ * The expression source code is written in the assertion diagnostic in case of failure.
+ * \see CppUT::checkFalse
+ */
+# define CPPUT_ASSERT_EXPR_FALSE( expression ) \
+   CPPUT_ASSERT_FALSE( (expression), #expression )
+
+/*! \brief Checks that an expression evaluate to false.
+ * \ingroup group_assertions
+ * The expression source code is written in the assertion diagnostic in case of failure.
+ * \see CppUT::checkFalse
+ */
+# define CPPUT_CHECK_EXPR_FALSE( expression ) \
+   CPPUT_CHECK_FALSE( (expression), #expression )
+
+/*! \brief Asserts that two values are equal.
+ * \ingroup group_assertions
+ * - The values must be comparable using CppUT::equalityTest
+ * - The values must be convertible to std::string using CppUT::stringize
+ * \see CppUT::checkEquals
+ */
+# define CPPUT_ASSERT_EQUAL      \
+   CPPUT_BEGIN_ASSERTION_MACRO() \
+   ::CppUT::checkEquals
+
+/*! \brief Checks that two values are equal.
+ * \ingroup group_assertions
+ * - The values must be comparable using CppUT::equalityTest
+ * - The values must be convertible to std::string using CppUT::stringize
+ * \see CppUT::checkEquals
+ */
+# define CPPUT_CHECK_EQUAL      \
+   CPPUT_BEGIN_CHECKING_MACRO() \
+   ::CppUT::checkEquals
+
+/*! \brief Asserts that two values are not equal.
+ * \ingroup group_assertions
+ * - The values must be comparable using CppUT::equalityTest
+ * - The values must be convertible to std::string using CppUT::stringize
+ * \see CppUT::checkNotEquals
+ */
+# define CPPUT_ASSERT_NOT_EQUAL  \
+   CPPUT_BEGIN_ASSERTION_MACRO() \
+   ::CppUT::checkNotEquals
+
+/*! \brief Checks that two values are not equal.
+ * \ingroup group_assertions
+ * - The values must be comparable using CppUT::equalityTest
+ * - The values must be convertible to std::string using CppUT::stringize
+ * \see CppUT::checkNotEquals
+ */
+# define CPPUT_CHECK_NOT_EQUAL  \
+   CPPUT_BEGIN_CHECKING_MACRO() \
+   ::CppUT::checkNotEquals
+
+/*! \brief Asserts that two double are equals given a tolerance
+ * \ingroup group_assertions
+ * \see ::CppUT::checkDoubleEquals
+ */
+# define CPPUT_ASSERT_DOUBLE_EQUAL \
+   CPPUT_BEGIN_ASSERTION_MACRO()   \
+   ::CppUT::checkDoubleEquals
+
+/*! \brief Checks that two double are equals given a tolerance
+ * \ingroup group_assertions
+ * \see ::CppUT::checkDoubleEquals
+ */
+# define CPPUT_CHECK_DOUBLE_EQUAL  \
+   CPPUT_BEGIN_CHECKING_MACRO()    \
+   ::CppUT::checkDoubleEquals
+
+/*! \internal
+ */
+# define _CPPUT_ASSERT_THROW_IMPL( assertionType, expression, ExceptionType )      \
+   do {                                                             \
+      CPPUT_CHECK_POINT( assertionType );                           \
+      bool cpputExceptionThrown_ = false;                           \
+      try {                                                         \
+         expression;                                                \
+      } catch ( const ExceptionType & ) {                           \
+         cpputExceptionThrown_ = true;                              \
+      }                                                             \
+                                                                    \
+      if ( cpputExceptionThrown_ )                                  \
+         break;                                                     \
+                                                                    \
+      ::CppUT::fail( "Expected exception: " #ExceptionType          \
+                     " not thrown." );                              \
+   } while ( false )
+
+
+/*! \brief Asserts that an expression throw an exception of a specified type
+ * \ingroup group_assertions
+ */
+# define CPPUT_ASSERT_THROW( expression, ExceptionType )                    \
+   _CPPUT_ASSERT_THROW_IMPL( abortingAssertion, expression, ExceptionType )
+
+/*! \brief Checks that an expression throw an exception of a specified type
+ * \ingroup group_assertions
+ */
+# define CPPUT_CHECK_THROW( expression, ExceptionType )                     \
+   _CPPUT_CHECK_THROW_IMPL( checkingAssertion, expression, ExceptionType )
+
+/*! \internal
+ */
+# define _CPPUT_ASSERT_NO_THROW_IMPL( assertionType, expression )          \
+   try {                                                                   \
+      CPPUT_CHECK_POINT( assertionType );                                  \
+      expression;                                                          \
+   } catch ( const std::exception &e ) {                                   \
+      ::CppUT::Message message( "Unexpected exception caught" );           \
+      message.add( "Type: " +                                              \
+                   ::CppTL::getObjectTypeName( e, "std::exception" ) );    \
+      message.add( std::string("What: ") + e.what() );              \
+      ::CppUT::fail( message );                                            \
+   } catch ( ... ) {                                                       \
+      ::CppUT::fail( "Unexpected exception caught" );                      \
+   }
+
+
+/*! \brief Asserts that an expression does not throw any exception
+ * \ingroup group_assertions
+ */
+# define CPPUT_ASSERT_NO_THROW( expression )                               \
+   _CPPUT_ASSERT_NO_THROW_IMPL( abortingAssertion, expression )
+
+/*! \brief Checks that an expression does not throw any exception
+ * \ingroup group_assertions
+ */
+# define CPPUT_CHECK_NO_THROW( expression )                                \
+   _CPPUT_ASSERT_NO_THROW_IMPL( checkingAssertion, expression )
+
+
+/*! \internal
+ * Notes: implementing that assertion checking is a bit tricky since all the state
+ * about the current test/assertions is stored in a "static" and
+ * we don't want the tested assertion to polute the test result
+ * of the current test.
+ * TestInfo::ScopedContextOverride is used to create a temporary
+ * context for the tested assertion. After the assertion, the
+ * result of the assertion (did it failed), and the test result
+ * properties are captured for later inspection.
+ */
+# define _CPPUT_ASSERT_ASSERTION_FAIL_MESSAGE_IMPL( assertionType, assertion, message )            \
+   {                                                                                               \
+      CPPUT_CHECK_POINT( assertionType );                                                          \
+      bool assertionFailedCppUT_ = false;                                                          \
+      {                                                                                            \
+         ::CppUT::TestInfo::ScopedContextOverride contextSwitchCppUT_;                             \
+         try {                                                                                     \
+            assertion;                                                                             \
+         } catch ( const ::CppUT::AbortingAssertionException & ) {                                 \
+         }                                                                                         \
+         assertionFailedCppUT_ = ::CppUT::TestInfo::threadInstance().testStatus().hasFailed();     \
+      }                                                                                            \
+      ::CppUT::checkAssertionFail( assertionFailedCppUT_, message );                               \
+   }
+
+/*! \brief Asserts that an assertion fails (for use to unit test custom assertion)
+ * \ingroup group_assertions
+ */
+# define CPPUT_ASSERT_ASSERTION_FAIL_MESSAGE( assertion, message )            \
+   _CPPUT_ASSERT_ASSERTION_FAIL_MESSAGE_IMPL( abortingAssertion, assertion, message )
+
+/*! \brief Checks that an assertion fails (for use to unit test custom assertion)
+ * \ingroup group_assertions
+ */
+# define CPPUT_CHECK_ASSERTION_FAIL_MESSAGE( assertion, message )            \
+   _CPPUT_CHECK_ASSERTION_FAIL_MESSAGE_IMPL( checkingAssertion, assertion, message )
+
+/*! \brief Asserts that an assertion fails (for use to unit test custom assertion)
+ * \ingroup group_assertions
+ */
+# define CPPUT_ASSERT_ASSERTION_FAIL( assertion )                     \
+   CPPUT_ASSERT_ASSERTION_FAIL_MESSAGE( assertion, ::CppUT::Message() )
+
+/*! \brief Checks that an assertion fails (for use to unit test custom assertion)
+ * \ingroup group_assertions
+ */
+# define CPPUT_CHECK_ASSERTION_FAIL( assertion )                     \
+   CPPUT_CHECK_ASSERTION_FAIL_MESSAGE( assertion, ::CppUT::Message() )
+
+/*! \internal
+ */
+# define _CPPUT_ASSERT_ASSERTION_PASS_MESSAGE_IMPL( assertionType, assertion, message )            \
+   {                                                                                               \
+      CPPUT_CHECK_POINT( assertionType );                                                          \
+      bool assertionFailedCppUT_ = false;                                                          \
+      {                                                                                            \
+         ::CppUT::TestInfo::ScopedContextOverride contextSwitchCppUT_;                             \
+         try {                                                                                     \
+            assertion;                                                                             \
+         } catch ( const ::CppUT::AbortingAssertionException & ) {                                 \
+         }                                                                                         \
+         assertionFailedCppUT_ = ::CppUT::TestInfo::threadInstance().testStatus().hasFailed();     \
+      }                                                                                            \
+      ::CppUT::checkAssertionPass( assertionFailedCppUT_, message );                               \
+   }
+
+
+/*! \brief Asserts that an assertion is successful (for use to unit test custom assertion)
+ * \ingroup group_assertions
+ */
+# define CPPUT_ASSERT_ASSERTION_PASS_MESSAGE( assertion, message )            \
+   _CPPUT_ASSERT_ASSERTION_PASS_MESSAGE_IMPL( abortingAssertion, assertion, message )
+
+
+/*! \brief Checks that an assertion is successful (for use to unit test custom assertion)
+ * \ingroup group_assertions
+ */
+# define CPPUT_CHECK_ASSERTION_PASS_MESSAGE( assertion, message )            \
+   _CPPUT_CHECK_ASSERTION_PASS_MESSAGE_IMPL( checkingAssertion, assertion, message )
+
+
+/*! \brief Asserts that an assertion is successful (for use to unit test custom assertion)
+ * \ingroup group_assertions
+ */
+# define CPPUT_ASSERT_ASSERTION_PASS( assertion )                   \
+   CPPUT_ASSERT_ASSERTION_PASS_MESSAGE( assertion, ::CppUT::Message() )
+
+/*! \brief Checks that an assertion is successful (for use to unit test custom assertion)
+ * \ingroup group_assertions
+ */
+# define CPPUT_CHECK_ASSERTION_PASS( assertion )                    \
+   CPPUT_CHECK_ASSERTION_PASS_MESSAGE( assertion, ::CppUT::Message() )
+
+/*! \brief Skips and aborts the current test.
+ * \ingroup group_assertions
+ *
+ * Cause the current test to be skipped. Its status will be 'TestStatus::skipped',
+ * unless an assertion failed before.
+ */
+# define CPPUT_SKIP_TEST \
+   ::CppUT::skipCurrentTest
+
+/*! \brief Checks that an assertion fail, but ignore its failure
+ * \ingroup group_assertions
+ *
+ * A typical usage of CPPUT_IGNORE_FAILURE is to ignore a failing assertion temporary.
+ * Even if the assertion fails, it does not cause the test to fail, but increased
+ * CppUT::TestStatus::ignoredFailureCount() instead.
+ *
+ * Notes that CPPUT_IGNORE_FAILURE also checks that the \c assertion fails (just like
+ * CPPUT_CHECK_ASSERTION_FAIL) and will therefore cause the test to fail if the
+ * assertion did not fail.
+ *
+ * \code
+ * CPPUT_IGNORE_FAILURE(( CPPUT_ASSERT_EQUAL( 1, 2 ));
+ * \endcode
+ *
+ * \warning Be sure to always use double brace around the macro parameter to avoid
+ *          preprocessor mess.
+ */
+# define CPPUT_IGNORE_FAILURE( assertion )                                                         \
+   {                                                                                               \
+      CPPUT_CHECK_POINT( checkingAssertion );                                                      \
+      bool failedCppUT_;                                                                           \
+      {                                                                                            \
+         ::CppUT::TestInfo::IgnoreFailureScopedContextOverride contextSwitchCppUT_( failedCppUT_ );\
+         try {                                                                                     \
+            assertion;                                                                             \
+         } catch ( const ::CppUT::AbortingAssertionException & ) {                                 \
+         }                                                                                         \
+      }                                                                                            \
+      ::CppUT::checkAssertionFail( failedCppUT_, #assertion );                                     \
+   }
+
+#endif // CPPUT_ASSERT_H_INCLUDED
+
+@
+
+
+1.18
+log
+@- added some documentation
+- fixed tabs display in html output.
+@
+text
+@@
+
+
+1.17
+log
+@Rough documentation: placed most function/class/macro in group.
+@
+text
+@d121 8
+a128 4
+// __func__ should contains the current fonction name on many compiler (C99 compiler extension). See:
+// http://publib.boulder.ibm.com/infocenter/pseries/index.jsp?topic=/com.ibm.vacpp7a.doc/language/ref/clrc02predefined_identifiers.htm
+// Available if __C99__FUNC__ is defined:
+// http://publib.boulder.ibm.com/infocenter/pseries/index.jsp?topic=/com.ibm.vacpp7a.doc/language/ref/clrapxaix_macros.htm
+d133 3
+a135 1
+
+d139 3
+@
+
+
+1.16
+log
+@- added unit tests for TestInfo
+- fixed bug in CPPUT_IGNORE_FAILURE and exception guard.
+- added 'isIgnoredFailure' to Assertion.
+- lighttestrunner now print ignored failure and skipped tests.
+@
+text
+@d137 6
+d147 4
+d155 4
+d163 5
+d171 5
+d179 4
+d187 4
+d195 5
+d203 5
+d211 6
+d221 6
+d231 6
+d241 6
+d251 4
+d259 4
+d267 2
+d286 4
+d293 3
+d299 2
+d315 4
+d322 3
+d329 10
+a338 8
+// Notes: implementing that assertion checking is a bit tricky since all the state
+// about the current test/assertions is stored in a "static" and
+// we don't want the tested assertion to polute the test result
+// of the current test.
+// TestInfo::ScopedContextOverride is used to create a temporary
+// context for the tested assertion. After the assertion, the
+// result of the assertion (did it failed), and the test result
+// properties are captured for later inspection.
+d354 3
+d360 3
+d366 3
+d372 3
+d378 2
+d395 4
+d402 4
+d409 4
+d416 3
+d422 6
+d431 2
+a432 1
+/*! Checks that an assertion fail, but ignore its failure
+@
+
+
+1.15
+log
+@- added CPPUT_SKIP_TEST to skip the current test
+- added CPPUT_IGNORE_FAILURE( assertion ) to ignore a failure caused by an assertion, but count the failed assertion
+@
+text
+@d255 1
+a255 1
+         assertionFailedCppUT_ = ::CppUT::TestInfo::threadInstance().getUpdatedTestStatus().hasFailed(); \
+d257 1
+a257 1
+      ::CppUT::checkAssertionFail( assertionFailedCppUT_, message );                                     \
+d282 1
+a282 1
+         assertionFailedCppUT_ = ::CppUT::TestInfo::threadInstance().getUpdatedTestStatus().hasFailed(); \
+d302 18
+a319 1
+# define CPPUT_IGNORE_FAILURE( assertion )                               \
+d321 2
+a322 1
+      bool succeedCppUT_ = false;                                                                  \
+d324 1
+a324 1
+         ::CppUT::TestInfo::ScopedContextOverride contextSwitchCppUT_;                             \
+a328 1
+         succeedCppUT_ = ::CppUT::TestInfo::threadInstance().getUpdatedTestStatus().hasPassed();   \
+d330 1
+a330 2
+      ::CppUT::checkAssertionFail( !succeedCppUT_, #assertion );                                        \
+      ::CppUT::TestInfo::threadInstance().ignoredFailure();                                        \
+@
+
+
+1.14
+log
+@- changed most interface to use std::string instead of CppTL::ConstString
+- CppTL::ConstString is now an implementation detail and is used to store string in objects as it is thread-safe.
+@
+text
+@d116 2
+a135 1
+
+d248 1
+a248 1
+      bool assertionFailed = false;                                                                \
+d250 1
+a250 1
+         ::CppUT::TestInfo::ScopedContextOverride contextSwitch;                                   \
+d255 1
+a255 1
+         assertionFailed = ::CppUT::TestInfo::threadInstance().getUpdatedTestStatus().hasFailed(); \
+d257 1
+a257 1
+      ::CppUT::checkAssertionFail( assertionFailed, message );                                     \
+d275 1
+a275 1
+      bool assertionFailed = false;                                                                \
+d277 1
+a277 1
+         ::CppUT::TestInfo::ScopedContextOverride contextSwitch;                                   \
+d282 1
+a282 1
+         assertionFailed = ::CppUT::TestInfo::threadInstance().getUpdatedTestStatus().hasFailed(); \
+d284 1
+a284 1
+      ::CppUT::checkAssertionPass( assertionFailed, message );                                     \
+d299 17
+@
+
+
+1.13
+log
+@* added CPPUT_ASSERT_DOUBLES_EQUAL and CPPUT_CHECK_DOUBLES_EQUAL
+@
+text
+@d27 2
+a28 2
+   Message CPPUT_API buildEqualityFailedMessage( const CppTL::ConstString &expected,
+                                                 const CppTL::ConstString &actual,
+d69 2
+a70 2
+   Message CPPUT_API buildUnequalityFailedMessage( const CppTL::ConstString &expected,
+                                                   const CppTL::ConstString &actual,
+d223 1
+a223 1
+      message.add( CppTL::ConstString("What: ") + e.what() );              \
+@
+
+
+1.12
+log
+@* Replaced function in namespace TestInfo by exposing the TestInfoData class and renaming it TestInfo. TestInfo in now an exposed per thread singleton.
+* startNewTest() is now called from TestCase::runTest() instead of being the test runner responsability. There still a few call to this method in cpput bootstrap test (which use assertion without run a test case).
+@
+text
+@d111 5
+d184 8
+@
+
+
+1.11
+log
+@Rewrote failure reporting during test. It now provides more structure while still providing some flexibility.
+@
+text
+@d118 4
+a121 2
+# define CPPUT_CHECK_POINT( assertionType )                            \
+   ::CppUT::TestInfo::newAssertion( ::CppUT::assertionType, __FILE__, __LINE__)
+d231 13
+a243 13
+# define _CPPUT_ASSERT_ASSERTION_FAIL_MESSAGE_IMPL( assertionType, assertion, message ) \
+   {                                                                                \
+      CPPUT_CHECK_POINT( assertionType );                                           \
+      bool assertionFailed = false;                                                 \
+      {                                                                             \
+         ::CppUT::TestInfo::ScopedContextOverride contextSwitch;                    \
+         try {                                                                      \
+            assertion;                                                              \
+         } catch ( const ::CppUT::AbortingAssertionException & ) {                  \
+         }                                                                          \
+         assertionFailed = ::CppUT::TestInfo::getUpdatedTestStatus().hasFailed();   \
+      }                                                                             \
+      ::CppUT::checkAssertionFail( assertionFailed, message );                      \
+d258 13
+a270 13
+# define _CPPUT_ASSERT_ASSERTION_PASS_MESSAGE_IMPL( assertionType, assertion, message ) \
+   {                                                                                \
+      CPPUT_CHECK_POINT( assertionType );                                           \
+      bool assertionFailed = false;                                                 \
+      {                                                                             \
+         ::CppUT::TestInfo::ScopedContextOverride contextSwitch;                    \
+         try {                                                                      \
+            assertion;                                                              \
+         } catch ( const ::CppUT::AbortingAssertionException & ) {                  \
+         }                                                                          \
+         assertionFailed = ::CppUT::TestInfo::getUpdatedTestStatus().hasFailed();   \
+      }                                                                             \
+      ::CppUT::checkAssertionPass( assertionFailed, message );                      \
+@
+
+
+1.10
+log
+@* added reference to potential C99 __func__ standard variable.
+@
+text
+@d230 12
+a241 15
+   {                                                                          \
+      CPPUT_CHECK_POINT( assertionType );                                     \
+      OpenTest::Properties result;                                            \
+      bool assertionFailed = false;                                           \
+      {                                                                       \
+         ::CppUT::TestInfo::ScopedContextOverride contextSwitch;              \
+         try {                                                                \
+            assertion;                                                        \
+         } catch ( const ::CppUT::AbortingAssertionException & ) {            \
+         }                                                                    \
+         assertionFailed = ::CppUT::TestInfo::failedAssertionCount() != 0;    \
+         if ( ::CppUT::TestInfo::result().isValid() )                         \
+            result = ::CppUT::TestInfo::result().properties();                \
+      }                                                                       \
+      ::CppUT::checkAssertionFail( assertionFailed, message );                \
+d257 12
+a268 15
+   {                                                                          \
+      CPPUT_CHECK_POINT( assertionType );                                     \
+      OpenTest::Properties result;                                            \
+      bool assertionFailed = false;                                           \
+      {                                                                       \
+         ::CppUT::TestInfo::ScopedContextOverride contextSwitch;              \
+         try {                                                                \
+            assertion;                                                        \
+         } catch ( const ::CppUT::AbortingAssertionException & ) {            \
+         }                                                                    \
+         assertionFailed = ::CppUT::TestInfo::failedAssertionCount() != 0;    \
+         if ( ::CppUT::TestInfo::result().isValid() )                         \
+            result = ::CppUT::TestInfo::result().properties();                \
+      }                                                                       \
+      ::CppUT::checkAssertionPass( assertionFailed, message );                \
+@
+
+
+1.9
+log
+@* newAssertion() now takes the assertion type and location as parameter
+* added checking assertion macros
+@
+text
+@d114 4
+@
+
+
+1.8
+log
+@* moved cpput/typehelper.h to cpptl/typename.h
+* renamed helper functions: getObjectTypeName(), getTypeName() and demangleTypeInfoName()
+* With mingw, typeinfo name is correctly extracted (skip initial digits)
+* added automatic detection of the presence of RTTI with msvc.
+@
+text
+@d114 2
+a115 3
+# define CPPUT_CHECK_POINT()                                      \
+   ::CppUT::TestInfo::newAssertion(),                             \
+   ::CppUT::TestInfo::setAssertionLocation( __FILE__, __LINE__ )
+d118 4
+a121 1
+   CPPUT_CHECK_POINT(),
+d133 4
+d140 3
+d147 4
+d154 3
+d161 4
+d169 5
+a173 1
+# define CPPUT_ASSERT_THROW( expression, ExceptionType )            \
+d175 1
+a175 1
+      CPPUT_CHECK_POINT();                                          \
+d190 7
+a196 1
+# define CPPUT_ASSERT_NO_THROW( expression )                               \
+d198 1
+d210 7
+d224 2
+a225 2
+// properties are captured for later introspection.
+# define CPPUT_ASSERT_ASSERTION_FAIL_MESSAGE( assertion, message )            \
+d227 1
+a227 1
+      CPPUT_CHECK_POINT();                                                    \
+d243 7
+a249 1
+# define CPPUT_ASSERT_ASSERTION_FAIL( assertion )                   \
+d252 4
+a255 1
+# define CPPUT_ASSERT_ASSERTION_PASS_MESSAGE( assertion, message )            \
+d257 1
+a257 1
+      CPPUT_CHECK_POINT();                                                    \
+d273 6
+d282 3
+@
+
+
+1.7
+log
+@* use CppTL::ConstString instead of std::string for thread-safety
+@
+text
+@d9 1
+a9 1
+# include <cpput/typehelper.h>
+d172 1
+a172 1
+                   ::CppUT::extractObjectType( e, "std::exception" ) );    \
+a178 10
+# define CPPUT_EXPRESSION_WRAPPER( expression, variable )   \
+      class Wrapper : public ::CppUT::ExpressionWrapper     \
+      {                                                     \
+      public: /* overridden from ExpressionWrapper */       \
+         void run() const                                   \
+         {                                                  \
+            expression;                                     \
+         }                                                  \
+      } variable
+
+@
+
+
+1.6
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@d27 2
+a28 2
+   Message CPPUT_API buildEqualityFailedMessage( const std::string &expected,
+                                                 const std::string &actual,
+d69 2
+a70 2
+   Message CPPUT_API buildUnequalityFailedMessage( const std::string &expected,
+                                                   const std::string &actual,
+d173 1
+a173 1
+      message.add( std::string("What: ") + e.what() );                     \
+@
+
+
+1.5
+log
+@* moved the assertion implementation to using TestInfo.
+* added assertion (tested/failed) counter to TestInfo.
+@
+text
+@a3 1
+# include <cpput/resultexception.h>
+a4 1
+# include <cpput/location.h>
+a12 10
+   class CPPUT_API ExpressionWrapper
+   {
+   public:
+      virtual ~ExpressionWrapper()
+      {
+      }
+
+      virtual void run() const = 0;
+   };
+
+@
+
+
+1.4
+log
+@* added CPPUT_SUCCEED to report a success with a structured message (warning, time, actual/excepted values...). Throw SuccessException.
+@
+text
+@d9 1
+d15 6
+a20 1
+   void CPPUT_API setCheckPointLocation( const Location &location );
+d22 2
+a23 1
+   Location CPPUT_API getCheckPointLocation();
+a26 2
+   void CPPUT_API succeed( const Message &message );
+
+d33 6
+d126 3
+a128 2
+# define CPPUT_CHECK_POINT() \
+   ::CppUT::setCheckPointLocation( CPPUT_MAKE_CURRENT_LOCATION() )
+a138 4
+# define CPPUT_SUCCEED           \
+   CPPUT_BEGIN_ASSERTION_MACRO() \
+   ::CppUT::succeed
+
+d191 36
+d228 19
+a246 1
+   CPPUT_ASSERT_THROW( assertion, ::CppUT::AssertException )
+d249 1
+a249 1
+   CPPUT_ASSERT_NO_THROW( assertion )
+@
+
+
+1.3
+log
+@* renamed cpput/assertexception.h to cpput/resultexception.h
+@
+text
+@d20 2
+d127 4
+@
+
+
+1.2
+log
+@* added macro CPPUT_FAIL
+@
+text
+@d4 1
+a4 1
+# include <cpput/assertexception.h>
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d121 4
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

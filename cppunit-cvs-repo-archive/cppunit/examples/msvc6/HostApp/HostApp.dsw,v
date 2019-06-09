@@ -1,0 +1,283 @@
+head	1.5;
+access;
+symbols
+	REL_1_12_1:1.5
+	REL_1_11_6:1.5
+	REL_1_11_4:1.5
+	REL_1_11_0:1.5
+	TG_CPPUNIT_NO_STREAM_AFTER:1.5
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.5
+	REL_1_10_2:1.5
+	REL_1_10_0:1.5
+	REL_1_9_14:1.5
+	REL_1_9_12:1.5
+	BRANCH_1_9_12:1.5.0.4
+	TG_BRANCH_1_9_12:1.5
+	TG_BEFORE_HPUX_PLUGIN:1.5
+	TG_BEFORE_SUN4_PORT:1.5
+	REL_1_9_10:1.5
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.5
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.5
+	REL_1_9_6:1.5
+	REL_1_9_4:1.5
+	REL_1_9_0:1.5
+	REL_1_8_0:1.5
+	REL_1_7_8:1.5
+	REL_1_7_3:1.5
+	REL_1_7_1:1.5
+	REL_1_6_2:1.5
+	BRANCH_1_6:1.5.0.2
+	REL_1_6_1:1.5
+	REL_1_6_0:1.5
+	REL_1_5_5:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.5
+date	2001.09.18.19.06.00;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.09.17.21.27.15;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.06.27.21.23.22;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.28.14.27.24;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* examples/examples.dsw:
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsw:
+* examples/msvc6/HostApp/HostApp.dsw:
+* examples/msvc6/TestPlugIn/TestPlugIn.dsw: Added missing
+project dependency.
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp: fixed *.tlb output directory.
+
+* include/msvc6/testrunner/TestPlugInInterface.h: does not define
+NOMINMAX if already defined.
+@
+text
+@Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "DSPlugIn"=..\..\..\src\msvc6\DSPlugIn\DSPlugIn.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "HostApp"=.\HostApp.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name cppunit
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TestRunner
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DSPlugIn
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "TestRunner"=..\..\..\src\msvc6\testrunner\TestRunner.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name cppunit
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DSPlugIn
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "cppunit"=..\..\..\src\cppunit\cppunit.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+
+@
+
+
+1.4
+log
+@* Makefile.am: Added INSTALL-WIN32.txt to EXTRA_DIST.
+
+* INSTALL-WIN32.txt: added, short documentation for CppUnit and VC++.
+
+* include/cppunit/extensions/HelperMacros.h: bug #448363, removed
+an extraneous ';' at the end of CPPUNIT_TEST_SUITE_END macro.
+
+* examples/cppunittest/TestCallerTest.cpp: bug #448332, fixed
+memory leaks.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp: change to define
+IDD to a dummy value when subclassing the dialog.
+
+* src/cppunit/cppunit.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* examples/cppunitttest/CppUnitTestMain.dsp:
+* examples/hierarchy.dsp:
+* examples/msvc6/TestPlugIn/TestPlugIn.dsp:
+* examples/msvc6/HostApp/HostApp.dsp: all configurations can be compiled.
+
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsw: added dependency to
+cppunit.dsp and TestRunner.dsp.
+@
+text
+@d6 12
+d32 3
+d49 3
+@
+
+
+1.3
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+moved dll copy from post-build to custom build setting, so that the
+dll is copied even if the CppUnitTestApp was not modified.
+
+* examples/msvc6/TestPlugIn/: a new example of test plug in.
+
+* src/msvc6/TestRunner/ListCtrlFormatter.*
+* src/msvc6/TestRunner/ListCtrlSetter.*:
+added, helper to manipulate list control.
+
+* src/msvc6/TestRunner/TestRunnerDlg.*: change to make the error list
+more compact. text moved to string resources. icons added for typ
+test tfailure type.
+
+* src/msvc6/TestRunner/MostRecentTests.*: added, classes that will
+replace the current implementation of MRU test which make it hard
+to subclass the dialog.
+
+* src/msvc6/TestRunner/res/errortype.bmp: added, bitmap with error
+types (failure and error).
+
+* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+
+* src/cppunit/cppunit.dsp:
+removed config.h from project
+added Portability.h and config-msvc6.h
+
+* include/cppunit/config-msvc6.h:
+undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+@
+text
+@a23 12
+Project: "TFWKUI"=..\..\..\..\TfwkUi\TfwkUi.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+@
+
+
+1.2
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@d24 12
+@
+
+
+1.1
+log
+@Merged msvc6 specific TestRunner and example adapted from Michael Feathers
+version by Baptiste Lepilleur.
+@
+text
+@d6 1
+a6 1
+Project: "HostApp"=".\HostApp.dsp" - Package Owner=<4>
+d24 1
+a24 1
+Project: "TestRunner"="..\..\..\src\msvc6\testrunner\TestRunner.dsp" - Package Owner=<4>
+d32 3
+d39 1
+a39 1
+Project: "cppunit"="..\..\..\cppunit\cppunit.dsp" - Package Owner=<4>
+@
+

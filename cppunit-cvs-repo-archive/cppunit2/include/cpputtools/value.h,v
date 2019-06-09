@@ -1,0 +1,589 @@
+head	1.10;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.10
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.10
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.10
+	TG_AFTER_REMOVING_TESTCONTEXT:1.8
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.8
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.8;
+locks; strict;
+comment	@ * @;
+
+
+1.10
+date	2005.02.23.22.45.56;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.02.23.21.40.13;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2004.11.15.08.31.43;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2004.08.04.07.55.43;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.08.03.21.58.56;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.06.23.20.07.30;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.06.23.20.00.12;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.06.15.01.19.56;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.15.00.45.52;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.06.14.23.31.24;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.10
+log
+@* added detection of gcc stdlib & of the presence of std::wstring
+@
+text
+@#ifndef CPPUTTOOLS_VALUE_H_INCLUDED
+# define CPPUTTOOLS_VALUE_H_INCLUDED
+
+# include "ctti.h"
+# include <typeinfo>  // std::bad_cast
+# include <string>
+
+/// @@todo Implement broken on VC++ 6 because of linker bug:
+///       => all get<xxx>() are resolved as the same function !
+
+
+
+namespace CppUTTools {
+
+
+   class ValueBadCast : public std::bad_cast
+   {
+   public:
+      const char * what() const throw()
+      {
+         return "ValueBadCast: "
+                "Value can not be converted to the specified type.";
+      }
+   };
+
+
+   namespace Impl {
+      class ValueHolder
+      {
+      public:
+         virtual ~ValueHolder() {}
+
+         virtual TypeId type() const = 0;
+
+         virtual ValueHolder *clone() const = 0;
+
+         virtual void *pointer() = 0;
+      };
+
+
+      template<class ValueType>
+      class ValueHolderImpl : public ValueHolder
+      {
+      public:
+         ValueHolderImpl( const ValueType &value )
+            : value_( value )
+         {
+         }
+
+         const ValueType &value() const
+         {
+            return value_;
+         }
+
+      public: // overridden from ValueHolder
+         TypeId type() const
+         {
+            return typeId<ValueType>();
+         }
+
+         void *pointer()
+         {
+            return &value_;
+         }
+
+         ValueHolder *clone() const
+         {
+            return new ValueHolderImpl<ValueType>( value_ );
+         }
+
+      private:
+         ValueType value_;
+      };
+
+   } // namespace Impl
+
+
+   class Value
+   {
+   public:
+      Value();
+      Value( char value );
+      Value( bool value );
+      Value( short value );
+      Value( int value );
+      Value( long value );
+      Value( unsigned short value );
+      Value( unsigned int value );
+      Value( unsigned long value );
+      Value( float value );
+      Value( double value );
+      Value( long double value );
+      Value( const std::string &value );
+#if !defined(CPPTL_NO_STD_WSTRING)
+      Value( const std::wstring &value );
+#endif
+      Value( const Value &other );
+
+      Value &operator =( const Value &other );
+
+      TypeId type() const;
+
+      void swap( Value &other );
+
+      bool hasSameType( const Value &other ) const;
+
+      bool isEmpty() const;
+
+      const void *valuePointer() const;
+
+      void *valuePointer();
+
+      void copyValueTo( void *storage );
+
+   //private:     // not private for access by get/set/cast function
+      Value( Impl::ValueHolder *holder );
+
+      Impl::ValueHolder *holder_;
+   };
+
+
+   template<class ValueType>
+   Value value( const ValueType &newValue )
+   {
+      return Value( new Impl::ValueHolderImpl<ValueType>( newValue ) );
+   }
+
+
+   // class Value
+   // ///////////////////////////////////////////////////////////////
+
+   inline Value::Value()
+      : holder_( 0 )
+   {
+   }
+
+   inline Value::Value( bool value )
+      : holder_( new Impl::ValueHolderImpl<bool>( value ) )
+   {
+   }
+
+   inline Value::Value( char value )
+      : holder_( new Impl::ValueHolderImpl<char>( value ) )
+   {
+   }
+
+   inline Value::Value( short value )
+      : holder_( new Impl::ValueHolderImpl<short>( value ) )
+   {
+   }
+
+   inline Value::Value( int value )
+      : holder_( new Impl::ValueHolderImpl<int>( value ) )
+   {
+   }
+
+   inline Value::Value( long value )
+      : holder_( new Impl::ValueHolderImpl<long>( value ) )
+   {
+   }
+
+   inline Value::Value( unsigned short value )
+      : holder_( new Impl::ValueHolderImpl<unsigned short>( value ) )
+   {
+   }
+
+   inline Value::Value( unsigned int value )
+      : holder_( new Impl::ValueHolderImpl<unsigned int>( value ) )
+   {
+   }
+
+   inline Value::Value( unsigned long value )
+      : holder_( new Impl::ValueHolderImpl<unsigned long>( value ) )
+   {
+   }
+
+   inline Value::Value( float value )
+      : holder_( new Impl::ValueHolderImpl<float>( value ) )
+   {
+   }
+
+   inline Value::Value( double value )
+      : holder_( new Impl::ValueHolderImpl<double>( value ) )
+   {
+   }
+
+   inline Value::Value( long double value )
+      : holder_( new Impl::ValueHolderImpl<long double>( value ) )
+   {
+   }
+
+   inline Value::Value( const std::string &value )
+      : holder_( new Impl::ValueHolderImpl<std::string>( value ) )
+   {
+   }
+
+#if !defined(CPPTL_NO_STD_WSTRING)
+   inline Value::Value( const std::wstring &value )
+      : holder_( new Impl::ValueHolderImpl<std::wstring>( value ) )
+   {
+   }
+#endif
+
+
+   inline Value::Value( const Value &other )
+      : holder_( other.holder_ ? other.holder_->clone() : 0 )
+   {
+   }
+
+   inline Value &
+   Value::operator =( const Value &other )
+   {
+      Value tmp( other );
+      swap( tmp );
+      return *this;
+   }
+
+   inline TypeId 
+   Value::type() const
+   {
+      return holder_ ? holder_->type() : typeId<void>();
+   }
+
+   inline void 
+   Value::swap( Value &other )
+   {
+      Impl::ValueHolder *tmp = holder_;
+      holder_ = other.holder_;
+      other.holder_ = tmp;
+   }
+
+   inline bool 
+   Value::hasSameType( const Value &other ) const
+   {
+      return type() == other.type();
+   }
+
+   inline bool 
+   Value::isEmpty() const
+   {
+      return holder_ == 0;
+   }
+
+   inline Value::Value( Impl::ValueHolder *holder )
+      : holder_( holder )
+   {
+   }
+
+   inline const void *
+   Value::valuePointer() const
+   {
+      // this const cast avoid extra virtual function
+      Impl::ValueHolder *holder = const_cast<Impl::ValueHolder *>( holder_ );
+      return holder ? holder->pointer() : 0;
+   }
+
+   inline void *
+   Value::valuePointer()
+   {
+      return holder_ ? holder_->pointer() : 0;
+   }
+
+
+} // namespace CppUTTools
+
+
+
+// Those function are imported in the global namespace since all compiler don't have
+// argument dependent look-up. They all take type 'Value' in parameter which is in a namespace.
+
+template<class ValueType>
+CppUTTools::Value &set( CppUTTools::Value &value, 
+                        const ValueType &newValue )
+{
+   value = CppUTTools::Value( new CppUTTools::Impl::ValueHolderImpl<ValueType>( newValue ) );
+   return value;
+}
+
+template<class ValueType>
+const ValueType &get( const CppUTTools::Value &value )
+{
+   if ( value.type() != CppUTTools::typeId<ValueType>() )
+      throw CppUTTools::ValueBadCast();
+
+   return static_cast<CppUTTools::Impl::ValueHolderImpl<ValueType> *>( value.holder_ )->value();
+}
+
+template<class ValueType>
+const ValueType *get( const CppUTTools::Value *value )
+{
+   if ( value.type() != CppUTTools::typeId<ValueType>() )
+      return 0;
+   return static_cast<CppUTTools::Impl::ValueHolderImpl<ValueType> *>( value.holder_ )->value();
+}
+
+
+#endif // CPPUTTOOLS_VALUE_H_INCLUDED
+@
+
+
+1.9
+log
+@* fixed included for std::bad_cast
+* changed implementation (overridding what() instead of calling contructor as it was not portable).
+@
+text
+@d94 1
+d96 1
+d197 1
+d202 1
+a202 1
+
+d275 2
+a276 1
+   return value = CppUTTools::Value( new Impl::ValueHolderImpl<ValueType>( newValue ) );
+@
+
+
+1.8
+log
+@* implementation is broken on VC++ 6 (linker bug with function template) => caused commandlineoptions to crash.
+@
+text
+@d5 2
+a6 1
+# include <stdexcept>
+d19 1
+a19 1
+      ValueBadCast() : std::bad_cast( "CppUTTools::ValueBadCast" )
+d21 2
+@
+
+
+1.7
+log
+@* TestResult: succeeded status moved to property "cpput.status' of the message
+* Reworked exception hierarchy to allow for a 'success' exception.
+* Reworked TestFailureGuard & TestFailureHandler to handle a generic ResultException.
+@
+text
+@d7 4
+@
+
+
+1.6
+log
+@* added std::string & std::wstring implicit constructor
+@
+text
+@d76 1
+d128 5
+@
+
+
+1.5
+log
+@* fixed crash in copy constructor
+@
+text
+@d85 2
+d177 10
+@
+
+
+1.4
+log
+@* fixed compilation issues
+@
+text
+@d178 1
+a178 1
+      : holder_( other.holder_ ? holder_->clone() : 0 )
+@
+
+
+1.3
+log
+@* option storage clean up
+@
+text
+@d24 1
+a24 1
+         virtual ~ValueHolder();
+@
+
+
+1.2
+log
+@* fixed compilation issue related to changing OptionValue into the new Value library
+@
+text
+@a29 2
+         virtual const void *pointer() const = 0;
+
+a53 5
+         const void *pointer() const
+         {
+            return &value_;
+         }
+
+d59 1
+a59 1
+         virtual ValueHolder *clone() const
+d101 2
+d224 3
+a226 1
+      return holder_ ? holder_->pointer() : 0;
+d253 1
+a253 1
+   if ( value.type() != typeId<ValueType>() )
+d256 1
+a256 1
+   return static_cast<Impl::ValueHolderImpl<ValueType> *>( value.holder_ )->value();
+d262 1
+a262 1
+   if ( value.type() != typeId<ValueType>() )
+d264 1
+a264 1
+   return static_cast<Impl::ValueHolderImpl<ValueType> *>( value.holder_ )->value();
+@
+
+
+1.1
+log
+@* adding cpputtools library, command line options among other thing (for test runners). In progress.
+@
+text
+@d24 1
+a24 1
+         virtual ~Value();
+d28 5
+a32 1
+         virtual Value *clone() const = 0;
+d50 6
+d63 1
+a63 7
+            return value_;
+         }
+
+      public: // overridden from ValueHolder
+         TypeId type() const
+         {
+            return typeId<ValueType>();
+d66 1
+a66 1
+         virtual Value *clone() const
+d109 1
+a109 1
+      Value( ValueHolder *holder );
+a120 26
+   
+   template<class ValueType>
+   Value &set( Value &value, 
+               const ValueType &newValue )
+   {
+      return value = Value( new Impl::ValueHolderImpl<ValueType>( newValue ) );
+   }
+
+   template<class ValueType>
+   const Value &get( const Value &value )
+   {
+      if ( value.type() != typeId<ValueType>() )
+         throw ValueBadCast();
+
+      return static_cast<Impl::ValueHolderImpl<ValueType> *>( value.holder_ )->value();
+   }
+
+   template<class ValueType>
+   const Value *get( const Value *value )
+   {
+      if ( value.type() != typeId<ValueType>() )
+         return 0;
+      return static_cast<Impl::ValueHolderImpl<ValueType> *>( value.holder_ )->value();
+   }
+
+
+d135 1
+a135 1
+   inline Value::Value( short value );
+d140 1
+a140 1
+   inline Value::Value( int value );
+d145 1
+a145 1
+   inline Value::Value( long value );
+d150 1
+a150 1
+   inline Value::Value( unsigned short value );
+d155 1
+a155 1
+   inline Value::Value( unsigned int value );
+d160 1
+a160 1
+   inline Value::Value( unsigned long value );
+d165 1
+a165 1
+   inline Value::Value( float value );
+d170 1
+a170 1
+   inline Value::Value( double value );
+d175 1
+a175 1
+   inline Value::Value( long double value );
+d183 1
+a183 1
+      : holder_( holder ? holder_->clone() : 0 )
+d204 1
+a204 1
+      ValueHolder *tmp = holder_;
+d221 1
+a221 1
+   inline Value::Value( ValueHolder *holder )
+d242 30
+a271 1
+#endif // CPPUTTOOLS_VALUE_H_INCLUDED@
+

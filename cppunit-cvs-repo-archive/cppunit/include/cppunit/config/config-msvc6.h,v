@@ -1,0 +1,548 @@
+head	1.11;
+access;
+symbols
+	REL_1_12_1:1.11
+	REL_1_11_6:1.10
+	REL_1_11_4:1.10
+	REL_1_11_0:1.8
+	TG_CPPUNIT_NO_STREAM_AFTER:1.8
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.8
+	REL_1_10_2:1.8
+	REL_1_10_0:1.8
+	REL_1_9_14:1.8
+	REL_1_9_12:1.8
+	BRANCH_1_9_12:1.8.0.2
+	TG_BRANCH_1_9_12:1.8
+	TG_BEFORE_HPUX_PLUGIN:1.7
+	TG_BEFORE_SUN4_PORT:1.7
+	REL_1_9_10:1.7
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.3
+	REL_1_9_4:1.3;
+locks; strict;
+comment	@ * @;
+
+
+1.11
+date	2007.02.24.21.13.04;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2005.07.30.07.02.38;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.07.30.06.54.13;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2003.05.15.06.31.52;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2002.07.16.22.59.21;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.07.14.19.48.32;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.18.09.32.18;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.17.22.27.28;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.15.15.24.14;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.11
+log
+@* src/cppunit/TestAssert.cpp (assertDoubleEquals): Moved finite & NaN
+  tests to include/cppunit/portability/FloatingPoint.h. Changed
+  implementation assertDoubleEquals to explicitly test for NaN
+  in case of non-finite values to force equality failure in the
+  presence of NaN. Previous implementation failed on Microsoft
+  Visual Studio 6 (on this platform: NaN == NaN).
+* examples/cppunittest/TestAssertTest.cpp: Add more unit tests to
+  test the portable floating-point primitive. Added missing
+  include <limits>.
+
+* include/cppunit/portability/Makefile.am:
+* include/cppunit/portability/FloatingPoint.h: Added file. Extracted
+  isfinite() from TestAssert.cpp.
+
+* include/cppunit/config-evc4:
+* include/cppunit/config-msvc6: Added support for _finite().
+@
+text
+@#ifndef _INCLUDE_CPPUNIT_CONFIG_MSVC6_H
+#define _INCLUDE_CPPUNIT_CONFIG_MSVC6_H 1
+
+#if _MSC_VER > 1000     // VC++
+#pragma warning( disable : 4786 )   // disable warning debug symbol > 255...
+#endif // _MSC_VER > 1000
+
+#define HAVE_CMATH 1
+ 
+/* include/cppunit/config-msvc6.h. Manually adapted from 
+   include/cppunit/config-auto.h */
+
+/* define to 1 if the compiler implements namespaces */
+#ifndef CPPUNIT_HAVE_NAMESPACES 
+#define CPPUNIT_HAVE_NAMESPACES  1 
+#endif
+
+/* define if library uses std::string::compare(string,pos,n) */
+#ifdef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST 
+#undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+#endif
+
+/* Define if you have the <dlfcn.h> header file. */
+#ifdef CPPUNIT_HAVE_DLFCN_H 
+#undef CPPUNIT_HAVE_DLFCN_H 
+#endif
+
+/* define to 1 if the compiler implements namespaces */
+#ifndef CPPUNIT_HAVE_NAMESPACES 
+#define CPPUNIT_HAVE_NAMESPACES  1 
+#endif
+
+/* define if the compiler supports Run-Time Type Identification */
+#ifndef CPPUNIT_HAVE_RTTI
+# ifdef _CPPRTTI // Defined by the compiler option /GR
+#  define CPPUNIT_HAVE_RTTI 1
+# else
+#  define CPPUNIT_HAVE_RTTI 0
+# endif
+#endif
+
+/* Define to 1 to use type_info::name() for class names */
+#ifndef CPPUNIT_USE_TYPEINFO_NAME 
+#define CPPUNIT_USE_TYPEINFO_NAME  CPPUNIT_HAVE_RTTI 
+#endif
+
+#define CPPUNIT_HAVE_SSTREAM 1
+
+/* Name of package */
+#ifndef CPPUNIT_PACKAGE 
+#define CPPUNIT_PACKAGE  "cppunit" 
+#endif
+
+
+// Compiler error location format for CompilerOutputter
+// See class CompilerOutputter for format.
+#undef CPPUNIT_COMPILER_LOCATION_FORMAT
+#if _MSC_VER >= 1300    // VS 7.0
+# define CPPUNIT_COMPILER_LOCATION_FORMAT "%p(%l) : error : "
+#else
+# define CPPUNIT_COMPILER_LOCATION_FORMAT "%p(%l):"
+#endif
+
+// Define to 1 if the compiler support C++ style cast.
+#define CPPUNIT_HAVE_CPP_CAST 1
+
+/* define to 1 if the compiler has _finite() */
+#ifndef CPPUNIT_HAVE__FINITE
+#define CPPUNIT_HAVE__FINITE 1 
+#endif
+
+
+// Uncomment to turn on STL wrapping => use this to test compilation. 
+// This will make CppUnit subclass std::vector & co to provide default
+// parameter.
+/*#define CPPUNIT_STD_NEED_ALLOCATOR 1
+#define CPPUNIT_STD_ALLOCATOR std::allocator<T>
+//#define CPPUNIT_NO_NAMESPACE 1
+*/
+
+
+/* _INCLUDE_CPPUNIT_CONFIG_MSVC6_H */
+#endif
+@
+
+
+1.10
+log
+@* include/cppunit/config/config-msvc6.h: added missing macro definition
+  CPPUNIT_HAVE_CPP_CAST.
+@
+text
+@d67 5
+@
+
+
+1.9
+log
+@* include/cppunit/config/config-msvc6.h: auto-detect if RTTI are enabled
+    the _CPPRTTI macro (defined by the compiler when enabling RTTI).
+@
+text
+@d64 4
+@
+
+
+1.8
+log
+@* include/cppunit/config/config-msvc6.h: changed the compiler outputter
+  default format (CPPUNIT_COMPILER_LOCATION_FORMAT) for Visual Studio 7.0.
+  Assertion now appears in the task list.
+@
+text
+@d34 6
+a39 2
+#ifndef CPPUNIT_HAVE_RTTI 
+#define CPPUNIT_HAVE_RTTI  1 
+@
+
+
+1.7
+log
+@* include/cppunit/Protector.h:
+* src/cppunit/Protector.cpp: added. Base class for protectors.
+
+* src/cppunit/DefaultProtector.h:
+* src/cppunit/DefaultProtector.cpp: added. Implementation of the default
+  protector used to catch std::exception and any other exception.
+
+* src/cppunit/ProtectorChain.h:
+* src/cppunit/ProtectorChain.cpp: added. Implementation of a chain of
+  protector, allowing catching custom exception and implementation of
+  expected exception.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestResult.cpp: updated to use protector.
+@
+text
+@d54 5
+a58 1
+#define CPPUNIT_COMPILER_LOCATION_FORMAT "%p(%l):"
+@
+
+
+1.6
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d59 4
+a62 3
+//#define CPPUNIT_STD_NEED_ALLOCATOR 1
+//#define CPPUNIT_STD_ALLOCATOR std::allocator<T>
+#define CPPUNIT_NO_NAMESPACE 1
+@
+
+
+1.5
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d59 3
+a61 2
+#define CPPUNIT_STD_NEED_ALLOCATOR 1
+#define CPPUNIT_STD_ALLOCATOR std::allocator<T>
+@
+
+
+1.4
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d56 7
+a62 1
+ 
+@
+
+
+1.3
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d13 5
+@
+
+
+1.2
+log
+@* bumped version to 1.9.3
+
+* FAQ: added question about 4786 warning on VC++.
+
+* NEWS: updated.
+
+* contrib/msvc/readme.txt: moved to contrib/readme.txt.
+
+* contrib/xml-xsl/report.xsl: added XML style sheet contributed by
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for
+  startTestRun()/endTestRun().
+
+* examples/simple/*: added. A simple example.
+
+* include/cppunit/BriefTestProgressListener.h:
+* src/cppunit/BriefTestProgressListener.cpp: added. Verbose progess listener
+  that print the test name before running the test.
+
+* include/cppunit/TestListener.h: added startTestRun()/endTestRun().
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: added runTest(), to be called to run
+  a test by test runner.
+
+* src/cppunit/TextTestRunner.cpp:
+* src/cppunit/TestRunner.cpp: updated to use TestResult::runTest().
+
+* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added. Managers for all loaded plug-ins.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: renamed TestPlugInAdapter. All
+  implementations are empty.
+
+* include/cppunit/plugin/TestPlugInSuite.h: removed.
+* src/cppunit/TestPlugInSuite.cpp: removed. Replaced by PlugInManager.
+
+* include/cppunit/plugin/TestPlugIn.h: rewrote the plug-in interface to
+  provide more versatility. updated macros to match new interface.
+
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestFactoryRegistry.cpp: Added unregisterFactory().
+  Added convenience method addRegistry(). Rewrote registry life cycle
+  management. AutoRegisterSuite can now detect that the registry has been
+  destroy and not call to it to unregister its test factory.
+
+* include/cppunit/extensions/AutoRegisterTest.h: on destruction, the registered
+  factory is unregistered from the registry.
+
+* include/cppunit/extensions/HelperMacros.h: added macros
+  CPPUNIT_REGISTRY_ADD_TO_DEFAULT and CPPUNIT_REGISTRY_ADD to help
+  build test suite hierarchy.
+
+* src/cppunit/msvc/DllPlugInTester/*: moved to src/cppunit/DllPlugInTester/.
+
+* src/cppunit/DllPlugInTester/DllPlugInTester.cpp: removed UNICODE stuffs. Use
+  the PlugInManager instead of PlugInTestSuite. Simplified: only one test on
+  command line, but many DLL can be specified. Added configurations to link
+  against cppunit dll, those are now the default configuration (static linking
+  don't make much sense for plug-in).
+@
+text
+@a44 16
+#undef CPPUNIT_API
+
+// define CPPUNIT_DLL_BUILD when building CppUnit dll.
+#ifdef CPPUNIT_BUILD_DLL
+#define CPPUNIT_API __declspec(dllexport)
+#endif
+
+// define CPPUNIT_DLL when linking to CppUnit dll.
+#ifdef CPPUNIT_DLL
+#define CPPUNIT_API __declspec(dllimport)
+#endif
+
+#ifdef CPPUNIT_API
+#undef CPPUNIT_NEED_DLL_DECL
+#define CPPUNIT_NEED_DLL_DECL 1
+#endif
+@
+
+
+1.1
+log
+@* NEWS: updated.
+
+* configure.in: added include/cppunit/config/Makefile and
+  include/cppunit/plugin/Makefile to the list of target.
+
+* doc/CppUnit-win.dox: enabled generation of HTML Help documentation.
+
+* include/cppunit/config/Makefile.am:
+* include/cppunit/plugin/Makefile.am: added.
+
+* include/cppunit/config-bcb5.h:
+* include/cppunit/config-msvc6.h:
+* include/cppunit/config-mac.h: moved to include/cppunit/config/.
+
+* include/cppunit/Portability.h: updated config files location. Added macros
+  CPPUNIT_STRINGIZE and CPPUNIT_JOIN (implementation adapted from boost.org).
+  Added macro CPPUNIT_MAKE_UNIQUE_NAME.
+
+* include/cppunit/Test.h: modified methods order.
+
+* include/cppunit/extensions/HelperMacros.h: renamed macro
+  __CPPUNIT_MAKE_UNIQUE_NAME to CPPUNIT_MAKE_UNIQUE_NAME and moved its
+  definition to include/cppunit/Portability.h.
+
+* include/cppunit/extensions/TestDecorator.h: Inherits Test instead of TestLeaf.
+
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* src/cppunit/DynamicLibraryManager.cpp: added. DLL manager (load & lookup
+  symbol).
+
+* src/cppunit/BeOsDynamicLibraryManager.cpp:
+* src/cppunit/UnixDynamicLibraryManager.cpp:
+* src/cppunit/Win32DynamicLibraryManager.cpp: added. Implementation of
+  platform dependent methods of DynamicLibraryManager.
+
+* include/cppunit/plugin/DynamicLibraryManagerException.h:
+* src/cppunit/DynamicLibraryManagerException.cpp: added. Exception thrown
+  by DynamicLibraryManager.
+
+* include/cppunit/plugin/TestPlugIn.h: added. CppUnitTestPlugIn interface
+  definition. Helper macros to implements plug-in.
+
+* include/cppunit/plugin/TestPlugInSuite.h:
+* src/cppunit/plugin/TestPlugInSuite.cpp: added. A suite to wrap a test
+  plug-in.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: added. A default implementation
+  of the test plug-in interface.
+
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp: updated to use the
+  new TestPlugIn.
+
+* examples/cppunittest/TestResultCollectorTest.cpp: fixed typo.
+@
+text
+@d4 4
+a65 4
+
+#if _MSC_VER > 1000     // VC++
+#pragma warning( disable : 4786 )   // disable warning debug symbol > 255...
+#endif // _MSC_VER > 1000
+@
+

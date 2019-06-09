@@ -1,0 +1,219 @@
+head	1.2;
+access;
+symbols
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.1
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2004.11.20.15.06.59;	author blep;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2004.08.04.08.01.14;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@#ifndef CPPUT_RESULTEXCEPTION_H_INCLUDED
+# define CPPUT_RESULTEXCEPTION_H_INCLUDED
+
+# include <cpput/config.h>
+# include <cpput/location.h>
+# include <cpput/message.h>
+# include <exception>
+
+
+// TODO: operator =() default implementation bugged in VC 6. See CppUnit 1.9 for work-around.
+
+
+namespace CppUT {
+
+
+class CPPUT_API ResultException : public std::exception
+{
+public:
+   ResultException( const Message &message,
+                    const Location &location = Location() )
+      : location_( location )
+      , message_( message )
+      , messageAdjusted_( false )
+   {
+   }
+
+   ResultException( const ResultException &other )
+      : location_( other.location_ )
+      , message_( other.message() ) // retrieves adjusted message
+      , messageAdjusted_( true )
+   {
+   }
+
+   virtual ~ResultException()	// CPPUT_STD_EXCEPTION_THROW_CLAUSE
+   {
+   }
+
+   ResultException &operator =( const ResultException &other )
+   {
+      // Don't call superclass operator =(). VC++ 6.0 STL implementation
+      // has a bug. It calls the destructor and copy constructor of 
+      // std::exception() which reset the virtual table to std::exception.
+      //  SuperClass::operator =(other);
+      location_ = other.location_;
+      message_ = other.message(); // retrieves adjusted message
+      messageAdjusted_ = true;
+      return *this;
+   }
+
+   const Location &location() const
+   {
+      return location_;
+   }
+
+   const Message &message() const
+   {
+      adjustMessage();
+      return message_;
+   }
+
+   // overridden from std::exception
+   const char *what() const throw()
+   {
+      if ( what_.empty() )
+      {
+         adjustMessage();
+         what_ = "Failure at ";
+         what_ += location_.toString();
+         what_ += "\n";
+         what_ += message_.toString();
+      }
+      return what_.c_str();
+   }
+
+protected:
+   /// Should be overriden to set test status and result type.
+   virtual void doAdjustMessage( Message &message ) const
+   {
+   }
+
+private:
+   void adjustMessage() const
+   {
+      if ( messageAdjusted_ )
+         return;
+
+      doAdjustMessage( message_ );
+      messageAdjusted_ = true;
+   }
+
+   mutable std::string what_;
+   Location location_;
+   mutable Message message_;
+   mutable bool messageAdjusted_;
+};
+
+
+class CPPUT_API SuccessException : public ResultException
+{
+public:
+   SuccessException( const Message &message,
+                     const Location &location = Location() )
+      : ResultException( message, location )
+   {
+   }
+
+protected: // overriden from ResultException
+   void doAdjustMessage( Message &message ) const
+   {
+      message.setStatus( true );
+   }
+};
+
+
+
+class CPPUT_API FailureException : public ResultException
+{
+public:
+   FailureException( const Message &message,
+                    const Location &location = Location() )
+      : ResultException( message, location )
+   {
+   }
+
+protected: // overriden from ResultException
+   void doAdjustMessage( Message &message ) const
+   {
+      message.setStatus( false );
+   }
+};
+
+
+
+class CPPUT_API AssertException : public FailureException
+{
+public:
+   AssertException( const Message &message,
+                    const Location &location = Location() )
+      : FailureException( message, location )
+   {
+   }
+
+protected: // overriden from ResultException
+   void doAdjustMessage( Message &message ) const
+   {
+      FailureException::doAdjustMessage( message );
+      if ( !message.hasResultType() )  // allow user to set a custom result type
+         message.setResultType( "assertion" );
+   }
+};
+
+
+
+class CPPUT_API FaultException : public FailureException
+{
+public:
+   FaultException( const Message &message,
+                   const Location &location = Location() )
+      : FailureException( message, location )
+   {
+   }
+
+protected: // overriden from ResultException
+   void doAdjustMessage( Message &message ) const
+   {
+      FailureException::doAdjustMessage( message );
+      if ( !message.hasResultType() )  // allow user to set a custom result type
+         message.setResultType( "fault" );
+   }
+};
+
+
+} // namespace CppUT
+
+
+#endif // CPPUT_RESULTEXCEPTION_H_INCLUDED
+@
+
+
+1.1
+log
+@* renamed cpput/assertexception.h to cpput/resultexception.h
+@
+text
+@@
+

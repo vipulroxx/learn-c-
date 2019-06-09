@@ -1,0 +1,457 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.3
+date	2005.10.13.20.13.15;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.07.13.10.33.49;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.06.16.17.55.58;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* removed most warning when compiling with vc++ 6sp6.
+@
+text
+@#include <cppunit/config/SourcePrefix.h>
+#include "StringToolsTest.h"
+
+CPPUNIT_TEST_SUITE_REGISTRATION( StringToolsTest );
+
+
+StringToolsTest::StringToolsTest()
+{
+}
+
+
+StringToolsTest::~StringToolsTest()
+{
+}
+
+
+void 
+StringToolsTest::setUp()
+{
+}
+
+
+void 
+StringToolsTest::tearDown()
+{
+}
+
+
+void 
+StringToolsTest::testToStringInt()
+{
+  std::string expected = "123456789";
+  std::string actual = CPPUNIT_NS::StringTools::toString( 123456789 );
+  CPPUNIT_ASSERT_EQUAL( expected, actual );
+}
+
+
+void 
+StringToolsTest::testToStringDouble()
+{
+  std::string expected = "1234.56";
+  std::string actual = CPPUNIT_NS::StringTools::toString( 1234.56 );
+  CPPUNIT_ASSERT_EQUAL( expected, actual );
+}
+
+
+void 
+StringToolsTest::testSplitEmptyString()
+{
+  std::string text;
+  CPPUNIT_NS::StringTools::Strings expected;
+  CPPUNIT_NS::StringTools::Strings actual = CPPUNIT_NS::StringTools::split( text, ';' );
+
+  CPPUNIT_ASSERT_EQUAL( expected.size(), actual.size() );
+  CPPUNIT_ASSERT( expected == actual );
+}
+
+
+void 
+StringToolsTest::testSplitOneItem()
+{
+  std::string text = "1";
+  CPPUNIT_NS::StringTools::Strings expected;
+  expected.push_back( "1" );
+  CPPUNIT_NS::StringTools::Strings actual = CPPUNIT_NS::StringTools::split( text, ';' );
+
+  CPPUNIT_ASSERT_EQUAL( expected.size(), actual.size() );
+  CPPUNIT_ASSERT( expected == actual );
+}
+
+
+void 
+StringToolsTest::testSplitItemEmpty()
+{
+  std::string text = "1;";
+  CPPUNIT_NS::StringTools::Strings expected;
+  expected.push_back( "1" );
+  expected.push_back( "" );
+  CPPUNIT_NS::StringTools::Strings actual = CPPUNIT_NS::StringTools::split( text, ';' );
+
+  CPPUNIT_ASSERT_EQUAL( expected.size(), actual.size() );
+  CPPUNIT_ASSERT( expected == actual );
+}
+
+
+void 
+StringToolsTest::testSplitTwoItem()
+{
+  std::string text = "2;1";
+  CPPUNIT_NS::StringTools::Strings expected;
+  expected.push_back( "2" );
+  expected.push_back( "1" );
+  CPPUNIT_NS::StringTools::Strings actual = CPPUNIT_NS::StringTools::split( text, ';' );
+
+  CPPUNIT_ASSERT_EQUAL( expected.size(), actual.size() );
+  CPPUNIT_ASSERT( expected == actual );
+}
+
+
+void 
+StringToolsTest::testSplitEmptyTwoItem()
+{
+  std::string text = ";1;2";
+  CPPUNIT_NS::StringTools::Strings expected;
+  expected.push_back( "" );
+  expected.push_back( "1" );
+  expected.push_back( "2" );
+  CPPUNIT_NS::StringTools::Strings actual = CPPUNIT_NS::StringTools::split( text, ';' );
+
+  CPPUNIT_ASSERT_EQUAL( expected.size(), actual.size() );
+  CPPUNIT_ASSERT( expected == actual );
+}
+
+
+void 
+StringToolsTest::testSplitEmptyItemEmpty()
+{
+  std::string text = ";1;";
+  CPPUNIT_NS::StringTools::Strings expected;
+  expected.push_back( "" );
+  expected.push_back( "1" );
+  expected.push_back( "" );
+  CPPUNIT_NS::StringTools::Strings actual = CPPUNIT_NS::StringTools::split( text, ';' );
+
+  CPPUNIT_ASSERT_EQUAL( expected.size(), actual.size() );
+  CPPUNIT_ASSERT( expected == actual );
+}
+
+
+void 
+StringToolsTest::testSplitEmptyItemEmptyEmptyItem()
+{
+  std::string text = ";1;;;2";
+  CPPUNIT_NS::StringTools::Strings expected;
+  expected.push_back( "" );
+  expected.push_back( "1" );
+  expected.push_back( "" );
+  expected.push_back( "" );
+  expected.push_back( "2" );
+  CPPUNIT_NS::StringTools::Strings actual = CPPUNIT_NS::StringTools::split( text, ';' );
+
+  CPPUNIT_ASSERT_EQUAL( expected.size(), actual.size() );
+  CPPUNIT_ASSERT( expected == actual );
+}
+
+
+void 
+StringToolsTest::testWrapEmpty()
+{
+  std::string text = "";
+  std::string expected = "";
+
+  std::string actual = CPPUNIT_NS::StringTools::wrap( text, 6 );
+  CPPUNIT_ASSERT_EQUAL( expected, actual );
+}
+
+
+void 
+StringToolsTest::testWrapNotNeeded()
+{
+  std::string text = "abcd";
+  std::string expected = text;
+
+  std::string actual = CPPUNIT_NS::StringTools::wrap( text, 6 );
+  CPPUNIT_ASSERT_EQUAL( expected, actual );
+}
+
+
+void 
+StringToolsTest::testWrapLimitNotNeeded()
+{
+  std::string text = "abcdef";
+  std::string expected = text;
+
+  std::string actual = CPPUNIT_NS::StringTools::wrap( text, 6 );
+  CPPUNIT_ASSERT_EQUAL( expected, actual );
+}
+
+
+void 
+StringToolsTest::testWrapOneNeeded()
+{
+  std::string text = "abcdefghi";
+  std::string expected = "abcdef\nghi";
+
+  std::string actual = CPPUNIT_NS::StringTools::wrap( text, 6 );
+  CPPUNIT_ASSERT_EQUAL( expected, actual );
+}
+
+
+void 
+StringToolsTest::testWrapTwoNeeded()
+{
+  std::string text = "abcdefghijklmnop";
+  std::string expected = "abcdef\nghijkl\nmnop";
+
+  std::string actual = CPPUNIT_NS::StringTools::wrap( text, 6 );
+  CPPUNIT_ASSERT_EQUAL( expected, actual );
+}
+
+
+void 
+StringToolsTest::testWrapLimitTwoNeeded()
+{
+  std::string text = "abcdefghijklmnopqr";
+  std::string expected = "abcdef\nghijkl\nmnopqr";
+
+  std::string actual = CPPUNIT_NS::StringTools::wrap( text, 6 );
+  CPPUNIT_ASSERT_EQUAL( expected, actual );
+}
+
+
+void 
+StringToolsTest::testWrapOneNeededTwoNeeded()
+{
+  std::string text = "123456789\nabcdefghijklmno";
+  std::string expected = "123456\n789\nabcdef\nghijkl\nmno";
+
+  std::string actual = CPPUNIT_NS::StringTools::wrap( text, 6 );
+  CPPUNIT_ASSERT_EQUAL( expected, actual );
+}
+
+
+void 
+StringToolsTest::testWrapNotNeededEmptyLinesOneNeeded()
+{
+  std::string text = "12345\n\n\n\nabcdefghi";
+  std::string expected = "12345\n\n\n\nabcdef\nghi";
+
+  std::string actual = CPPUNIT_NS::StringTools::wrap( text, 6 );
+  CPPUNIT_ASSERT_EQUAL( expected, actual );
+}
+
+@
+
+
+1.2
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d1 1
+@
+
+
+1.1
+log
+@* release 1.9.8
+
+* include/cppunit/plugin/TestPlugIn.h: updated documentation.
+
+* include/cppunit/tools/XmlDocument.h: updated documentation.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/StringTools.cpp: added split() and wrap() functions.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp: extracted wrap() and
+  splitMessageIntoLines() to StringTools.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: removed rooNode parameter from
+  beginDocument() and endDocument(). It can be retreive from document.
+  Renamed 'node' occurences to 'element'.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against
+  XmlOutputterHook changes. Renamed 'node' occurences to 'element'.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: updated against
+  XmlOutputterHook changes.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: Renamed 'node' occurences
+  to 'element'.
+
+* examples/cppunittest/XmlOutputterTest.cpp: updated against
+  XmlOutputterHook changes.
+
+* examples/cppunittest/StringToolsTest.h:
+* examples/cppunittest/StringToolsTest.cpp: added. Unit tests for
+  StringTools. Turn out that VC++ dismiss empty lines in tools output,
+  which is the reason why empty lines where not printed in
+  CompilerOutputter.
+@
+text
+@d32 1
+a32 1
+  std::string actual = CppUnit::StringTools::toString( 123456789 );
+d41 1
+a41 1
+  std::string actual = CppUnit::StringTools::toString( 1234.56 );
+d50 2
+a51 2
+  CppUnit::StringTools::Strings expected;
+  CppUnit::StringTools::Strings actual = CppUnit::StringTools::split( text, ';' );
+d62 1
+a62 1
+  CppUnit::StringTools::Strings expected;
+d64 1
+a64 1
+  CppUnit::StringTools::Strings actual = CppUnit::StringTools::split( text, ';' );
+d75 1
+a75 1
+  CppUnit::StringTools::Strings expected;
+d78 1
+a78 1
+  CppUnit::StringTools::Strings actual = CppUnit::StringTools::split( text, ';' );
+d89 1
+a89 1
+  CppUnit::StringTools::Strings expected;
+d92 1
+a92 1
+  CppUnit::StringTools::Strings actual = CppUnit::StringTools::split( text, ';' );
+d103 1
+a103 1
+  CppUnit::StringTools::Strings expected;
+d107 1
+a107 1
+  CppUnit::StringTools::Strings actual = CppUnit::StringTools::split( text, ';' );
+d118 1
+a118 1
+  CppUnit::StringTools::Strings expected;
+d122 1
+a122 1
+  CppUnit::StringTools::Strings actual = CppUnit::StringTools::split( text, ';' );
+d133 1
+a133 1
+  CppUnit::StringTools::Strings expected;
+d139 1
+a139 1
+  CppUnit::StringTools::Strings actual = CppUnit::StringTools::split( text, ';' );
+d152 1
+a152 1
+  std::string actual = CppUnit::StringTools::wrap( text, 6 );
+d163 1
+a163 1
+  std::string actual = CppUnit::StringTools::wrap( text, 6 );
+d174 1
+a174 1
+  std::string actual = CppUnit::StringTools::wrap( text, 6 );
+d185 1
+a185 1
+  std::string actual = CppUnit::StringTools::wrap( text, 6 );
+d196 1
+a196 1
+  std::string actual = CppUnit::StringTools::wrap( text, 6 );
+d207 1
+a207 1
+  std::string actual = CppUnit::StringTools::wrap( text, 6 );
+d218 1
+a218 1
+  std::string actual = CppUnit::StringTools::wrap( text, 6 );
+d229 1
+a229 1
+  std::string actual = CppUnit::StringTools::wrap( text, 6 );
+@
+

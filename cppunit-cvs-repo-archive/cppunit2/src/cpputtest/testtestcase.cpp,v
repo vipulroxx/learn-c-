@@ -1,0 +1,798 @@
+head	1.19;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.19
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.12
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.11
+	TG_AFTER_REMOVING_TESTCONTEXT:1.9
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.6
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.5
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@// @;
+
+
+1.19
+date	2005.11.13.10.12.01;	author blep;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2005.11.08.21.44.55;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2005.08.10.21.34.29;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2005.07.20.21.06.51;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2005.02.27.16.50.36;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2005.02.27.16.30.34;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2005.02.27.14.38.28;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2005.02.27.10.17.06;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2005.02.23.23.06.50;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2004.11.21.22.28.24;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2004.11.20.15.26.38;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2004.11.20.15.07.00;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2004.11.20.12.17.52;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.11.17.21.47.10;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.11.17.08.59.34;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.08.04.08.01.15;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.08.03.22.20.03;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.27.23.37.22;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.38;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.38;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.19
+log
+@- renamed include/cpput/assert.h to include/cpput/assertcommon.h. This avoid clash with include <assert.h> in doxygen documentation
+- most Impl namespaces are now hidden from documentation using \cond and \endcond.
+@
+text
+@#include <cpput/assertcommon.h>
+#include <cpput/testcase.h>
+#include <stdio.h>
+#include <stdexcept>
+#include "mocktestvisitor.h"
+
+
+
+
+class TestTestCaseFixture : public CppTL::IntrusiveCount
+{
+public:
+   TestTestCaseFixture()
+      : setUp_(0)
+      , tearDown_(0)
+      , run_(0)
+   {
+   }
+
+   void runWithParameter( int runIncrement )
+   {
+      run_ += runIncrement;
+   }
+
+   void setUp()
+   {
+      ++setUp_;
+   }
+
+   void tearDown()
+   {
+      ++tearDown_;
+   }
+
+   void run()
+   {
+      ++run_;
+   }
+
+   int setUp_;
+   int tearDown_;
+   int run_;
+};
+
+typedef CppTL::IntrusivePtr<TestTestCaseFixture> TestTestCaseFixturePtr;
+
+
+struct SetUpCaller
+{
+   SetUpCaller( const TestTestCaseFixturePtr &fixture )
+      : fixture_( fixture )
+   {
+   }
+
+   void operator()() const
+   {
+      fixture_->setUp();
+   }
+
+   TestTestCaseFixturePtr fixture_;
+};
+
+
+
+
+static void callback( int *flag )
+{
+   ++*flag;
+}
+
+static void callbackThrow( int *flag )
+{
+   ++*flag;
+   throw std::runtime_error( "callback exception" );
+}
+
+
+static bool runTestCase( CppUT::Test &test )
+{
+   bool success = false;
+   {
+      CppUT::TestInfo::ScopedContextOverride contextOverride;
+      success = static_cast<CppUT::AbstractTestCase &>( test ).runTest();
+   }
+   return success;
+}
+
+static void testCaseSimpleRun()
+{
+   int testCall = 0;
+   CppUT::TestPtr test = CppUT::makeTestCase( 
+                                CppTL::bind_cfn( &callback, &testCall ),
+                                "Test 1" );
+   CPPUT_ASSERT_EQUAL( "Test 1", test->name() );
+   CPPUT_ASSERT( test->isTestCase() );
+
+   MockTestVisitor visitor;
+   test->accept( visitor );
+   CPPUT_ASSERT_EQUAL( 1, visitor.visitTestCaseCount_ );
+   CPPUT_ASSERT_EQUAL( 0, visitor.visitTestSuiteCount_ );
+
+   CPPUT_ASSERT( runTestCase( *test ), "testCaseSimpleRun" );
+   CPPUT_ASSERT_EQUAL( 1, testCall );
+}
+
+
+static CppUT::TestPtr makeTest( void (*setUpCallback)( int *),
+                                int *testSetUpCall,
+                                void (*runCallback)( int *),
+                                int *testRunCall,
+                                void (*tearDownCallback)( int *),
+                                int *testTearDownCall,
+                                const std::string &name )
+{
+   return CppUT::makeTestCase( 
+      CppTL::bind_cfn(setUpCallback, testSetUpCall ),
+      CppTL::bind_cfn(runCallback, testRunCall ),
+      CppTL::bind_cfn(tearDownCallback, testTearDownCall ),
+      name );
+}
+
+
+static void testCaseSetUpRunTearDown()
+{
+   int testSetUpCall = 0;
+   int testRunCall = 0;
+   int testTearDownCall = 0;
+   CppUT::TestPtr test = makeTest( &callback, &testSetUpCall,
+                                   &callback, &testRunCall,
+                                   &callback, &testTearDownCall,
+                                   "Test 2" );
+
+   CPPUT_ASSERT( test->isTestCase() );
+
+   CPPUT_ASSERT_EXPR( runTestCase( *test ) );
+   CPPUT_ASSERT_EQUAL( 1, testSetUpCall );
+   CPPUT_ASSERT_EQUAL( 1, testRunCall );
+   CPPUT_ASSERT_EQUAL( 1, testTearDownCall );
+}
+
+
+static void testCaseSetUpThrow()
+{
+   int testSetUpCall = 0;
+   int testRunCall = 0;
+   int testTearDownCall = 0;
+   CppUT::TestPtr test = makeTest( &callbackThrow, &testSetUpCall,
+                                   &callback, &testRunCall,
+                                   &callback, &testTearDownCall,
+                                   "Test" );
+   CPPUT_ASSERT( test->isTestCase() );
+
+   CPPUT_ASSERT_EXPR_FALSE( runTestCase( *test ) );
+   CPPUT_ASSERT_EQUAL( 1, testSetUpCall );
+   CPPUT_ASSERT_EQUAL( 0, testRunCall );
+   CPPUT_ASSERT_EQUAL( 0, testTearDownCall );
+}
+
+
+static void testCaseRunThrow()
+{
+   int testSetUpCall = 0;
+   int testRunCall = 0;
+   int testTearDownCall = 0;
+   CppUT::TestPtr test = makeTest( &callback, &testSetUpCall,
+                                   &callbackThrow, &testRunCall,
+                                   &callback, &testTearDownCall,
+                                   "Test" );
+   CPPUT_ASSERT( test->isTestCase() );
+
+   CPPUT_ASSERT_EXPR_FALSE( runTestCase( *test ) );
+   CPPUT_ASSERT_EQUAL( 1, testSetUpCall );
+   CPPUT_ASSERT_EQUAL( 1, testRunCall );
+   CPPUT_ASSERT_EQUAL( 1, testTearDownCall );
+}
+
+
+static void testCaseTearDownThrow()
+{
+   int testSetUpCall = 0;
+   int testRunCall = 0;
+   int testTearDownCall = 0;
+   CppUT::TestPtr test = makeTest( &callback, &testSetUpCall,
+                                   &callback, &testRunCall,
+                                   &callbackThrow, &testTearDownCall,
+                                   "Test" );
+   CPPUT_ASSERT( test->isTestCase() );
+
+   CPPUT_ASSERT_EXPR_FALSE( runTestCase( *test ) );
+   CPPUT_ASSERT_EQUAL( 1, testSetUpCall );
+   CPPUT_ASSERT_EQUAL( 1, testRunCall );
+   CPPUT_ASSERT_EQUAL( 1, testTearDownCall );
+}
+
+
+static void testRunFixture()
+{
+   TestTestCaseFixturePtr fixture = TestTestCaseFixturePtr( new TestTestCaseFixture() );
+
+   CppUT::TestPtr test = CppUT::makeFixtureTestCase(
+                                fixture,
+                                CppTL::memfn0( fixture, &TestTestCaseFixture::run ),
+                                "Test1" );
+   CPPUT_ASSERT( test->isTestCase() );
+   CPPUT_ASSERT_EQUAL( "Test1", test->name() );
+
+   CPPUT_ASSERT_EXPR( runTestCase( *test ) );
+   CPPUT_ASSERT_EQUAL( 1, fixture->setUp_ );
+   CPPUT_ASSERT_EQUAL( 1, fixture->run_ );
+   CPPUT_ASSERT_EQUAL( 1, fixture->tearDown_ );
+}
+
+
+static void testParametrizedFixture()
+{
+   TestTestCaseFixturePtr fixture = TestTestCaseFixturePtr( new TestTestCaseFixture() );
+   CppUT::TestPtr test = CppUT::makeTestCase(
+      CppTL::bind_memfn( fixture, &TestTestCaseFixture::runWithParameter, 1 ),
+      CppTL::bind_memfn( fixture, &TestTestCaseFixture::runWithParameter, 10 ),
+      CppTL::bind_memfn( fixture, &TestTestCaseFixture::runWithParameter, 100 ),
+      "Test1" );
+   CPPUT_ASSERT( test->isTestCase() );
+   CPPUT_ASSERT_EQUAL( "Test1", test->name() );
+
+   CPPUT_ASSERT_EXPR( runTestCase( *test ) );
+   CPPUT_ASSERT_EQUAL( 0, fixture->setUp_ );
+   CPPUT_ASSERT_EQUAL( 111, fixture->run_ );
+   CPPUT_ASSERT_EQUAL( 0, fixture->tearDown_ );
+}
+
+
+bool testTestCase()
+{
+   printf( "Running bootstrap test: testTestCase()...\n" );
+   try
+   {     
+      CppUT::TestInfo::threadInstance().startNewTest();
+      testCaseSimpleRun();
+      testCaseSetUpRunTearDown();
+      testCaseSetUpThrow();
+      testCaseRunThrow();
+      testCaseTearDownThrow();
+      testRunFixture();
+      testParametrizedFixture();
+   }
+   catch ( const CppUT::AbortingAssertionException &e )
+   {
+      printf( "testTestCase() failed: %s\n", e.what() );
+      return false;
+   }
+   catch ( ... )
+   {
+      printf( "testTestCase() failed (uncaught exception)." );
+      return false;
+   }
+
+   return true;
+}
+@
+
+
+1.18
+log
+@- changed most interface to use std::string instead of CppTL::ConstString
+- CppTL::ConstString is now an implementation detail and is used to store string in objects as it is thread-safe.
+@
+text
+@d1 1
+a1 1
+#include <cpput/assert.h>
+@
+
+
+1.17
+log
+@* Replaced function in namespace TestInfo by exposing the TestInfoData class and renaming it TestInfo. TestInfo in now an exposed per thread singleton.
+* startNewTest() is now called from TestCase::runTest() instead of being the test runner responsability. There still a few call to this method in cpput bootstrap test (which use assertion without run a test case).
+@
+text
+@d113 1
+a113 1
+                                const CppTL::ConstString &name )
+@
+
+
+1.16
+log
+@* Added IntrusivePtr, a reference counted smart-pointer
+* Changed Test hierarchy and TestFixture to use IntrusivePtr instead of SharedPtr (this allows simple upcasting).
+@
+text
+@d237 1
+a237 1
+      CppUT::TestInfo::startNewTest();
+@
+
+
+1.15
+log
+@* catch any exceptions that the test may leak.
+@
+text
+@d10 1
+a10 1
+struct TestTestCaseFixture
+d12 1
+d45 1
+a45 1
+typedef CppTL::SharedPtr<TestTestCaseFixture> TestTestCaseFixturePtr;
+@
+
+
+1.14
+log
+@* removed dependency on <iostream>.
+* added progress traces while running bootstrap tests.
+@
+text
+@d245 1
+a245 1
+   catch ( CppUT::AbortingAssertionException &e )
+d250 5
+@
+
+
+1.13
+log
+@* changed cppunit 2 to use the new functors (cpptl/functor.h). bind_cfn & bind_memfn simplified some of the test code.
+@
+text
+@d3 1
+a3 1
+#include <iostream>
+d233 1
+d247 1
+a247 1
+      std::cout << "testTestCase() failed: "  <<  e.what()  <<  std::endl;
+@
+
+
+1.12
+log
+@* use CppTL::ConstString instead of std::string for thread-safety
+@
+text
+@d91 1
+a91 2
+                                CppUT::bind1( CppUT::makeCFn1( &callback ),
+                                              &testCall ),
+d115 3
+a117 3
+      CppUT::bind1( CppUT::makeCFn1(setUpCallback), testSetUpCall ),
+      CppUT::bind1( CppUT::makeCFn1(runCallback), testRunCall ),
+      CppUT::bind1( CppUT::makeCFn1(tearDownCallback), testTearDownCall ),
+d201 1
+a201 2
+                                CppUT::makeMemFn0( fixture,
+                                                   &TestTestCaseFixture::run ),
+d217 3
+a219 3
+      CppUT::bind1( CppUT::makeMemFn1( fixture, &TestTestCaseFixture::runWithParameter ), 1 ),
+      CppUT::bind1( CppUT::makeMemFn1( fixture, &TestTestCaseFixture::runWithParameter ), 10 ),
+      CppUT::bind1( CppUT::makeMemFn1( fixture, &TestTestCaseFixture::runWithParameter ), 100 ),
+@
+
+
+1.11
+log
+@* fixed portability issue (std::exception does not have a const char * constructor).
+@
+text
+@d113 1
+a113 1
+                                const std::string &name )
+@
+
+
+1.10
+log
+@* fixed failing unit tests
+@
+text
+@d4 1
+d73 1
+a73 1
+   throw std::exception( "callback exception" );
+@
+
+
+1.9
+log
+@* Removed TestContext.
+* TestContext/AbstractTestCase: moved responsibility of running the test to AbstractTestCase.
+@
+text
+@d152 1
+a152 1
+   CPPUT_ASSERT_EXPR( runTestCase( *test ) );
+d170 1
+a170 1
+   CPPUT_ASSERT_EXPR( runTestCase( *test ) );
+d188 1
+a188 1
+   CPPUT_ASSERT_EXPR( runTestCase( *test ) );
+@
+
+
+1.8
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@a2 1
+#include <cpput/testcontext.h>
+d81 1
+a81 2
+      CppUT::TestContext context;
+      success = context.run( static_cast<CppUT::AbstractTestCase &>( test ) );
+@
+
+
+1.7
+log
+@* moved the assertion implementation to using TestInfo.
+* added assertion (tested/failed) counter to TestInfo.
+@
+text
+@a1 2
+#include <cpput/resultexception.h>
+#include <cpput/testrunresult.h>
+d77 11
+d103 1
+a103 4
+   CppUT::TestContext context;
+   CppUT::TestRunResult result;
+   context.add( result );
+   context.run( static_cast<CppUT::AbstractTestCase &>( *test ) );
+a104 1
+   CPPUT_ASSERT_EQUAL( 0, result.failureCount() );
+d136 1
+a136 4
+   CppUT::TestContext context;
+   CppUT::TestRunResult result;
+   context.add( result );
+   context.run( static_cast<CppUT::AbstractTestCase &>( *test ) );
+a139 1
+   CPPUT_ASSERT_EQUAL( 0, result.failureCount() );
+d154 1
+a154 4
+   CppUT::TestContext context;
+   CppUT::TestRunResult result;
+   context.add( result );
+   context.run( static_cast<CppUT::AbstractTestCase &>( *test ) );
+a157 1
+   CPPUT_ASSERT_EQUAL( 1, result.failureCount() );
+d172 1
+a172 4
+   CppUT::TestContext context;
+   CppUT::TestRunResult result;
+   context.add( result );
+   context.run( static_cast<CppUT::AbstractTestCase &>( *test ) );
+a175 1
+   CPPUT_ASSERT_EQUAL( 1, result.failureCount() );
+d190 1
+a190 4
+   CppUT::TestContext context;
+   CppUT::TestRunResult result;
+   context.add( result );
+   context.run( static_cast<CppUT::AbstractTestCase &>( *test ) );
+a193 1
+   CPPUT_ASSERT_EQUAL( 1, result.failureCount() );
+d208 2
+a209 4
+   CppUT::TestContext context;
+   CppUT::TestRunResult result;
+   context.add( result );
+   context.run( static_cast<CppUT::AbstractTestCase &>( *test ) );
+a212 1
+   CPPUT_ASSERT_EQUAL( 0, result.failureCount() );
+d226 2
+a227 4
+   CppUT::TestContext context;
+   CppUT::TestRunResult result;
+   context.add( result );
+   context.run( static_cast<CppUT::AbstractTestCase &>( *test ) );
+a230 1
+   CPPUT_ASSERT_EQUAL( 0, result.failureCount() );
+@
+
+
+1.6
+log
+@* started removing TestDriver stuff from CppUnit 2
+* Removed Test::run(), Test::totalTestCount and Test::parent
+* User can only subclass AbstractTestSuite or AbstractTestCase.
+* AbstractTest has been inlined into Test
+* Test no longer have parent
+* Removed TestListener::enterTest() & TestListener::exitTest()
+* Moved responsibility of running TestCase from AbstractTestCase to TestContext::run( AbstractTestCase &test ).
+* Removed method related to suite and enter/exit event from TestContext.
+* Disabled some unit tests (rely on running test which will change again shortly)
+@
+text
+@d255 1
+d264 1
+a264 1
+   catch ( CppUT::AssertException &e )
+@
+
+
+1.5
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@d87 1
+a92 2
+   CPPUT_ASSERT( test->parentTest() == 0 );
+   CPPUT_ASSERT_EQUAL( 1, test->totalTestCount() );
+d97 1
+a97 1
+   test->run( context );
+d129 2
+d134 1
+a134 1
+   test->run( context );
+d151 1
+d156 1
+a156 1
+   test->run( context );
+d173 1
+d178 1
+a178 1
+   test->run( context );
+d195 1
+d200 1
+a200 1
+   test->run( context );
+d217 1
+d222 1
+a222 1
+   test->run( context );
+d238 1
+d243 1
+a243 1
+   test->run( context );
+@
+
+
+1.4
+log
+@* renamed cpput/assertexception.h to cpput/resultexception.h
+@
+text
+@d46 1
+a46 1
+typedef CppUT::SmartPtr<TestTestCaseFixture> TestTestCaseFixturePtr;
+@
+
+
+1.3
+log
+@* renamed Result to TestRunResult (and cpput/result.h to cpput/testrunresult.h)
+@
+text
+@d2 1
+a2 1
+#include <cpput/assertexception.h>
+@
+
+
+1.2
+log
+@* SmartPtr now subclass boost::shared_ptr to make templated function
+  overloading easier.
+* Added our own smart pointer implementation
+* Added AtomicCounter as implementation detail.
+  Can use boost::detail::atomic_counter.
+@
+text
+@d3 1
+a3 1
+#include <cpput/result.h>
+d96 1
+a96 1
+   CppUT::Result result;
+d131 1
+a131 1
+   CppUT::Result result;
+d152 1
+a152 1
+   CppUT::Result result;
+d173 1
+a173 1
+   CppUT::Result result;
+d194 1
+a194 1
+   CppUT::Result result;
+d215 1
+a215 1
+   CppUT::Result result;
+d235 1
+a235 1
+   CppUT::Result result;
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d46 1
+a46 1
+typedef boost::shared_ptr<TestTestCaseFixture> TestTestCaseFixturePtr;
+d82 1
+a82 1
+   CppUT::TestCasePtr test = CppUT::makeTestCase( 
+d104 7
+a110 7
+static CppUT::TestCasePtr makeTest( void (*setUpCallback)( int *),
+                                    int *testSetUpCall,
+                                    void (*runCallback)( int *),
+                                    int *testRunCall,
+                                    void (*tearDownCallback)( int *),
+                                    int *testTearDownCall,
+                                    const std::string &name )
+d125 4
+a128 4
+   CppUT::TestCasePtr test = makeTest( &callback, &testSetUpCall,
+                                       &callback, &testRunCall,
+                                       &callback, &testTearDownCall,
+                                       "Test 2" );
+d146 4
+a149 4
+   CppUT::TestCasePtr test = makeTest( &callbackThrow, &testSetUpCall,
+                                       &callback, &testRunCall,
+                                       &callback, &testTearDownCall,
+                                       "Test" );
+d167 4
+a170 4
+   CppUT::TestCasePtr test = makeTest( &callback, &testSetUpCall,
+                                       &callbackThrow, &testRunCall,
+                                       &callback, &testTearDownCall,
+                                       "Test" );
+d188 4
+a191 4
+   CppUT::TestCasePtr test = makeTest( &callback, &testSetUpCall,
+                                       &callback, &testRunCall,
+                                       &callbackThrow, &testTearDownCall,
+                                       "Test" );
+d208 1
+a208 1
+   CppUT::TestCasePtr test = CppUT::makeFixtureTestCase(
+d228 1
+a228 1
+   CppUT::TestCasePtr test = CppUT::makeTestCase(
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

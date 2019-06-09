@@ -1,0 +1,242 @@
+head	1.6;
+access;
+symbols
+	REL_1_12_1:1.6
+	REL_1_11_6:1.6
+	REL_1_11_4:1.6
+	REL_1_11_0:1.5
+	TG_CPPUNIT_NO_STREAM_AFTER:1.5
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.5
+	REL_1_10_2:1.5
+	REL_1_10_0:1.5
+	REL_1_9_14:1.5
+	REL_1_9_12:1.5
+	BRANCH_1_9_12:1.5.0.2
+	TG_BRANCH_1_9_12:1.5
+	TG_BEFORE_HPUX_PLUGIN:1.5
+	TG_BEFORE_SUN4_PORT:1.4
+	REL_1_9_10:1.4
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.3
+	REL_1_9_4:1.3
+	REL_1_9_0:1.3
+	REL_1_8_0:1.3
+	REL_1_7_8:1.3
+	REL_1_7_3:1.3
+	REL_1_7_1:1.3
+	REL_1_6_2:1.3
+	BRANCH_1_6:1.3.0.2
+	REL_1_6_1:1.3
+	REL_1_6_0:1.3
+	REL_1_5_5:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.6
+date	2005.11.06.16.58.21;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2003.03.11.20.06.27;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.07.14.19.48.32;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.06.02.19.53.06;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.28.14.27.24;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@* include/cppunit/config/SourcePrefix.h: disable warning #4996
+(sprintf is deprecated) for visual studio 2005.
+
+* include/cppunit/TestAssert.h: use sprintf_s instead of sprintf for
+visual studio 2005.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp
+* examples/DumperPlugIn/DumperPlugIn.cpp: use SourcePrefix.h. Fixed
+wrong macro usage to implement DllMain.
+
+* examples/msvc6/HostApp/ExamplesTestCase.h
+* examples/msvc6/HostApp/ExamplesTestCase.cpp
+* examples/simple/ExamplesTestCase.h
+* examples/simple/ExamplesTestCase.cpp: removed divideByZero test case
+as it cause some crash on some platforms.
+@
+text
+@
+#ifndef CPP_UNIT_EXAMPLETESTCASE_H
+#define CPP_UNIT_EXAMPLETESTCASE_H
+
+#include <cppunit/extensions/HelperMacros.h>
+
+/* 
+ * A test case that is designed to produce
+ * example errors and failures
+ *
+ */
+
+class ExampleTestCase : public CPPUNIT_NS::TestFixture
+{
+  CPPUNIT_TEST_SUITE( ExampleTestCase );
+  CPPUNIT_TEST( example );
+  CPPUNIT_TEST( anotherExample );
+  CPPUNIT_TEST( testAdd );
+  CPPUNIT_TEST( testEquals );
+  CPPUNIT_TEST_SUITE_END();
+protected:
+
+	double			m_value1;
+	double			m_value2;
+
+public:
+
+	void			setUp ();
+
+protected:
+	void			example ();
+	void			anotherExample ();
+	void			testAdd ();
+	void			testEquals ();
+};
+
+
+#endif@
+
+
+1.5
+log
+@* include/cppunit/tools/Algorithm.h:
+* src/cppunit/TestResult.cpp:
+* src/msvc6/testrunner/TestRunnerModel.cpp: added removeFromSequence
+algorithm in Algorithm.h to fix STLPort compatibility issue
+(std::remove use the one of cstdio instead of algorithm). Bug #694971.
+
+* include/cppunit/extensions/TestNamer.h: fixed bug #662666 (missing include
+for typeinfo).
+
+* src/cppunit/TestResult.cpp: TestFailure are no longer passed as temporary,
+but explicitely instantiated on the stack. Work around AIX compiler bug.
+@
+text
+@a18 1
+  CPPUNIT_TEST( testDivideByZero );
+a33 1
+	void			testDivideByZero ();
+a34 1
+
+@
+
+
+1.4
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@a4 1
+#include <cppunit/TestCase.h>
+d13 1
+a13 1
+class ExampleTestCase : public CPPUNIT_NS::TestCase
+@
+
+
+1.3
+log
+@Replace CU_ by CPPUNIT_.
+@
+text
+@d14 1
+a14 1
+class ExampleTestCase : public CppUnit::TestCase
+@
+
+
+1.2
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@d16 7
+a22 7
+  CU_TEST_SUITE( ExampleTestCase );
+  CU_TEST( example );
+  CU_TEST( anotherExample );
+  CU_TEST( testAdd );
+  CU_TEST( testDivideByZero );
+  CU_TEST( testEquals );
+  CU_TEST_SUITE_END();
+@
+
+
+1.1
+log
+@Merged msvc6 specific TestRunner and example adapted from Michael Feathers
+version by Baptiste Lepilleur.
+@
+text
+@d6 1
+a6 2
+#include <cppunit/TestSuite.h>
+#include <cppunit/TestCaller.h>
+d16 7
+a30 1
+	static CppUnit::Test		*suite ();
+@
+

@@ -1,0 +1,488 @@
+head	1.7;
+access;
+symbols
+	REL_1_12_1:1.7
+	REL_1_11_6:1.7
+	REL_1_11_4:1.7
+	REL_1_11_0:1.7
+	TG_CPPUNIT_NO_STREAM_AFTER:1.7
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.7
+	REL_1_10_2:1.7
+	REL_1_10_0:1.7
+	REL_1_9_14:1.6
+	REL_1_9_12:1.6
+	BRANCH_1_9_12:1.6.0.2
+	TG_BRANCH_1_9_12:1.6
+	TG_BEFORE_HPUX_PLUGIN:1.6
+	TG_BEFORE_SUN4_PORT:1.4
+	REL_1_9_10:1.4
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.7
+date	2004.04.09.21.17.00;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2003.03.15.08.55.29;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2003.03.11.21.13.59;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.07.12.05.59.58;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.06.16.18.05.49;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.06.14.20.21.00;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.05.23.18.38.39;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@* clean up
+@
+text
+@#include <cppunit/tools/StringTools.h>
+#include <cppunit/tools/XmlElement.h>
+#include <stdexcept>
+
+
+CPPUNIT_NS_BEGIN
+
+  
+XmlElement::XmlElement( std::string elementName,
+                        std::string content ) 
+  : m_name( elementName )
+  , m_content( content )
+{
+}
+
+    
+XmlElement::XmlElement( std::string elementName,
+                        int numericContent )
+  : m_name( elementName )
+{
+  setContent( numericContent );
+}
+
+
+XmlElement::~XmlElement()
+{
+  Elements::iterator itNode = m_elements.begin();
+  while ( itNode != m_elements.end() )
+  {
+    XmlElement *element = *itNode++;
+    delete element;
+  }
+}
+
+
+std::string 
+XmlElement::name() const
+{
+  return m_name;
+}
+
+
+std::string 
+XmlElement::content() const
+{
+  return m_content;
+}
+
+
+void 
+XmlElement::setName( const std::string &name )
+{
+  m_name = name;
+}
+
+
+void 
+XmlElement::setContent( const std::string &content )
+{
+  m_content = content;
+}
+
+
+void 
+XmlElement::setContent( int numericContent )
+{
+  m_content = StringTools::toString( numericContent );
+}
+
+
+void 
+XmlElement::addAttribute( std::string attributeName,
+                          std::string value  )
+{
+  m_attributes.push_back( Attribute( attributeName, value ) );
+}
+
+
+void 
+XmlElement::addAttribute( std::string attributeName,
+                          int numericValue )
+{
+  addAttribute( attributeName, StringTools::toString( numericValue ) );
+}
+
+
+void 
+XmlElement::addElement( XmlElement *node )
+{
+  m_elements.push_back( node );
+}
+
+
+int 
+XmlElement::elementCount() const
+{
+  return m_elements.size();
+}
+
+
+XmlElement *
+XmlElement::elementAt( int index ) const
+{
+  if ( index < 0  ||  index >= elementCount() )
+    throw std::invalid_argument( "XmlElement::elementAt(), out of range index" );
+
+  return m_elements[ index ];
+}
+
+
+XmlElement *
+XmlElement::elementFor( const std::string &name ) const
+{
+  Elements::const_iterator itElement = m_elements.begin();
+  for ( ; itElement != m_elements.end(); ++itElement )
+  {
+    if ( (*itElement)->name() == name )
+      return *itElement;
+  }
+
+  throw std::invalid_argument( "XmlElement::elementFor(), not matching child element found" );
+  return NULL;  // make some compilers happy.
+}
+
+
+std::string 
+XmlElement::toString( const std::string &indent ) const
+{
+  std::string element( indent );
+  element += "<";
+  element += m_name;
+  if ( !m_attributes.empty() )
+  {
+    element += " ";
+    element += attributesAsString();
+  }
+  element += ">";
+
+  if ( !m_elements.empty() )
+  {
+    element += "\n";
+
+    std::string subNodeIndent( indent + "  " );
+    Elements::const_iterator itNode = m_elements.begin();
+    while ( itNode != m_elements.end() )
+    {
+      const XmlElement *node = *itNode++;
+      element += node->toString( subNodeIndent );
+    }
+
+    element += indent;
+  }
+
+  if ( !m_content.empty() )
+  {
+    element += escape( m_content );
+    if ( !m_elements.empty() )
+    {
+      element += "\n";
+      element += indent;
+    }
+  }
+
+  element += "</";
+  element += m_name;
+  element += ">\n";
+
+  return element;
+}
+
+
+std::string 
+XmlElement::attributesAsString() const
+{
+  std::string attributes;
+  Attributes::const_iterator itAttribute = m_attributes.begin();
+  while ( itAttribute != m_attributes.end() )
+  {
+    if ( !attributes.empty() )
+       attributes += " ";
+
+    const Attribute &attribute = *itAttribute++;
+    attributes += attribute.first;
+    attributes += "=\"";
+    attributes += escape( attribute.second );
+    attributes += "\"";
+  }
+  return attributes;
+}
+
+
+std::string 
+XmlElement::escape( std::string value ) const
+{
+  std::string escaped;
+  for ( unsigned int index =0; index < value.length(); ++index )
+  {
+    char c = value[index ];
+    switch ( c )    // escape all predefined XML entity (safe?)
+    {
+    case '<': 
+      escaped += "&lt;";
+      break;
+    case '>': 
+      escaped += "&gt;";
+      break;
+    case '&': 
+      escaped += "&amp;";
+      break;
+    case '\'': 
+      escaped += "&apos;";
+      break;
+    case '"': 
+      escaped += "&quot;";
+      break;
+    default:
+      escaped += c;
+    }
+  }
+  
+  return escaped;
+}
+
+
+CPPUNIT_NS_END
+
+@
+
+
+1.6
+log
+@* src/cppunit/CompilerOutputter.cpp:
+* src/cppunit/ProtectorChain.cpp:
+* src/cppunit/StringTools.cpp:
+* src/cppunit/TestPath.cpp:
+* src/cppunit/TypeInfoHelper.cpp:
+* src/cppunit/XmlElement.cpp:
+* src/cppunit/XmlOutputter.cpp: switched to using unsigned index in loop to
+	avoid signed/unsigned warning in vc7.
+
+* include/cppunit/extension/ExceptionTestCaseDecorator.h: removed dll export
+	on template (caused link error on vc7).
+@
+text
+@d30 2
+a31 2
+    XmlElement *element = *itNode;
+    delete *itNode++;
+@
+
+
+1.5
+log
+@* src/cppunit/XmlElement.cpp:
+* src/examples/CppUnitTest/XmlUniformser.cpp: fixed bug #676505 (no space
+between attributes of XmlElement).
+@
+text
+@d196 1
+a196 1
+  for ( int index =0; index < value.length(); ++index )
+@
+
+
+1.4
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d179 3
+@
+
+
+1.3
+log
+@* src/cppunit/Message.cpp:
+* src/cppunit/XmlElement.cpp: added missing include <stdexcept>
+@
+text
+@d6 1
+a6 2
+namespace CppUnit
+{
+d222 1
+a222 1
+} //  namespace CppUnit
+@
+
+
+1.2
+log
+@* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added two methods to use the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugIn.h: added two methods to the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugInAdapter.h:
+* src/cppunit/plugin/TestPlugInAdapter.cpp: renamed TestPlugInDefaultImpl.
+  Added empty implementation for Xml outputter hook methods.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/tools/StringTools.cpp: added. Functions to manipulate string
+  (conversion, wrapping...)
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/XmlElement.cpp: renamed addNode() to addElement(). Added
+  methods to walk and modify XmlElement (for hook). Added documentation.
+  Use StringTools.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: added hook calls & management.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: added. Hook to customize XML output.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: call plug-in XmlOutputterHook
+  when writing XML output. Modified so that memory is freed before
+  unloading the test plug-in (caused crash when freeing the XmlDocument).
+
+* examples/ReadMe.txt:
+* examples/ClockerPlugIn/ReadMe.txt: added details about the plug-in
+  (usage, xml content...)
+
+* examples/ClockerPlugIn/ClockerModel.h:
+* examples/ClockerPlugIn/ClockerModel.cpp: extracted from ClockerListener.
+  Represents the test hierarchy and tracked time for each test.
+
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/ClockerListener.cpp: extracted test hierarchy
+  tracking to ClockerModel. Replaced the 'flat' view option with a 'text'
+  option to print the timed test tree to stdout.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp: updated to hook the XML
+  output and use the new classes.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: added. XmlOutputterHook to
+  includes the timed test hierarchy and test timing in the XML output.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added new test cases.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: added tests for
+  XmlOutputterHook.
+@
+text
+@d3 1
+@
+
+
+1.1
+log
+@* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: extracted class XmlOutputter::Node to
+XmlElement. Extracted xml 'prolog' generation to XmlDocument.
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/tools/XmlElement.cpp: added, extracted from XmlOutputter::Node.
+
+* include/cppunit/tools/XmlDocument.h:
+* src/cppunit/tools/XmlDocument.cpp: added, extracted from XmlOutputter. Handle
+XML document prolog (encoding & style-sheet) and manage the root element.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: bug fix, flag --xsl was ignored.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated for XmlOuputter changes.
+extracted tests for XmlOutputter::Node to XmlElementTest
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added, tests extracted from
+XmlOutputterTest.
+@
+text
+@d1 1
+d21 1
+a21 1
+  m_content = asString( numericContent );
+d29 2
+d32 36
+d83 1
+a83 1
+  addAttribute( attributeName, asString( numericValue ) );
+d88 1
+a88 1
+XmlElement::addNode( XmlElement *node )
+d94 32
+a218 9
+}
+
+// should be somewhere else... Future CppUnit::String ?    
+std::string 
+XmlElement::asString( int value )
+{
+  OStringStream stream;
+  stream << value;
+  return stream.str();
+@
+

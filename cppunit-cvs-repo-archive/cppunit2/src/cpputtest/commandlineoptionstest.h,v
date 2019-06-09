@@ -1,0 +1,181 @@
+head	1.5;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.4
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.3
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.2
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.5
+date	2007.08.14.17.30.52;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.11.13.10.12.01;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.02.27.10.17.06;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.15.00.45.50;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.06.14.23.33.53;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@   Modified assertion implementation to force evaluation of user
+condition expression first, while preserving delegation to
+function, overloading and optional parameters feature.
+   See CPPUT_BEGIN_ASSERTION_MACRO() documentation in testinfo.h for an example
+to update your custom assertion code.
+
+   New implementation rely on operator evaluation order and operator overloading. The trick is documented in CPPUT_BEGIN_ASSERTION_MACRO().
+@
+text
+@#ifndef CPPUT_COMMANDLINEOPTIONS_H_INCLUDED
+ #define CPPUT_COMMANDLINEOPTIONS_H_INCLUDED
+
+# include <cpput/assertcommon.h>
+# include <cpput/testfixture.h>
+# include <cpput/registry.h>
+# include <cpputtools/configuration.h>
+
+
+class CommandLineOptionsTest : public CppUT::TestFixture
+{
+public:
+   CPPUT_TESTSUITE_BEGIN( CommandLineOptionsTest );
+   CPPUT_TEST( testParseShortOption );
+   CPPUT_TEST( testLongOption );
+   CPPUT_TEST( testErrorOnBadOptionName );
+   CPPUT_TEST( testParseShortOptionAdjascentParameter );
+   CPPUT_TEST( testParseShortOptionNextParameter );
+   CPPUT_TEST( testParserLongOptionAdjascentParameter );
+   CPPUT_TEST( testParserLongOptionNextParameter );
+   CPPUT_TEST( testStoreParameterValues );
+   CPPUT_TEST( testValuesLookUpAsShortOrLong );
+   CPPUT_TEST( testParseRequiredParameter );
+   CPPUT_TEST( testCustomValidator );
+   CPPUT_TEST( testEnumerationValidator );
+   CPPUT_TESTSUITE_END();
+   
+   void setUp();
+
+   void tearDown();
+
+   void testParseShortOption();
+   void testLongOption();
+   void testErrorOnBadOptionName();
+   
+   void testParseShortOptionAdjascentParameter();
+   void testParseShortOptionNextParameter();
+
+   void testParserLongOptionAdjascentParameter();
+   void testParserLongOptionNextParameter();
+
+   void testValuesLookUpAsShortOrLong();
+
+   void testStoreParameterValues();
+
+   void testParseRequiredParameter();
+
+   void testCustomValidator();
+
+   void testEnumerationValidator();
+
+private:
+   CppUT::CheckerResult checkParse( CppUTTools::CommandLineOptions::OptionsDescription &description,
+                                    const char *argv[] );
+   CppUT::CheckerResult checkParseBadOption( CppUTTools::CommandLineOptions::OptionsDescription &description,
+                                             const char *argv[],
+                                             const CppTL::ConstString &badOptionName );
+
+   enum LogLevel {
+      fatal = 1,
+      warning,
+      info
+   };
+
+
+   CppUTTools::CommandLineOptions::OptionsValues *values_;
+};
+
+
+#endif // CPPUT_COMMANDLINEOPTIONS_H_INCLUDED
+@
+
+
+1.4
+log
+@- renamed include/cpput/assert.h to include/cpput/assertcommon.h. This avoid clash with include <assert.h> in doxygen documentation
+- most Impl namespaces are now hidden from documentation using \cond and \endcond.
+@
+text
+@d53 5
+a57 5
+   void checkParse( CppUTTools::CommandLineOptions::OptionsDescription &description,
+                    const char *argv[] );
+   void checkParseBadOption( CppUTTools::CommandLineOptions::OptionsDescription &description,
+                             const char *argv[],
+                             const CppTL::ConstString &badOptionName );
+@
+
+
+1.3
+log
+@* use CppTL::ConstString instead of std::string for thread-safety
+@
+text
+@d4 1
+a4 1
+# include <cpput/assert.h>
+@
+
+
+1.2
+log
+@* fixed compilation issue related to changing OptionValue into the new Value library
+@
+text
+@d57 1
+a57 1
+                             const std::string &badOptionName );
+@
+
+
+1.1
+log
+@* unit test for command line options library
+@
+text
+@d53 1
+a53 1
+   void checkParse( CommandLineOptions::OptionsDescription &description,
+d55 1
+a55 1
+   void checkParseBadOption( CommandLineOptions::OptionsDescription &description,
+d66 1
+a66 1
+   CommandLineOptions::OptionsValues *values_;
+@
+

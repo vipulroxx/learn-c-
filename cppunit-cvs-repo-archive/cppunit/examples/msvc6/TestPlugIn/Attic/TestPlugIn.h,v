@@ -1,0 +1,70 @@
+head	1.2;
+access;
+symbols
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2002.04.21.10.57.52;	author blep;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.27.21.30.11;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* src/DllPlugInTester/makefile.am: removed ld.so from LDADD flags.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: rewrote, fixed problem
+  with double quotes in command line...
+
+* src/DllPlugInTester/CommandLineParserTest.h:
+* src/DllPlugInTester/CommandLineParserTest.cpp:
+* src/DllPlugInTester/DllPlugInTesterTest.cpp: added, unit tests for
+  CommandLineParser.
+
+* src/msvc6/TestPlugIn/*: removed.
+@
+text
+@
+// The following ifdef block is the standard way of creating macros which make exporting 
+// from a DLL simpler. All files within this DLL are compiled with the TESTPLUGIN_EXPORTS
+// symbol defined on the command line. this symbol should not be defined on any project
+// that uses this DLL. This way any other project whose source files include this file see 
+// TESTPLUGIN_API functions as being imported from a DLL, wheras this DLL sees symbols
+// defined with this macro as being exported.
+#ifdef TESTPLUGIN_EXPORTS
+#define TESTPLUGIN_API __declspec(dllexport)
+#else
+#define TESTPLUGIN_API __declspec(dllimport)
+#endif
+@
+
+
+1.1
+log
+@* examples/msvc6/TestPlugIn/: a new example of test plug in.
+@
+text
+@@
+

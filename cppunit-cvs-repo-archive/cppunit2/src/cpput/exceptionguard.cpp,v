@@ -1,0 +1,397 @@
+head	1.12;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.11
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.2
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.12
+date	2007.08.14.17.30.52;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2006.06.05.13.22.58;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2005.11.13.10.12.01;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.11.11.20.54.15;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.11.09.20.04.06;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.08.10.21.34.29;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2005.08.08.22.10.21;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.02.28.22.14.03;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.02.27.17.42.32;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.02.27.14.38.27;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.02.27.10.17.05;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.02.22.21.26.49;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.12
+log
+@   Modified assertion implementation to force evaluation of user
+condition expression first, while preserving delegation to
+function, overloading and optional parameters feature.
+   See CPPUT_BEGIN_ASSERTION_MACRO() documentation in testinfo.h for an example
+to update your custom assertion code.
+
+   New implementation rely on operator evaluation order and operator overloading. The trick is documented in CPPUT_BEGIN_ASSERTION_MACRO().
+@
+text
+@#include <cpput/exceptionguard.h>
+#include <cpput/testinfo.h>
+#include <cpptl/typename.h>
+#include <cpptl/functor.h>
+#include <cpptl/conststring.h>
+
+namespace CppUT {
+
+// class ExceptionGuardElement
+// //////////////////////////////////////////////////////////////////
+
+struct ExceptionGuardElement::Context
+{
+   Context( CppTL::Functor0 test )
+      : test_( test )
+   {
+   }
+
+   CppTL::Functor0 test_;
+};
+   
+   
+   
+void 
+ExceptionGuardElement::setNextInChain( const ExceptionGuardElementPtr &deleguate )
+{
+   deleguate_ = deleguate;
+}
+
+
+bool 
+ExceptionGuardElement::callNextInChain( Context &context )
+{
+   if ( deleguate_ )
+      deleguate_->protect( context );
+   else
+      context.test_();
+   return !(TestInfo::threadInstance().testStatus().hasFailed());
+}
+
+
+/// \cond implementation_detail
+namespace Impl {
+
+   // class StandardTestExceptionGuard
+   // //////////////////////////////////////////////////////////////////
+
+   // catch CppUT::AssertionException, std::exception, ...
+   class CPPUT_API StandardTestExceptionGuard : public ExceptionGuardElement
+   {
+   public: // overridden from ExceptionGuardElement
+      bool protect( Context &context )
+      {
+         try
+         {
+            return callNextInChain( context );
+         }
+         catch ( const AbortingAssertionException & )
+         {
+            // Already injected into result
+         }
+// @@todo Need to add catch for all standard derived classes. 
+// Warning: => they don't always exist on all platforms.
+         catch ( const std::runtime_error &e )
+         {
+            addFault( CppTL::getObjectTypeName( e, "std::runtime_error" ), e.what() );
+         }
+         catch ( const std::exception &e )
+         {
+            addFault( CppTL::getObjectTypeName( e, "std::exception" ), e.what() );
+         }
+         catch ( ... ) 
+         {
+            Assertion fault( Assertion::fault );
+            Message messages( "test threw an unexpected exception" );
+            messages.add( "caught unexpected exception of unknown type (not a subclass of std::exception)." );
+            fault.setMessages( messages );
+            TestInfo::threadInstance().handleUnexpectedException( fault );
+         }
+
+         return false;
+      }
+
+   private:
+      void addFault( const CppTL::ConstString &exceptionType,
+                     const char *what )
+      {
+         Assertion fault( Assertion::fault );
+         Message messages( "test threw an unexpected exception" );
+         messages.add( "caught unexpected exception of type: " + exceptionType );
+         messages.add( what );
+         fault.setMessages( messages );
+         fault.setTestDataType( "unexpected-exception-fault" );
+         fault.setTestData( "expection-type", exceptionType.c_str() );
+         fault.setTestData( "expection-message", what );
+         TestInfo::threadInstance().handleUnexpectedException( fault );
+      }
+   };
+
+} // namespace Impl
+/// \endcond
+
+
+
+// class ExceptionGuard
+// //////////////////////////////////////////////////////////////////
+
+ExceptionGuard::ExceptionGuard()
+{
+   guards_.push_back( ExceptionGuardElementPtr( new Impl::StandardTestExceptionGuard() ) );
+}
+
+
+void 
+ExceptionGuard::append( const ExceptionGuardElementPtr &guard )
+{
+   guard->setNextInChain( ExceptionGuardElementPtr() );
+   guards_.back()->setNextInChain( guard );
+   guards_.push_back( guard );
+}
+
+
+void 
+ExceptionGuard::removeLast()
+{
+   if ( guards_.size() == 1 ) // should we throw an exception ?
+      return;
+
+   guards_.erase( guards_.end() - 1 );
+   guards_.back()->setNextInChain( ExceptionGuardElementPtr() );
+}
+
+
+bool
+ExceptionGuard::protect( CppTL::Functor0 test ) const
+{
+   ExceptionGuardElement::Context context( test );
+   return guards_.front()->protect( context );
+}
+
+} // namespace CppUT
+@
+
+
+1.11
+log
+@- synchronized with lastest jsoncpp.
+@
+text
+@d5 1
+@
+
+
+1.10
+log
+@- renamed include/cpput/assert.h to include/cpput/assertcommon.h. This avoid clash with include <assert.h> in doxygen documentation
+- most Impl namespaces are now hidden from documentation using \cond and \endcond.
+@
+text
+@d93 1
+a93 1
+         fault.setTestData( "expection-type", exceptionType );
+@
+
+
+1.9
+log
+@- added unit tests for TestInfo
+- fixed bug in CPPUT_IGNORE_FAILURE and exception guard.
+- added 'isIgnoredFailure' to Assertion.
+- lighttestrunner now print ignored failure and skipped tests.
+@
+text
+@d41 1
+d100 1
+@
+
+
+1.8
+log
+@- added CPPUT_SKIP_TEST to skip the current test
+- added CPPUT_IGNORE_FAILURE( assertion ) to ignore a failure caused by an assertion, but count the failed assertion
+@
+text
+@d37 1
+a37 1
+   return !(TestInfo::threadInstance().getUpdatedTestStatus().hasFailed());
+@
+
+
+1.7
+log
+@* Replaced function in namespace TestInfo by exposing the TestInfoData class and renaming it TestInfo. TestInfo in now an exposed per thread singleton.
+* startNewTest() is now called from TestCase::runTest() instead of being the test runner responsability. There still a few call to this method in cpput bootstrap test (which use assertion without run a test case).
+@
+text
+@d34 4
+a37 3
+      return deleguate_->protect( context );
+   context.test_();
+   return true;
+@
+
+
+1.6
+log
+@Rewrote failure reporting during test. It now provides more structure while still providing some flexibility.
+@
+text
+@d75 1
+a75 1
+            TestInfo::handleUnexpectedException( fault );
+d93 1
+a93 1
+         TestInfo::handleUnexpectedException( fault );
+@
+
+
+1.5
+log
+@* moved cpput/typehelper.h to cpptl/typename.h
+* renamed helper functions: getObjectTypeName(), getTypeName() and demangleTypeInfoName()
+* With mingw, typeinfo name is correctly extracted (skip initial digits)
+* added automatic detection of the presence of RTTI with msvc.
+@
+text
+@d71 5
+a75 4
+            OpenTest::Properties fault;
+            fault["type"] = "unexpected exception";
+            fault["message"].append( "caught unexpected exception of unknown type." );
+            TestInfo::appendFaultToResult( fault );
+d85 9
+a93 6
+         OpenTest::Properties fault;
+         fault["type"] = "unexpected exception";
+         fault["exception_type"] = exceptionType;
+         fault["message"].append( "caught unexpected exception." );
+         fault["message"].append( what );
+         TestInfo::appendFaultToResult( fault );
+@
+
+
+1.4
+log
+@* added tests for ExceptionGuard.
+* fixed bug in ExceptionGuard::append()
+@
+text
+@d3 1
+a3 1
+#include <cpput/typehelper.h>
+d59 2
+a60 7
+#ifndef CPPTL_NO_RTTI
+         catch ( const std::exception &e )
+         {
+            addFault( extractObjectType( e, "std::exception" ), e.what() );
+         }
+#else    // @@todo Need to add catch for all standard derived classes. 
+         // Warning: => they don't always exist on all platforms.
+d63 1
+a63 1
+            addFault( extractObjectType( e, "std::runtime_error" ), e.what() );
+d67 1
+a67 1
+            addFault( extractObjectType( e, "std::exception" ), e.what() );
+a68 1
+#endif
+@
+
+
+1.3
+log
+@* changed cppunit 2 to use the new functors (cpptl/functor.h). bind_cfn & bind_memfn simplified some of the test code.
+@
+text
+@d117 1
+a117 1
+   guards_.insert( guards_.end()-1, guard );
+@
+
+
+1.2
+log
+@* use CppTL::ConstString instead of std::string for thread-safety
+@
+text
+@d4 1
+d13 1
+a13 1
+   Context( Functor0 test )
+d18 1
+a18 1
+   Functor0 test_;
+d133 1
+a133 1
+ExceptionGuard::protect( Functor0 test ) const
+@
+
+
+1.1
+log
+@* renamed testfailureguard.h/cpp to exceptionguard.h/cpp
+@
+text
+@d86 1
+a86 1
+      void addFault( const std::string &exceptionType,
+@
+

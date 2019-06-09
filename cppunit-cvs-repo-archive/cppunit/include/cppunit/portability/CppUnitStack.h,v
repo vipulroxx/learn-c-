@@ -1,0 +1,90 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.2
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2002.07.14.19.48.32;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@#ifndef CPPUNIT_PORTABILITY_CPPUNITSTACK_H
+#define CPPUNIT_PORTABILITY_CPPUNITSTACK_H
+
+// The technic used is similar to the wrapper of STLPort.
+ 
+#include <cppunit/Portability.h>
+#include <deque>
+#include <stack>
+
+
+#if CPPUNIT_STD_NEED_ALLOCATOR
+
+template<class T>
+class CppUnitStack : public std::stack<T
+                                      ,std::deque<T,CPPUNIT_STD_ALLOCATOR> >
+{
+public:
+};
+
+#else // CPPUNIT_STD_NEED_ALLOCATOR
+
+#define CppUnitStack std::stack
+
+#endif
+
+#endif // CPPUNIT_PORTABILITY_CPPUNITSTACK_H@

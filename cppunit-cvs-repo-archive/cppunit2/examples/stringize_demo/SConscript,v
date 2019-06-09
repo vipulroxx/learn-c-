@@ -1,0 +1,30 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2005.09.06.07.47.36;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* small demo that demonstrate how conversion to string can be customized.
+@
+text
+@Import( 'env_testing buildCppUnitExample' )
+
+buildCppUnitExample( env_testing, Split( """
+    main.cpp
+     """ ),
+    'stringize_demo' )
+@

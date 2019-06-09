@@ -1,0 +1,846 @@
+head	1.12;
+access;
+symbols
+	REL_1_12_1:1.12
+	REL_1_11_6:1.12
+	REL_1_11_4:1.12
+	REL_1_11_0:1.12
+	TG_CPPUNIT_NO_STREAM_AFTER:1.12
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.12
+	REL_1_10_2:1.12
+	REL_1_10_0:1.11
+	REL_1_9_14:1.11
+	REL_1_9_12:1.11
+	BRANCH_1_9_12:1.11.0.2
+	TG_BRANCH_1_9_12:1.11
+	TG_BEFORE_HPUX_PLUGIN:1.11
+	TG_BEFORE_SUN4_PORT:1.9
+	REL_1_9_10:1.9
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.7
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.7
+	REL_1_9_6:1.7
+	REL_1_9_4:1.7
+	REL_1_9_0:1.7
+	REL_1_8_0:1.6
+	REL_1_7_8:1.6
+	REL_1_7_3:1.5
+	REL_1_7_1:1.4
+	REL_1_6_2:1.4
+	BRANCH_1_6:1.4.0.2
+	REL_1_6_1:1.4
+	REL_1_6_0:1.4
+	REL_1_5_5:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.12
+date	2004.06.18.11.20.42;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2003.03.12.07.40.04;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2003.03.11.20.06.34;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2002.06.13.23.25.55;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2002.04.12.19.28.48;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.03.25.07.15.06;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.10.24.20.03.29;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.06.27.21.23.22;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.05.20.09.43.04;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.05.05.23.34.50;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.12
+log
+@* added DEBUG_NEW for memory leaks tracking
+@
+text
+@// //////////////////////////////////////////////////////////////////////////
+// Implementation file TestRunnerModel.cpp for class TestRunnerModel
+// (c)Copyright 2000, Baptiste Lepilleur.
+// Created: 2001/04/26
+// //////////////////////////////////////////////////////////////////////////
+
+#include "StdAfx.h"
+#include "TestRunnerModel.h"
+#include <cppunit/tools/Algorithm.h>
+#include <algorithm>
+#include <stdexcept>
+#include <cppunit/testsuite.h>
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+
+
+const CString TestRunnerModel::settingKey( _T("CppUnit") );
+const CString TestRunnerModel::settingMainDialogKey( _T( "MainDialog" ) );
+const CString TestRunnerModel::settingBrowseDialogKey( _T( "BrowseDialog" ) );
+
+
+TestRunnerModel::TestRunnerModel( CPPUNIT_NS::Test *rootTest ) :
+    m_rootTest( rootTest )
+{
+}
+
+
+TestRunnerModel::~TestRunnerModel()
+{
+}
+
+const TestRunnerModel::History &
+TestRunnerModel::history() const
+{
+  return m_history;
+}
+
+
+void 
+TestRunnerModel::selectHistoryTest( CPPUNIT_NS::Test *test )
+{
+   CPPUNIT_NS::removeFromSequence( m_history, test );
+  
+  if ( test != NULL )
+    m_history.push_front( test );
+}
+
+
+CPPUNIT_NS::Test *
+TestRunnerModel::selectedTest() const
+{
+  if ( m_history.size() > 0 )
+    return m_history[0];
+  return NULL;
+}
+
+
+void 
+TestRunnerModel::loadSettings(Settings & s)
+{
+  CWinApp *app = AfxGetApp();
+  ASSERT( app != NULL );
+
+  int autorun = app->GetProfileInt( _T("CppUnit"),
+                                    _T("AutorunAtStartup"),
+                                    1 );
+  s.autorunOnLaunch = (autorun == 1);
+
+  s.col_1 = app->GetProfileInt( _T("CppUnit"), _T("Col_1"), 40 );
+  s.col_2 = app->GetProfileInt( _T("CppUnit"), _T("Col_2"), 40 );
+  s.col_3 = app->GetProfileInt( _T("CppUnit"), _T("Col_3"), 40 );
+  s.col_4 = app->GetProfileInt( _T("CppUnit"), _T("Col_4"), 40 );
+
+  loadHistory();
+}
+
+
+void 
+TestRunnerModel::loadHistory()
+{
+  m_history.clear();
+  int idx = 1;
+  do
+  {
+    CString testName = loadHistoryEntry( idx++ );
+    if ( testName.IsEmpty() )
+      break;
+
+    try
+    {
+      m_history.push_back( m_rootTest->findTest( toAnsiString(testName ) ) );
+    }
+    catch ( std::invalid_argument &)
+    {
+    }
+  }
+  while ( true );
+}
+
+
+CString
+TestRunnerModel::loadHistoryEntry( int idx )
+{
+  CWinApp *app = AfxGetApp();
+  ASSERT( app != NULL );
+
+  return app->GetProfileString( _T("CppUnit"), getHistoryEntryName( idx ) );
+}
+
+
+void 
+TestRunnerModel::saveSettings( const Settings & s )
+{
+  CWinApp *app = AfxGetApp();
+  ASSERT( app != NULL );
+
+  int autorun = s.autorunOnLaunch ? 1 : 0;
+  app->WriteProfileInt( _T("CppUnit"), _T("AutorunAtStartup"), autorun );
+
+  app->WriteProfileInt( _T("CppUnit"), _T("Col_1"),	 s.col_1 );
+  app->WriteProfileInt( _T("CppUnit"), _T("Col_2"),	 s.col_2 );
+  app->WriteProfileInt( _T("CppUnit"), _T("Col_3"),	 s.col_3 );
+  app->WriteProfileInt( _T("CppUnit"), _T("Col_4"),	 s.col_4 );
+
+  int idx = 1;
+  for ( History::const_iterator it = m_history.begin(); 
+        it != m_history.end(); 
+        ++it , ++idx )
+  {
+    CPPUNIT_NS::Test *test = *it;
+    saveHistoryEntry( idx, test->getName().c_str() );
+  }
+}
+
+
+void 
+TestRunnerModel::saveHistoryEntry( int idx, 
+                                   CString testName )
+{
+  CWinApp *app = AfxGetApp();
+  ASSERT( app != NULL );
+
+  app->WriteProfileString( _T("CppUnit"),
+                           getHistoryEntryName( idx ),
+                           testName );
+}
+
+
+CString
+TestRunnerModel::getHistoryEntryName( int idx ) const
+{
+  CString entry;
+  entry.Format( _T("HistoryTest%d"), idx );
+  return entry;
+}
+
+
+CPPUNIT_NS::Test *
+TestRunnerModel::rootTest()
+{
+  return m_rootTest;
+}
+
+
+void 
+TestRunnerModel::setRootTest( CPPUNIT_NS::Test *test )
+{
+  m_rootTest = test;
+}
+
+
+CPPUNIT_NS::Test * 
+TestRunnerModel::findTestByName( CString name ) const
+{
+  return findTestByNameFor( name, m_rootTest );
+}
+
+
+CPPUNIT_NS::Test * 
+TestRunnerModel::findTestByNameFor( const CString &name, 
+                                    CPPUNIT_NS::Test *test ) const
+{
+  if ( name == test->getName().c_str() )
+    return test;
+
+  CPPUNIT_NS::TestSuite *suite = dynamic_cast<CPPUNIT_NS::TestSuite *>(test);
+  if ( suite == NULL )
+    return NULL;
+
+  const std::vector<CPPUNIT_NS::Test *> &tests = suite->getTests();
+  for ( std::vector<CPPUNIT_NS::Test *>::const_iterator it = tests.begin(); 
+        it != tests.end(); 
+        ++it )
+  {
+    CPPUNIT_NS::Test *testFound = findTestByNameFor( name, *it );
+    if ( testFound != NULL )
+      return testFound;
+  }
+  return NULL;
+}
+
+
+// Utility method, should be moved somewhere else...
+std::string 
+TestRunnerModel::toAnsiString( const CString &text )
+{
+#ifdef _UNICODE
+  int bufferLength = ::WideCharToMultiByte( CP_THREAD_ACP, 0, 
+                                            text, text.GetLength(),
+                                            NULL, 0, NULL, NULL ) +1;
+  char *ansiString = new char[bufferLength];
+  ::WideCharToMultiByte( CP_THREAD_ACP, 0, 
+                         text, text.GetLength(),
+                         ansiString, bufferLength, 
+                                            NULL,
+                                            NULL );
+
+  std::string str( ansiString, bufferLength-1 );
+  delete[] ansiString;
+
+  return str;
+#else
+  return std::string( (LPCTSTR)text );
+#endif
+}
+@
+
+
+1.11
+log
+@* fixed typos
+@
+text
+@d14 7
+@
+
+
+1.10
+log
+@* include/cppunit/tools/Algorithm.h:
+* src/cppunit/TestResult.cpp:
+* src/msvc6/testrunner/TestRunnerModel.cpp: added removeFromSequence
+algorithm in Algorithm.h to fix STLPort compatibility issue
+(std::remove use the one of cstdio instead of algorithm). Bug #694971.
+
+* include/cppunit/extensions/TestNamer.h: fixed bug #662666 (missing include
+for typeinfo).
+
+* src/cppunit/TestResult.cpp: TestFailure are no longer passed as temporary,
+but explicitely instantiated on the stack. Work around AIX compiler bug.
+@
+text
+@d40 1
+a40 1
+  removeFromsSequence( m_history, test );
+@
+
+
+1.9
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d9 1
+d40 1
+a40 3
+  History::iterator end = 
+      std::remove( m_history.begin(), m_history.end(), test );
+  m_history.erase( end, m_history.end() );
+@
+
+
+1.8
+log
+@* src/cppunit/CompilerOutputter.cpp: fixed bug #549762 (line wrap).
+
+* src/msvc6/testrunner/DynamicWindow/*: added. Dynamic Window library
+  from Hans Bühler (hans.buehler@@topmail.de) to resize window.
+
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TestRunnerModel.cpp: removed dialog bounds from
+  settings. Added public registry keys for cppunit, main dialog, and
+  browse dialog.
+
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: dialog is now resizable.
+  Window placement is stored and restored.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replaced dialog resizing code
+  by usage of Hans Bühler's Dynamic Window library. Dialog placement
+  is stored/restored by that library. ProgressBar is now a child window.
+  Added edit field to see the details of the failure. List on show
+  the short description of the failure.
+
+* src/msvc6/testrunner/ProgressBar.h:
+* src/msvc6/testrunner/ProgressBar.cpp: is now a CWnd.
+
+* src/msvc6/testrunner/TestRunner.rc: named all static fill ID for resizing.
+  Added an invisble static field for progress bar placement.
+@
+text
+@d19 1
+a19 1
+TestRunnerModel::TestRunnerModel( CppUnit::Test *rootTest ) :
+d37 1
+a37 1
+TestRunnerModel::selectHistoryTest( CppUnit::Test *test )
+d48 1
+a48 1
+CppUnit::Test *
+d129 1
+a129 1
+    CppUnit::Test *test = *it;
+d157 1
+a157 1
+CppUnit::Test *
+d165 1
+a165 1
+TestRunnerModel::setRootTest( CppUnit::Test *test )
+d171 1
+a171 1
+CppUnit::Test * 
+d178 1
+a178 1
+CppUnit::Test * 
+d180 1
+a180 1
+                                    CppUnit::Test *test ) const
+d185 1
+a185 1
+  CppUnit::TestSuite *suite = dynamic_cast<CppUnit::TestSuite *>(test);
+d189 2
+a190 2
+  const std::vector<CppUnit::Test *> &tests = suite->getTests();
+  for ( std::vector<CppUnit::Test *>::const_iterator it = tests.begin(); 
+d194 1
+a194 1
+    CppUnit::Test *testFound = findTestByNameFor( name, *it );
+@
+
+
+1.7
+log
+@* Makefile.am: added examples/qt to tar ball release.
+
+* TODO: heavily updated.
+
+* contrib/msvc/CppUnit*.wwtpl: changed base class for unit test to TestFixture.
+
+* include/cppunit/Test.h: removed toString() method. Not used by the framework
+  and source of confusions with getName().
+  Added getChildTestCount() and getChildTestAt(), introducing the composite pattern
+  at top level. Added utility methods findTest() and findTestPath().
+
+* src/cppunit/Test.cpp: added. Implementation of new utility methods.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: inherits TestLeaf. Removed toString(), run(void) and
+  defaultResult(). Removed default constructor.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestSuite.cpp: fixed some includes that used "" instead of <>.
+
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: added. Common implementation of Test for composite
+  tests (TestSuite).
+
+* include/cppunit/TestFailure.h:
+* src/cppunit/TestFailure.cpp: removed toString().
+
+* include/cppunit/TestLeaf.h:
+* src/cppunit/TestLeaf.cpp: added. Common implementation of Test for single test
+  (TestCase).
+
+* include/cppunit/TestListener.h: added TimingListener example to documentation.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: added. List of test traversed to access a test in the
+  test hierarchy.
+
+* include/cppunit/TestRunner.h: added. Generic TestRunner.
+
+* src/cppunit/TestRunner.cpp: moved to TextTestRunner.cpp. Added new implementation
+  of includecppunit/TestRunner.h.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: inherits TestComposite and implements new Test
+  interface. Removed toString().
+
+* src/cppunit/TextTestRunner.cpp: moved from TestRunner.cpp. Implementation of
+  include/cppunit/ui/text/TestRunner.h.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* src/cppunit/RepeatedTest.cpp: removed toString().
+
+* include/cppunit/extensions/TestDecorator.h: inherits TestLeaf.
+  Removed toString()
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h: XML outputter now escape node content.
+  Add unit test for that bug (#540944). Added style sheet support. Modified
+  XML structure: failure message as its own element.
+
+* src/msvc/testrunner/TestRunnerModel.h:
+* src/msvc/testrunner/TestRunnerModel.cpp: used Test::findTest() to find a test
+  by name instead of using RTTI. Added toAnsiString() for convertion when
+  compiling as UNICODE.
+
+* src/msvc/testrunner/TreeHierarchyDlg.h:
+* src/msvc/testrunner/TreeHierarchyDlg.cpp: used new composite interface of Test
+  to explorer the test hierarchy instead of RTTI.
+
+* examples/cppunittest/TestPathTest.h:
+* examples/cppunittest/TestPathTest.cpp: added, unit tests for TestPath.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: added test for TestLeaf.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: added test for TestComposite and
+  new Test interface.
+@
+text
+@d14 5
+a67 5
+  s.dlgBounds.left = app->GetProfileInt( _T("CppUnit"), _T("Left"), 0 );
+  s.dlgBounds.top = app->GetProfileInt( _T("CppUnit"), _T("Top"), 0 );
+  s.dlgBounds.right = app->GetProfileInt( _T("CppUnit"), _T("Right"), 0 );
+  s.dlgBounds.bottom= app->GetProfileInt( _T("CppUnit"), _T("Bottom"), 0 );  
+
+a117 5
+
+  app->WriteProfileInt( _T("CppUnit"), _T("Left"),	 s.dlgBounds.left );
+  app->WriteProfileInt( _T("CppUnit"), _T("Top"),	 s.dlgBounds.top );
+  app->WriteProfileInt( _T("CppUnit"), _T("Right"),  s.dlgBounds.right );
+  app->WriteProfileInt( _T("CppUnit"), _T("Bottom"), s.dlgBounds.bottom );
+@
+
+
+1.6
+log
+@* INSTALL-WIN32.txt: updated for MFC Unicode TestRunner.
+
+* src/msvc6/testrunner/TestRunner.dsp: added Unicode configurations.
+
+* src/msvc6/testrunner/ListCtrlSetter.cpp:
+* src/msvc6/testrunner/ListCtrlSetter.h: replaced usage of std::string by
+CString for easier ansi/unicode switch.
+
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: made changes to compile with
+either ANSI and UNICODE support.
+
+* examples/msvc6/HostApp/HostApp.cpp:
+* examples/msvc6/HostApp/HostApp.h:
+* examples/msvc6/HostApp/HostAppDoc.cpp:
+* examples/msvc6/HostApp/HostAppDoc.h: moved TestRunner execution to
+HostApp::RunUnitTests() and removed the MainFrame application window.
+
+* examples/msvc6/HostApp/HostApp.dsp: added Unicode configurations.
+@
+text
+@d10 1
+d88 7
+a94 3
+    CppUnit::Test *test = findTestByName( testName );
+    if ( test != NULL )
+      m_history.push_back( test );
+d204 25
+@
+
+
+1.5
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+* examples/msvc6/HostApp/HostApp.dsp: use custom file build instead
+of post-build/pre-link step to copy the TestRunner DLL to the
+Release/Debug directory.
+
+* src/msvc6/ProgressBar.cpp:
+* src/msvc6/ProgressBar.h:
+* src/msvc6/TestRunner.rc:
+* src/msvc6/TestRunnerDlg.cpp:
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/testRunner.dsp:
+* src/msvc6/TestRunnerModel.cpp:
+* src/msvc6/TestRunnerModel.h: included Gigi Sayfan (gigi@@morphink.com)
+patch. The dialog can now be resized, and list view columns and dialog
+sizes are saved.
+
+* src/msvc6/ProgressBar.cpp:
+* src/msvc6/ProgressBar.h: Minor refactoring.
+
+* THANKS: added Gigi Sayfan to the list.
+@
+text
+@d57 2
+a58 2
+  int autorun = app->GetProfileInt( "CppUnit", 
+                                    "AutorunAtStartup",
+d62 9
+a70 9
+  s.dlgBounds.left = app->GetProfileInt( "CppUnit", "Left", 0 );
+  s.dlgBounds.top = app->GetProfileInt( "CppUnit", "Top", 0 );
+  s.dlgBounds.right = app->GetProfileInt( "CppUnit", "Right", 0 );
+  s.dlgBounds.bottom= app->GetProfileInt( "CppUnit", "Bottom", 0 );  
+
+  s.col_1 = app->GetProfileInt( "CppUnit", "Col_1", 40 );
+  s.col_2 = app->GetProfileInt( "CppUnit", "Col_2", 40 );
+  s.col_3 = app->GetProfileInt( "CppUnit", "Col_3", 40 );
+  s.col_4 = app->GetProfileInt( "CppUnit", "Col_4", 40 );
+d83 2
+a84 2
+    std::string testName = loadHistoryEntry( idx++ );
+    if ( testName.empty() )
+d95 1
+a95 1
+std::string 
+d101 1
+a101 3
+  return std::string( 
+      app->GetProfileString( "CppUnit", 
+                             getHistoryEntryName( idx ).c_str() ) );
+d112 1
+a112 1
+  app->WriteProfileInt( "CppUnit", "AutorunAtStartup", autorun );
+d114 9
+a122 9
+  app->WriteProfileInt( "CppUnit", "Left",	 s.dlgBounds.left );
+  app->WriteProfileInt( "CppUnit", "Top",	 s.dlgBounds.top );
+  app->WriteProfileInt( "CppUnit", "Right",  s.dlgBounds.right );
+  app->WriteProfileInt( "CppUnit", "Bottom", s.dlgBounds.bottom );
+
+  app->WriteProfileInt( "CppUnit", "Col_1",	 s.col_1 );
+  app->WriteProfileInt( "CppUnit", "Col_2",	 s.col_2 );
+  app->WriteProfileInt( "CppUnit", "Col_3",	 s.col_3 );
+  app->WriteProfileInt( "CppUnit", "Col_4",	 s.col_4 );
+d130 1
+a130 1
+    saveHistoryEntry( idx, test->getName() );
+d137 1
+a137 1
+                                   std::string testName )
+d142 3
+a144 3
+  app->WriteProfileString( "CppUnit", 
+                           getHistoryEntryName( idx ).c_str(), 
+                           testName.c_str() );
+d148 1
+a148 1
+std::string 
+d151 3
+a153 3
+  char entry[20];
+  ::sprintf( entry, "HistoryTest%d", idx );
+  return std::string( entry );
+d172 1
+a172 1
+TestRunnerModel::findTestByName( std::string name ) const
+d179 1
+a179 1
+TestRunnerModel::findTestByNameFor( const std::string &name, 
+d182 1
+a182 1
+  if ( name == test->getName() )
+@
+
+
+1.4
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+moved dll copy from post-build to custom build setting, so that the
+dll is copied even if the CppUnitTestApp was not modified.
+
+* examples/msvc6/TestPlugIn/: a new example of test plug in.
+
+* src/msvc6/TestRunner/ListCtrlFormatter.*
+* src/msvc6/TestRunner/ListCtrlSetter.*:
+added, helper to manipulate list control.
+
+* src/msvc6/TestRunner/TestRunnerDlg.*: change to make the error list
+more compact. text moved to string resources. icons added for typ
+test tfailure type.
+
+* src/msvc6/TestRunner/MostRecentTests.*: added, classes that will
+replace the current implementation of MRU test which make it hard
+to subclass the dialog.
+
+* src/msvc6/TestRunner/res/errortype.bmp: added, bitmap with error
+types (failure and error).
+
+* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+
+* src/cppunit/cppunit.dsp:
+removed config.h from project
+added Portability.h and config-msvc6.h
+
+* include/cppunit/config-msvc6.h:
+undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+@
+text
+@a13 1
+    m_autorunOnLaunch( true ),
+a22 15
+
+bool 
+TestRunnerModel::autorunOnLaunch() const
+{
+  return m_autorunOnLaunch;
+}
+
+
+void 
+TestRunnerModel::setAutorunOnLaunch( bool autorunOnLaunch )
+{
+  m_autorunOnLaunch = autorunOnLaunch;
+}
+
+
+d52 1
+a52 1
+TestRunnerModel::loadSettings()
+d60 1
+a60 1
+  m_autorunOnLaunch = (autorun == 1);
+d62 9
+d108 1
+a108 1
+TestRunnerModel::saveSettings()
+d113 1
+a113 1
+  int autorun = m_autorunOnLaunch ? 1 : 0;
+d115 10
+@
+
+
+1.3
+log
+@  * Fixed bug #424320 (VC++ TestRunner): access violation caused by NULL pointer in history list. NULL pointer are not added to the history anymore.
+@
+text
+@d79 7
+@
+
+
+1.2
+log
+@Merge of CppUnitW 1.2 phase 2.
+@
+text
+@d52 3
+a54 1
+  m_history.push_front( test );
+d88 2
+a89 1
+    m_history.push_back( test );
+@
+
+
+1.1
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@d178 1
+a178 1
+  std::vector<CppUnit::Test *> tests& = suite->getTests();
+@
+

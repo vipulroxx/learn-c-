@@ -1,0 +1,183 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2007.01.12.05.56.34;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2003.05.07.21.13.38;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.08.27.21.51.14;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@Arrange class initializers in correct order.
+@
+text
+@#ifndef MOCKFUNCTOR_H
+#define MOCKFUNCTOR_H
+
+#include <cppunit/TestAssert.h>
+#include <cppunit/Protector.h>
+#include "FailureException.h"
+#include "MockProtector.h"
+
+
+class MockFunctor : public CPPUNIT_NS::Functor
+{
+public:
+  MockFunctor()
+    : m_shouldSucceed( true )
+    , m_shouldThrow( false )
+    , m_shouldThrowFailureException( false )
+    , m_hasExpectation( false )
+    , m_actualCallCount( 0 )
+    , m_expectedCallCount( 0 )
+  {
+  }
+
+
+  bool operator()() const
+  {
+    ++CPPUNIT_CONST_CAST(MockFunctor *,this)->m_actualCallCount;
+
+    if ( m_shouldThrow )
+    {
+      if ( m_shouldThrowFailureException )
+        throw FailureException();
+      throw MockProtectorException();
+    }
+
+    return m_shouldSucceed;
+  }
+
+  void setThrowFailureException()
+  {
+    m_shouldThrow = true;
+    m_shouldThrowFailureException = true;
+    ++m_expectedCallCount;
+    m_hasExpectation = true;
+  }
+
+  void setThrowMockProtectorException()
+  {
+    m_shouldThrow = true;
+    m_shouldThrowFailureException = false;
+    ++m_expectedCallCount;
+    m_hasExpectation = true;
+  }
+
+  void setShouldFail()
+  {
+    m_shouldSucceed = false;
+  }
+
+  void setShouldSucceed()
+  {
+    m_shouldSucceed = true;
+  }
+
+  void setExpectedCallCount( int callCount =1 )
+  {
+    m_expectedCallCount = callCount;
+    m_hasExpectation = true;
+  }
+
+  void verify()
+  {
+    if ( m_hasExpectation )
+    {
+      CPPUNIT_ASSERT_EQUAL_MESSAGE( "MockFunctor: bad call count",
+                                    m_expectedCallCount,
+                                    m_actualCallCount );
+    }
+  }
+
+private:
+  bool m_shouldSucceed;
+  bool m_shouldThrow;
+  bool m_shouldThrowFailureException;
+  bool m_hasExpectation;
+  int m_actualCallCount;
+  int m_expectedCallCount;
+};
+
+
+#endif // MOCKFUNCTOR_H
+@
+
+
+1.2
+log
+@* added new lines
+@
+text
+@d14 2
+a15 1
+    : m_shouldThrow( false )
+a19 1
+    , m_shouldSucceed( true )
+@
+
+
+1.1
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d90 1
+a90 1
+#endif // MOCKFUNCTOR_H@
+

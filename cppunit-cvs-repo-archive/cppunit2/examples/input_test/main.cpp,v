@@ -1,0 +1,95 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@// @;
+
+
+1.1
+date	2007.08.16.15.51.04;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@   Added initial support for column fixture supported by fitness. Still missing
+automatic type convertion and correct reporting of error with regard to
+originating cell.
+@
+text
+@#include <examples/common/examplecommon.h>
+#include <cpput/testcase.h>
+#include <cpput/testinfo.h>
+#include <cpput/assertcommon.h>
+#include <cpput/inputbasedtest.h>
+#include <json/reader.h>
+
+class OperationInputTest;
+
+CPPTL_DECLARE_TYPE_AND_PTR_INFO( OperationInputTest );     // Not required if RTTI are always enabled
+CPPTL_REFLECT_REGISTER_CLASS( OperationInputTest )
+
+
+class OperationInputTest : public CppUT::ColumnInputTest
+{
+public:
+   CPPUT_INPUT_FIXTURE_BEGIN( OperationInputTest )
+      CPPTL_REFLECT_METHOD_WITH_RETURN( result )
+      CPPTL_REFLECT_RENAMED_ATTRIBUT( lhs_, "leftHandSide" )
+      CPPTL_REFLECT_RENAMED_ATTRIBUT( rhs_, "rightHandSide" )
+      CPPTL_REFLECT_RENAMED_ATTRIBUT( operation_, "operation" )
+   CPPUT_INPUT_FIXTURE_END()
+
+   int result()
+   {
+      if ( operation_ == "add" )
+         return lhs_ + rhs_;
+      else if ( operation_ == "substract" )
+         return lhs_ - rhs_;
+      CPPUT_CHECKING_FAIL( "Unsupported operation: " + operation_ );
+      return 0;
+   }
+
+   std::string operation_;
+   int lhs_;
+   int rhs_;
+};
+
+
+
+static void testOperations()
+{
+   Json::Reader reader;
+   Json::Value data;
+   bool ok = reader.parse(
+    "[ "
+    "[\"leftHandSide\", \"rightHandSide\", \"operation\", \"result?\"],"
+    "[1,              2,               \"add\",               3],"
+    "[1,              2,         \"substract\",              -1]"
+    "]", data );
+   if ( !ok )
+      CPPUT_FAIL( reader.getFormatedErrorMessages() );
+
+   OperationInputTest test;
+   CppUT::JsonTableDataSource table( data );
+   test( table );
+}
+
+
+
+int main( int argc, const char *argv[] )
+{
+   CppUT::TestSuitePtr allSuite = CppUT::makeTestSuite( "All tests" );
+
+   CppUT::TestPtr test1 = CppUT::makeTestCase( CppTL::cfn0( testOperations ), 
+                                               "testOperations" );
+   allSuite->add( test1 );
+
+   return runExampleTests( argc, argv, allSuite.get() );
+}
+@

@@ -1,0 +1,279 @@
+head	1.4;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.4;
+locks; strict;
+comment	@ * @;
+
+
+1.4
+date	2005.11.13.10.12.01;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.03.07.08.46.38;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.03.06.20.12.31;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.03.06.18.36.03;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@- renamed include/cpput/assert.h to include/cpput/assertcommon.h. This avoid clash with include <assert.h> in doxygen documentation
+- most Impl namespaces are now hidden from documentation using \cond and \endcond.
+@
+text
+@#ifndef CPPTL_THREAD_H_INCLUDED
+# define CPPTL_THREAD_H_INCLUDED
+
+# include <cpptl/forwards.h>
+# if CPPTL_HAS_THREAD
+#  include <cpptl/functor.h>
+# endif // # if CPPTL_HAS_THREAD
+
+
+namespace CppTL {
+
+void CPPTL_API processThreadExitHandlers();
+
+
+// Non-recursive mutex
+class CPPTL_API Mutex : public NonCopyable
+{
+public:
+   class ScopedLockGuard
+   {
+   public:
+      ScopedLockGuard( Mutex &mutex )
+         : mutex_( mutex )
+      {
+         mutex_.lock();
+      }
+
+      ~ScopedLockGuard()
+      {
+         mutex_.unlock();
+      }
+
+   private:
+      Mutex &mutex_;
+   };
+
+   Mutex();
+   ~Mutex();
+
+   void lock();
+   void unlock();
+# if CPPTL_HAS_THREAD
+private:
+   void *data_;
+# endif
+};
+ 
+   
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Implementation of thread API for NON THREAD-SAFE mode
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+# if !(CPPTL_HAS_THREAD)
+
+template<class ValueType>
+class ThreadLocalStorage
+{
+public:
+   typedef ThreadLocalStorage<ValueType> SelfType;
+
+   ThreadLocalStorage( const ValueType &defaultValue = ValueType() )
+      : value_( defaultValue )
+   {
+   }
+
+   bool isInitialized() const
+   {
+      return true;
+   }
+
+   ValueType &get()
+   {
+      return value_;
+   }
+
+private:
+   ValueType value_;
+};
+
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Implementation of thread API for THREAD-SAFE mode
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+# else // # if !(CPPTL_HAS_THREAD)
+
+/// \cond implementation_detail
+namespace Impl {
+
+   class RawThreadStorage;
+
+   RawThreadStorage *CPPTL_API createRawThreadStorage( const Functor1<void *> &deallocator );
+
+   void CPPTL_API freeRawThreadStorage( RawThreadStorage *storage );
+
+   void *CPPTL_API getRawThreadStorage( RawThreadStorage *storage );
+
+   void setRawThreadStorage( RawThreadStorage *storage, void *value );
+
+} // namespace Impl
+/// \endcond
+
+
+template<class ValueType>
+class ThreadLocalStorage : public NonCopyable
+{
+public:
+   typedef void(*FreeFn)(void*);
+   typedef ThreadLocalStorage<ValueType> SelfType;
+
+   ThreadLocalStorage( const ValueType &defaultValue = ValueType() )
+      : storage_( Impl::createRawThreadStorage( cfn1( FreeFn(freeValue) ) ) )
+      , defaultValue_( defaultValue )
+   {
+   }
+
+   virtual ~ThreadLocalStorage()
+   {
+      Impl::freeRawThreadStorage( storage_ );
+   }
+
+   bool isInitialized() const
+   {
+      return Impl::getRawThreadStorage( storage_ ) != 0;
+   }
+
+   ValueType &get()
+   {
+      ValueType * value = static_cast<ValueType *>( 
+         Impl::getRawThreadStorage( storage_ ) );
+      if ( !value )
+      {
+         value = new ValueType( defaultValue_ );
+         Impl::setRawThreadStorage( storage_, value );
+      }
+      return *value;
+   }
+
+   SelfType &operator =( const ValueType &other )
+   {
+      get() = other;
+      return *this;
+   }
+
+private:
+   static void freeValue( void *p )
+   {
+      delete static_cast<ValueType *>( p );
+   }
+
+   ValueType defaultValue_;
+   Impl::RawThreadStorage *storage_;
+};
+
+# endif // #  ifndef CPPTL_THREAD_SAFE
+
+} // namespace CppTL
+
+
+
+#endif // CPPTL_THREAD_H_INCLUDED
+@
+
+
+1.3
+log
+@* removed thread creation code. It is not required for core CppUnit.
+* exposed only processThreadExitHandlers(), other at exit handlers are implementation details.
+* modified RawThreadStorage::onThreadExit so that it may be called multiple time in the same thread without advert effects.
+@
+text
+@d89 1
+d103 1
+@
+
+
+1.2
+log
+@* added automatic detection of pthread support
+* added atomic counter implementation for linux
+@
+text
+@a11 5
+void CPPTL_API addThreadExitHandler( const Functor0 &handler, 
+                                     const void *tag = 0 );
+
+void CPPTL_API removeThreadExitHandler( const void *tag );
+
+a154 18
+
+class CPPTL_API Thread
+{
+public:
+   typedef unsigned long ThreadIdType;
+
+//   Thread( Functor0 threadFunction );
+
+//   void join();
+
+   static ThreadIdType currentId();
+
+//   static void sleep( unsigned long durationInMillisecond );
+
+private:
+   void *data_;
+};
+
+a156 18
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Implementation of thread API common to all thread-safety mode
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+
+/*
+
+class Thread;
+typedef CppTL::SharedPtr<Thread> ThreadPtr;
+
+inline ThreadPtr createThread( Functor0 threadFunction )
+{
+   return ThreadPtr( new Thread( threadFunction ) );
+}
+*/
+
+@
+
+
+1.1
+log
+@* moved from cpput/thread.h
+* implementation clean-up
+@
+text
+@d20 1
+@
+

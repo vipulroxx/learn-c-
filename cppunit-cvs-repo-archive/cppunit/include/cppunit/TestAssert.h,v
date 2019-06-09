@@ -1,0 +1,2156 @@
+head	1.30;
+access;
+symbols
+	REL_1_12_1:1.30
+	REL_1_11_6:1.29
+	REL_1_11_4:1.29
+	REL_1_11_0:1.27
+	TG_CPPUNIT_NO_STREAM_AFTER:1.24
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.22
+	REL_1_10_2:1.22
+	REL_1_10_0:1.22
+	REL_1_9_14:1.22
+	REL_1_9_12:1.21
+	BRANCH_1_9_12:1.21.0.2
+	TG_BRANCH_1_9_12:1.21
+	TG_BEFORE_HPUX_PLUGIN:1.21
+	TG_BEFORE_SUN4_PORT:1.21
+	REL_1_9_10:1.21
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.17
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.17
+	REL_1_9_6:1.16
+	REL_1_9_4:1.16
+	REL_1_9_0:1.16
+	REL_1_8_0:1.16
+	REL_1_7_8:1.14
+	REL_1_7_3:1.13
+	REL_1_7_1:1.12
+	REL_1_6_2:1.9
+	BRANCH_1_6:1.9.0.2
+	REL_1_6_1:1.9
+	REL_1_6_0:1.9
+	REL_1_5_5:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.30
+date	2007.02.24.21.13.04;	author blep;	state Exp;
+branches;
+next	1.29;
+
+1.29
+date	2005.11.06.16.58.21;	author blep;	state Exp;
+branches;
+next	1.28;
+
+1.28
+date	2005.10.27.19.34.11;	author blep;	state Exp;
+branches;
+next	1.27;
+
+1.27
+date	2004.11.08.20.12.58;	author blep;	state Exp;
+branches;
+next	1.26;
+
+1.26
+date	2004.11.06.09.05.45;	author blep;	state Exp;
+branches;
+next	1.25;
+
+1.25
+date	2004.11.05.22.47.20;	author blep;	state Exp;
+branches;
+next	1.24;
+
+1.24
+date	2004.06.25.11.11.45;	author blep;	state Exp;
+branches;
+next	1.23;
+
+1.23
+date	2004.06.25.10.41.27;	author blep;	state Exp;
+branches;
+next	1.22;
+
+1.22
+date	2004.03.13.12.52.56;	author blep;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2002.08.27.21.51.16;	author blep;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2002.07.14.19.48.32;	author blep;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2002.07.13.10.33.49;	author blep;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2002.06.13.15.31.01;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2002.04.04.15.39.37;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2002.03.28.15.47.07;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2002.03.24.19.39.54;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2002.02.28.10.52.15;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2001.10.21.21.20.25;	author smr99;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2001.10.05.22.27.14;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2001.10.02.06.49.27;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2001.09.23.23.58.09;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2001.07.07.16.05.47;	author smr99;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.06.17.16.59.07;	author bastiaan;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.06.12.06.59.26;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.06.11.20.00.52;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.06.05.21.35.57;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.06.02.22.29.52;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.05.06.16.19.31;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.30
+log
+@* src/cppunit/TestAssert.cpp (assertDoubleEquals): Moved finite & NaN
+  tests to include/cppunit/portability/FloatingPoint.h. Changed
+  implementation assertDoubleEquals to explicitly test for NaN
+  in case of non-finite values to force equality failure in the
+  presence of NaN. Previous implementation failed on Microsoft
+  Visual Studio 6 (on this platform: NaN == NaN).
+* examples/cppunittest/TestAssertTest.cpp: Add more unit tests to
+  test the portable floating-point primitive. Added missing
+  include <limits>.
+
+* include/cppunit/portability/Makefile.am:
+* include/cppunit/portability/FloatingPoint.h: Added file. Extracted
+  isfinite() from TestAssert.cpp.
+
+* include/cppunit/config-evc4:
+* include/cppunit/config-msvc6: Added support for _finite().
+@
+text
+@#ifndef CPPUNIT_TESTASSERT_H
+#define CPPUNIT_TESTASSERT_H
+
+#include <cppunit/Portability.h>
+#include <cppunit/Exception.h>
+#include <cppunit/Asserter.h>
+#include <cppunit/portability/Stream.h>
+#include <stdio.h>
+#include <float.h> // For struct assertion_traits<double>
+
+
+CPPUNIT_NS_BEGIN
+
+
+/*! \brief Traits used by CPPUNIT_ASSERT_EQUAL().
+ *
+ * Here is an example of specialising these traits: 
+ *
+ * \code
+ * template<>
+ * struct assertion_traits<std::string>   // specialization for the std::string type
+ * {
+ *   static bool equal( const std::string& x, const std::string& y )
+ *   {
+ *     return x == y;
+ *   }
+ * 
+ *   static std::string toString( const std::string& x )
+ *   {
+ *     std::string text = '"' + x + '"';    // adds quote around the string to see whitespace
+ *     OStringStream ost;
+ *     ost << text;
+ *     return ost.str();
+ *   }
+ * };
+ * \endcode
+ */
+template <class T>
+struct assertion_traits 
+{  
+    static bool equal( const T& x, const T& y )
+    {
+        return x == y;
+    }
+
+    static std::string toString( const T& x )
+    {
+        OStringStream ost;
+        ost << x;
+        return ost.str();
+    }
+};
+
+
+/*! \brief Traits used by CPPUNIT_ASSERT_DOUBLES_EQUAL(). 
+ * 
+ * This specialisation from @@c struct @@c assertion_traits<> ensures that 
+ * doubles are converted in full, instead of being rounded to the default 
+ * 6 digits of precision. Use the system defined ISO C99 macro DBL_DIG 
+ * within float.h is available to define the maximum precision, otherwise
+ * use the hard-coded maximum precision of 15.
+ */
+template <>
+struct assertion_traits<double>
+{  
+    static bool equal( double x, double y )
+    {
+        return x == y;
+    }
+
+    static std::string toString( double x )
+    {
+#ifdef DBL_DIG
+       const int precision = DBL_DIG;
+#else
+       const int precision = 15;
+#endif  // #ifdef DBL_DIG
+       char buffer[128];
+#ifdef __STDC_SECURE_LIB__ // Use secure version with visual studio 2005 to avoid warning.
+       sprintf_s(buffer, sizeof(buffer), "%.*g", precision, x); 
+#else	
+       sprintf(buffer, "%.*g", precision, x); 
+#endif
+       return buffer;
+    }
+};
+
+
+/*! \brief (Implementation) Asserts that two objects of the same type are equals.
+ * Use CPPUNIT_ASSERT_EQUAL instead of this function.
+ * \sa assertion_traits, Asserter::failNotEqual().
+ */
+template <class T>
+void assertEquals( const T& expected,
+                   const T& actual,
+                   SourceLine sourceLine,
+                   const std::string &message )
+{
+  if ( !assertion_traits<T>::equal(expected,actual) ) // lazy toString conversion...
+  {
+    Asserter::failNotEqual( assertion_traits<T>::toString(expected),
+                            assertion_traits<T>::toString(actual),
+                            sourceLine,
+                            message );
+  }
+}
+
+
+/*! \brief (Implementation) Asserts that two double are equals given a tolerance.
+ * Use CPPUNIT_ASSERT_DOUBLES_EQUAL instead of this function.
+ * \sa Asserter::failNotEqual().
+ * \sa CPPUNIT_ASSERT_DOUBLES_EQUAL for detailed semantic of the assertion.
+ */
+void CPPUNIT_API assertDoubleEquals( double expected,
+                                     double actual,
+                                     double delta,
+                                     SourceLine sourceLine, 
+                                     const std::string &message );
+
+
+/* A set of macros which allow us to get the line number
+ * and file name at the point of an error.
+ * Just goes to show that preprocessors do have some
+ * redeeming qualities.
+ */
+#if CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION
+/** Assertions that a condition is \c true.
+ * \ingroup Assertions
+ */
+#define CPPUNIT_ASSERT(condition)                                                 \
+  ( CPPUNIT_NS::Asserter::failIf( !(condition),                                   \
+                                 CPPUNIT_NS::Message( "assertion failed",         \
+                                                      "Expression: " #condition), \
+                                 CPPUNIT_SOURCELINE() ) )
+#else
+#define CPPUNIT_ASSERT(condition)                                            \
+  ( CPPUNIT_NS::Asserter::failIf( !(condition),                              \
+                                  CPPUNIT_NS::Message( "assertion failed" ), \
+                                  CPPUNIT_SOURCELINE() ) )
+#endif
+
+/** Assertion with a user specified message.
+ * \ingroup Assertions
+ * \param message Message reported in diagnostic if \a condition evaluates
+ *                to \c false.
+ * \param condition If this condition evaluates to \c false then the
+ *                  test failed.
+ */
+#define CPPUNIT_ASSERT_MESSAGE(message,condition)                          \
+  ( CPPUNIT_NS::Asserter::failIf( !(condition),                            \
+                                  CPPUNIT_NS::Message( "assertion failed", \
+                                                       "Expression: "      \
+                                                       #condition,         \
+                                                       message ),          \
+                                  CPPUNIT_SOURCELINE() ) )
+
+/** Fails with the specified message.
+ * \ingroup Assertions
+ * \param message Message reported in diagnostic.
+ */
+#define CPPUNIT_FAIL( message )                                         \
+  ( CPPUNIT_NS::Asserter::fail( CPPUNIT_NS::Message( "forced failure",  \
+                                                     message ),         \
+                                CPPUNIT_SOURCELINE() ) )
+
+#ifdef CPPUNIT_ENABLE_SOURCELINE_DEPRECATED
+/// Generalized macro for primitive value comparisons
+#define CPPUNIT_ASSERT_EQUAL(expected,actual)                     \
+  ( CPPUNIT_NS::assertEquals( (expected),             \
+                              (actual),               \
+                              __LINE__, __FILE__ ) )
+#else
+/** Asserts that two values are equals.
+ * \ingroup Assertions
+ *
+ * Equality and string representation can be defined with
+ * an appropriate CppUnit::assertion_traits class.
+ *
+ * A diagnostic is printed if actual and expected values disagree.
+ *
+ * Requirement for \a expected and \a actual parameters:
+ * - They are exactly of the same type
+ * - They are serializable into a std::strstream using operator <<.
+ * - They can be compared using operator ==. 
+ *
+ * The last two requirements (serialization and comparison) can be
+ * removed by specializing the CppUnit::assertion_traits.
+ */
+#define CPPUNIT_ASSERT_EQUAL(expected,actual)          \
+  ( CPPUNIT_NS::assertEquals( (expected),              \
+                              (actual),                \
+                              CPPUNIT_SOURCELINE(),    \
+                              "" ) )
+
+/** Asserts that two values are equals, provides additional message on failure.
+ * \ingroup Assertions
+ *
+ * Equality and string representation can be defined with
+ * an appropriate assertion_traits class.
+ *
+ * A diagnostic is printed if actual and expected values disagree.
+ * The message is printed in addition to the expected and actual value
+ * to provide additional information.
+ *
+ * Requirement for \a expected and \a actual parameters:
+ * - They are exactly of the same type
+ * - They are serializable into a std::strstream using operator <<.
+ * - They can be compared using operator ==. 
+ *
+ * The last two requirements (serialization and comparison) can be
+ * removed by specializing the CppUnit::assertion_traits.
+ */
+#define CPPUNIT_ASSERT_EQUAL_MESSAGE(message,expected,actual)      \
+  ( CPPUNIT_NS::assertEquals( (expected),              \
+                              (actual),                \
+                              CPPUNIT_SOURCELINE(),    \
+                              (message) ) )
+#endif
+
+/*! \brief Macro for primitive double value comparisons. 
+ * \ingroup Assertions
+ *
+ * The assertion pass if both expected and actual are finite and
+ * \c fabs( \c expected - \c actual ) <= \c delta.
+ * If either \c expected or actual are infinite (+/- inf), the 
+ * assertion pass if \c expected == \c actual.
+ * If either \c expected or \c actual is a NaN (not a number), then
+ * the assertion fails.
+ */
+#define CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,actual,delta)        \
+  ( CPPUNIT_NS::assertDoubleEquals( (expected),            \
+                                    (actual),              \
+                                    (delta),               \
+                                    CPPUNIT_SOURCELINE(),  \
+                                    "" ) )
+
+
+/*! \brief Macro for primitive double value comparisons, setting a 
+ * user-supplied message in case of failure. 
+ * \ingroup Assertions
+ * \sa CPPUNIT_ASSERT_DOUBLES_EQUAL for detailed semantic of the assertion.
+ */
+#define CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(message,expected,actual,delta)  \
+  ( CPPUNIT_NS::assertDoubleEquals( (expected),            \
+                                    (actual),              \
+                                    (delta),               \
+                                    CPPUNIT_SOURCELINE(),  \
+                                    (message) ) )
+
+
+/** Asserts that the given expression throws an exception of the specified type. 
+ * \ingroup Assertions
+ * Example of usage:
+ * \code
+ *   std::vector<int> v;
+ *  CPPUNIT_ASSERT_THROW( v.at( 50 ), std::out_of_range );
+ * \endcode
+ */
+# define CPPUNIT_ASSERT_THROW( expression, ExceptionType )              \
+   CPPUNIT_ASSERT_THROW_MESSAGE( CPPUNIT_NS::AdditionalMessage(),       \
+                                 expression,                            \
+                                 ExceptionType )
+
+
+// implementation detail
+#if CPPUNIT_USE_TYPEINFO_NAME
+#define CPPUNIT_EXTRACT_EXCEPTION_TYPE_( exception, no_rtti_message ) \
+   CPPUNIT_NS::TypeInfoHelper::getClassName( typeid(exception) )
+#else
+#define CPPUNIT_EXTRACT_EXCEPTION_TYPE_( exception, no_rtti_message ) \
+   std::string( no_rtti_message )
+#endif // CPPUNIT_USE_TYPEINFO_NAME
+
+// implementation detail
+#define CPPUNIT_GET_PARAMETER_STRING( parameter ) #parameter
+
+/** Asserts that the given expression throws an exception of the specified type, 
+ * setting a user supplied message in case of failure. 
+ * \ingroup Assertions
+ * Example of usage:
+ * \code
+ *   std::vector<int> v;
+ *  CPPUNIT_ASSERT_THROW_MESSAGE( "- std::vector<int> v;", v.at( 50 ), std::out_of_range );
+ * \endcode
+ */
+# define CPPUNIT_ASSERT_THROW_MESSAGE( message, expression, ExceptionType )   \
+   do {                                                                       \
+      bool cpputCorrectExceptionThrown_ = false;                              \
+      CPPUNIT_NS::Message cpputMsg_( "expected exception not thrown" );       \
+      cpputMsg_.addDetail( message );                                         \
+      cpputMsg_.addDetail( "Expected: "                                       \
+                           CPPUNIT_GET_PARAMETER_STRING( ExceptionType ) );   \
+                                                                              \
+      try {                                                                   \
+         expression;                                                          \
+      } catch ( const ExceptionType & ) {                                     \
+         cpputCorrectExceptionThrown_ = true;                                 \
+      } catch ( const std::exception &e) {                                    \
+         cpputMsg_.addDetail( "Actual  : " +                                  \
+                              CPPUNIT_EXTRACT_EXCEPTION_TYPE_( e,             \
+                                          "std::exception or derived") );     \
+         cpputMsg_.addDetail( std::string("What()  : ") + e.what() );         \
+      } catch ( ... ) {                                                       \
+         cpputMsg_.addDetail( "Actual  : unknown.");                          \
+      }                                                                       \
+                                                                              \
+      if ( cpputCorrectExceptionThrown_ )                                     \
+         break;                                                               \
+                                                                              \
+      CPPUNIT_NS::Asserter::fail( cpputMsg_,                                  \
+                                  CPPUNIT_SOURCELINE() );                     \
+   } while ( false )
+
+
+/** Asserts that the given expression does not throw any exceptions.
+ * \ingroup Assertions
+ * Example of usage:
+ * \code
+ *   std::vector<int> v;
+ *   v.push_back( 10 );
+ *  CPPUNIT_ASSERT_NO_THROW( v.at( 0 ) );
+ * \endcode
+ */
+# define CPPUNIT_ASSERT_NO_THROW( expression )                             \
+   CPPUNIT_ASSERT_NO_THROW_MESSAGE( CPPUNIT_NS::AdditionalMessage(),       \
+                                    expression )
+
+
+/** Asserts that the given expression does not throw any exceptions, 
+ * setting a user supplied message in case of failure. 
+ * \ingroup Assertions
+ * Example of usage:
+ * \code
+ *   std::vector<int> v;
+ *   v.push_back( 10 );
+ *  CPPUNIT_ASSERT_NO_THROW( "std::vector<int> v;", v.at( 0 ) );
+ * \endcode
+ */
+# define CPPUNIT_ASSERT_NO_THROW_MESSAGE( message, expression )               \
+   do {                                                                       \
+      CPPUNIT_NS::Message cpputMsg_( "unexpected exception caught" );         \
+      cpputMsg_.addDetail( message );                                         \
+                                                                              \
+      try {                                                                   \
+         expression;                                                          \
+      } catch ( const std::exception &e ) {                                   \
+         cpputMsg_.addDetail( "Caught: " +                                    \
+                              CPPUNIT_EXTRACT_EXCEPTION_TYPE_( e,             \
+                                          "std::exception or derived" ) );    \
+         cpputMsg_.addDetail( std::string("What(): ") + e.what() );           \
+         CPPUNIT_NS::Asserter::fail( cpputMsg_,                               \
+                                     CPPUNIT_SOURCELINE() );                  \
+      } catch ( ... ) {                                                       \
+         cpputMsg_.addDetail( "Caught: unknown." );                           \
+         CPPUNIT_NS::Asserter::fail( cpputMsg_,                               \
+                                     CPPUNIT_SOURCELINE() );                  \
+      }                                                                       \
+   } while ( false )
+
+
+/** Asserts that an assertion fail.
+ * \ingroup Assertions
+ * Use to test assertions.
+ * Example of usage:
+ * \code
+ *   CPPUNIT_ASSERT_ASSERTION_FAIL( CPPUNIT_ASSERT( 1 == 2 ) );
+ * \endcode
+ */
+# define CPPUNIT_ASSERT_ASSERTION_FAIL( assertion )                 \
+   CPPUNIT_ASSERT_THROW( assertion, CPPUNIT_NS::Exception )
+
+
+/** Asserts that an assertion fail, with a user-supplied message in 
+ * case of error.
+ * \ingroup Assertions
+ * Use to test assertions.
+ * Example of usage:
+ * \code
+ *   CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE( "1 == 2", CPPUNIT_ASSERT( 1 == 2 ) );
+ * \endcode
+ */
+# define CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE( message, assertion )    \
+   CPPUNIT_ASSERT_THROW_MESSAGE( message, assertion, CPPUNIT_NS::Exception )
+
+
+/** Asserts that an assertion pass.
+ * \ingroup Assertions
+ * Use to test assertions.
+ * Example of usage:
+ * \code
+ *   CPPUNIT_ASSERT_ASSERTION_PASS( CPPUNIT_ASSERT( 1 == 1 ) );
+ * \endcode
+ */
+# define CPPUNIT_ASSERT_ASSERTION_PASS( assertion )                 \
+   CPPUNIT_ASSERT_NO_THROW( assertion )
+
+
+/** Asserts that an assertion pass, with a user-supplied message in 
+ * case of failure. 
+ * \ingroup Assertions
+ * Use to test assertions.
+ * Example of usage:
+ * \code
+ *   CPPUNIT_ASSERT_ASSERTION_PASS_MESSAGE( "1 != 1", CPPUNIT_ASSERT( 1 == 1 ) );
+ * \endcode
+ */
+# define CPPUNIT_ASSERT_ASSERTION_PASS_MESSAGE( message, assertion )    \
+   CPPUNIT_ASSERT_NO_THROW_MESSAGE( message, assertion )
+
+
+
+
+// Backwards compatibility
+
+#if CPPUNIT_ENABLE_NAKED_ASSERT
+
+#undef assert
+#define assert(c)                 CPPUNIT_ASSERT(c)
+#define assertEqual(e,a)          CPPUNIT_ASSERT_EQUAL(e,a)
+#define assertDoublesEqual(e,a,d) CPPUNIT_ASSERT_DOUBLES_EQUAL(e,a,d)
+#define assertLongsEqual(e,a)     CPPUNIT_ASSERT_EQUAL(e,a)
+
+#endif
+
+
+CPPUNIT_NS_END
+
+#endif  // CPPUNIT_TESTASSERT_H
+@
+
+
+1.29
+log
+@* include/cppunit/config/SourcePrefix.h: disable warning #4996
+(sprintf is deprecated) for visual studio 2005.
+
+* include/cppunit/TestAssert.h: use sprintf_s instead of sprintf for
+visual studio 2005.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp
+* examples/DumperPlugIn/DumperPlugIn.cpp: use SourcePrefix.h. Fixed
+wrong macro usage to implement DllMain.
+
+* examples/msvc6/HostApp/ExamplesTestCase.h
+* examples/msvc6/HostApp/ExamplesTestCase.cpp
+* examples/simple/ExamplesTestCase.h
+* examples/simple/ExamplesTestCase.cpp: removed divideByZero test case
+as it cause some crash on some platforms.
+@
+text
+@d112 1
+d222 7
+d241 1
+@
+
+
+1.28
+log
+@* include/cppunit/TestAssert.h: added missing #include <stdio.h>
+@
+text
+@d79 3
+d83 1
+@
+
+
+1.27
+log
+@* include/cppunit/TestAssert.h: fixed portability bug pointed out by
+  Neil Ferguson.
+@
+text
+@d8 1
+a8 1
+
+@
+
+
+1.26
+log
+@* include/cppunit/TestAssert.h: integrated Neil Ferguson patch for high
+  precision conversion to string for double number. Modified the patch
+  to works even if DBL_DIG C99 macro is not defined.
+@
+text
+@d79 1
+a79 1
+       sprintf(buffer, "%.*g", DBL_DIG, x); 
+@
+
+
+1.25
+log
+@* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: integrated Neil Ferguson patch for missing
+  _MESSAGE assertion variants. Also enhanced the failure message of a
+  few assertions.
+@
+text
+@d9 2
+d55 30
+@
+
+
+1.24
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@d15 1
+a15 1
+ * Here is an example of specialization of that traits:
+d72 1
+d80 2
+a81 1
+                                     SourceLine sourceLine );
+d112 6
+a117 3
+#define CPPUNIT_ASSERT_MESSAGE(message,condition)          \
+  ( CPPUNIT_NS::Asserter::failIf( !(condition),            \
+                                  (message),               \
+d158 1
+a158 1
+/** Asserts that two values are equals, provides additional messafe on failure.
+d183 1
+a183 1
+/*! \brief Macro for primitive value comparisons
+d187 17
+a203 4
+  ( CPPUNIT_NS::assertDoubleEquals( (expected),        \
+                                    (actual),          \
+                                    (delta),           \
+                                    CPPUNIT_SOURCELINE() ) )
+d206 1
+a206 1
+/** Asserts that the given expression throws an exception of the specified type.
+d214 4
+a217 17
+# define CPPUNIT_ASSERT_THROW( expression, ExceptionType )          \
+   do {                                                             \
+      bool cpputExceptionThrown_ = false;                           \
+      try {                                                         \
+         expression;                                                \
+      } catch ( const ExceptionType & ) {                           \
+         cpputExceptionThrown_ = true;                              \
+      }                                                             \
+                                                                    \
+      if ( cpputExceptionThrown_ )                                  \
+         break;                                                     \
+                                                                    \
+      CPPUNIT_NS::Asserter::fail(                                   \
+                     "Expected exception: " #ExceptionType          \
+                     " not thrown.",                                \
+                     CPPUNIT_SOURCELINE() );                        \
+   } while ( false )
+d229 41
+d280 35
+a314 14
+   try {                                                                   \
+      expression;                                                          \
+   } catch ( const std::exception &e ) {                                   \
+      CPPUNIT_NS::Message message( "Unexpected exception caught" );        \
+      message.addDetail( "Type: " +                                        \
+                   CPPUNIT_EXTRACT_EXCEPTION_TYPE_( e,                     \
+                                       "std::exception or derived" ) );    \
+      message.addDetail( std::string("What: ") + e.what() );               \
+      CPPUNIT_NS::Asserter::fail( message,                                 \
+                                  CPPUNIT_SOURCELINE() );                  \
+   } catch ( ... ) {                                                       \
+      CPPUNIT_NS::Asserter::fail( "Unexpected exception caught",           \
+                                  CPPUNIT_SOURCELINE() );                  \
+   }
+d328 13
+d353 13
+@
+
+
+1.23
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@d7 1
+a7 1
+#include <cppunit/Portability/Stream.h>
+@
+
+
+1.22
+log
+@* examples/cppunittest/TestAssertTest.h:
+* examples/cppunittest/TestAssertTest.cpp:
+* examples/cppunittest/XmlUniformiserTest.h:
+* examples/cppunittest/XmlUniformiserTest.cpp:
+* include/cppunit/TestAssert.h: add the exception assertion macros
+  from cppunit 2: CPPUNIT_ASSERT_THROW, CPPUNIT_ASSERT_NO_THROW,
+  CPPUNIT_ASSERT_ASSERTION_FAIL, CPPUNIT_ASSERT_ASSERTION_PASS.
+  Updated unit test to use and test the new macros.
+
+* include/cppunit/extensions/HelperMacros.h: deprecated the
+  test case factory that check for exception (CPPUNIT_TEST_FAIL &
+  CPPUNIT_TEST_EXCEPTION).
+@
+text
+@d7 1
+@
+
+
+1.21
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d186 88
+@
+
+
+1.20
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d60 1
+a60 1
+                   const std::string &message ="" )
+d146 1
+a146 1
+#define CPPUNIT_ASSERT_EQUAL(expected,actual)                      \
+d149 2
+a150 1
+                              CPPUNIT_SOURCELINE() ) )
+@
+
+
+1.19
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d52 9
+a60 1
+namespace TestAssert
+d62 1
+a62 17
+#ifdef CPPUNIT_ENABLE_SOURCELINE_DEPRECATED
+  void CPPUNIT_API assertImplementation( bool         condition, 
+                                         std::string  conditionExpression = "",
+                                         long lineNumber,
+                                         std::string  fileName );
+
+  void CPPUNIT_API assertNotEqualImplementation( std::string expected,
+                                                 std::string actual,
+                                                 long lineNumber,
+                                                 std::string fileName );
+    
+
+  template <class T>
+  void assertEquals( const T& expected,
+                     const T& actual,
+                     long lineNumber,
+                     std::string fileName )
+d64 4
+a67 7
+    if ( !assertion_traits<T>::equal(expected,actual) ) // lazy toString conversion...
+    {
+      assertNotEqualImplementation( assertion_traits<T>::toString(expected),
+                                    assertion_traits<T>::toString(actual),
+                                    lineNumber, 
+                                    fileName );
+    }
+d69 1
+d71 8
+a78 30
+  void CPPUNIT_API assertEquals( double expected, 
+                                 double actual, 
+                                 double delta, 
+                                 long lineNumber,
+                                 std::string fileName );
+
+#else   //                  using SourceLine
+
+  template <class T>
+  void assertEquals( const T& expected,
+                     const T& actual,
+                     SourceLine sourceLine,
+                     const std::string &message ="" )
+  {
+    if ( !assertion_traits<T>::equal(expected,actual) ) // lazy toString conversion...
+    {
+      Asserter::failNotEqual( assertion_traits<T>::toString(expected),
+                              assertion_traits<T>::toString(actual),
+                              sourceLine,
+                              message );
+    }
+  }
+
+  void CPPUNIT_API assertDoubleEquals( double expected,
+                                       double actual,
+                                       double delta,
+                                       SourceLine sourceLine );
+
+#endif
+}
+d126 3
+a128 3
+  ( CPPUNIT_NS::TestAssert::assertEquals( (expected),             \
+                                          (actual),               \
+                                          __LINE__, __FILE__ ) )
+d147 3
+a149 3
+  ( CPPUNIT_NS::TestAssert::assertEquals( (expected),              \
+                                          (actual),                \
+                                          CPPUNIT_SOURCELINE() ) )
+d170 4
+a173 4
+  ( CPPUNIT_NS::TestAssert::assertEquals( (expected),              \
+                                          (actual),                \
+                                          CPPUNIT_SOURCELINE(),    \
+                                          (message) ) )
+d180 4
+a183 4
+  ( CPPUNIT_NS::TestAssert::assertDoubleEquals( (expected),        \
+                                                (actual),          \
+                                                (delta),           \
+                                                CPPUNIT_SOURCELINE() ) )
+@
+
+
+1.18
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d123 2
+a124 2
+  ( CPPUNIT_NS(Asserter)::failIf( !(condition),                                   \
+                                 CPPUNIT_NS(Message)( "assertion failed",         \
+d129 2
+a130 2
+  ( CPPUNIT_NS(Asserter)::failIf( !(condition),                              \
+                                  CPPUNIT_NS(Message)( "assertion failed" ), \
+d142 1
+a142 1
+  ( CPPUNIT_NS(Asserter)::failIf( !(condition),            \
+d151 1
+a151 1
+  ( CPPUNIT_NS(Asserter)::fail( CPPUNIT_NS(Message)( "forced failure",  \
+d158 1
+a158 1
+  ( CPPUNIT_NS(TestAssert)::assertEquals( (expected),             \
+d179 1
+a179 1
+  ( CPPUNIT_NS(TestAssert)::assertEquals( (expected),              \
+d202 1
+a202 1
+  ( CPPUNIT_NS(TestAssert)::assertEquals( (expected),              \
+d212 1
+a212 1
+  ( CPPUNIT_NS(TestAssert)::assertDoubleEquals( (expected),        \
+@
+
+
+1.17
+log
+@* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: added functions that take a Message as a
+  parameter. Existing function have a short description indicating
+  an assertion failure.
+
+* include/cppunit/CompilerOuputter.h:
+* src/cppunit/CompilerOuputter.cpp: removed printNotEqualMessage() and
+  printDefaultMessage(). Updated to use Message.
+
+* include/cppunit/Message.h:
+* src/cppunit/Message.cpp: added. Represents a message associated to an
+  Exception.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: the message associated to the exception is now
+  stored as a Message instead of a string.
+
+* include/cppunit/NotEqualException.cpp: constructs a Message instead of a
+  string.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: updated to use Asserter functions that
+  take a message when pertinent (CPPUNIT_FAIL...).
+
+* include/cppunit/TestCaller.h:
+* src/cppunit/TestCaller.cpp: exception not caught failure has a better
+  short description.
+
+* src/cppunit/TestCase.cpp: better short description when setUp() or
+  tearDown() fail.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replace '\n' in failure message
+  with space.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/NotEqualExceptionTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated to use Exception/Message.
+
+* examples/cppunittest/MessageTest.h:
+* examples/cppunittest/MessageTest.cpp: added. Unit test for Message.
+@
+text
+@d9 41
+a49 1
+namespace CppUnit {
+a50 38
+  /*! \brief Traits used by CPPUNIT_ASSERT_EQUAL().
+   *
+   * Here is an example of specialization of that traits:
+   *
+   * \code
+   * template<>
+   * struct assertion_traits<std::string>   // specialization for the std::string type
+   * {
+   *   static bool equal( const std::string& x, const std::string& y )
+   *   {
+   *     return x == y;
+   *   }
+   * 
+   *   static std::string toString( const std::string& x )
+   *   {
+   *     std::string text = '"' + x + '"';    // adds quote around the string to see whitespace
+   *     OStringStream ost;
+   *     ost << text;
+   *     return ost.str();
+   *   }
+   * };
+   * \endcode
+   */
+  template <class T>
+  struct assertion_traits 
+  {  
+      static bool equal( const T& x, const T& y )
+      {
+          return x == y;
+      }
+
+      static std::string toString( const T& x )
+      {
+          OStringStream ost;
+          ost << x;
+          return ost.str();
+      }
+  };
+d52 13
+d66 5
+a70 1
+  namespace TestAssert
+d72 1
+a72 17
+#ifdef CPPUNIT_ENABLE_SOURCELINE_DEPRECATED
+    void CPPUNIT_API assertImplementation( bool         condition, 
+                                           std::string  conditionExpression = "",
+                                           long lineNumber,
+                                           std::string  fileName );
+
+    void CPPUNIT_API assertNotEqualImplementation( std::string expected,
+                                                   std::string actual,
+                                                   long lineNumber,
+                                                   std::string fileName );
+      
+
+    template <class T>
+    void assertEquals( const T& expected,
+                       const T& actual,
+                       long lineNumber,
+                       std::string fileName )
+d74 4
+a77 7
+      if ( !assertion_traits<T>::equal(expected,actual) ) // lazy toString conversion...
+      {
+        assertNotEqualImplementation( assertion_traits<T>::toString(expected),
+                                      assertion_traits<T>::toString(actual),
+                                      lineNumber, 
+                                      fileName );
+      }
+d79 1
+d81 5
+a85 5
+    void CPPUNIT_API assertEquals( double expected, 
+                                   double actual, 
+                                   double delta, 
+                                   long lineNumber,
+                                   std::string fileName );
+d89 7
+a95 5
+    template <class T>
+    void assertEquals( const T& expected,
+                       const T& actual,
+                       SourceLine sourceLine,
+                       const std::string &message ="" )
+d97 4
+a100 7
+      if ( !assertion_traits<T>::equal(expected,actual) ) // lazy toString conversion...
+      {
+        Asserter::failNotEqual( assertion_traits<T>::toString(expected),
+                                assertion_traits<T>::toString(actual),
+                                sourceLine,
+                                message );
+      }
+d102 1
+d104 4
+a107 4
+    void CPPUNIT_API assertDoubleEquals( double expected,
+                                         double actual,
+                                         double delta,
+                                         SourceLine sourceLine );
+d110 1
+a110 1
+  }
+d122 4
+a125 4
+#define CPPUNIT_ASSERT(condition)                                                \
+  ( ::CppUnit::Asserter::failIf( !(condition),                                   \
+                                 ::CppUnit::Message( "assertion failed",         \
+                                                     "Expression: " #condition), \
+d128 4
+a131 4
+#define CPPUNIT_ASSERT(condition)                                           \
+  ( ::CppUnit::Asserter::failIf( !(condition),                              \
+                                 ::CppUnit::Message( "assertion failed" ),  \
+                                 CPPUNIT_SOURCELINE() ) )
+d142 3
+a144 3
+  ( ::CppUnit::Asserter::failIf( !(condition),             \
+                                 (message),                \
+                                 CPPUNIT_SOURCELINE() ) )
+d150 4
+a153 4
+#define CPPUNIT_FAIL( message )                                       \
+  ( ::CppUnit::Asserter::fail( ::CppUnit::Message( "forced failure",  \
+                                                   message ),         \
+                               CPPUNIT_SOURCELINE() ) )
+d157 4
+a160 4
+#define CPPUNIT_ASSERT_EQUAL(expected,actual)                    \
+  ( ::CppUnit::TestAssert::assertEquals( (expected),             \
+                                         (actual),               \
+                                         __LINE__, __FILE__ ) )
+d178 4
+a181 4
+#define CPPUNIT_ASSERT_EQUAL(expected,actual)                     \
+  ( ::CppUnit::TestAssert::assertEquals( (expected),              \
+                                         (actual),                \
+                                         CPPUNIT_SOURCELINE() ) )
+d201 5
+a205 5
+#define CPPUNIT_ASSERT_EQUAL_MESSAGE(message,expected,actual)     \
+  ( ::CppUnit::TestAssert::assertEquals( (expected),              \
+                                         (actual),                \
+                                         CPPUNIT_SOURCELINE(),    \
+                                         (message) ) )
+d211 5
+a215 5
+#define CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,actual,delta)       \
+  ( ::CppUnit::TestAssert::assertDoubleEquals( (expected),        \
+                                               (actual),          \
+                                               (delta),           \
+                                               CPPUNIT_SOURCELINE() ) )
+d230 1
+a230 1
+} // namespace CppUnit
+@
+
+
+1.16
+log
+@* NEW: added CPPUNIT_ASSERT_EQUAL_MESSAGE compatiblity break.
+
+* include/cppunit/TestAssert.h: changed arguments order for
+CPPUNIT_ASSERT_EQUAL_MESSAGE. 'message' is now the first argument instead
+of the last (like CPPUNIT_ASSERT_MESSAGE).
+
+* examples/cppunittest/MockTestCase.cpp:
+* examples/cppunittest/MockTestListener.cpp: updated to reflect change on
+CPPUNIT_ASSERT_EQUAL_MESSAGE.
+@
+text
+@d121 4
+a124 3
+#define CPPUNIT_ASSERT(condition)                          \
+  ( ::CppUnit::Asserter::failIf( !(condition),             \
+                                 (#condition),             \
+d127 3
+a129 3
+#define CPPUNIT_ASSERT(condition)                          \
+  ( ::CppUnit::Asserter::failIf( !(condition),             \
+                                 "",                       \
+d149 3
+a151 2
+#define CPPUNIT_FAIL( message )                            \
+  ( ::CppUnit::Asserter::fail( message,                    \
+@
+
+
+1.15
+log
+@* doc/cookbook.html: removed. Replaced by cookbook.doc.
+
+* doc/cookbook.dox: added, conversion of cookbook.html to Doxygen format.
+
+* doc/other_documentation.dox: added groups definition.
+
+* doc/Makefile.am: replaced cookbook.html by cookbook.dox
+
+* doc/Doxyfile.in: added predefined CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION.
+Replaced cookbook.html by cookbook.dox.
+
+* include/cppunitui/mfc/TestRunner.h: added, extracted from
+include/msvc6/testrunner/TestRunner.h. Moved class TestRunner to namespace
+CppUnit::MfcUi.
+
+* include/msvc6/testrunner/TestRunner.h: deprecated. A simple typedef to
+CppUnit::MfcUi::TestRunner.
+
+* include/textui/TestRuner.h: added, extracted from
+include/cppunit/TextTestRunner.h.
+
+* src/cppunit/TextTestRunner.cpp: renamed TestRunner.cpp. Moved into
+namespace CppUnit::TextUi.
+
+* src/msvc6/testruner/TestRunner.cpp: moved into namespace CppUnit::MfcUi.
+
+* src/cppunit/CompilerOutputter.cpp: removed printing "- " before
+NotEqualException addional message, for consistency between different
+TestRunner (Mfc,Text...)
+
+* include/cppunit/Asserter.h:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/Outputter.h:
+* include/cppunit/SourceLine.h:
+* include/cppunit/TestAssert.h:
+* include/cppunit/TestCaller.h:
+* include/cppunit/TestFailure.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: doc update. organization
+in groups.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.cpp:
+* examples/msvc6/HostApp/HostApp.cpp: updated to use
+CppUnit::MfcUi::TestRunner.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use
+CppUnit::TextUi::TestRunner.
+@
+text
+@d198 1
+a198 1
+#define CPPUNIT_ASSERT_EQUAL_MESSAGE(expected,actual,message)     \
+@
+
+
+1.14
+log
+@* INSTALL-WIN32.txt: added some info to build cppunit as a DLL.
+
+* include/cppunit/config-msvc6.h: added definition of macro CPPUNIT_API when
+building or linking DLL. Defined CPPUNIT_BUILD_DLL when building, and
+CPPUNIT_DLL when linking.
+
+* include/cppunit/Portability.h: added empty definition of macro CPPUNIT_API
+when not building or using CppUnit as a DLL. When any of those symbol is defined,
+the symbol CPPUNIT_NEED_DLL_DECL is set to 1.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* include/cppunit/extensions/TestDecorator.h:
+* include/cppunit/extensions/TestSetUp.h:
+* include/cppunit/TestCaller.h
+* include/cppunit/extensions/TestFactory.h
+* include/cppunit/extensions/TestFactoryRegistry.h
+* include/cppunit/extensions/TypeInfoHelper.h
+* include/cppunit/Asserter.h
+* include/cppunit/Exception.h
+* include/cppunit/NotEqualException.h
+* include/cppunit/SourceLine.h
+* include/cppunit/SynchronizedObject.h
+* include/cppunit/Test.h
+* include/cppunit/TestAssert.h
+* include/cppunit/TestCase.h
+* include/cppunit/TestFailure.h
+* include/cppunit/TestListener.h
+* include/cppunit/TestResult.h
+* include/cppunit/TestSuite.h
+* include/cppunit/CompilerOutputter.h
+* include/cppunit/Outputter.h
+* include/cppunit/TestResultCollector.h
+* include/cppunit/TestSuccessListener.h
+* include/cppunit/TextOutputter.h
+* include/cppunit/TextTestProgressListener.h
+* include/cppunit/TextTestResult.h
+* include/cppunit/TextTestRunner.h
+* include/cppunit/XmlOutputter.h: added CPPUNIT_API for DLL export.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: reindented
+
+* include/cppunit/extensions/TestSetUp.h:
+* src/cppunit/TestSetUp.cpp: added .cpp. extracted inline method and moved them
+to cpp file.
+@
+text
+@d11 23
+d112 1
+a112 1
+/** A set of macros which allow us to get the line number
+d118 4
+a121 1
+#  define CPPUNIT_ASSERT(condition)                        \
+d126 1
+a126 1
+#  define CPPUNIT_ASSERT(condition)                        \
+d133 1
+d144 2
+a145 1
+/** Failure with a user specified message.
+a153 4
+/** Equality and string representation can be defined with
+ * an appropriate assertion_traits class.
+ * A diagnostic is printed if actual and expected values disagree.
+ */
+d159 16
+d179 19
+d205 3
+a207 1
+/// Macro for primitive value comparisons
+@
+
+
+1.13
+log
+@* NEW: updated and restructured.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp:
+updated against TestResultChange. Changed TestResult to TestResultCollector.
+
+* include/cppunit/extensions/HelperMacros.h: minor documentation fix.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all Outputter.
+
+* include/cppunit/Portability.h: made the fix on OStringStream suggested by
+Bob Summerwill to remove level 4 warning with VC++.
+
+* include/cppunit/TestAssert.h: added macro CPPUNIT_ASSERT_EQUAL_MESSAGE.
+
+* src/cppunit/TestFailure.cpp:
+* include/cppunit/TestFailure.h: added method clone() to duplicate a failure. Made
+all method virtual.
+
+* include/cppunit/TestListener.h: changed signature of addFailure() to
+addFailure( const TestFailure &failure ). Failure is now only a temporary object.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all outputter. Used
+by TextTestRunner.
+
+* include/cppunit/SynchronizedObject.h:
+* src/cppunit/SynchronizedObject.cpp: added. Class extracted from TestResult.
+Base class for objects that can be accessed from different threads.
+
+* include/cppunit/TestResult.h: TestFailure.h is no longer included.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: extracted all methods related to keeping track
+of the result to the new TestResultCollector class which is a TestListener.
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: added. TestListener which kept track
+of the result of the test run. All failure/error, and tests are tracked.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: added. TestListener extracted from
+TestResult. Is responsible for wasSucessful().
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: reindented.
+
+* include/cppunit/TextOutputter.h:
+* src/cppunit/TextOutputter.cpp: added. Copied from the deprecated
+TextTestResult and modified to act as an Ouputter.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: Copied from the deprecated
+TextTestResult and modified to print the dot while the test are running.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: updated against TestResult change.
+No compatiblity break. Deprecated.
+
+* include/cppunit/TextTestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to work with the new TestResult.
+Use TextTestProgressListener and TextOutputter instead of TextTestResult.
+Any outputter with interface Outputter can be used to print the test result
+(CompilerOutputter, XmlOutputter, TextOutputter...)
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against TestResultChange.
+Changed TestResult to TestResultCollector.
+
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/TestRunnerDlg.cpp: fixed the 'fullrowselect' feature of the list view.
+The dialog is a TestListener itself, it no longer use the GUITestResult class.
+
+* src/msvc6/TestRunner.rc: moved the "autorun test button" in such a way that it
+did not overlap the progress bar anymore.
+
+* src/msvc6/MfcSynchronizationObject.h: added. Generic SynchronizedObject
+lock for MFC.
+
+* src/msvc6/GUITestResult.h :
+* src/msvc6/GUITestResult.cpp : removed.
+
+* src/qttestrunner/TestRunnerModel.h:
+* src/qttestrunner/TestRunnerModel.cpp: changed addFailure() signature to reflect
+change on TestListener.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use the new Outputter
+abstraction and TextTestRunner facilities.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.cpp: removed. Replaced by MockTestCase.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.h:
+
+* examples/cppunittest/HelperMacrosTest.h:
+* examples/cppunittest/HelperMacrosTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/MockTestListener.h:
+* examples/cppunittest/MockTestListener.cpp: the class now behave like a mock
+object.
+
+* examples/cppunittest/MockTestCase.h:
+* examples/cppunittest/MockTestCase.cpp: added. Mock TestCase object.
+
+* examples/cppunittest/OrthodoxTest.h:
+* examples/cppunittest/OrthodoxTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/SynchronizedTestResult.h: Updated against TestResult
+change.
+
+* examples/cppunittest/TestCallerTest.h:
+* examples/cppunittest/TestCallerTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: Updated against TestResult change.
+Use MockTestListener and MockTestCase instead of FailingTestCase and TestResult.
+
+* examples/cppunittest/TestDecoratorTest.h:
+* examples/cppunittest/TestDecoratorTest.cpp: Updated against TestResult change.
+Use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/TestListenerTest.h:
+* examples/cppunittest/TestListenerTest.cpp: removed. Those unit tests have been
+rewrote and moved to TestResultTest.
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: Updated to test the new interface.
+Tests from TestListenerTest have been moved here.
+
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp: added. Tests for the class
+that been extracted from TestResult.
+
+* examples/cppunittest/TestSetUpTest.h:
+* examples/cppunittest/TestSetUpTest.cpp: renamed SetUp inner class to MockSetUp.
+Changed interface to be more akin to a Mock object.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: Updated against TestResult change,
+and rewrote to use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: Updated against TestResult change.
+Added some utility methods to make the update easier.
+@
+text
+@d31 9
+a39 9
+    void assertImplementation( bool         condition, 
+                               std::string  conditionExpression = "",
+                               long lineNumber,
+                               std::string  fileName );
+
+    void assertNotEqualImplementation( std::string expected,
+                                       std::string actual,
+                                       long lineNumber,
+                                       std::string fileName );
+d57 5
+a61 5
+    void assertEquals( double expected, 
+                       double actual, 
+                       double delta, 
+                       long lineNumber,
+                       std::string fileName );
+d80 4
+a83 4
+    void assertDoubleEquals( double expected,
+                             double actual,
+                             double delta,
+                             SourceLine sourceLine );
+@
+
+
+1.12
+log
+@Commit of 1.7.1 release.
+@
+text
+@d68 2
+a69 1
+                       SourceLine sourceLine )
+d75 2
+a76 1
+                                sourceLine );
+d114 1
+a114 1
+                                 message,                  \
+d139 5
+@
+
+
+1.11
+log
+@* include/cppunit/Asserter.h :
+* src/cppunit/Asserter.cpp : added. Helper to create assertion macros.
+
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* include/cppunit/Makefile.am : added Asserter.h and Asserter.cpp.
+
+* include/cppunit/Exception.h :
+* src/cppunit/Exception.cpp : added constructor that take a
+SourceLine argument. Deprecated static constant and old constructor.
+Fixed some constness issues.
+
+* examples/cppunittest/ExceptionTest.cpp : Refactored.
+
+* NEWS : partially updated (need to be more detailed)
+
+* include/cppunit/NotEqualException.h :
+* src/cppunit/NotEqualException.cpp : added constructor that take a
+SourceLine argument. Deprecated old constructor. Added a third element
+to compose message.
+
+* examples/cppunittest/NotEqualExceptionTest.cpp : moved to "Core"
+suite. Added test for SourceLine() and additionalMessage().
+Refactored.
+
+* include/cppunit/SourceLine.h :
+* src/cppunit/SourceLine.cpp : added. Result of applying
+IntroduceParameterObject refactoring on filename & line number...
+
+* include/cppunit/TestAssert.h :
+* src/cppunit/TestAssert.cpp : deprecated old assert functions.
+added functions assertEquals() and assertDoubleEquals() which use
+SourceLine.
+
+* src/cppunit/TestCase.cpp : Modified for SourceLine.
+
+* include/cppunit/TestFailure.h :
+* src/cppunit/TestFailure.cpp : added failedTestName(), and
+sourceLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp : modified to use SourceLine.
+
+* include/cppunit/TextTestResult.h :
+* src/cppunit/TextTestResult.cpp : corrected include order and
+switched to angled brackets. Refactored. Don't print failure location
+if not available. Not equal failure dump additional message if
+available.
+
+* src/cppunit/TextTestRunner.cpp : run() now returns a boolean to
+indicate if the run was sucessful.
+
+* src/cppunit/XmlTestResultOutputter.cpp : replaced itoa() with
+OStringStream. Refactored.
+
+* examples/cppunittest/XmlUniformiser.h :
+* examples/cppunittest/XmlUniformiser.cpp :
+CPPUNITTEST_ASSERT_XML_EQUAL capture failure location. Refactored
+checkXmlEqual().
+
+* examples/cppunittest/XmlUniformiserTest.h :
+* examples/cppunittest/XmlUniformiserTest.cpp : added test for
+CPPUNITTEST_ASSERT_XML_EQUAL.
+
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/XmlTestResultOutputter.cpp : updated to use SourceLine.
+@
+text
+@d99 1
+a99 1
+  ( ::CppUnit::Asserter::failIf( !(condition),             \ 
+@
+
+
+1.10
+log
+@* NEWS : updated.
+
+* doc/other_documentation.dox : added all the authors to the list of
+authors.
+
+* examples/cppunittest/HelperMacrosTest.*: added unit tests for
+CPPUNIT_TEST_FAIL & CPPUNIT_TEST_EXCEPTION.
+
+* examples/cppunittest/TestAssertTest.*: added unit tests for
+CPPUNIT_FAIL. Corrected spelling error. Relaxed constraint on message
+produced by CPPUNIT_ASSERT_MESSAGE. Refactored some tests.
+
+* include/cppunit/extensions/HelperMacros.h : added macro
+CPPUNIT_TEST_EXCEPTION to create a test case for the specified method
+that must throw an exception of the specified type.
+
+* include/cppunit/extensions/TestSuiteBuilder.h : made makeTestName() public.
+Added addTestCallerForException() to add a test case expecting an exception of
+the specified type to be caught.
+
+* include/cppunit/TestAssert.h : added macro CPPUNIT_FAIL as a
+shortcut for CPPUNIT_ASSERT_MESSAGE( message, false ).
+@
+text
+@d6 1
+a6 1
+#include <string>
+d30 1
+d33 2
+a34 2
+                               long lineNumber = Exception::UNKNOWNLINENUMBER,
+                               std::string  fileName = Exception::UNKNOWNFILENAME );
+d38 2
+a39 2
+                                       long lineNumber = Exception::UNKNOWNLINENUMBER,
+                                       std::string fileName = Exception::UNKNOWNFILENAME );
+d45 2
+a46 2
+                       long lineNumber = Exception::UNKNOWNLINENUMBER,
+                       std::string fileName = Exception::UNKNOWNFILENAME )
+d60 24
+a83 2
+                       long lineNumber = Exception::UNKNOWNLINENUMBER,
+                       std::string fileName = Exception::UNKNOWNFILENAME);
+d93 4
+a96 5
+
+#  define CPPUNIT_ASSERT(condition)\
+    (CppUnit::TestAssert::assertImplementation ((condition),(#condition),\
+        __LINE__, __FILE__))
+
+d98 4
+a101 5
+
+#  define CPPUNIT_ASSERT(condition)\
+    (CppUnit::TestAssert::assertImplementation ((condition),"",\
+        __LINE__, __FILE__))
+
+d110 4
+a113 5
+#define CPPUNIT_ASSERT_MESSAGE(message,condition)\
+  (CppUnit::TestAssert::assertImplementation( condition, \
+                                              message, \
+                                              __LINE__, \
+                                              __FILE__ ) )
+d118 3
+a120 2
+#define CPPUNIT_FAIL( message ) \
+                     CPPUNIT_ASSERT_MESSAGE( message, false )
+d122 1
+d128 10
+a137 3
+#define CPPUNIT_ASSERT_EQUAL(expected,actual)\
+  (CppUnit::TestAssert::assertEquals ((expected),\
+    (actual),__LINE__,__FILE__))
+d140 5
+a144 4
+#define CPPUNIT_ASSERT_DOUBLES_EQUAL(expected,actual,delta)\
+  (CppUnit::TestAssert::assertEquals ((expected),\
+    (actual),(delta),__LINE__,__FILE__))
+
+@
+
+
+1.9
+log
+@* include/cppunit/TestAssert.h : changed header order to remove warning on VC++
+
+* include/cppunit/TestCaller.h : bugfix: threw 'new Exception'
+instead of 'Exception'.
+@
+text
+@d95 6
+@
+
+
+1.8
+log
+@Use strstream if stringstream unavailable.
+@
+text
+@a3 1
+#include <string>
+d6 1
+@
+
+
+1.7
+log
+@replaced #include of <config.h> with <cppunit/Portability.h>
+@
+text
+@d4 1
+a5 2
+#include <string>
+#include <sstream>
+d21 1
+a21 1
+          std::ostringstream ost;
+@
+
+
+1.6
+log
+@* include/cppunit/NotEqualException.h
+* src/cppunit/NotEqualException.h:
+Fixed constructor and operator = (aren't unit test nice?). Added
+methods expectedValue() and actualValue().
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp:
+Use NotEqualException to report equality failure.
+
+* src/cppunit/TestResult.cpp:
+Report expect/was on different line for assertEquals failure.
+
+* examples/cppunittest/NotEqualExceptionTest.*: added unit tests for
+NotEqualException.
+@
+text
+@d4 1
+a6 1
+#include <cppunit/config.h>
+@
+
+
+1.5
+log
+@* include/cppunit/Exception.h: now inherit from std::exception instead
+of ::exception. Added clone(), type(), and isInstanceOf()
+methods for subclassing support. Changed UNKNOWNLINENUMBER type to long
+for consistence with lineNumber().
+
+* include/cppunit/NotEqualException.h: addded, exception to be used
+with assertEquals().
+
+* include/cppunit/TestAssert.h: changed TestAssert into a namespace
+instead of a class. This remove the need of template member methods
+and does not cause compiler internal error on VC++.
+Macro CPPUNIT_ASSERT_MESSAGE has been added to fail test with
+a specified message.
+
+* include/cppunit/TestCaller.h: added "Expected exception" support.
+Based on Tim Jansen patch (#403745), but use a traits instead of RTTI
+to distingh between "No expected exception" and "Excepted exception".
+Exception type name is reported using RTTI if CPPUNIT_USE_TYPEINFO is
+defined.
+@
+text
+@d12 15
+a26 15
+    template <class T>
+    struct assertion_traits 
+    {  
+	static bool equal( const T& x, const T& y )
+	{
+	    return x == y;
+	}
+
+	static std::string toString( const T& x )
+	{
+	    std::ostringstream ost;
+	    ost << x;
+	    return ost.str();
+	}
+    };
+a28 2
+  /*! \brief This class represents
+   */
+d36 6
+d43 4
+a46 2
+    std::string         notEqualsMessage (const T& expected, 
+						 const T& actual)
+d48 7
+a54 2
+	return "expected: " + assertion_traits<T>::toString(expected)
+	     + " but was: " + assertion_traits<T>::toString(actual);
+a55 14
+
+
+    template <class T>
+    void    assertEquals     (
+      const T&     expected,
+      const T&     actual,
+      long         lineNumber = Exception::UNKNOWNLINENUMBER,
+      std::string  fileName = Exception::UNKNOWNFILENAME)
+	{
+	    assertImplementation( assertion_traits<T>::equal(expected,actual),
+				  notEqualsMessage(expected, actual), 
+				  lineNumber, 
+				  fileName); 
+	}
+@
+
+
+1.4
+log
+@* src/cppunit/TypeInfoHelper.cpp: removed #include <config.h>, cppunit/config.h was already included.
+
+* src/cppunit/cppunit.dsp: removed TestAssert.cpp from project.
+
+* added/updated .cvsignore files for beter handling of windows projects.
+
+* added include/cppunit/config.h with a default configuration for VC++ 6.0.
+
+* include/cppunit/.cvsignore: removed config.h from the list of ignored file.
+
+* renamed VC++ configurations without RTTI from "Debug No CU_USE_TYPEINFO" to "Debug Crossplatform".
+
+* include/cppunit/TestAssert.h: added include <math.h> for fabs().
+@
+text
+@a3 1
+#include <math.h>
+d31 1
+a31 1
+  class TestAssert
+d33 4
+a36 15
+  public:
+    virtual ~TestAssert() {}
+
+    static void    assertImplementation(
+      bool         condition, 
+      std::string  conditionExpression = "",
+      long         lineNumber = Exception::UNKNOWNLINENUMBER,
+      std::string  fileName = Exception::UNKNOWNFILENAME)
+	{
+	    if (!condition) 
+		throw Exception (conditionExpression, 
+				 lineNumber, 
+				 fileName); 
+	}
+
+d39 1
+a39 1
+    static std::string         notEqualsMessage (const T& expected, 
+d48 1
+a48 1
+    static void    assertEquals     (
+d60 6
+a65 12
+    static void    assertEquals     (double       expected, 
+      double       actual, 
+      double       delta, 
+      long         lineNumber = Exception::UNKNOWNLINENUMBER,
+      std::string  fileName = Exception::UNKNOWNFILENAME)
+	{
+	    assertImplementation( fabs(expected - actual) <= delta,
+				  notEqualsMessage(expected, actual), 
+				  lineNumber, 
+				  fileName); 
+	}
+  };
+d87 11
+@
+
+
+1.3
+log
+@Change to templatized TestAssert::assertEquals() and the new CPPUNIT_ASSERT* macros
+@
+text
+@d4 1
+@
+
+
+1.2
+log
+@Fixed #include's for cppunit headers.
+@
+text
+@d5 2
+d9 1
+d12 17
+d40 22
+a61 4
+      std::string  fileName = Exception::UNKNOWNFILENAME);
+
+    static void    assertEquals     (long         expected, 
+      long         actual,
+d63 7
+a69 1
+      std::string  fileName = Exception::UNKNOWNFILENAME);
+d75 7
+a81 7
+      std::string  fileName = Exception::UNKNOWNFILENAME);
+
+    static std::string         notEqualsMessage (long         expected, 
+      long         actual);
+
+    static std::string         notEqualsMessage (double       expected, 
+      double       actual);
+d90 1
+a90 3
+#define CPPUNIT_SOURCEANNOTATION
+  
+#ifdef CPPUNIT_SOURCEANNOTATION
+d92 1
+a92 2
+    #undef assert
+    #define assert(condition)\
+d98 1
+a98 2
+    #undef assert
+    #define assert(condition)\
+d105 9
+d115 8
+a122 3
+#define assertDoublesEqual(expected,actual,delta)\
+(CppUnit::TestAssert::assertEquals ((expected),\
+        (actual),(delta),__LINE__,__FILE__))
+d124 7
+a130 4
+/// Macro for primitive value comparisons
+#define assertLongsEqual(expected,actual)\
+(CppUnit::TestAssert::assertEquals ((expected),\
+        (actual),__LINE__,__FILE__))
+@
+
+
+1.1
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@d5 1
+a5 4
+
+#ifndef CPPUNIT_EXCEPTION_H
+#include "Exception.h"
+#endif
+@
+

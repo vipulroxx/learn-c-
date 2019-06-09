@@ -1,0 +1,268 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.2
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2002.03.27.17.56.40;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* makefile.am: added src/CppUnitLibraries.dsw, new contribution, and
+src/qttestrunner.
+
+* TODO: updated (doc).
+
+* contrib/msvc/AddingUnitTestMethod.dsm: added, submitted by
+bloodchen@@hotmail.com.
+
+* constrib/msvc/readme.txt: updated.
+
+* include/cppunit/TestAsserter.h:
+* include/cppunit/SourceLine.h: updated doc.
+
+* include/cppunit/TestCaller.h: reindented. updated doc.
+
+* include/cppunit/extensions/HelperMacros.h: relaxed constraint on fixture.
+Fixture base class may be TestFixture instead of TestCase.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.h: TestCase inherits TestFixture for setUp() and
+tearDown() definition. Moved documentation to TestFixture.
+
+* include/cppunit/TestFixture.h: updated documentation.
+
+* include/cppunit/TestRegistry.h:
+* src/cppunit/TestRegistry.cpp: Removed. Replaced by TestFactoryRegistry.
+
+* include/cppunit/TextTestRunner.h:
+* src/cppunit/TextTestRunner.cpp: made printing progress using a
+TextTestProgressListener optional.
+
+* examples\cppunittest\ExceptionTest.h:
+* examples\cppunittest\HelperMacrosTest.h:
+* examples\cppunittest\HelperMacrosTest.cpp:
+* examples\cppunittest\NotEqualException.h:
+* examples\cppunittest\OrthodoxTest.h:
+* examples\cppunittest\RepeatedTest.h:
+* examples\cppunittest\TestAssertTest.h:
+* examples\cppunittest\TestCallerTest.h:
+* examples\cppunittest\TestDecoratorTest.h:
+* examples\cppunittest\TestFailureTest.h:
+* examples\cppunittest\TestResultCollectorTest.h:
+* examples\cppunittest\TestResultTest.h:
+* examples\cppunittest\TestSetUpTest.h:
+* examples\cppunittest\TestSuiteTest.h:
+* examples\cppunittest\XmlOutputterTest.h:
+* examples\cppunittest\XmlOutputterTest.cpp:
+* examples\cppunittest\XmlUniformizerTest.h:
+* examples\cppunittest\XmlUniformizerTest.cpp: changed base class for fixture
+from TestCase to TestFixture.
+
+* examples\hierarchy\BoardGameTest.h:
+* examples\hierarchy\ChessTest.h:
+* examples\hierarchy\main.cpp: updated to use HelperMacros for correct
+fixture instantiation (the ChessBoard::testReset test case was using
+BoardGame fixture instance instead of ChessBoard).
+@
+text
+@'Made by bloodchen 
+'bloodchen@@hotmail.com 
+Sub NewTestClass 
+On Error Resume Next 
+dim proj_path,ext,pos,proj_dir,MyCppFile,MyCppName,MyHFile,MyHName,ClassName,HText,CPPText 
+proj_path = ActiveProject.fullname 
+ext = "" 
+pos = len (proj_path) 
+Do While ext <> "\" 
+ext = Mid(proj_path, pos, 1) 
+pos = pos -1 
+Loop 
+proj_dir = left(proj_path, pos+1) 
+ClassName=InputBox("Enter the class name:", "Class Name") 
+if ActiveProject.Type <> "Build" then 
+MsgBox "This project is not valid. Ending macro." 
+Exit Sub 
+end if 
+if (len(ClassName) <= 0) then 
+MsgBox "Invalid class name. Ending macro." 
+Exit Sub 
+end if 
+
+' ClassName="CTest" 
+MyCppName=proj_dir+ClassName+".cpp" 
+MyHName=proj_dir+ClassName+".h" 
+ActiveProject.AddFile MyCppName 
+ActiveProject.AddFile MyHName 
+Documents.Add "Text" 
+ActiveDocument.Selection.StartOfDocument 
+
+HText= "#ifndef "+ClassName+"DEF"+VbCrLf& _ 
+"#define "+ClassName+"DEF"+VbCrLf& _ 
+""+VbCrLf& _ 
+"#include <cppunit\testcase.h>"+VbCrLf& _ 
+"#include <cppunit\extensions\HelperMacros.h>"+VbCrLf& _ 
+"class "+ClassName+":public CppUnit::TestCase"+VbCrLf& _ 
+"{"+VbCrLf& _ 
+" CPPUNIT_TEST_SUITE( "+ClassName+" );"+VbCrLf& _ 
+" CPPUNIT_TEST_SUITE_END();"+VbCrLf& _ 
+"public:"+VbCrLf& _ 
+" "+ClassName+"();"+VbCrLf& _ 
+" virtual ~"+ClassName+"();"+VbCrLf& _ 
+"};"+VbCrLf& _ 
+"#endif"+VbCrLf 
+ActiveDocument.Selection = HText 
+ActiveDocument.Save MyHName 
+' WriteFile MyHName,HText 
+Documents.Add "Text" 
+ActiveDocument.Selection.StartOfDocument 
+CPPText = "#include "+chr(34)+"stdafx.h"+chr(34)+VbCrLf& _ 
+"#include "+chr(34)+ClassName+".h"+chr(34)+VbCrLf& _ 
+""+VbCrLf& _ 
+""+VbCrLf& _ 
+"CPPUNIT_TEST_SUITE_REGISTRATION( "+ClassName+ " );"+VbCrLf& _ 
+""+VbCrLf& _ 
+""+VbCrLf& _ 
+ClassName+"::"+ClassName+"()"+VbCrLf& _ 
+"{"+VbCrLf& _ 
+"}"+VbCrLf& _ 
+""+VbCrLf& _ 
+""+VbCrLf& _ 
+ClassName+"::~"+ClassName+"()"+VbCrLf& _ 
+"{"+VbCrLf& _ 
+"}" 
+' WriteFile MyCppName,CPPText 
+ActiveDocument.Selection = CPPText 
+ActiveDocument.Save MyCppName 
+
+End Sub 
+
+
+Sub ToggleHandCPP() 
+'DESCRIPTION: Opens the .cpp or .h file for the current document. 
+'Toggles between the .cpp & .h file 
+ext = ActiveDocument.FullName 
+If ext = "" Then 
+msgbox ("Error, not a .cpp or .h file") 
+exit sub 
+End If 
+DocName = UCase(ext) 
+
+If Right(DocName,4) = ".CPP" Then 
+fn = left(DocName, Len(DocName)-3) & "h" 
+ElseIf Right(DocName,2) = ".H" Then 
+fn = Left(DocName, Len(DocName)-1) & "cpp" 
+Else 
+msgbox ("Error, not a .cpp or a .h file") 
+exit sub 
+End If 
+'msgbox (fn) 
+on error resume next 
+Documents.Open (fn) 
+End Sub 
+
+Sub ADDTestMethod() 
+strHpt = ActiveDocument.FullName 
+if right(strHpt,3) = "CPP" Or right (strHpt,3) = "cpp" Then 
+ActiveDocument.Selection.SelectLine 
+strText = ActiveDocument.Selection.Text 
+if (Instr(strText, "::" ) = 0) Then 
+MsgBox("Line not valid !!") 
+Exit Sub 
+End If 
+else exit sub 
+end if 
+
+pos = Instr(strText, "::") 
+strName = Right(strText, (Len(strText) - (pos+1))) 
+pos = Instr(strName,"(") 
+strName = Left(strName,pos-1) 
+strClass = Left(strText,pos - 1) 
+while (instr(strClass, " ") > 0) 
+pos = instr(strClass, " ") 
+strTyp = strTyp & Left(strClass, pos) 
+strClass = Right(strClass, Len(strClass) - (pos) ) 
+wend 
+ToggleHandCPP 
+
+ActiveDocument.Selection.SelectAll 
+strHead = ActiveDocument.Selection.Text 
+
+if (instr(strHead,strClass) = 0) Then 
+MsgBox(" Can't find class " & strClass & " !!") 
+ToggleHandCPP 
+Exit Sub 
+End If 
+ActiveDocument.Selection.EndOfDocument 
+lineBottom = ActiveDocument.Selection.CurrentLine 
+
+ActiveDocument.Selection.StartOfDocument 
+ActiveDocument.Selection.StartOfLine 
+ActiveDocument.Selection.SelectLine 
+strLine = ActiveDocument.Selection.Text 
+while (instr(strLine, strName) = 0 And ActiveDocument.Selection.CurrentLine <> lineBottom) 
+ActiveDocument.Selection.StartOfLine 
+ActiveDocument.Selection.LineDown dsMove 
+ActiveDocument.Selection.SelectLine 
+strLine = ActiveDocument.Selection.Text 
+Wend 
+if (ActiveDocument.Selection.CurrentLine < lineBottom) Then 
+if( instr(strLine, "CPPUNIT_TEST" ) <> 0 )Then 
+ToggleHandCPP 
+Exit Sub 
+end if 
+End If 
+
+ActiveDocument.Selection.StartOfDocument 
+ActiveDocument.Selection.StartOfLine 
+ActiveDocument.Selection.SelectLine 
+strLine = ActiveDocument.Selection.Text 
+while (instr(strLine, " CPPUNIT_TEST_SUITE_END();" ) = 0 And ActiveDocument.Selection.CurrentLine <> lineBottom) 
+ActiveDocument.Selection.StartOfLine 
+ActiveDocument.Selection.LineDown dsMove 
+ActiveDocument.Selection.SelectLine 
+strLine = ActiveDocument.Selection.Text 
+Wend 
+if (ActiveDocument.Selection.CurrentLine < lineBottom) Then 
+ActiveDocument.Selection.EndOfLine 
+ActiveDocument.Selection.LineUp 
+ActiveDocument.Selection.EndOfLine 
+ActiveDocument.Selection.NewLine 
+ActiveDocument.Selection = "CPPUNIT_TEST( "&strName&" );" 
+else 
+MsgBox("CPPUNIT_TEST_SUITE_END not found") 
+end if 
+ToggleHandCPP 
+
+End Sub 
+ @

@@ -1,0 +1,146 @@
+head	1.7;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.2
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.2
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.7
+date	2008.07.13.08.19.18;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2007.08.19.20.13.24;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2007.08.15.11.20.57;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2007.08.14.17.30.52;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2006.09.02.11.24.53;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.23.18.47.06;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.06.14.23.31.23;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@- Added core framework for resource handling to test case, resource registry and test info. Not integrated with the test runner and no unit tests yet.
+@
+text
+@* complete works on the CommandLines library => likely moved to opentest.
+* add support for ExtendedData in C function test case (CPPUT_TEST_FUNCTION...)
+* need a new Any supporting feature required for unit testing:
+  - toString (toJson?)
+  - type to text (for conversion error message)
+  - equality comparison test (input fixture)
+  - support for basic types
+  - support for string types
+  - support for unknown aggregate types.
+  - conversion between type (int, uint, const char *, std::string...)
+  - type comparison
+* arange for fixture based test case to create a new instance for each test run.
+  => solve requirement to implement setUp()/tearDown()
+  => ensure thread-safety when the same test is executed in multiple thread at the
+     same time (stress test)
+
+@
+
+
+1.6
+log
+@In progress of adding CppTL::Value to replace CppTL::Any in table fixture and input based fixture. Value allows optionaly comparison, conversion to other type, conversion to string...
+@
+text
+@d12 4
+@
+
+
+1.5
+log
+@   Added support for light test fixture (a la CppUnitLite).
+See lightfixture.h and example/light_fixture.
+   Added support for direct declaration and registration of test in plain C
+function. See testfunction.h and example/test_function.
+@
+text
+@d3 10
+@
+
+
+1.4
+log
+@   Modified assertion implementation to force evaluation of user
+condition expression first, while preserving delegation to
+function, overloading and optional parameters feature.
+   See CPPUT_BEGIN_ASSERTION_MACRO() documentation in testinfo.h for an example
+to update your custom assertion code.
+
+   New implementation rely on operator evaluation order and operator overloading. The trick is documented in CPPUT_BEGIN_ASSERTION_MACRO().
+@
+text
+@d2 1
+@
+
+
+1.3
+log
+@- added LazyMessage, a simple proxy class that avoid building Message until it is really needed (assertion failed).
+@
+text
+@a0 2
+* figure out how CHECK/ASSERT can be made more friendly to developper when debugging
+	=> avoid stepping into cppunit code before processing the assertion.
+@
+
+
+1.2
+log
+@* updated
+@
+text
+@d1 3
+a3 5
+* complete works on the CommandLines library
+* move compiler settings (such as CPPUT_DEDUCED_TYPENAME to cpputtools)
+* move other useful header to cpputtools such as: enumerator.h, functor.h (dllproxy.h ? <= platform dependent stuff)
+* works on the TableFixture
+* add 'properties' list to Message, to provides additional structured information about a failure. Find a way to also provide such data for test success (time to run, accessed resource, error level...).@
+
+
+1.1
+log
+@* adding cpputtools library, command line options among other thing (for test runners). In progress.
+@
+text
+@d5 1
+@
+

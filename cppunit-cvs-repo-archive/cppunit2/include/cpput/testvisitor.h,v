@@ -1,0 +1,107 @@
+head	1.3;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.2
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.2
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2005.09.06.07.14.49;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.11.15.08.30.05;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.29;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.29;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* added CPPTL_ARRAY_SIZE
+* added typedef LargestInt and LargestUnsignedInt
+@
+text
+@#ifndef CPPUT_TESTVISITOR_H_INCLUDED
+# define CPPUT_TESTVISITOR_H_INCLUDED
+
+# include <cpput/config.h>
+# include <cpput/forwards.h>
+
+namespace CppUT {
+
+class CPPUT_API TestVisitor
+{
+public:
+   virtual ~TestVisitor()
+   {
+   }
+
+   virtual void visitTestCase( AbstractTestCase &test ) = 0;
+
+   virtual void visitTestSuite( AbstractTestSuite &suite ) = 0;
+};
+
+
+} // namespace CppUT
+
+
+
+#endif // CPPUT_TESTVISITOR_H_INCLUDED
+@
+
+
+1.2
+log
+@* removed constness of visited tests.
+@
+text
+@d16 1
+a16 1
+   virtual void visitTestCase( Test &test ) = 0;
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d16 1
+a16 1
+   virtual void visitTestCase( const Test &test ) = 0;
+d18 1
+a18 1
+   virtual void visitTestSuite( const AbstractTestSuite &suite ) = 0;
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

@@ -1,0 +1,866 @@
+head	1.10;
+access;
+symbols
+	REL_1_12_1:1.10
+	REL_1_11_6:1.9
+	REL_1_11_4:1.9
+	REL_1_11_0:1.9
+	TG_CPPUNIT_NO_STREAM_AFTER:1.9
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.9
+	REL_1_10_2:1.9
+	REL_1_10_0:1.9
+	REL_1_9_14:1.9
+	REL_1_9_12:1.9
+	BRANCH_1_9_12:1.9.0.2
+	TG_BRANCH_1_9_12:1.9
+	TG_BEFORE_HPUX_PLUGIN:1.9
+	TG_BEFORE_SUN4_PORT:1.9
+	REL_1_9_10:1.9
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.6
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.6
+	REL_1_9_6:1.5
+	REL_1_9_4:1.5
+	REL_1_9_0:1.5
+	REL_1_8_0:1.5
+	REL_1_7_8:1.5
+	REL_1_7_3:1.4
+	REL_1_7_1:1.2
+	REL_1_6_2:1.2
+	BRANCH_1_6:1.2.0.2
+	REL_1_6_1:1.2
+	REL_1_6_0:1.2
+	REL_1_5_5:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.10
+date	2006.07.28.05.53.51;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2002.07.03.07.02.49;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2002.06.14.11.12.17;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2002.06.13.23.25.55;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.05.22.17.27.26;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.03.04.14.33.58;	author malcolmisaacs;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.02.28.10.56.10;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.10.24.20.03.29;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.06.27.21.23.22;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.10
+log
+@* src/msvc6/TesRunner/TestRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc: Fixed bug #1528212
+  (some resources wrongly tagged as French).
+@
+text
+@//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif\r\n"
+    "#include ""res\\TestRunner.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "TestRunner DLL\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "TestRunner\0"
+            VALUE "LegalCopyright", "Copyright (C) 1998\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "TestRunner.DLL\0"
+            VALUE "ProductName", "TestRunner Dynamic Link Library\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+CPP_UNIT_TEST_RUNNER_IDD_DIALOG_TEST_HIERARCHY DIALOG DISCARDABLE  0, 0, 259, 250
+STYLE DS_MODALFRAME | WS_POPUP | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
+CAPTION "Test hierarchy"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Select",IDOK,202,7,50,14
+    CONTROL         "Tree1",IDC_TREE_TEST,"SysTreeView32",TVS_HASBUTTONS | 
+                    TVS_HASLINES | TVS_LINESATROOT | TVS_FULLROWSELECT | 
+                    WS_BORDER | WS_TABSTOP,7,7,189,236
+    PUSHBUTTON      "&Close",IDCANCEL,202,34,50,14
+END
+
+CPP_UNIT_TEST_RUNNER_IDD_DIALOG_TESTRUNNER DIALOG DISCARDABLE  0, 0, 330, 226
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CLIPCHILDREN | 
+    WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "TestRunner"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Test:",IDC_STATIC_TEST_NAME,7,7,17,8
+    COMBOBOX        IDC_COMBO_TEST,28,7,235,157,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&Browse",IDC_BROWSE_TEST,273,7,50,14
+    DEFPUSHBUTTON   "&Run",ID_RUN,273,23,50,14
+    LTEXT           "Progress:",IDC_STATIC_PROGRESS,7,23,33,9
+    LTEXT           "none",IDC_RUNNING_TEST_CASE_LABEL,43,23,220,9
+    LTEXT           "Progress Bar",IDC_STATIC_PROGRESS_BAR,7,34,256,15,NOT 
+                    WS_VISIBLE
+    LTEXT           "Runs:",IDC_STATIC_LABEL_RUNS,7,55,29,10
+    LTEXT           "0",IDC_STATIC_RUNS,48,55,30,8
+    LTEXT           "Errors:",IDC_STATIC_LABEL_ERRORS,89,55,29,10
+    LTEXT           "0",IDC_STATIC_ERRORS,127,55,19,8
+    LTEXT           "Failures:",IDC_STATIC_LABEL_FAILURES,174,55,29,10
+    LTEXT           "0",IDC_STATIC_FAILURES,212,55,19,8
+    LTEXT           "&Errors and Failures:",IDC_STATIC,7,70,67,9
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | 
+                    WS_TABSTOP,7,81,257,60
+    LTEXT           "&Details:",IDC_STATIC_DETAILS,7,145,24,8
+    EDITTEXT        IDC_DETAILS,7,154,316,48,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "&Autorun at startup",IDC_CHECK_AUTORUN,"Button",
+                    BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,273,52,49,19
+    PUSHBUTTON      "&Stop",ID_STOP,273,82,50,14
+    PUSHBUTTON      "&Close",IDOK,273,98,50,14
+    EDITTEXT        IDC_EDIT_TIME,7,206,316,13,ES_AUTOHSCROLL | ES_READONLY
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+CPP_UNIT_TEST_RUNNER_IDB_TEST_TYPE BITMAP  DISCARDABLE     "res\\test_type.bmp"
+CPP_UNIT_TEST_RUNNER_IDB_ERROR_TYPE BITMAP  DISCARDABLE     "res\\errortype.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR_TEST_RUNNER ACCELERATORS DISCARDABLE 
+BEGIN
+    "Q",            ID_QUIT_APPLICATION,    VIRTKEY, NOINVERT
+    VK_SPACE,       ID_RUN,                 VIRTKEY, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ERROR_SELECT_TEST   "You must select a test!"
+    IDS_ERRORLIST_TYPE      "Type"
+    IDS_ERRORLIST_NAME      "Name"
+    IDS_ERRORLIST_FAILED_CONDITION "Failed Condition"
+    IDS_ERRORLIST_LINE_NUMBER "Line Number"
+    IDS_ERRORLIST_FILE_NAME "File Name"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif
+#include "res\TestRunner.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
+@
+
+
+1.9
+log
+@* include/cppunit/XmlOutputter.h: fixed XmlOutputter constructed default
+  value initializatino which caused compilation error with BC5.
+
+* src/cppunit/PlugInManager.cpp: added missing CPPUNIT_NO_TESTPLUGIN guard.
+
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp:
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h: applied Steven Mitter
+  patch to fix bug #530426 (conflict between TestRunner and host application
+  resources). Adapted patch to compile work with Unicode.
+
+* src/msvc6/testrunner/ResourceLoaders.h:
+* src/msvc6/testrunner/ResourceLoaders.cpp:
+* src/msvc6/testrunner/Change-Diary-ResourceBugFix.txt: added, from
+  Steven Mitter's patch. Simplified loadCString() to compile with Unicode.
+
+* src/cppunit/cppunit.dsp:
+* src/cppunit/cppunit_dll.dsp:
+* src/DllPlugInTester/DllPlugInTester.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: all lib, dll and exe are
+  now created in the intermediate directory. A post-build rule is used to
+  copy them to the lib/ directory.
+@
+text
+@a175 12
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// French (France) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
+#ifdef _WIN32
+LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
+#pragma code_page(1252)
+#endif //_WIN32
+d192 1
+a192 1
+#endif    // French (France) resources
+@
+
+
+1.8
+log
+@* src/cppunit/TypeInfoHelper.cpp: added work around for bug #565481.
+  gcc 3.0 RTTI name() returns the type prefixed with a number (the
+  length of the type). The work around strip the number.
+
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp: registry key is now
+  set. Allow to save settings.
+
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp: added layout
+  initialization for resizing.
+
+* src/msvc6/testpluginrunner/TestPlugRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: added TestRunner
+  project files. Somehow I can't get cdxCDynamicDialog to compile
+  as a MFC extension. Included all sources files and resources
+  as a very dirt work around.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h: those classes are no longer
+  exported in the MFC extension. See TestPlugInRunner issue with
+  cdxCDynamicDialog.
+
+* include/cppunit/Message.h:
+* include/cppunit/TestPath.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TestFactoryRegistry.h:
+* include/cppunit/XmlElement.h:
+* include/cppunit/TypeInfoHelper.h: commented out STL template export
+  in DLL. This caused conflicts when instantiting the same template in
+  a user project.
+@
+text
+@d109 1
+a109 1
+IDD_DIALOG_TEST_HIERARCHY DIALOG DISCARDABLE  0, 0, 259, 250
+d121 1
+a121 1
+IDD_DIALOG_TESTRUNNER DIALOG DISCARDABLE  0, 0, 330, 226
+a158 27
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_DIALOG_TEST_HIERARCHY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 252
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 243
+    END
+
+    IDD_DIALOG_TESTRUNNER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 323
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 219
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+d162 2
+a163 2
+IDB_TEST_TYPE           BITMAP  DISCARDABLE     "res\\test_type.bmp"
+IDB_ERROR_TYPE          BITMAP  DISCARDABLE     "res\\errortype.bmp"
+@
+
+
+1.7
+log
+@* src/cppunit/CompilerOutputter.cpp: fixed bug #549762 (line wrap).
+
+* src/msvc6/testrunner/DynamicWindow/*: added. Dynamic Window library
+  from Hans Bühler (hans.buehler@@topmail.de) to resize window.
+
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TestRunnerModel.cpp: removed dialog bounds from
+  settings. Added public registry keys for cppunit, main dialog, and
+  browse dialog.
+
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: dialog is now resizable.
+  Window placement is stored and restored.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replaced dialog resizing code
+  by usage of Hans Bühler's Dynamic Window library. Dialog placement
+  is stored/restored by that library. ProgressBar is now a child window.
+  Added edit field to see the details of the failure. List on show
+  the short description of the failure.
+
+* src/msvc6/testrunner/ProgressBar.h:
+* src/msvc6/testrunner/ProgressBar.cpp: is now a CWnd.
+
+* src/msvc6/testrunner/TestRunner.rc: named all static fill ID for resizing.
+  Added an invisble static field for progress bar placement.
+@
+text
+@d150 1
+a150 1
+                    BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,274,52,49,19
+@
+
+
+1.6
+log
+@* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/Resource.h:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerModel.cpp: integrated patch from
+Marco Welti (Welti@@GretagMacbeth.ch) with a few clean up.
+Display the name of the test being run during above the progress bar. Allow the
+VC++ add-ins to works with TestPlugInRunner (COM init). DLL name can be specified
+on the command line after flag '-testsuite'. Display wait cursor, clear and reload
+history when reloading DLL.
+
+* THANKS: added Marco Welti to the list.
+@
+text
+@d110 1
+a110 1
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+d121 3
+a123 3
+IDD_DIALOG_TESTRUNNER DIALOGEX 0, 0, 404, 214
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | 
+    WS_THICKFRAME
+d127 2
+a128 4
+    PUSHBUTTON      "&Browse",IDC_BROWSE_TEST,347,16,50,14
+    DEFPUSHBUTTON   "&Run",ID_RUN,347,32,50,14
+    LTEXT           "Test name:",IDC_STATIC,7,7,179,9
+    COMBOBOX        IDC_COMBO_TEST,7,17,332,157,CBS_DROPDOWNLIST | 
+d130 19
+d150 4
+a153 15
+                    BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,348,73,49,19
+    PUSHBUTTON      "&Stop",ID_STOP,347,177,50,14
+    PUSHBUTTON      "&Close",IDOK,347,193,50,14
+    LTEXT           "Progress:",IDC_STATIC,7,38,33,9
+    LTEXT           "0",IDC_STATIC_RUNS,48,80,30,8
+    LTEXT           "Failures:",IDC_STATIC,174,80,29,10
+    LTEXT           "0",IDC_STATIC_FAILURES,212,80,19,8
+    LTEXT           "Errors and Failures:",IDC_STATIC,7,94,67,9
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | WS_BORDER | 
+                    WS_TABSTOP,7,105,331,86
+    EDITTEXT        IDC_EDIT_TIME,7,194,332,13,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Errors:",IDC_STATIC,89,80,29,10
+    LTEXT           "0",IDC_STATIC_ERRORS,127,80,19,8
+    LTEXT           "Runs:",IDC_STATIC,7,80,29,10
+    LTEXT           "none",IDC_RUNNING_TEST_CASE_LABEL,43,39,166,9
+d176 1
+a176 1
+        RIGHTMARGIN, 397
+d178 1
+a178 1
+        BOTTOMMARGIN, 207
+@
+
+
+1.5
+log
+@Added minimize and maximize boxes to the TestRunner dialog.
+@
+text
+@d121 1
+a121 1
+IDD_DIALOG_TESTRUNNER DIALOG DISCARDABLE  0, 0, 404, 214
+d136 1
+a136 1
+    LTEXT           "Progress:",IDC_STATIC,7,38,49,9
+d147 1
+@
+
+
+1.4
+log
+@* NEW: updated and restructured.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp:
+updated against TestResultChange. Changed TestResult to TestResultCollector.
+
+* include/cppunit/extensions/HelperMacros.h: minor documentation fix.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all Outputter.
+
+* include/cppunit/Portability.h: made the fix on OStringStream suggested by
+Bob Summerwill to remove level 4 warning with VC++.
+
+* include/cppunit/TestAssert.h: added macro CPPUNIT_ASSERT_EQUAL_MESSAGE.
+
+* src/cppunit/TestFailure.cpp:
+* include/cppunit/TestFailure.h: added method clone() to duplicate a failure. Made
+all method virtual.
+
+* include/cppunit/TestListener.h: changed signature of addFailure() to
+addFailure( const TestFailure &failure ). Failure is now only a temporary object.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all outputter. Used
+by TextTestRunner.
+
+* include/cppunit/SynchronizedObject.h:
+* src/cppunit/SynchronizedObject.cpp: added. Class extracted from TestResult.
+Base class for objects that can be accessed from different threads.
+
+* include/cppunit/TestResult.h: TestFailure.h is no longer included.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: extracted all methods related to keeping track
+of the result to the new TestResultCollector class which is a TestListener.
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: added. TestListener which kept track
+of the result of the test run. All failure/error, and tests are tracked.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: added. TestListener extracted from
+TestResult. Is responsible for wasSucessful().
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: reindented.
+
+* include/cppunit/TextOutputter.h:
+* src/cppunit/TextOutputter.cpp: added. Copied from the deprecated
+TextTestResult and modified to act as an Ouputter.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: Copied from the deprecated
+TextTestResult and modified to print the dot while the test are running.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: updated against TestResult change.
+No compatiblity break. Deprecated.
+
+* include/cppunit/TextTestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to work with the new TestResult.
+Use TextTestProgressListener and TextOutputter instead of TextTestResult.
+Any outputter with interface Outputter can be used to print the test result
+(CompilerOutputter, XmlOutputter, TextOutputter...)
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against TestResultChange.
+Changed TestResult to TestResultCollector.
+
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/TestRunnerDlg.cpp: fixed the 'fullrowselect' feature of the list view.
+The dialog is a TestListener itself, it no longer use the GUITestResult class.
+
+* src/msvc6/TestRunner.rc: moved the "autorun test button" in such a way that it
+did not overlap the progress bar anymore.
+
+* src/msvc6/MfcSynchronizationObject.h: added. Generic SynchronizedObject
+lock for MFC.
+
+* src/msvc6/GUITestResult.h :
+* src/msvc6/GUITestResult.cpp : removed.
+
+* src/qttestrunner/TestRunnerModel.h:
+* src/qttestrunner/TestRunnerModel.cpp: changed addFailure() signature to reflect
+change on TestListener.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use the new Outputter
+abstraction and TextTestRunner facilities.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.cpp: removed. Replaced by MockTestCase.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.h:
+
+* examples/cppunittest/HelperMacrosTest.h:
+* examples/cppunittest/HelperMacrosTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/MockTestListener.h:
+* examples/cppunittest/MockTestListener.cpp: the class now behave like a mock
+object.
+
+* examples/cppunittest/MockTestCase.h:
+* examples/cppunittest/MockTestCase.cpp: added. Mock TestCase object.
+
+* examples/cppunittest/OrthodoxTest.h:
+* examples/cppunittest/OrthodoxTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/SynchronizedTestResult.h: Updated against TestResult
+change.
+
+* examples/cppunittest/TestCallerTest.h:
+* examples/cppunittest/TestCallerTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: Updated against TestResult change.
+Use MockTestListener and MockTestCase instead of FailingTestCase and TestResult.
+
+* examples/cppunittest/TestDecoratorTest.h:
+* examples/cppunittest/TestDecoratorTest.cpp: Updated against TestResult change.
+Use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/TestListenerTest.h:
+* examples/cppunittest/TestListenerTest.cpp: removed. Those unit tests have been
+rewrote and moved to TestResultTest.
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: Updated to test the new interface.
+Tests from TestListenerTest have been moved here.
+
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp: added. Tests for the class
+that been extracted from TestResult.
+
+* examples/cppunittest/TestSetUpTest.h:
+* examples/cppunittest/TestSetUpTest.cpp: renamed SetUp inner class to MockSetUp.
+Changed interface to be more akin to a Mock object.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: Updated against TestResult change,
+and rewrote to use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: Updated against TestResult change.
+Added some utility methods to make the update easier.
+@
+text
+@d122 2
+a123 1
+STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+@
+
+
+1.3
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+* examples/msvc6/HostApp/HostApp.dsp: use custom file build instead
+of post-build/pre-link step to copy the TestRunner DLL to the
+Release/Debug directory.
+
+* src/msvc6/ProgressBar.cpp:
+* src/msvc6/ProgressBar.h:
+* src/msvc6/TestRunner.rc:
+* src/msvc6/TestRunnerDlg.cpp:
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/testRunner.dsp:
+* src/msvc6/TestRunnerModel.cpp:
+* src/msvc6/TestRunnerModel.h: included Gigi Sayfan (gigi@@morphink.com)
+patch. The dialog can now be resized, and list view columns and dialog
+sizes are saved.
+
+* src/msvc6/ProgressBar.cpp:
+* src/msvc6/ProgressBar.h: Minor refactoring.
+
+* THANKS: added Gigi Sayfan to the list.
+@
+text
+@d132 1
+a132 1
+                    BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,348,67,49,25
+@
+
+
+1.2
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+moved dll copy from post-build to custom build setting, so that the
+dll is copied even if the CppUnitTestApp was not modified.
+
+* examples/msvc6/TestPlugIn/: a new example of test plug in.
+
+* src/msvc6/TestRunner/ListCtrlFormatter.*
+* src/msvc6/TestRunner/ListCtrlSetter.*:
+added, helper to manipulate list control.
+
+* src/msvc6/TestRunner/TestRunnerDlg.*: change to make the error list
+more compact. text moved to string resources. icons added for typ
+test tfailure type.
+
+* src/msvc6/TestRunner/MostRecentTests.*: added, classes that will
+replace the current implementation of MRU test which make it hard
+to subclass the dialog.
+
+* src/msvc6/TestRunner/res/errortype.bmp: added, bitmap with error
+types (failure and error).
+
+* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+
+* src/cppunit/cppunit.dsp:
+removed config.h from project
+added Portability.h and config-msvc6.h
+
+* include/cppunit/config-msvc6.h:
+undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+@
+text
+@d121 2
+a122 2
+IDD_DIALOG_TESTRUNNER DIALOG DISCARDABLE  0, 0, 403, 215
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+d126 2
+a127 2
+    PUSHBUTTON      "&Browse",IDC_BROWSE_TEST,346,16,50,14
+    DEFPUSHBUTTON   "&Run",ID_RUN,346,39,50,14
+d132 3
+a134 3
+                    BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,347,67,49,25
+    PUSHBUTTON      "&Stop",ID_STOP,346,175,50,14
+    PUSHBUTTON      "&Close",IDOK,346,194,50,14
+d136 3
+a138 6
+    LTEXT           "Runs:",IDC_STATIC,103,76,29,10
+    LTEXT           "0",IDC_STATIC_RUNS,141,76,19,8
+    LTEXT           "Errors:",IDC_STATIC,169,76,29,10
+    LTEXT           "0",IDC_STATIC_ERRORS,207,76,19,8
+    LTEXT           "Failures:",IDC_STATIC,235,76,29,10
+    LTEXT           "0",IDC_STATIC_FAILURES,273,76,19,8
+d142 4
+a145 1
+    EDITTEXT        IDC_EDIT_TIME,7,195,332,13,ES_AUTOHSCROLL | ES_READONLY
+d168 1
+a168 1
+        RIGHTMARGIN, 396
+d170 1
+a170 1
+        BOTTOMMARGIN, 208
+@
+
+
+1.1
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@d109 12
+a147 12
+IDD_DIALOG_TEST_HIERARCHY DIALOG DISCARDABLE  0, 0, 259, 250
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Test hierarchy"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Select",IDOK,202,7,50,14
+    CONTROL         "Tree1",IDC_TREE_TEST,"SysTreeView32",TVS_HASBUTTONS | 
+                    TVS_HASLINES | TVS_LINESATROOT | TVS_FULLROWSELECT | 
+                    WS_BORDER | WS_TABSTOP,7,7,189,236
+    PUSHBUTTON      "&Close",IDCANCEL,202,34,50,14
+END
+
+d157 1
+a157 1
+    IDD_DIALOG_TESTRUNNER, DIALOG
+d160 1
+a160 1
+        RIGHTMARGIN, 396
+d162 1
+a162 1
+        BOTTOMMARGIN, 208
+d165 1
+a165 1
+    IDD_DIALOG_TEST_HIERARCHY, DIALOG
+d168 1
+a168 1
+        RIGHTMARGIN, 252
+d170 1
+a170 1
+        BOTTOMMARGIN, 243
+d182 1
+d216 5
+@
+

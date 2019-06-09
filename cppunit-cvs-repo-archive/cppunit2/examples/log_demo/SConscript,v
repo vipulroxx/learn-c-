@@ -1,0 +1,32 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2005.08.11.07.18.23;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* Added log support in test result output
+* Removed unsued method in TestResultUpdater
+* Added CppUT::log demo example.
+@
+text
+@Import( 'env_testing buildCppUnitExample' )
+
+buildCppUnitExample( env_testing, Split( """
+    main.cpp
+     """ ),
+    'log_demo' )
+@

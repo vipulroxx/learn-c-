@@ -1,0 +1,167 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.2
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.1
+date	2002.04.20.21.51.32;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@// //////////////////////////////////////////////////////////////////////////
+// Implementation file WinNtTimer.cpp for class WinNtTimer
+// (c)Copyright 2000, Baptiste Lepilleur.
+// Created: 2002/04/19
+// //////////////////////////////////////////////////////////////////////////
+
+#include "WinNtTimer.h"
+
+
+/*! Returns time spent in the thread.
+ * @@param rquadTime Receive the time spent in the thread (user+kernel time) 
+ *                  in unit of 100 nano-seconds.
+ *                  In pratice, the effective resolution is 10ms !!!
+ *
+ * @@return \c true if sucess, \c false otherwise.
+ */
+static bool 
+GetThreadSpentTime( LONGLONG &rquadTime )
+{
+  FILETIME timeCreation;
+  FILETIME timeExit;
+  FILETIME timeKernel;
+  FILETIME timeUser;
+  if ( !::GetThreadTimes( ::GetCurrentThread(),
+                          &timeCreation,
+                          &timeExit,
+                          &timeKernel,
+                          &timeUser) )
+  {
+    rquadTime = 0;
+    return false;
+  }
+
+  LARGE_INTEGER lintKernel;
+  lintKernel.LowPart = timeKernel.dwLowDateTime;
+  lintKernel.HighPart = timeKernel.dwHighDateTime;
+
+  LARGE_INTEGER lintUser;
+  lintUser.LowPart = timeUser.dwLowDateTime;
+  lintUser.HighPart = timeUser.dwHighDateTime;
+
+  rquadTime = lintKernel.QuadPart + lintUser.QuadPart;
+
+  return true;
+}
+
+
+
+void 
+WinNtTimer::start()
+{
+  m_isValid = GetThreadSpentTime( m_beginTime );
+
+}
+
+
+void 
+WinNtTimer::finish()
+{
+  LONGLONG quadTimeEnd;
+  LONGLONG quadProcessedElapse;
+  m_isValid = m_isValid  && GetThreadSpentTime( quadTimeEnd );
+  if ( m_isValid )
+  {
+    quadProcessedElapse = quadTimeEnd - m_beginTime;
+    m_elapsedTime = double(quadProcessedElapse) / 10000000;
+  }
+  else
+    m_elapsedTime = -1;
+}
+
+
+double 
+WinNtTimer::elapsedTime() const
+{
+  return m_elapsedTime;
+}
+@

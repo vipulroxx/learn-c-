@@ -1,0 +1,67 @@
+head	1.2;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2006.09.07.22.45.50;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2006.03.06.07.46.58;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@- started adding coding guidelines.
+@
+text
+@<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
+<title>CppUnit 2: Main Page</title>
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+<link href="tabs.css" rel="stylesheet" type="text/css">
+<style type='text/css'>
+.cg_rule {
+	background-color:grey;
+	border-style:solid; 
+	border-width:2px;
+	padding-left: 0.5ex;
+}
+</style>
+</head><body> 
+<table width="100%">
+  <tr>
+    <td width="40%" align="left" valign="center">
+      <a href="http://sourceforge.net/projects/cppunit">
+      CppUnit project page
+      </a>
+    </td>
+    <td width="40%" align="right" valign="center">
+      <a href="http://cppunit.sourceforge.net">CppUnit home page</a>
+    </td>
+  </tr>
+</table>
+
+<hr>
+@
+
+
+1.1
+log
+@* added file required for doc generation.
+@
+text
+@d6 8
+@
+

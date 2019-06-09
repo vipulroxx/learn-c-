@@ -1,0 +1,197 @@
+head	1.5;
+access;
+symbols
+	REL_1_12_1:1.4
+	REL_1_11_6:1.4
+	REL_1_11_4:1.4
+	REL_1_11_0:1.4
+	TG_CPPUNIT_NO_STREAM_AFTER:1.4
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.5
+date	2008.02.21.03.10.05;	author smr99;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.06.25.10.41.27;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.07.14.19.48.31;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.21.12.50.44;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.21.10.57.52;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@Changes to suppress warnings of gcc -Wall -W -ansi, mainly from patch [1898225].
+@
+text
+@#include "StdAfx.h"
+#include <cppunit/CompilerOutputter.h>
+#include <cppunit/extensions/TestFactoryRegistry.h>
+#include <cppunit/ui/text/TestRunner.h>
+
+
+int main()
+{
+  // Get the top level suite from the registry
+  CPPUNIT_NS::Test *suite = CPPUNIT_NS::TestFactoryRegistry::getRegistry().makeTest();
+
+  // Adds the test to the list of test to run
+  CPPUNIT_NS::TextUi::TestRunner runner;
+  runner.addTest( suite );
+
+  // Change the default outputter to a compiler error format outputter
+  runner.setOutputter( new CPPUNIT_NS::CompilerOutputter( &runner.result(),
+                                                          CPPUNIT_NS::stdCOut() ) );
+  // Run the test.
+  bool wasSucessful = runner.run();
+
+  // Return error code 1 if the one of test failed.
+  return wasSucessful ? 0 : 1;
+}
+
+@
+
+
+1.4
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@d7 1
+a7 1
+int main(int argc, char* argv[])
+@
+
+
+1.3
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d18 1
+a18 1
+                                                       std::cerr ) );
+@
+
+
+1.2
+log
+@* fixed
+@
+text
+@d10 1
+a10 1
+  CppUnit::Test *suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
+d13 1
+a13 1
+  CppUnit::TextUi::TestRunner runner;
+d17 1
+a17 1
+  runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(),
+@
+
+
+1.1
+log
+@* src/DllPlugInTester/makefile.am: removed ld.so from LDADD flags.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: rewrote, fixed problem
+  with double quotes in command line...
+
+* src/DllPlugInTester/CommandLineParserTest.h:
+* src/DllPlugInTester/CommandLineParserTest.cpp:
+* src/DllPlugInTester/DllPlugInTesterTest.cpp: added, unit tests for
+  CommandLineParser.
+
+* src/msvc6/TestPlugIn/*: removed.
+@
+text
+@d1 1
+a1 1
+#include "stdafx.h"
+@
+

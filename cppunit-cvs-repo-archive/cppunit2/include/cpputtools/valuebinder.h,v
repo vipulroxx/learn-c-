@@ -1,0 +1,266 @@
+head	1.4;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.4
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.4
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.4
+	TG_AFTER_REMOVING_TESTCONTEXT:1.4
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.4
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.4;
+locks; strict;
+comment	@ * @;
+
+
+1.4
+date	2004.06.23.20.00.12;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.06.15.07.50.41;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.15.01.24.22;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.06.15.01.19.56;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* fixed compilation issues
+@
+text
+@#ifndef CPPUTTOOLS_VALUEBINDER_H_INCLUDED
+# define CPPUTTOOLS_VALUEBINDER_H_INCLUDED
+
+# include "value.h"
+
+
+namespace CppUTTools {
+
+namespace Impl {
+
+   class ValueBinderImpl
+   {
+   public:
+      virtual ~ValueBinderImpl() {}
+
+      virtual void set( void *storage, const Value &value ) const = 0;
+
+      virtual Value get( const void *storage ) const = 0;
+
+      virtual TypeId type() const = 0;
+   };
+
+   template<class ValueType>
+   class SpecificValueBinderImpl : public ValueBinderImpl
+   {
+   public:
+      static const ValueBinderImpl &instance()
+      {
+         static SpecificValueBinderImpl dummy;
+         return dummy;
+      }
+
+   public: // overridden from ValueBinderImpl
+      void set( void *storage, const Value &value ) const
+      {
+         if ( !value.isEmpty() )
+            *( static_cast<ValueType *>( storage ) )= ::get<ValueType>( value );
+      }
+
+      Value get( const void *storage ) const
+      {
+         return value( *( static_cast<const ValueType *>( storage ) ) );
+      }
+
+      TypeId type() const
+      {
+         return typeId<ValueType>();
+      }
+   };
+
+   class VoidValueBinderImpl : public ValueBinderImpl
+   {
+   public:
+      static const ValueBinderImpl &instance()
+      {
+         static VoidValueBinderImpl dummy;
+         return dummy;
+      }
+
+   public: // overridden from ValueBinderImpl
+      void set( void *storage, const Value &value ) const
+      {
+      }
+
+      Value get( const void *storage ) const
+      {
+         return Value();
+      }
+
+      TypeId type() const
+      {
+         return typeId<void>();
+      }
+   };
+
+} // namespace Impl
+
+class ValueBinder
+{
+public:
+   ValueBinder();
+
+   void set( const Value &value ) const;
+
+   Value get() const;
+
+   TypeId type() const;
+
+   bool isEmpty() const;
+
+public: // private, but friendly template function
+   ValueBinder( void *storage,
+                const Impl::ValueBinderImpl &impl );
+
+private:
+   void *storage_;
+   const Impl::ValueBinderImpl *impl_;
+};
+
+
+template<class ValueType>
+ValueBinder valueBinder( ValueType &storage )
+{
+   return ValueBinder( &storage, Impl::SpecificValueBinderImpl<ValueType>::instance() );
+}
+
+
+// Implementation
+// ////////////////////////////////////////////////////////////
+
+inline
+ValueBinder::ValueBinder()
+   : storage_( 0 )
+   , impl_( &Impl::VoidValueBinderImpl::instance() )
+{
+}
+
+
+inline
+ValueBinder::ValueBinder( void *storage,
+                          const Impl::ValueBinderImpl &impl )
+   : storage_( storage )
+   , impl_( &impl )
+{
+}
+
+inline void 
+ValueBinder::set( const Value &value ) const
+{
+   if ( value.type() != type() )
+      throw ValueBadCast();
+
+   impl_->set( storage_, value );
+}
+
+inline Value 
+ValueBinder::get() const
+{
+   if ( isEmpty() )
+      return Value();
+   return impl_->get( storage_ );
+}
+
+
+inline TypeId 
+ValueBinder::type() const
+{
+   return impl_->type();
+}
+
+
+inline bool 
+ValueBinder::isEmpty() const
+{
+   return storage_ == 0;
+}
+
+} // namespace CppUTTools
+
+
+#endif // CPPUTTOOLS_VALUEBINDER_H_INCLUDED
+@
+
+
+1.3
+log
+@* added default constructor
+@
+text
+@d51 25
+d83 1
+a83 1
+   void set( const Value &value );
+d97 1
+a97 1
+   const Impl::ValueBinderImpl &impl_;
+d114 1
+a114 1
+   , impl_( Impl::SpecificValueBinderImpl<void>::instance() )
+d123 1
+a123 1
+   , impl_( impl )
+d128 1
+a128 1
+ValueBinder::set( const Value &value )
+d133 1
+a133 1
+   impl_.set( storage_, value );
+d141 1
+a141 1
+   return impl_.get( storage_ );
+d148 1
+a148 1
+   return impl_.type();
+d152 1
+a152 1
+bool 
+@
+
+
+1.2
+log
+@* option storage clean up
+@
+text
+@d56 2
+d64 2
+d87 8
+d114 2
+d126 7
+@
+
+
+1.1
+log
+@* option storage clean up
+@
+text
+@d75 1
+a75 1
+   return ValueBinder( &storage, typeId<ValueType>() );
+@
+

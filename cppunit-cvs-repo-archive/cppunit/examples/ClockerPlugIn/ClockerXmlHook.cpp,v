@@ -1,0 +1,355 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3;
+locks; strict;
+comment	@// @;
+
+
+1.3
+date	2002.07.14.19.48.31;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.06.16.17.55.58;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.06.14.20.21.00;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@// //////////////////////////////////////////////////////////////////////////
+// Implementation file ClockerXmlHook.cpp for class ClockerXmlHook
+// (c)Copyright 2000, Baptiste Lepilleur.
+// Created: 2002/06/14
+// //////////////////////////////////////////////////////////////////////////
+
+#include <cppunit/Test.h>
+#include <cppunit/tools/XmlDocument.h>
+#include <cppunit/tools/XmlElement.h>
+#include "ClockerModel.h"
+#include "ClockerXmlHook.h"
+
+
+ClockerXmlHook::ClockerXmlHook( ClockerModel *model )
+    : m_model( model )
+{
+}
+
+
+ClockerXmlHook::~ClockerXmlHook()
+{
+}
+
+
+void 
+ClockerXmlHook::endDocument( CPPUNIT_NS::XmlDocument *document )
+{
+  CPPUNIT_NS::XmlElement *testTreeElement = new CPPUNIT_NS::XmlElement( "TimedTestTree" );
+  document->rootElement().addElement( testTreeElement );
+
+  addTimedTest( testTreeElement, 0 );
+}
+
+
+void 
+ClockerXmlHook::addTimedTest( CPPUNIT_NS::XmlElement *parentElement, 
+                              int testIndex )
+{
+  std::string elementName = m_model->isSuite( testIndex ) ? "TimedSuite" : "TimedTest";
+  CPPUNIT_NS::XmlElement *testElement = new CPPUNIT_NS::XmlElement( elementName );
+  parentElement->addElement( testElement );
+  testElement->addAttribute( "id", testIndex );
+
+  const CPPUNIT_NS::TestPath &path = m_model->testPathFor( testIndex );
+  testElement->addElement( new CPPUNIT_NS::XmlElement( "Name", 
+                                                    path.getChildTest()->getName() ) );
+  testElement->addElement( new CPPUNIT_NS::XmlElement( "TestPath", path.toString() ) );
+  testElement->addElement( new CPPUNIT_NS::XmlElement( "Time", 
+                                 ClockerModel::timeStringFor( 
+                                    m_model->testTimeFor( testIndex ) ) ) );
+
+  if ( m_model->isSuite( testIndex ) )
+  {
+    for ( int childIndex =0; childIndex < m_model->childCountFor( testIndex ); ++childIndex )
+      addTimedTest( testElement, m_model->childAtFor( testIndex, childIndex ) );
+  }
+}
+
+
+void 
+ClockerXmlHook::failTestAdded( CPPUNIT_NS::XmlDocument *document,
+                               CPPUNIT_NS::XmlElement *testElement,
+                               CPPUNIT_NS::Test *test,
+                               CPPUNIT_NS::TestFailure *failure )
+{
+  successfulTestAdded( document, testElement, test );
+}
+
+
+void 
+ClockerXmlHook::successfulTestAdded( CPPUNIT_NS::XmlDocument *document,
+                                     CPPUNIT_NS::XmlElement *testElement,
+                                     CPPUNIT_NS::Test *test )
+{
+  int testIndex = m_model->indexOf( test );
+  double time = (testIndex >= 0) ? m_model->testTimeFor( testIndex ) : 0.0;
+  const CPPUNIT_NS::TestPath &path = m_model->testPathFor( testIndex );
+  testElement->addElement( new CPPUNIT_NS::XmlElement( "TestPath", path.toString() ) );
+  testElement->addElement( new CPPUNIT_NS::XmlElement( "Time",
+                                   ClockerModel::timeStringFor( time ) ) );
+}
+
+
+void 
+ClockerXmlHook::statisticsAdded( CPPUNIT_NS::XmlDocument *document,
+                                 CPPUNIT_NS::XmlElement *statisticsElement )
+{
+  statisticsElement->addElement( 
+      new CPPUNIT_NS::XmlElement( "TotalElapsedTime",
+           ClockerModel::timeStringFor( m_model->totalElapsedTime() ) ) );
+  statisticsElement->addElement( 
+      new CPPUNIT_NS::XmlElement( "AverageTestCaseTime",
+           ClockerModel::timeStringFor( m_model->averageTestCaseTime() ) ) );
+}
+@
+
+
+1.2
+log
+@* release 1.9.8
+
+* include/cppunit/plugin/TestPlugIn.h: updated documentation.
+
+* include/cppunit/tools/XmlDocument.h: updated documentation.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/StringTools.cpp: added split() and wrap() functions.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp: extracted wrap() and
+  splitMessageIntoLines() to StringTools.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: removed rooNode parameter from
+  beginDocument() and endDocument(). It can be retreive from document.
+  Renamed 'node' occurences to 'element'.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against
+  XmlOutputterHook changes. Renamed 'node' occurences to 'element'.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: updated against
+  XmlOutputterHook changes.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: Renamed 'node' occurences
+  to 'element'.
+
+* examples/cppunittest/XmlOutputterTest.cpp: updated against
+  XmlOutputterHook changes.
+
+* examples/cppunittest/StringToolsTest.h:
+* examples/cppunittest/StringToolsTest.cpp: added. Unit tests for
+  StringTools. Turn out that VC++ dismiss empty lines in tools output,
+  which is the reason why empty lines where not printed in
+  CompilerOutputter.
+@
+text
+@d26 1
+a26 1
+ClockerXmlHook::endDocument( CppUnit::XmlDocument *document )
+d28 1
+a28 1
+  CppUnit::XmlElement *testTreeElement = new CppUnit::XmlElement( "TimedTestTree" );
+d36 1
+a36 1
+ClockerXmlHook::addTimedTest( CppUnit::XmlElement *parentElement, 
+d40 1
+a40 1
+  CppUnit::XmlElement *testElement = new CppUnit::XmlElement( elementName );
+d44 2
+a45 2
+  const CppUnit::TestPath &path = m_model->testPathFor( testIndex );
+  testElement->addElement( new CppUnit::XmlElement( "Name", 
+d47 2
+a48 2
+  testElement->addElement( new CppUnit::XmlElement( "TestPath", path.toString() ) );
+  testElement->addElement( new CppUnit::XmlElement( "Time", 
+d61 4
+a64 4
+ClockerXmlHook::failTestAdded( CppUnit::XmlDocument *document,
+                               CppUnit::XmlElement *testElement,
+                               CppUnit::Test *test,
+                               CppUnit::TestFailure *failure )
+d71 3
+a73 3
+ClockerXmlHook::successfulTestAdded( CppUnit::XmlDocument *document,
+                                     CppUnit::XmlElement *testElement,
+                                     CppUnit::Test *test )
+d77 3
+a79 3
+  const CppUnit::TestPath &path = m_model->testPathFor( testIndex );
+  testElement->addElement( new CppUnit::XmlElement( "TestPath", path.toString() ) );
+  testElement->addElement( new CppUnit::XmlElement( "Time",
+d85 2
+a86 2
+ClockerXmlHook::statisticsAdded( CppUnit::XmlDocument *document,
+                                 CppUnit::XmlElement *statisticsElement )
+d89 1
+a89 1
+      new CppUnit::XmlElement( "TotalElapsedTime",
+d92 1
+a92 1
+      new CppUnit::XmlElement( "AverageTestCaseTime",
+@
+
+
+1.1
+log
+@* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added two methods to use the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugIn.h: added two methods to the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugInAdapter.h:
+* src/cppunit/plugin/TestPlugInAdapter.cpp: renamed TestPlugInDefaultImpl.
+  Added empty implementation for Xml outputter hook methods.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/tools/StringTools.cpp: added. Functions to manipulate string
+  (conversion, wrapping...)
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/XmlElement.cpp: renamed addNode() to addElement(). Added
+  methods to walk and modify XmlElement (for hook). Added documentation.
+  Use StringTools.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: added hook calls & management.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: added. Hook to customize XML output.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: call plug-in XmlOutputterHook
+  when writing XML output. Modified so that memory is freed before
+  unloading the test plug-in (caused crash when freeing the XmlDocument).
+
+* examples/ReadMe.txt:
+* examples/ClockerPlugIn/ReadMe.txt: added details about the plug-in
+  (usage, xml content...)
+
+* examples/ClockerPlugIn/ClockerModel.h:
+* examples/ClockerPlugIn/ClockerModel.cpp: extracted from ClockerListener.
+  Represents the test hierarchy and tracked time for each test.
+
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/ClockerListener.cpp: extracted test hierarchy
+  tracking to ClockerModel. Replaced the 'flat' view option with a 'text'
+  option to print the timed test tree to stdout.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp: updated to hook the XML
+  output and use the new classes.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: added. XmlOutputterHook to
+  includes the timed test hierarchy and test timing in the XML output.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added new test cases.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: added tests for
+  XmlOutputterHook.
+@
+text
+@d8 1
+d26 1
+a26 2
+ClockerXmlHook::endDocument( CppUnit::XmlDocument *document,
+                             CppUnit::XmlElement *rootNode )
+d29 1
+a29 1
+  rootNode->addElement( testTreeElement );
+d62 1
+a62 1
+                               CppUnit::XmlElement *testNode,
+d66 1
+a66 1
+  successfulTestAdded( document, testNode, test );
+d72 1
+a72 1
+                                     CppUnit::XmlElement *testNode,
+d78 3
+a80 3
+  testNode->addElement( new CppUnit::XmlElement( "TestPath", path.toString() ) );
+  testNode->addElement( new CppUnit::XmlElement( "Time",
+                               ClockerModel::timeStringFor( time ) ) );
+d86 1
+a86 1
+                                 CppUnit::XmlElement *statisticsNode )
+d88 1
+a88 1
+  statisticsNode->addElement( 
+d91 1
+a91 1
+  statisticsNode->addElement( 
+@
+

@@ -1,0 +1,229 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.2
+date	2002.08.03.15.47.52;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.07.16.22.59.22;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* include/cppunit/Exception.h:
+* src/cppunit/Exception.h: added setMessage().
+
+* include/cppunit/Protector.h:
+* src/cppunit/Protector.cpp: added class ProtectorGuard. Change the
+  reportXXX() method to support Exception passing and SourceLine.
+
+* include/cppunit/TestCaller.h: removed 'expect exception' features.
+  It is now handled by ExceptionTestCaseDecorator and TestCaller no
+  longer need default template argument support.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/extensions/TestCaller.h: runTest() is now public
+  instead of protected, so that it can be decorated.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.h: added pushProtector() and popProtector()
+  methods. This allow user to specify their own exception trap when
+  running test case.
+
+* include/cppunit/extensions/TestDecorator.h:
+* src/cppunit/TestDecorator.cpp: added. Extracted from TestDecorator.h.
+  The test passed to the constructor is now owned by the decorator.
+
+* include/cppunit/extensions/TestCaseDecorator.h:
+* src/cppunit/TestCaseDecorator.cpp: added. Decorator for TestCase
+  setUp(), tearDown() and runTest().
+
+* include/cppunit/extensions/ExceptionTestCaseDecorator.h: added.
+  TestCaseDecorator to expect that a specific exception is thrown.
+
+* include/cppunit/extensions/HelperMacros.h: updated against TestCaller
+  change.
+
+* src/cppunit/DefaultFunctor.h: fixed bug (did not return underlying
+  test return code).
+
+* src/cppunit/ProtectorChain.cpp: fixed bug in chaing return code.
+
+* src/cppunit/DefaultFunctor.h: fixed bug.
+
+* src/msvc6/testrunner/ActiveTest.h:
+* src/msvc6/testrunner/ActiveTest.cpp: updated against
+  TestCaseDecorator ownership policy change. Moved inline functions
+  to .cpp.
+
+* examples/cppunittest/TestSetUpTest.cpp: updated to use MockTestCase
+  and against the new ownership policy.
+
+* examples/cppunittest/TestDecoratorTest.cpp:
+* examples/cppunittest/RepeatedTestTest.cpp: updated against
+  TestDecorator ownership policy change.
+
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.h:
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.cpp: added. Unit
+  tests for ExceptionTestCaseDecoratorTest.
+@
+text
+@#include <cppunit/Exception.h>
+#include <cppunit/Message.h>
+#include <cppunit/Protector.h>
+#include <cppunit/TestResult.h>
+#include "ProtectorContext.h"
+#include <memory>
+
+CPPUNIT_NS_BEGIN
+
+Functor::~Functor()
+{
+}
+
+
+Protector::~Protector()
+{
+}
+
+
+void 
+Protector::reportError( const ProtectorContext &context,
+                        const Exception &error ) const
+{
+  std::auto_ptr<Exception> actualError( error.clone() );
+  actualError->setMessage( actualMessage( actualError->message(), context ) );
+  context.m_result->addError( context.m_test, 
+                              actualError.release() );
+}
+
+
+
+void 
+Protector::reportError( const ProtectorContext &context,
+                        const Message &message,
+                        const SourceLine &sourceLine ) const
+{
+  reportError( context, Exception( message, sourceLine ) );
+}
+
+
+void 
+Protector::reportFailure( const ProtectorContext &context,
+                          const Exception &failure ) const
+{
+  std::auto_ptr<Exception> actualFailure( failure.clone() );
+  actualFailure->setMessage( actualMessage( actualFailure->message(), context ) );
+  context.m_result->addFailure( context.m_test, 
+                                actualFailure.release() );
+}
+
+
+Message 
+Protector::actualMessage( const Message &message,
+                          const ProtectorContext &context ) const
+{
+  Message theActualMessage;
+  if ( context.m_shortDescription.empty() )
+    theActualMessage = message;
+  else
+  {
+    theActualMessage = Message( context.m_shortDescription, 
+                                message.shortDescription() );
+    theActualMessage.addDetail( message );
+  }
+
+  return theActualMessage;
+}
+
+
+
+
+ProtectorGuard::ProtectorGuard( TestResult *result,
+                                              Protector *protector )
+    : m_result( result )
+{
+  m_result->pushProtector( protector );
+}
+
+
+ProtectorGuard::~ProtectorGuard()
+{
+  m_result->popProtector();
+}
+
+
+CPPUNIT_NS_END
+@
+
+
+1.1
+log
+@* include/cppunit/Protector.h:
+* src/cppunit/Protector.cpp: added. Base class for protectors.
+
+* src/cppunit/DefaultProtector.h:
+* src/cppunit/DefaultProtector.cpp: added. Implementation of the default
+  protector used to catch std::exception and any other exception.
+
+* src/cppunit/ProtectorChain.h:
+* src/cppunit/ProtectorChain.cpp: added. Implementation of a chain of
+  protector, allowing catching custom exception and implementation of
+  expected exception.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestResult.cpp: updated to use protector.
+@
+text
+@d6 1
+d21 2
+a22 3
+Protector::reportTestFailure( const Message &message,
+                              const ProtectorContext &context,
+                              bool isError )
+d24 33
+a56 1
+  Message actualMessage;
+d58 1
+a58 1
+    actualMessage = message;
+d61 3
+a63 3
+    actualMessage = Message( context.m_shortDescription, 
+                             message.shortDescription() );
+    actualMessage.addDetail( message );
+d66 17
+a82 4
+  if ( isError )
+    context.m_result->addError( context.m_test, new Exception( message ) );
+  else
+    context.m_result->addFailure( context.m_test, new Exception( message ) );
+@
+

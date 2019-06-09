@@ -1,0 +1,420 @@
+head	1.2;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.2
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.2
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.2
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2004.11.16.08.47.29;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.11.15.20.41.12;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* added a bit about functional testing
+@
+text
+@===============================
+CppUnit 2 features presentation
+===============================
+
+:Author: Baptiste Lepilleur
+:Contact: blep@@users.sourceforge.net
+
+.. _`Open Test`: opentest.html
+
+.. contents::
+
+Support for unit testing and functional testing
+===============================================
+
+The framework offers the traditional features found in unit testing framework
+(assertions, grouping tests in suite...). A significant move has been made to 
+provide more support for functional test:
+
+* `rich test description`_
+* `rich test result`_
+* `non aborting assertions`_
+* `test monitoring`_
+
+Supports for quick develop/test cycle
+=====================================
+
+The framework help having a quick develop/test cycle with the following 
+features:
+
+* test factory registry to reduce build time (only the modified test 
+  source file need to be recompiled)
+* compiler format source location of failed assertion to jump straight
+  to the assertion in the source code
+* detailed diagnostic on assertion failure, frequently avoiding the
+  need to run the debugger
+* test plug-in to reduce link-time on large project
+
+In a well-tuned environment the develop/test cycle can be as short as a few seconds,
+as you usually only recompile only two translation units (the test and
+the tested implementation), and run the test automatically after a 
+successful build. This makes test driven design possible in C++.
+
+Component based testing with test plug-in
+=========================================
+
+Tests can be embedded into the dynamic library to test. An application
+provided with the framework is used to run the test contained in a
+dynamic library. The application can run the test of a
+specific dynamic library or of multiple dynamic libraries at once.
+
+Test-plug in also help separating the tests from the way they are run, 
+thus allowing to centralize the way tests are run and their result
+reported.
+
+.. _`test monitoring`:
+
+Test monitor to detect crash and infinite loop
+==============================================
+
+The framework provides easy mechanism to monitor the test run. It can 
+automatically spawn a child process that run the test and monitor it
+for crash or infinite loop. In the case of infinite loop it terminates
+the child process. If either a crash or an infinite loop occurred, a
+new child process is spawned and testing resume after the problematic
+test case.
+
+Test monitoring is provided by most test drivers of `Open Test`_.
+
+Text test driver
+=====================
+
+A text test driver is provided by `Open Test`_ to. It is commonly used in a 
+post-build step to run unit test with failure location in a compiler like 
+format for integration with the development environment.
+
+Graphical test driver
+=====================
+
+Graphical test driver are provided by `Open Test`_ to:
+
+* navigate test hierarchy
+* run a specific test or test suite
+* browse test result
+* and more...
+
+Open test runner interface
+==========================
+
+The test drivers (the components that run and monitor the tests) can work
+with any test runner that implements the `Open Test`_ interface. This
+means that the framework text and graphical test drivers can be used to run and 
+monitor tests implemented using another test framework as long as 
+the `Open Test`_ interface can be implemented for that other framework.
+
+More detail can be found in the `Open Test`_ document.
+
+Flexible output of test result
+==============================
+
+The result of a test run is thoroughly inspectable. Outputter are 
+provided to output the result in multiple format, such as XML for
+integration in a tool chain, or a human readable format with
+compiler like assertion location for integration with IDE.
+
+Extensive test driver configuration
+===================================
+
+Test drivers can be configured either using the command-line or
+persistent configuration files. 
+
+The configuration management is designed in such a way that new
+configuration options can easily be added.
+
+Custom assertion support
+========================
+
+The assertion design separate the assertion location tracking
+from the function call used to implement the assertion.
+
+This means that assertion functions can have a variable number of 
+parameters, and that default parameters are allowed.
+
+One of the advantages of writing custom assertions is that in addition
+to detecting that the assertion failed, a detailed diagnostic can be
+provided. For example, when comparing two structured trees, 
+knowing that they are different let you know that something is wrong, 
+but not *what*. With custom assertions, the assertion can be tested, and
+a detailed diagnostic based on the knowledge of what the structure
+represent and what would be useful to diagnostic the failure can
+be reported.
+
+An application of advanced assertions can be found in 
+`enumeration and string assertions`_.
+
+(Notes: should move the detail below somewhere else.)
+
+Here is an example of how the assertion ``CPPUT_FAIL( "bad parameters." )`` 
+is expanded.
+
+The assertion is defined as follow: ::
+
+	# define CPPUT_FAIL              \
+	   CPPUT_BEGIN_ASSERTION_MACRO() \
+	   ::CppUT::fail
+
+Which is expanded into: ::
+
+	::CppUT::setCheckPointLocation( 
+		::CppUT::Location( __FILE__, __LINE__ ) ), // notes the comma
+	::CppUT::fail
+
+Hence, the code ``CPPUT_FAIL( "bad parameters." )`` first call 
+``SetCheckPointLocation`` to memorize where the assertion occurred in
+the source code, and then call the function ``fail`` with the parameter(s)
+specified by the user. As the parameters are not part of the macro,
+their number can vary.
+
+.. _`non aborting assertions`:
+
+Non aborting assertions support
+===============================
+
+The framework provides both assertions that abort the current test (throwing
+an exception), and assertions that do not abort the current test but 
+keep track of the failures. Those assertions are named respectively 
+"aborting assertions " and "checking assertions".
+
+The implementation of this feature relies on a mechanism similar to 
+`setCheckPointLocation()` described in `Custom assertion support`_, 
+meaning that all aborting assertions can easily be made available as 
+checking assertions and vice versa.
+
+.. _`rich test result`:
+
+Test result as property tree for integration
+============================================
+
+The result of each test case run is always a property tree. All data
+related to the execution of a test case are stored as property in this
+tree. For instance, the status of the test (success, failure...)
+is just a specific property in this tree.
+
+Using a property tree provide a lot of flexibility as it allows
+association of complex data to each test run such as:
+
+* duration of the test
+* log messages
+* alternative test execution status (succeeded with warning, failure
+  because of missing resources...)
+* actual and expected value
+
+Being able to report actual and expected values in a test result is a
+very powerful features. For example, if you are generating input values
+from a spreadsheet application, after running the test, you can put the
+actual values back into the spreadsheet.
+
+Properties can be added to result result during the test case run. This
+makes it easy to provide rich structure output for functional testing.
+
+.. _`rich test description`:
+
+Test description as property tree
+=================================
+
+Each test has a property tree. The property tree can be used to store
+descriptive data for each test. Property can be marked as "inheritable",
+meaning all tests of a test suite inherit this property (but they can
+override it).
+
+Here is some example of properties that can be associated with a test:
+
+* time-out delay (used by test driver to detect infinite loop and dead-lock)
+* description
+
+.. _stringize:
+
+Flexible conversion of object to string for assertion
+=====================================================
+
+The framework provides a specific service to convert an object into a 
+string. This service is used by assertions to generate diagnostic.
+
+Two operations are provided by the service:
+
+* conversion of a string into the standard std::string type.
+* conversion of an object into a string. If the object is a string 
+  type it is automatically quoted and escaped.
+
+While the default implementation relies on std::ostream for conversion
+of object to string, an alternative implementation can easily be 
+provided (for platform such eVC++ 4 which do not provide iostream).
+
+If the target compiler supports function template partial specialization
+and the feature is enabled in the configuration, pointer will be
+automatically deferenced.
+
+Flexible test for equality for assertion
+========================================
+
+The framework provides a specific service to check if two objects are
+equal.
+
+If the target compiler supports function template partial specialization
+and the feature is enabled in the configuration, pointer will be
+automatically deferenced.
+
+.. _`enumeration and string assertions`:
+
+Advanced assertions providing detailed diagnostic
+=================================================
+
+Two advanced assertions facility are provided:
+
+* enumeration based assertions
+* string based assertions
+
+Enumeration based assertions
+----------------------------
+
+The enumeration based assertions work with the concept of enumerator.
+An enumerator implements a specific interface allowing enumeration
+of the elements of a collection. The CppTL library provides a complete
+implementation of enumerator that supports STL containers and iterators
+and can be very easily extended to support other container interfaces.
+
+The following assertions are provided for enumeration:
+
+* ensure that two enumerations have the same elements in the same order 
+  (sequence). On failure, the position of the first different element
+  is reported, as well as the list of identical elements, 
+  and the remaining part of the expected and actual lists of elements.
+* ensure that two enumerations have the same elements regardless 
+  of the order (set). On failure, the list of extraneous and missing
+  elements is reported, as well as the list of actual and expected 
+  elements.
+
+*insert example here*
+
+
+String based assertions
+-----------------------
+
+The following assertions are provided for string:
+
+* ensure two strings are equals.
+* ensure a string starts with an expected string.
+* ensure a string ends with an expected string.
+* ensure a string contains another expected string.
+
+String assertions works with heterogeneous string types and use the
+stringize_ mechanism provided by the framework to convert object to string.
+
+String assertions provide detailed diagnostics on failure, escaping the
+string over multiple lines when it contains \\n or \\r character.
+
+*insert example here*
+
+Create test cases using generic functor
+=======================================
+
+Test cases delegate the actual task of setting up the test, running the test and 
+cleaning up after the test (setUp/run/tearDown) to generic functors.
+
+A generic functor can be created from a C function, an object instance and 
+a member function or from a functor. When a function with parameters
+used for testing, its parameters can be bound to specific value, hence
+creating a generic functor that requires no parameter.
+
+*insert example here*
+
+Resource Acquisition Is Initialization idiom (RAII)
+===================================================
+
+The framework uses the fundamental *RAII* C++ idiom 
+(Resource Acquisition Is Initialization idiom) for clarity.
+
+Smart-pointer are used to pass dynamically allocated pointer around.
+
+
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   sentence-end-double-space: t
+   fill-column: 70
+   End:
+
+@
+
+
+1.1
+log
+@* added some documentations: features, open test, todo for cppunit 2 and open test. docutils is needed to build the doc.
+@
+text
+@d12 12
+d38 1
+a38 1
+In a well-tuned environment that cycle can be as short as a few seconds,
+d51 1
+a51 1
+Test-plug in also help separating the tests from how they are run, 
+d55 2
+d67 9
+d79 1
+a79 1
+Graphical test driver are provided to:
+d84 1
+d91 2
+a92 2
+means that the framework graphical test driver can be used to run and 
+monitor test implemented using another test framework as long as 
+d123 14
+d158 1
+a158 11
+One of the advantages of writing custom assertions is that in addition
+to detecting that the assertion failed, a detailed diagnostic can be
+provided. For example, when comparing two structured trees, 
+knowing that they are different let you know that something is wrong, 
+but not *what*. With custom assertions, the assertion can be tested, and
+a detailed diagnostic based on the knowledge of what the structure
+represent and what would be useful to diagnostic the failure can
+be reported.
+
+An application of advanced assertions can be found in 
+`enumeration and string assertions`_.
+d173 3
+a175 1
+Property tree as test result for integration
+d197 7
+a203 2
+Property tree associated to each test declaration
+=================================================
+a246 5
+[Notes: current implementation should be enhanced to detect if a 
+specific overload is provided for comparison of AType and BType
+is provided, and automatically fallback on the generic == otherwise.
+This is similar to the convert to string trick used by stringize().]
+
+d260 1
+a260 1
+The enumeration based assertions works with the concept of enumerator.
+d290 1
+a290 1
+String assertions works with heterogeneous string type and use the
+@
+

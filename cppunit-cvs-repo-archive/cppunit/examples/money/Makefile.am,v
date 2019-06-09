@@ -1,0 +1,156 @@
+head	1.5;
+access;
+symbols
+	REL_1_12_1:1.5
+	REL_1_11_6:1.5
+	REL_1_11_4:1.5
+	REL_1_11_0:1.5
+	TG_CPPUNIT_NO_STREAM_AFTER:1.5
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.5
+	REL_1_10_2:1.5
+	REL_1_10_0:1.5
+	REL_1_9_14:1.5
+	REL_1_9_12:1.5
+	BRANCH_1_9_12:1.5.0.2
+	TG_BRANCH_1_9_12:1.5
+	TG_BEFORE_HPUX_PLUGIN:1.4
+	TG_BEFORE_SUN4_PORT:1.4
+	REL_1_9_10:1.4
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	REL_1_9_6:1.4;
+locks; strict;
+comment	@# @;
+
+
+1.5
+date	2003.05.07.20.07.16;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.04.21.12.50.44;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.21.12.39.35;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.21.12.36.35;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.21.10.57.52;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* Makefile.am
+* configure.in
+* config/ac_dll.m4
+* examples/cppunittest/Makefile.am
+* examples/hierarchy/Makefile.am
+* examples/money/Makefile.am
+* examples/simple/Makefile.am
+* include/cppunit/config/SelectDllLoader.h
+* include/cppunit/plugin/TestPlugIn.h
+* include/cppunit/tools/Algorithm.h
+* src/DllPlugInTester/Makefile.am
+* src/cppunit/Makefile.am
+* src/cppunit/TestDecorator.cpp
+* src/cppunit/ShlDynamicLibraryManager.cpp
+* src/cppunit/UnixDynamicLibraryManager.cpp
+* src/cppunit/Win32DynamicLibraryManager.cpp: applied patch from
+  Abdessattar Sassi <abdesassi@@users.sourceforge.net> to add support
+  for plug-in to hp-ux.
+@
+text
+@# Include cookbook.html in distro
+EXTRA_DIST = money.dsp money.dsw configure.in StdAfx.cpp
+
+INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include
+
+
+# Rules to make the production code
+#bin_PROGRAMS = Money
+#main_SOURCES = Money.h
+
+# Rules for the test code (use `make check` to execute)
+TESTS = MoneyApp
+check_PROGRAMS = $(TESTS)
+
+MoneyApp_SOURCES = Money.h MoneyTest.h MoneyTest.cpp MoneyApp.cpp StdAfx.h
+MoneyApp_CXXFLAGS = $(CPPUNIT_CFLAGS)
+MoneyApp_LDADD= \
+  $(top_builddir)/src/cppunit/libcppunit.la 
+
+MoneyApp_LDFLAGS = $(CPPUNIT_LIBS) $(LIBADD_DL)
+
+@
+
+
+1.4
+log
+@* fixed
+@
+text
+@d20 1
+a20 1
+MoneyApp_LDFLAGS = $(CPPUNIT_LIBS) -ldl
+@
+
+
+1.3
+log
+@* fixed uppercase problem
+@
+text
+@d4 3
+d14 1
+d17 3
+@
+
+
+1.2
+log
+@* fixed double definition of LDFLAGS
+@
+text
+@d2 1
+a2 1
+EXTRA_DIST = Money.dsp Money.dsw configure.in StdAfx.cpp
+@
+
+
+1.1
+log
+@* src/DllPlugInTester/makefile.am: removed ld.so from LDADD flags.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: rewrote, fixed problem
+  with double quotes in command line...
+
+* src/DllPlugInTester/CommandLineParserTest.h:
+* src/DllPlugInTester/CommandLineParserTest.cpp:
+* src/DllPlugInTester/DllPlugInTesterTest.cpp: added, unit tests for
+  CommandLineParser.
+
+* src/msvc6/TestPlugIn/*: removed.
+@
+text
+@d13 2
+a14 2
+MoneyApp_LDFLAGS = $(CPPUNIT_LIBS)
+MoneyApp_LDFLAGS = -ldl
+@
+

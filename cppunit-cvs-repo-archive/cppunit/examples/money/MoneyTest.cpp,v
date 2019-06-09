@@ -1,0 +1,186 @@
+head	1.4;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.4
+date	2008.02.21.03.48.05;	author smr99;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.10.13.21.25.39;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.21.12.50.44;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.21.10.57.52;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@Replace deprecated CPPUNIT_TEST_EXCEPTION with code using CPPUNIT_ASSERT_THROW.
+@
+text
+@// MoneyTest.cpp
+
+#include "StdAfx.h"
+#include <cppunit/config/SourcePrefix.h>
+#include "Money.h"
+#include "MoneyTest.h"
+
+// Registers the fixture into the 'registry'
+CPPUNIT_TEST_SUITE_REGISTRATION( MoneyTest );
+
+
+void 
+MoneyTest::setUp()
+{
+}
+
+
+void 
+MoneyTest::tearDown()
+{
+}
+
+
+void 
+MoneyTest::testConstructor()
+{
+  // Set up
+  const std::string currencyFF( "FF" );
+  const double longNumber = 1234.5678;
+
+  // Process
+  Money money( longNumber, currencyFF );
+
+  // Check
+  CPPUNIT_ASSERT_EQUAL( longNumber, money.getAmount() );
+  CPPUNIT_ASSERT_EQUAL( currencyFF, money.getCurrency() );
+}
+
+
+void
+MoneyTest::testEqual()
+{
+  // Set up
+  const Money money123FF( 123, "FF" );
+  const Money money123USD( 123, "USD" );
+  const Money money12FF( 12, "FF" );
+  const Money money12USD( 12, "USD" );
+
+  // Process & Check
+  CPPUNIT_ASSERT( money123FF == money123FF );    // ==
+  CPPUNIT_ASSERT( money12FF != money123FF );     // != amount
+  CPPUNIT_ASSERT( money123USD != money123FF );   // != currency
+  CPPUNIT_ASSERT( money12USD != money123FF );    // != currency and != amount
+}
+
+
+void 
+MoneyTest::testAdd()
+{
+  // Set up
+  const Money money12FF( 12, "FF" );
+  const Money expectedMoney( 135, "FF" );
+
+  // Process
+  Money money( 123, "FF" );
+  money += money12FF;
+
+  // Check
+  CPPUNIT_ASSERT_EQUAL( expectedMoney, money );           // add works
+  CPPUNIT_ASSERT( &money == &(money += money12FF) );  // add returns ref. on 'this'.
+}
+
+
+void 
+MoneyTest::testAddThrow()
+{
+  // Set up
+  const Money money123FF( 123, "FF" );
+
+  // Process
+  Money money( 123, "USD" );
+  CPPUNIT_ASSERT_THROW( money += money123FF, IncompatibleMoneyError );
+}
+@
+
+
+1.3
+log
+@* removed most warning when compiling with vc++ 6sp6.
+* added assert equal usage
+@
+text
+@d82 1
+a82 1
+  money += money123FF;        // should throw an exception
+@
+
+
+1.2
+log
+@* fixed
+@
+text
+@d4 1
+d69 1
+a69 1
+  CPPUNIT_ASSERT( expectedMoney == money );           // add works
+@
+
+
+1.1
+log
+@* src/DllPlugInTester/makefile.am: removed ld.so from LDADD flags.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: rewrote, fixed problem
+  with double quotes in command line...
+
+* src/DllPlugInTester/CommandLineParserTest.h:
+* src/DllPlugInTester/CommandLineParserTest.cpp:
+* src/DllPlugInTester/DllPlugInTesterTest.cpp: added, unit tests for
+  CommandLineParser.
+
+* src/msvc6/TestPlugIn/*: removed.
+@
+text
+@d3 1
+a3 1
+#include "stdafx.h"
+@
+

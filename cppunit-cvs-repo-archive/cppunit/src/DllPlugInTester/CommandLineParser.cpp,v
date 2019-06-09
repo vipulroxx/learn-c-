@@ -1,0 +1,674 @@
+head	1.7;
+access;
+symbols
+	REL_1_12_1:1.7
+	REL_1_11_6:1.6
+	REL_1_11_4:1.6
+	REL_1_11_0:1.6
+	TG_CPPUNIT_NO_STREAM_AFTER:1.6
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.6
+	REL_1_10_2:1.6
+	REL_1_10_0:1.5
+	REL_1_9_14:1.5
+	REL_1_9_12:1.5
+	BRANCH_1_9_12:1.5.0.2
+	TG_BRANCH_1_9_12:1.5
+	TG_BEFORE_HPUX_PLUGIN:1.5
+	TG_BEFORE_SUN4_PORT:1.5
+	REL_1_9_10:1.5
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	REL_1_9_6:1.3;
+locks; strict;
+comment	@// @;
+
+
+1.7
+date	2007.01.12.05.56.34;	author smr99;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.06.18.08.15.29;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.08.27.21.51.18;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.04.25.19.05.22;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.21.10.57.52;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.20.21.56.54;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.20.21.51.33;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@Arrange class initializers in correct order.
+@
+text
+@#include "CommandLineParser.h"
+
+
+CommandLineParser::CommandLineParser( int argc, 
+                                      const char *argv[] )
+    : m_useCompiler( false )
+    , m_useXml( false )
+    , m_briefProgress( false )
+    , m_noProgress( false )
+    , m_useText( false )
+    , m_useCout( false )
+    , m_waitBeforeExit( false )
+    , m_currentArgument( 0 )
+{
+  for ( int index =1; index < argc; ++index )
+  {
+    std::string argument( argv[index ] );
+    m_arguments.push_back( argument );
+  }
+}
+
+
+CommandLineParser::~CommandLineParser()
+{
+}
+
+
+void 
+CommandLineParser::parse()
+{
+  while ( hasNextArgument() )
+  {
+    getNextOption();
+    if ( isOption( "c", "compiler" ) )
+      m_useCompiler = true;
+    else if ( isOption( "x", "xml" ) )
+    {
+      m_useXml = true;
+      m_xmlFileName = getNextOptionalParameter();
+    }
+    else if ( isOption( "s", "xsl" ) )
+      m_xsl = getNextParameter();
+    else if ( isOption( "e", "encoding" ) )
+      m_encoding = getNextParameter();
+    else if ( isOption( "b", "brief-progress" ) )
+      m_briefProgress = true;
+    else if ( isOption( "n", "no-progress" ) )
+      m_noProgress = true;
+    else if ( isOption( "t", "text" ) )
+      m_useText = true;
+    else if ( isOption( "o", "cout" ) )
+      m_useCout = true;
+    else if ( isOption( "w", "wait" ) )
+      m_waitBeforeExit = true;
+    else if ( !m_option.empty() )
+      fail( "Unknown option" );
+    else if ( hasNextArgument() )
+      readNonOptionCommands();
+  }
+}
+
+
+void 
+CommandLineParser::readNonOptionCommands()
+{
+  if ( argumentStartsWith( ":" ) )
+    m_testPath = getNextArgument().substr( 1 );
+  else
+  {
+    CommandLinePlugInInfo plugIn;
+    int indexParameter = getCurrentArgument().find( '=' );
+    if ( indexParameter < 0 )
+      plugIn.m_fileName = getCurrentArgument();
+    else
+    {
+      plugIn.m_fileName = getCurrentArgument().substr( 0, indexParameter );
+      std::string parameters = getCurrentArgument().substr( indexParameter +1 );
+      plugIn.m_parameters = CPPUNIT_NS::PlugInParameters( parameters );
+    }
+    
+    m_plugIns.push_back( plugIn );
+
+    getNextArgument();
+  }
+}
+
+
+bool 
+CommandLineParser::hasNextArgument() const
+{
+  return m_currentArgument < m_arguments.size();
+}
+
+
+std::string 
+CommandLineParser::getNextArgument()
+{
+  if ( hasNextArgument() )
+    return m_arguments[ m_currentArgument++ ];
+  return "";
+}
+
+
+std::string 
+CommandLineParser::getCurrentArgument() const
+{
+  if ( m_currentArgument < m_arguments.size() )
+    return m_arguments[ m_currentArgument ];
+  return "";
+}
+
+
+bool 
+CommandLineParser::argumentStartsWith( const std::string &expected ) const
+{
+  return getCurrentArgument().substr( 0, expected.length() ) == expected;
+}
+
+
+void 
+CommandLineParser::getNextOption()
+{
+  if ( argumentStartsWith( "-" )  ||  argumentStartsWith( "--" ) )
+    m_option = getNextArgument();
+  else
+    m_option = "";
+}
+
+
+bool 
+CommandLineParser::isOption( const std::string &shortName,
+                             const std::string &longName )
+{
+  return (m_option == "-" + shortName)  ||
+         (m_option == "--" + longName);
+}
+
+
+std::string 
+CommandLineParser::getNextParameter()
+{
+  if ( !hasNextArgument() )
+    fail( "missing parameter" );
+  return getNextArgument();
+}
+
+
+std::string
+CommandLineParser::getNextOptionalParameter()
+{
+  if ( argumentStartsWith( "-" )  ||  argumentStartsWith( ":" ) )
+    return "";
+  return getNextArgument();
+}
+
+
+void 
+CommandLineParser::fail( std::string message )
+{
+  throw CommandLineParserException( "while parsing option " + m_option+
+            ",\n" + message );
+}
+
+
+bool 
+CommandLineParser::useCompilerOutputter() const
+{
+  return m_useCompiler;
+}
+
+
+bool 
+CommandLineParser::useXmlOutputter() const
+{
+  return m_useXml;
+}
+
+
+std::string 
+CommandLineParser::getXmlFileName() const
+{
+  return m_xmlFileName;
+}
+
+
+std::string 
+CommandLineParser::getXmlStyleSheet() const
+{
+  return m_xsl;
+}
+
+
+std::string 
+CommandLineParser::getEncoding() const
+{
+  return m_encoding;
+}
+
+
+bool 
+CommandLineParser::useBriefTestProgress() const
+{
+  return m_briefProgress;
+}
+
+
+bool 
+CommandLineParser::noTestProgress() const
+{
+  return m_noProgress;
+}
+
+
+bool 
+CommandLineParser::useTextOutputter() const
+{
+  return m_useText;
+}
+
+
+bool 
+CommandLineParser::useCoutStream() const
+{
+  return m_useCout;
+}
+
+
+bool 
+CommandLineParser::waitBeforeExit() const
+{
+  return m_waitBeforeExit;
+}
+
+
+int 
+CommandLineParser::getPlugInCount() const
+{
+  return m_plugIns.size(); 
+}
+
+CommandLinePlugInInfo 
+CommandLineParser::getPlugInAt( int index ) const
+{
+  return m_plugIns[ index ];
+}
+
+
+std::string 
+CommandLineParser::getTestPath() const
+{
+  return m_testPath;
+}
+
+@
+
+
+1.6
+log
+@* src/DllPlugInTester/*.cpp: bug #941625, string literal using char *
+  instead of const char *. Patch contributed by Curt Arnold has been
+  applied.
+@
+text
+@d6 1
+a6 2
+    : m_currentArgument( 0 )
+    , m_useCompiler( false )
+d13 1
+@
+
+
+1.5
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d5 1
+a5 1
+                                      char *argv[] )
+@
+
+
+1.4
+log
+@* src/cppunit/XmlOutputter.cpp: bugfix, use ISO-8859-1 encoding if an
+  empty string is given.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp:
+* src/DllPlugInTester/DllPlugInTester.cpp: added option -w to wait for
+  the user to press a key before exiting (Philippe Lavoie patch,
+  with change).
+@
+text
+@d78 1
+a78 1
+      plugIn.m_parameters.push_back( parameters );
+@
+
+
+1.3
+log
+@* src/DllPlugInTester/makefile.am: removed ld.so from LDADD flags.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: rewrote, fixed problem
+  with double quotes in command line...
+
+* src/DllPlugInTester/CommandLineParserTest.h:
+* src/DllPlugInTester/CommandLineParserTest.cpp:
+* src/DllPlugInTester/DllPlugInTesterTest.cpp: added, unit tests for
+  CommandLineParser.
+
+* src/msvc6/TestPlugIn/*: removed.
+@
+text
+@d13 1
+d53 2
+d225 7
+@
+
+
+1.2
+log
+@* changed .at() to []
+@
+text
+@d6 1
+a6 1
+    : m_currentIndex( 0 )
+d16 2
+a17 3
+    if ( index > 1 )
+      m_line += " ";
+    m_line += argv[index];
+d30 1
+a30 1
+  while ( hasNext() )
+d38 1
+a38 1
+      m_xmlFileName = getOptionalParameter();
+d41 1
+a41 1
+      m_xsl = getParameter();
+d43 1
+a43 1
+      m_encoding = getParameter();
+d54 1
+a54 1
+    else if ( hasNext() )
+d60 2
+a61 11
+bool 
+CommandLineParser::isOption( const std::string &shortName,
+                             const std::string &longName )
+{
+  return (m_option == "-" + shortName)  ||
+         (m_option == "--" + longName);
+}
+
+
+bool 
+CommandLineParser::hasNext() const
+d63 2
+a64 9
+  return m_currentIndex < m_line.length();
+}
+
+
+std::string
+CommandLineParser::getParameter()
+{
+  if ( startsWith( "\"" ) )
+    return getQuotedParameter();
+a65 23
+    return getUnquotedParameter();
+}
+
+
+std::string
+CommandLineParser::getUnquotedParameter()
+{
+  std::string parameter;
+
+  if ( !hasNext() )
+    fail( "missing option parameter" );
+
+  while ( hasNext()  &&  !isSpace() )
+    parameter += next();
+  return parameter;
+}
+
+
+std::string
+CommandLineParser::getQuotedParameter()
+{
+  std::string parameter;
+  while ( !startsWith( "\"" ) )
+d67 5
+a71 4
+    if ( !hasNext() )
+      fail( "Unmatched \" in option parameter" );
+
+    if ( startsWith( "\\" ) )
+d73 3
+a75 3
+      skipNext();
+      if ( !hasNext() )
+        fail( "Missing escaped character in option parameter" );
+d77 2
+d80 1
+a80 1
+    parameter += next();
+a81 1
+  return parameter;
+d85 2
+a86 2
+std::string
+CommandLineParser::getOptionalParameter()
+d88 1
+a88 3
+  if ( !hasNext()  ||  startsWith( "-" )  ||  startsWith( ":" ) )
+    return "";
+  return getParameter();
+d92 2
+a93 2
+void 
+CommandLineParser::getNextOption()
+d95 3
+a97 9
+  skipSpaces();
+  m_option = "";
+  if ( startsWith( "-" )  ||  startsWith( "--" ) )
+  {
+    while ( hasNext()  &&  !isSpace() )
+      m_option += next();
+
+    skipSpaces();
+  }
+d101 2
+a102 2
+void 
+CommandLineParser::readNonOptionCommands()
+d104 3
+a106 22
+  if ( startsWith( ":" ) )
+  {
+    skipNext();
+    m_testPath = getParameter();
+  }
+  else
+  {
+    CommandLinePlugInInfo plugIn;
+    while ( hasNext()  &&  !isSpace()  &&  !startsWith( "=" ) )
+      plugIn.m_fileName += next();
+
+    std::string parameters;
+    if ( startsWith( "=" ) )
+    {
+      m_option = plugIn.m_fileName;
+      skipNext();
+      parameters = getParameter();
+    }
+    
+    plugIn.m_parameters.push_back( parameters );
+    m_plugIns.push_back( plugIn );
+  }
+d111 1
+a111 1
+CommandLineParser::startsWith( const std::string &expected ) const
+d113 1
+a113 1
+  return m_line.substr( m_currentIndex, expected.length() ) == expected;
+d118 1
+a118 1
+CommandLineParser::skipSpaces()
+d120 4
+a123 2
+  while ( hasNext()  &&  isSpace() )
+    skipNext();
+d128 2
+a129 1
+CommandLineParser::isSpace() const
+d131 2
+a132 4
+  if ( !hasNext() )
+    return true;
+
+  return isSpace( m_line[m_currentIndex] );
+d136 2
+a137 2
+bool 
+CommandLineParser::isSpace( unsigned char c )
+d139 3
+a141 1
+  return c <= 32;
+d145 2
+a146 2
+char 
+CommandLineParser::next()
+d148 3
+a150 13
+  if ( !hasNext() )
+    fail( "unexpected error while parsing option" );
+
+  return m_line[ m_currentIndex++ ];
+}
+
+
+void 
+CommandLineParser::skipNext( int count )
+{
+  m_currentIndex += count;
+  if ( m_currentIndex > m_line.length() )
+    m_currentIndex = m_line.length();
+d157 2
+a158 2
+  throw CommandLineParserException( "Error while parsing option: " + m_option+
+            "\n" + message );
+a159 1
+
+@
+
+
+1.1
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@d307 1
+a307 1
+  return m_plugIns.at( index );
+@
+

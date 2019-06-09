@@ -1,0 +1,238 @@
+head	1.4;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3;
+locks; strict;
+comment	@ * @;
+
+
+1.4
+date	2007.08.19.20.13.24;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.11.09.21.16.41;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.09.06.07.17.36;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.03.03.08.13.06;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@In progress of adding CppTL::Value to replace CppTL::Any in table fixture and input based fixture. Value allows optionaly comparison, conversion to other type, conversion to string...
+@
+text
+@#ifndef CPPTL_TYPEINFO_H_INCUDED
+# define CPPTL_TYPEINFO_H_INCUDED
+
+# include <string>
+
+// /////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////
+// CTTI using std::type_info & typeid
+// /////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////
+# ifndef CPPTL_NO_RTTI
+
+#  include <typeinfo>
+
+namespace CppTL {
+
+class TypeId
+{
+public:
+   TypeId( const std::type_info &typeId )
+      : type_( &typeId )
+   {
+   }
+
+   bool operator ==( const TypeId &other ) const
+   {
+      return *type_ == *(other.type_);
+   }
+
+   bool operator !=( const TypeId &other ) const
+   {
+      return !( *this == other );
+   }
+
+   bool operator <( const TypeId &other ) const
+   {
+      // Notes: experience has proven this to be bugged:
+      // in a staticaly linked programm on AIX, 
+      // two distinct instances of std::type_info for the same type.
+      // They compared to false. Can be worked-around by comparing name though.
+      return type_->before( *(other.type_) );
+   }
+private:
+   const std::type_info *type_;
+};
+
+
+// Compile Time Type Information functions
+// //////////////////////////////////////////////////////////////////
+
+template<class AType>
+TypeId typeId( Type<AType> )
+{
+   return typeid( AType );
+}
+
+
+} // namespace CppTL
+
+
+#define CPPTL_DECLARE_TYPEINFO( AType )
+#define CPPTL_DECLARE_TYPE_AND_PTR_INFO( AType )
+
+// /////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////
+// CTTI using hande-made mecanism (template overload)
+// /////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////
+# else
+
+namespace CppTL {
+class TypeId
+{
+public:
+   TypeId( const char *type )
+      : type_( type )
+   {
+   }
+
+   bool operator <( const TypeId &other ) const
+   {
+      return strcmp( type_, other.type_) < 0;
+   }
+
+   bool operator ==( const TypeId &other ) const
+   {
+      return strcmp( type_, other.type_ ) == 0;
+   }
+
+   bool operator !=( const TypeId &other ) const
+   {
+      return !( *this == other );
+   }
+
+private:
+   const char *type_;
+};
+
+#ifdef CPPTL_NO_FUNCTION_TEMPLATE_ORDERING
+inline TypeId typeId( ... )
+#else
+template<class AType>
+inline TypeId typeId( Type<AType> )
+#endif
+{
+   return __error__typeId_function_not_overloaded;
+}
+
+} // namespace CppTL
+
+#define CPPTL_DECLARE_TYPEINFO( AType )       \
+   namespace CppTL {                          \
+      inline TypeId typeId( Type<AType> )     \
+      {                                       \
+         return TypeId( #AType );             \
+      }                                       \
+   }
+
+#define CPPTL_DECLARE_TYPE_AND_PTR_INFO( AType )       \
+   CPPTL_DECLARE_TYPEINFO( AType );                    \
+   CPPTL_DECLARE_TYPEINFO( AType * )
+
+CPPTL_DECLARE_TYPEINFO( void );
+CPPTL_DECLARE_TYPEINFO( bool );
+CPPTL_DECLARE_TYPEINFO( char );
+CPPTL_DECLARE_TYPEINFO( signed char );
+CPPTL_DECLARE_TYPEINFO( unsigned char );
+CPPTL_DECLARE_TYPEINFO( short );
+CPPTL_DECLARE_TYPEINFO( unsigned short );
+CPPTL_DECLARE_TYPEINFO( int );
+CPPTL_DECLARE_TYPEINFO( unsigned int );
+CPPTL_DECLARE_TYPEINFO( long );
+CPPTL_DECLARE_TYPEINFO( unsigned long );
+CPPTL_DECLARE_TYPEINFO( float );
+CPPTL_DECLARE_TYPEINFO( double );
+CPPTL_DECLARE_TYPEINFO( long double );
+CPPTL_DECLARE_TYPEINFO( const char * );
+CPPTL_DECLARE_TYPEINFO( const wchar_t * );
+CPPTL_DECLARE_TYPEINFO( std::string );
+CPPTL_DECLARE_TYPEINFO( std::wstring );
+
+# endif
+
+#endif // CPPTL_TYPEINFO_H_INCUDED
+@
+
+
+1.3
+log
+@- added declaration of compile type RTTI macro even if RTTI is enabled.
+@
+text
+@d37 4
+@
+
+
+1.2
+log
+@* added CPPUT_ASSERT_DOUBLES_EQUAL and CPPUT_CHECK_DOUBLES_EQUAL
+@
+text
+@d57 2
+@
+
+
+1.1
+log
+@* TypeId is a std::type_info wrapper, and provides a mechanism to support RTTI when the compiler does not provide any support.
+@
+text
+@d93 1
+d95 4
+d103 2
+d113 22
+a134 19
+
+CPPUTTOOLS_DECLARE_CTTI( char );
+CPPUTTOOLS_DECLARE_CTTI( signed char );
+CPPUTTOOLS_DECLARE_CTTI( unsigned char );
+CPPUTTOOLS_DECLARE_CTTI( short );
+CPPUTTOOLS_DECLARE_CTTI( unsigned short );
+CPPUTTOOLS_DECLARE_CTTI( int );
+CPPUTTOOLS_DECLARE_CTTI( unsigned int );
+CPPUTTOOLS_DECLARE_CTTI( long );
+CPPUTTOOLS_DECLARE_CTTI( unsigned long );
+CPPUTTOOLS_DECLARE_CTTI( float );
+CPPUTTOOLS_DECLARE_CTTI( double );
+CPPUTTOOLS_DECLARE_CTTI( long double );
+CPPUTTOOLS_DECLARE_CTTI( const char * );
+CPPUTTOOLS_DECLARE_CTTI( const wchar_t * );
+CPPUTTOOLS_DECLARE_CTTI( std::string );
+CPPUTTOOLS_DECLARE_CTTI( std::wstring );
+
+} // namespace CppTL
+a137 3
+
+
+
+@
+

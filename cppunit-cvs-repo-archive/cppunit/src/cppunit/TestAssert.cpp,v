@@ -1,0 +1,686 @@
+head	1.14;
+access;
+symbols
+	REL_1_12_1:1.14
+	REL_1_11_6:1.12
+	REL_1_11_4:1.12
+	REL_1_11_0:1.12
+	TG_CPPUNIT_NO_STREAM_AFTER:1.11
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.11
+	REL_1_10_2:1.11
+	REL_1_10_0:1.11
+	REL_1_9_14:1.11
+	REL_1_9_12:1.11
+	BRANCH_1_9_12:1.11.0.2
+	TG_BRANCH_1_9_12:1.11
+	TG_BEFORE_HPUX_PLUGIN:1.11
+	TG_BEFORE_SUN4_PORT:1.11
+	REL_1_9_10:1.11
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.9
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.8
+	REL_1_9_6:1.8
+	REL_1_9_4:1.8
+	REL_1_9_0:1.8
+	REL_1_8_0:1.8
+	REL_1_7_8:1.8
+	REL_1_7_3:1.8
+	REL_1_7_1:1.8
+	REL_1_6_2:1.6
+	BRANCH_1_6:1.6.0.2
+	REL_1_6_1:1.6
+	REL_1_6_0:1.6
+	REL_1_5_5:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.14
+date	2007.02.24.21.13.04;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2007.01.27.05.45.08;	author smr99;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2004.11.05.22.47.20;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2002.07.14.19.48.32;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2002.06.13.18.17.42;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2001.10.07.19.36.47;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.10.05.22.27.14;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.08.07.15.48.10;	author smr99;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.07.06.01.31.25;	author smr99;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.06.12.06.59.26;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.06.11.19.59.15;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.06.02.22.29.52;	author smr99;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2001.05.15.20.17.02;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.14
+log
+@* src/cppunit/TestAssert.cpp (assertDoubleEquals): Moved finite & NaN
+  tests to include/cppunit/portability/FloatingPoint.h. Changed
+  implementation assertDoubleEquals to explicitly test for NaN
+  in case of non-finite values to force equality failure in the
+  presence of NaN. Previous implementation failed on Microsoft
+  Visual Studio 6 (on this platform: NaN == NaN).
+* examples/cppunittest/TestAssertTest.cpp: Add more unit tests to
+  test the portable floating-point primitive. Added missing
+  include <limits>.
+
+* include/cppunit/portability/Makefile.am:
+* include/cppunit/portability/FloatingPoint.h: Added file. Extracted
+  isfinite() from TestAssert.cpp.
+
+* include/cppunit/config-evc4:
+* include/cppunit/config-msvc6: Added support for _finite().
+@
+text
+@#include <cppunit/TestAssert.h>
+#include <cppunit/portability/FloatingPoint.h>
+
+CPPUNIT_NS_BEGIN
+
+
+void 
+assertDoubleEquals( double expected,
+                    double actual,
+                    double delta,
+                    SourceLine sourceLine,
+                    const std::string &message )
+{
+  AdditionalMessage msg( "Delta   : " + 
+                         assertion_traits<double>::toString(delta) );
+  msg.addDetail( AdditionalMessage(message) );
+
+  bool equal;
+  if ( floatingPointIsFinite(expected)  &&  floatingPointIsFinite(actual) )
+      equal = fabs( expected - actual ) <= delta;
+  else
+  {
+    // If expected or actual is not finite, it may be +inf, -inf or NaN (Not a Number).
+    // Value of +inf or -inf leads to a true equality regardless of delta if both
+    // expected and actual have the same value (infinity sign).
+    // NaN Value should always lead to a failed equality.
+    if ( floatingPointIsUnordered(expected)  ||  floatingPointIsUnordered(actual) )
+    { 
+       equal = false;  // expected or actual is a NaN
+    }
+    else // ordered values, +inf or -inf comparison
+    {
+       equal = expected == actual;
+    }
+  }
+
+  Asserter::failNotEqualIf( !equal,
+                            assertion_traits<double>::toString(expected),
+                            assertion_traits<double>::toString(actual),
+                            sourceLine, 
+                            msg, 
+                            "double equality assertion failed" );
+}
+
+
+CPPUNIT_NS_END
+@
+
+
+1.13
+log
+@Account for non-finite values in assertDoubleEquals().
+
+Conditional inclusion of cmath rather than math.h removed since (1) it
+was never used as HAVE_CMATH is never defined, and (2) cmath may move
+isfinite() into namespace std.
+@
+text
+@d2 1
+a2 15
+
+#include <math.h>
+
+#if !defined(CPPUNIT_HAVE_ISFINITE)
+
+    static inline bool isfinite( double x )
+    {
+#if defined(CPPUNIT_HAVE_FINITE)
+	return finite( x );
+#else
+        return ( x * 0.0 ) == 0.0;
+#endif
+    }
+
+#endif
+d19 1
+a19 1
+  if ( isfinite(expected) && isfinite(actual) )
+d22 14
+a35 1
+      equal = expected == actual;
+@
+
+
+1.12
+log
+@* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: integrated Neil Ferguson patch for missing
+  _MESSAGE assertion variants. Also enhanced the failure message of a
+  few assertions.
+@
+text
+@d1 10
+a10 2
+#if HAVE_CMATH
+#   include <cmath>
+d12 1
+a12 1
+#   include <math.h>
+d14 1
+d16 1
+a16 2
+#include <cppunit/TestAssert.h>
+
+d32 7
+a38 1
+  Asserter::failNotEqualIf( fabs( expected - actual ) > delta,
+@
+
+
+1.11
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d17 2
+a18 1
+                    SourceLine sourceLine )
+d20 4
+d27 3
+a29 1
+                            sourceLine );
+@
+
+
+1.10
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@a12 2
+#ifdef CPPUNIT_ENABLE_SOURCELINE_DEPRECATED
+/// Check for a failed general assertion 
+d14 4
+a17 46
+TestAssert::assertImplementation( bool condition,
+                                  std::string conditionExpression,
+                                  long lineNumber,
+                                  std::string fileName )
+{
+  Asserter::failIf( condition, 
+                    conditionExpression, 
+                    SourceLine( fileName, lineNumber ) );
+}
+
+
+/// Reports failed equality
+void 
+TestAssert::assertNotEqualImplementation( std::string expected,
+                                          std::string actual,
+                                          long lineNumber,
+                                          std::string fileName )
+{
+  Asserter::failNotEqual( expected, 
+                          actual, 
+                          SouceLine( fileName, lineNumber ), "" );
+}
+
+
+/// Check for a failed equality assertion
+void 
+TestAssert::assertEquals( double expected, 
+                          double actual, 
+                          double delta,
+                          long lineNumber,
+                          std::string fileName )
+{ 
+  if (fabs (expected - actual) > delta) 
+    assertNotEqualImplementation( assertion_traits<double>::toString(expected),
+                                  assertion_traits<double>::toString(actual),
+                                  lineNumber, 
+                                  fileName ); 
+}
+
+#else  // CPPUNIT_ENABLE_SOURCELINE_DEPRECATED
+
+void 
+TestAssert::assertDoubleEquals( double expected,
+                                double actual,
+                                double delta,
+                                SourceLine sourceLine )
+a23 3
+
+
+#endif
+@
+
+
+1.9
+log
+@* include/cppunit/NotEqualException.h:
+* src/cppunit/NotEqualException.cpp: removed.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: removed 'type' related stuffs.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: delegate printing to TextOutputter.
+
+* examples/simple/ExampleTestCase.h:
+* examples/simple/ExampleTestCase.cpp: reindented.
+
+* src/qttestrunner/build:
+* src/qttestrunner/qttestrunner.pro:
+* src/qttestrunner/TestBrowserDlgImpl.h:
+* src/qttestrunner/TestRunnerModel.h: applied Thomas Neidhart's patch,
+  'Some minor fixes to compile QTTestrunner under Linux.'.
+@
+text
+@d10 1
+a10 1
+namespace CppUnit {
+d73 1
+a73 1
+}
+@
+
+
+1.8
+log
+@* include/cppunit/CompilerTestResultOutputter.h :
+renamed CompilerOutputter.h
+
+* src/cppunit/CompilerTestResultOutputter.cpp :
+renamed CompilerOutputter.cpp
+
+* include/cppunit/CompilerTestResultOutputter.h :
+* src/cppunit/CompilerTestResultOutputter.cpp : ajust max line length
+for wrapping. Added static factory method defaultOutputter(). Print
+the number of test runs on success.
+
+* include/cppunit/CompilerTestResultOutputter.h : renamed
+CompilerOutputter.h.
+
+* src/cppunit/CompilerTestResultOutputter.cpp : renamed
+CompilerOutputter.cpp.
+
+* examples/cppunittest/CppUnitTestMain.cpp : use factory method
+CompilerTestResultOutputter::defaultOutputter().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp : removed COM registration in
+post-build step. IT is automatically done by VC++ when the add-in is
+added. Caused build to failed if the add-in was used in VC++.
+
+* NEWS : updated.
+
+* src/cppunit/TestAssert.cpp : modified deprecated assert
+implementations to use Asserter.
+
+* examples/cppunittest/XmlTestResultOutputterTest.h :
+renamed XmlOutputterTest.h.
+
+* examples/cppunittest/XmlTestResultOutputterTest.cpp :
+renamed XmlOutputterTest.cpp.
+
+* NEWS :
+* examples/cppunittest/CppUnitTestMain.cpp :
+* examples/cppunittest/CppUnitTestMain.dsp :
+* examples/cppunittest/Makefile.am :
+* examples/cppunittest/XmlTestResultOutputterTest.h :
+* examples/cppunittest/XmlTestResultOutputterTest.cpp :
+* examples/msvc6/CppUniTestApp/CppUnitTestApp.dsp
+* include/cppunit/CompilerOutputter.h :
+* include/cppunit/Makefile.am :
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/CompilerOutputter.cpp :
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* src/cppunit/XmlTestResultOutputter.cpp : change due to renaming
+CompilerTestResultOutputter to CompilerOutputter,
+XmlTestResultOutputter to XmlOuputter, XmlTestResultOutputterTest
+to XmlOutputterTest.
+@
+text
+@a7 1
+#include <cppunit/NotEqualException.h>
+@
+
+
+1.7
+log
+@* include/cppunit/Asserter.h :
+* src/cppunit/Asserter.cpp : added. Helper to create assertion macros.
+
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* include/cppunit/Makefile.am : added Asserter.h and Asserter.cpp.
+
+* include/cppunit/Exception.h :
+* src/cppunit/Exception.cpp : added constructor that take a
+SourceLine argument. Deprecated static constant and old constructor.
+Fixed some constness issues.
+
+* examples/cppunittest/ExceptionTest.cpp : Refactored.
+
+* NEWS : partially updated (need to be more detailed)
+
+* include/cppunit/NotEqualException.h :
+* src/cppunit/NotEqualException.cpp : added constructor that take a
+SourceLine argument. Deprecated old constructor. Added a third element
+to compose message.
+
+* examples/cppunittest/NotEqualExceptionTest.cpp : moved to "Core"
+suite. Added test for SourceLine() and additionalMessage().
+Refactored.
+
+* include/cppunit/SourceLine.h :
+* src/cppunit/SourceLine.cpp : added. Result of applying
+IntroduceParameterObject refactoring on filename & line number...
+
+* include/cppunit/TestAssert.h :
+* src/cppunit/TestAssert.cpp : deprecated old assert functions.
+added functions assertEquals() and assertDoubleEquals() which use
+SourceLine.
+
+* src/cppunit/TestCase.cpp : Modified for SourceLine.
+
+* include/cppunit/TestFailure.h :
+* src/cppunit/TestFailure.cpp : added failedTestName(), and
+sourceLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp : modified to use SourceLine.
+
+* include/cppunit/TextTestResult.h :
+* src/cppunit/TextTestResult.cpp : corrected include order and
+switched to angled brackets. Refactored. Don't print failure location
+if not available. Not equal failure dump additional message if
+available.
+
+* src/cppunit/TextTestRunner.cpp : run() now returns a boolean to
+indicate if the run was sucessful.
+
+* src/cppunit/XmlTestResultOutputter.cpp : replaced itoa() with
+OStringStream. Refactored.
+
+* examples/cppunittest/XmlUniformiser.h :
+* examples/cppunittest/XmlUniformiser.cpp :
+CPPUNITTEST_ASSERT_XML_EQUAL capture failure location. Refactored
+checkXmlEqual().
+
+* examples/cppunittest/XmlUniformiserTest.h :
+* examples/cppunittest/XmlUniformiserTest.cpp : added test for
+CPPUNITTEST_ASSERT_XML_EQUAL.
+
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/XmlTestResultOutputter.cpp : updated to use SourceLine.
+@
+text
+@d16 9
+a24 9
+void TestAssert::assertImplementation (bool          condition,
+  std::string   conditionExpression,
+  long          lineNumber,
+  std::string   fileName)
+{ 
+  if (!condition) 
+    throw Exception (conditionExpression, 
+                     lineNumber,
+                     fileName); 
+d29 5
+a33 4
+void TestAssert::assertNotEqualImplementation( std::string expected,
+     std::string actual,
+     long lineNumber,
+     std::string fileName )
+d35 3
+a37 1
+  throw NotEqualException( expected, actual, lineNumber, fileName );
+d42 6
+a47 5
+void TestAssert::assertEquals (double        expected, 
+  double        actual, 
+  double        delta,
+  long          lineNumber,
+  std::string   fileName)
+d56 1
+a56 1
+#else
+@
+
+
+1.6
+log
+@Fixes to allow building with SGI MIPSpro 7.30 compiler.
+The testsuite file examples/cppunittest/SubclassedTestCase.cpp
+causes the compiler to dump core, so that and HelperMacrosTest
+were not tested.  The rest of the test suite passes.
+@
+text
+@d14 1
+d51 17
+@
+
+
+1.5
+log
+@Change from CPPUNIT_USE_TYPEINFO to CPPUNIT_USE_TYPEINFO_NAME
+@
+text
+@d1 5
+a5 1
+#include <cmath>
+@
+
+
+1.4
+log
+@* include/cppunit/NotEqualException.h
+* src/cppunit/NotEqualException.h:
+Fixed constructor and operator = (aren't unit test nice?). Added
+methods expectedValue() and actualValue().
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp:
+Use NotEqualException to report equality failure.
+
+* src/cppunit/TestResult.cpp:
+Report expect/was on different line for assertEquals failure.
+
+* examples/cppunittest/NotEqualExceptionTest.*: added unit tests for
+NotEqualException.
+@
+text
+@d3 1
+a3 2
+#include "cppunit/TestAssert.h"
+#include "estring.h"
+d6 1
+d9 1
+d48 1
+a48 1
+} // namespace TestAssert
+@
+
+
+1.3
+log
+@* include/cppunit/NotEqualException.cpp: addded, exception to be used
+with assertEquals().
+
+* src/cppunit/RepeatedTest.cpp: added to reduce header dependency
+(TestResult.h was missing).
+
+* src/cppunit/TestAssert.cpp: added to put non template functions
+there.
+
+* src/cppunit/TestCase.cpp: added std:: prefix to
+catch (exception& e). Integrated a modified version of Tim Jansen
+patch (#403745) for TestCase to make the unit test (TestCaseTest)
+pass. If the setUp() fail then neither the runTest() nor
+the tearDown() method is called.
+@
+text
+@d5 1
+d22 10
+d40 4
+a43 4
+    assertImplementation (false, 
+                          notEqualsMessage(expected, actual), 
+                          lineNumber, 
+                          fileName); 
+@
+
+
+1.2
+log
+@Change to templatized TestAssert::assertEquals() and the new CPPUNIT_ASSERT* macros
+@
+text
+@d15 3
+a17 12
+    throw Exception (conditionExpression, lineNumber, fileName); 
+}
+
+
+/// Check for a failed equality assertion 
+void TestAssert::assertEquals (long        expected, 
+  long        actual,
+  long        lineNumber,
+  std::string fileName)
+{ 
+  if (expected != actual) 
+    assertImplementation (false, notEqualsMessage(expected, actual), lineNumber, fileName); 
+d29 4
+a32 9
+    assertImplementation (false, notEqualsMessage(expected, actual), lineNumber, fileName); 
+
+}
+
+
+/// Build a message about a failed equality check 
+std::string TestAssert::notEqualsMessage (long expected, long actual)
+{ 
+  return "expected: " + estring (expected) + " but was: " + estring (actual); 
+a34 6
+
+/// Build a message about a failed equality check 
+std::string TestAssert::notEqualsMessage (double expected, double actual)
+{ 
+  return "expected: " + estring (expected) + " but was: " + estring (actual); 
+}
+@
+
+
+1.1
+log
+@Forgotten in CppUnitW 1.2 merge.
+@
+text
+@@
+

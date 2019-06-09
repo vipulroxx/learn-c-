@@ -1,0 +1,250 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2
+	REL_1_9_4:1.2
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.19.14.38.07;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.27.21.23.22;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@// //////////////////////////////////////////////////////////////////////////
+// Header file TestPlugIn.h for class TestPlugIn
+// (c)Copyright 2000, Baptiste Lepilleur.
+// Created: 2001/06/23
+// //////////////////////////////////////////////////////////////////////////
+#ifndef TESTPLUGIN_H
+#define TESTPLUGIN_H
+
+#include <string>
+#include <cppunit/test.h>
+#include <cppunit/plugin/PlugInManager.h>
+
+
+/*! \class TestPlugIn
+ * \brief This class represents a test plug-in.
+ */
+class TestPlugIn
+{
+public:
+  /*! Constructs a TestPlugIn object.
+   */
+  TestPlugIn( const std::string fileName );
+
+  /*! Destructor.
+   */
+  virtual ~TestPlugIn();
+
+  /*! Obtains a new test from a new copy of the dll.
+   * \exception TestPlugInException if a error occurs.
+   */
+  CPPUNIT_NS::Test *makeTest();
+
+private:
+  /// Prevents the use of the copy constructor.
+  TestPlugIn( const TestPlugIn &copy );
+
+  /// Prevents the use of the copy operator.
+  void operator =( const TestPlugIn &copy );
+
+  void reloadDll();
+  void deleteDllCopy();
+
+  /*! Copy m_fileName DLL to m_copyFileName.
+   *
+   * Working on a copy of the DLL allow to update the original DLL.
+   * \exception TestPlugInException on copy failure.
+   */
+  void makeDllCopy();
+
+  /*! Load the DLL.
+   * \exception TestPlugInException on dll loading failure.
+   */
+  void loadDll();
+
+private:
+  std::string m_fileName;
+  std::string m_copyFileName;
+  CPPUNIT_NS::PlugInManager m_manager;
+};
+
+
+
+// Inlines methods for TestPlugIn:
+// -------------------------------
+
+
+
+#endif  // TESTPLUGIN_H
+@
+
+
+1.2
+log
+@* release 1.9.4
+@
+text
+@d31 1
+a31 1
+  CppUnit::Test *makeTest();
+d58 1
+a58 1
+  CppUnit::PlugInManager m_manager;
+@
+
+
+1.1
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+moved dll copy from post-build to custom build setting, so that the
+dll is copied even if the CppUnitTestApp was not modified.
+
+* examples/msvc6/TestPlugIn/: a new example of test plug in.
+
+* src/msvc6/TestRunner/ListCtrlFormatter.*
+* src/msvc6/TestRunner/ListCtrlSetter.*:
+added, helper to manipulate list control.
+
+* src/msvc6/TestRunner/TestRunnerDlg.*: change to make the error list
+more compact. text moved to string resources. icons added for typ
+test tfailure type.
+
+* src/msvc6/TestRunner/MostRecentTests.*: added, classes that will
+replace the current implementation of MRU test which make it hard
+to subclass the dialog.
+
+* src/msvc6/TestRunner/res/errortype.bmp: added, bitmap with error
+types (failure and error).
+
+* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+
+* src/cppunit/cppunit.dsp:
+removed config.h from project
+added Portability.h and config-msvc6.h
+
+* include/cppunit/config-msvc6.h:
+undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+@
+text
+@d11 1
+a11 1
+#include <msvc6/testrunner/TestPlugInInterface.h>
+a40 1
+  void releaseDll();
+a54 5
+  /*! Get a pointer on the function "GetTestPlugInInterface" of the DLL.
+   * \exception TestPlugInException if the function does not exist.
+   */
+  void getDllInterface();
+
+d58 1
+a58 2
+  HINSTANCE m_dllHandle;
+  GetTestPlugInInterfaceFunction m_interfaceFunction;
+@
+

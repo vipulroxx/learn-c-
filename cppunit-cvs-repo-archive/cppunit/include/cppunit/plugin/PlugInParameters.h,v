@@ -1,0 +1,133 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2002.08.29.19.27.07;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.08.27.21.51.18;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/Protector.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestPath.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* include/cppunit/plugin/PlugInManager.h:
+* include/cppunit/plugin/PlugInParameters.h:
+* include/cppunit/TestPlugIn.h:
+* src/cppunit/DefaultProtector.h:
+* src/cppunit/ProtectorChain.h:
+* src/cppunit/ProtectorContext.h:
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestResult.cpp: fixed a dew documentation bugs.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: moved documentation to header.
+@
+text
+@#ifndef CPPUNIT_PLUGIN_PARAMETERS
+#define CPPUNIT_PLUGIN_PARAMETERS
+
+#include <cppunit/Portability.h>
+
+#if !defined(CPPUNIT_NO_TESTPLUGIN)
+
+#include <cppunit/portability/CppUnitDeque.h>
+#include <string>
+
+CPPUNIT_NS_BEGIN
+
+/*! \brief Test plug-ins parameters.
+ */
+class CPPUNIT_API PlugInParameters
+{
+public:
+  /// Constructs plug-in parameters from the specified command-line.
+  PlugInParameters( const std::string &commandLine = "" );
+
+  virtual ~PlugInParameters();
+
+  /// Returns the command line that was passed on construction.
+  std::string getCommandLine() const;
+
+private:
+  std::string m_commandLine;
+};
+
+
+CPPUNIT_NS_END
+
+#endif // !defined(CPPUNIT_NO_TESTPLUGIN)
+
+
+#endif // CPPUNIT_PLUGIN_PARAMETERS
+@
+
+
+1.1
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d13 2
+a14 1
+
+d18 1
+d23 1
+@
+

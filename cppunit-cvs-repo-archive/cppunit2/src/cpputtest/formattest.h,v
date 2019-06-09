@@ -1,0 +1,49 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2005.09.06.07.42.54;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* experimental implementation of a type safe sprintf.
+@
+text
+@#ifndef CPPUT_FORMATTEST_H_INCLUDED
+# define CPPUT_FORMATTEST_H_INCLUDED
+
+# include <cpput/testfixture.h>
+
+class FormatTest : public CppUT::TestFixture
+{
+   CPPUT_TESTSUITE_BEGIN( FormatTest );
+   CPPUT_TEST( testLengthNoFormat );
+   CPPUT_TEST( testLengthIntFormat );
+   CPPUT_TESTSUITE_END();
+
+public:
+   void setUp();
+   void tearDown();
+
+   void testLengthNoFormat();
+   void testLengthIntFormat();
+
+private:
+};
+
+
+#endif  // CPPUT_FORMATTEST_H_INCLUDED
+
+@

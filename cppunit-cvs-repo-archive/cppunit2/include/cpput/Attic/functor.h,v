@@ -1,0 +1,1270 @@
+head	1.7;
+access;
+symbols
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.6
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.6
+	TG_AFTER_REMOVING_TESTCONTEXT:1.5
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.5
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.5
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.7
+date	2005.02.27.14.38.26;	author blep;	state dead;
+branches;
+next	1.6;
+
+1.6
+date	2005.02.23.21.34.12;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.11.17.08.59.05;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.02.01.16.12.51;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.01.27.23.49.48;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.27.23.37.21;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.26;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.26;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@* changed cppunit 2 to use the new functors (cpptl/functor.h). bind_cfn & bind_memfn simplified some of the test code.
+@
+text
+@#ifndef CPPUT_FUNCTOR_H_INCLUDED
+# define CPPUT_FUNCTOR_H_INCLUDED
+
+// File generated using functor.py. DO NOT EDIT.
+
+# include <cpptl/sharedptr.h>
+
+namespace CppUT {
+
+   // Partially borrowed from the standard
+   // See: 
+   // N1453: http://std.dkuug.dk/jtc1/sc22/wg21/docs/papers/2003/n1453.html
+   template<class T>
+   class ReferenceWrapper
+   {
+   public:
+      explicit ReferenceWrapper( T &t ) : t_( &t )
+      {
+      }
+
+      operator T&() const
+      {
+         return *t_;
+      }
+
+   private:
+      T *t_;
+   };
+
+   template<class T>
+   inline ReferenceWrapper<T> 
+   ref( T &t )
+   {
+      return ReferenceWrapper<T>( t );
+   }
+
+   template<class T>
+   inline ReferenceWrapper<const T>
+   cref( const T& t )
+   {
+      return ReferenceWrapper<const T>( t );
+   }
+
+   namespace Impl {
+
+
+
+      template <class ReturnType>
+      class Functor0Base
+      {
+      public:
+      
+         typedef ReturnType result_type;
+
+         virtual ~Functor0Base()
+         {
+         }
+
+         virtual ReturnType operator()(  ) = 0;
+      };
+      
+      template <class FunctorType>
+      class Functor0 : public Functor0Base<void>
+      {
+      public:
+         typedef void result_type;
+
+         Functor0( FunctorType functor )
+            : functor_( functor )
+         {
+         }
+
+         void operator()()
+         {
+            functor_();
+         }
+         
+      private:
+         FunctorType functor_;
+      };
+      
+      template <class FunctorType, class ReturnType>
+      class FunctorR0 : public Functor0Base<ReturnType>
+      {
+      public:
+         typedef ReturnType result_type;
+
+         FunctorR0( FunctorType functor )
+            : functor_( functor )
+         {
+         }
+
+         ReturnType operator()()
+         {
+            return functor_();
+         }
+         
+      private:
+         FunctorType functor_;
+      };
+      
+      template <class ObjectType, class ObjectPtrType>
+      class MemFn0
+      {
+      public:
+         typedef void result_type;
+
+         MemFn0( const ObjectPtrType &object,
+               void (ObjectType::*method)() )
+            : object_( object )
+            , method_( method )
+         {
+         }
+
+         void operator()()
+         {
+            ObjectType *object = &*object_;
+            (object->*method_)();
+         }
+         
+      private:
+         ObjectPtrType object_;
+         void (ObjectType::*method_)();
+      };
+      
+      template <class ObjectType, class ObjectPtrType, class ReturnType>
+      class MemFnR0
+      {
+      public:
+         typedef ReturnType result_type;
+
+         MemFnR0( const ObjectPtrType &object,
+               ReturnType (ObjectType::*method)() )
+            : object_( object )
+            , method_( method )
+         {
+         }
+
+         ReturnType operator()()
+         {
+            ObjectType *object = &*object_;
+            return (object->*method_)();
+         }
+         
+      private:
+         ObjectPtrType object_;
+         ReturnType (ObjectType::*method_)();
+      };
+      
+
+
+      template <class ReturnType, class Arg1Type>
+      class Functor1Base
+      {
+      public:
+      
+         typedef ReturnType result_type;
+
+         virtual ~Functor1Base()
+         {
+         }
+
+         virtual ReturnType operator()( Arg1Type arg1 ) = 0;
+      };
+      
+      template <class FunctorType, class Arg1Type>
+      class Functor1 : public Functor1Base<void, Arg1Type>
+      {
+      public:
+         typedef Arg1Type first_argument_type;
+         typedef void result_type;
+
+         Functor1( FunctorType functor )
+            : functor_( functor )
+         {
+         }
+
+         void operator()(Arg1Type arg1)
+         {
+            functor_(arg1);
+         }
+         
+      private:
+         FunctorType functor_;
+      };
+      
+      template <class FunctorType, class ReturnType, class Arg1Type>
+      class FunctorR1 : public Functor1Base<ReturnType, Arg1Type>
+      {
+      public:
+         typedef Arg1Type first_argument_type;
+         typedef ReturnType result_type;
+
+         FunctorR1( FunctorType functor )
+            : functor_( functor )
+         {
+         }
+
+         ReturnType operator()(Arg1Type arg1)
+         {
+            return functor_(arg1);
+         }
+         
+      private:
+         FunctorType functor_;
+      };
+      
+      template <class ObjectType, class ObjectPtrType, class Arg1Type>
+      class MemFn1
+      {
+      public:
+         typedef Arg1Type first_argument_type;
+         typedef void result_type;
+
+         MemFn1( const ObjectPtrType &object,
+               void (ObjectType::*method)(Arg1Type arg1) )
+            : object_( object )
+            , method_( method )
+         {
+         }
+
+         void operator()(Arg1Type arg1)
+         {
+            ObjectType *object = &*object_;
+            (object->*method_)(arg1);
+         }
+         
+      private:
+         ObjectPtrType object_;
+         void (ObjectType::*method_)(Arg1Type arg1);
+      };
+      
+      template <class ObjectType, class ObjectPtrType, class ReturnType, class Arg1Type>
+      class MemFnR1
+      {
+      public:
+         typedef Arg1Type first_argument_type;
+         typedef ReturnType result_type;
+
+         MemFnR1( const ObjectPtrType &object,
+               ReturnType (ObjectType::*method)(Arg1Type arg1) )
+            : object_( object )
+            , method_( method )
+         {
+         }
+
+         ReturnType operator()(Arg1Type arg1)
+         {
+            ObjectType *object = &*object_;
+            return (object->*method_)(arg1);
+         }
+         
+      private:
+         ObjectPtrType object_;
+         ReturnType (ObjectType::*method_)(Arg1Type arg1);
+      };
+      
+      template<class ReturnType, class FunctorType, class BindArgType>
+      class Bind1
+      {
+      public:
+         typedef void result_type;
+
+         Bind1( FunctorType functor, BindArgType arg )
+            : functor_( functor )
+            , arg_( arg )
+         {
+         }
+
+         void operator()()
+         {
+            functor_(arg_);
+         }
+      private:
+         FunctorType functor_;
+         BindArgType arg_;
+      };
+      
+      template<class ReturnType, class FunctorType, class BindArgType>
+      class BindR1
+      {
+      public:
+         typedef ReturnType result_type;
+
+         BindR1( FunctorType functor, BindArgType arg )
+            : functor_( functor )
+            , arg_( arg )
+         {
+         }
+
+         ReturnType operator()()
+         {
+            return functor_(arg_);
+         }
+      private:
+         FunctorType functor_;
+         BindArgType arg_;
+      };
+      
+
+
+      template <class ReturnType, class Arg1Type, class Arg2Type>
+      class Functor2Base
+      {
+      public:
+      
+         typedef ReturnType result_type;
+
+         virtual ~Functor2Base()
+         {
+         }
+
+         virtual ReturnType operator()( Arg1Type arg1, Arg2Type arg2 ) = 0;
+      };
+      
+      template <class FunctorType, class Arg1Type, class Arg2Type>
+      class Functor2 : public Functor2Base<void, Arg1Type, Arg2Type>
+      {
+      public:
+         typedef Arg1Type first_argument_type;
+         typedef Arg2Type second_argument_type;
+         typedef void result_type;
+
+         Functor2( FunctorType functor )
+            : functor_( functor )
+         {
+         }
+
+         void operator()(Arg1Type arg1, Arg2Type arg2)
+         {
+            functor_(arg1, arg2);
+         }
+         
+      private:
+         FunctorType functor_;
+      };
+      
+      template <class FunctorType, class ReturnType, class Arg1Type, class Arg2Type>
+      class FunctorR2 : public Functor2Base<ReturnType, Arg1Type, Arg2Type>
+      {
+      public:
+         typedef Arg1Type first_argument_type;
+         typedef Arg2Type second_argument_type;
+         typedef ReturnType result_type;
+
+         FunctorR2( FunctorType functor )
+            : functor_( functor )
+         {
+         }
+
+         ReturnType operator()(Arg1Type arg1, Arg2Type arg2)
+         {
+            return functor_(arg1, arg2);
+         }
+         
+      private:
+         FunctorType functor_;
+      };
+      
+      template <class ObjectType, class ObjectPtrType, class Arg1Type, class Arg2Type>
+      class MemFn2
+      {
+      public:
+         typedef Arg1Type first_argument_type;
+         typedef Arg2Type second_argument_type;
+         typedef void result_type;
+
+         MemFn2( const ObjectPtrType &object,
+               void (ObjectType::*method)(Arg1Type arg1, Arg2Type arg2) )
+            : object_( object )
+            , method_( method )
+         {
+         }
+
+         void operator()(Arg1Type arg1, Arg2Type arg2)
+         {
+            ObjectType *object = &*object_;
+            (object->*method_)(arg1, arg2);
+         }
+         
+      private:
+         ObjectPtrType object_;
+         void (ObjectType::*method_)(Arg1Type arg1, Arg2Type arg2);
+      };
+      
+      template <class ObjectType, class ObjectPtrType, class ReturnType, class Arg1Type, class Arg2Type>
+      class MemFnR2
+      {
+      public:
+         typedef Arg1Type first_argument_type;
+         typedef Arg2Type second_argument_type;
+         typedef ReturnType result_type;
+
+         MemFnR2( const ObjectPtrType &object,
+               ReturnType (ObjectType::*method)(Arg1Type arg1, Arg2Type arg2) )
+            : object_( object )
+            , method_( method )
+         {
+         }
+
+         ReturnType operator()(Arg1Type arg1, Arg2Type arg2)
+         {
+            ObjectType *object = &*object_;
+            return (object->*method_)(arg1, arg2);
+         }
+         
+      private:
+         ObjectPtrType object_;
+         ReturnType (ObjectType::*method_)(Arg1Type arg1, Arg2Type arg2);
+      };
+      
+      template<class ReturnType, class FunctorType, class BindArgType>
+      class Bind2
+      {
+      public:
+         typedef CPPTL_TYPENAME FunctorType::first_argument_type first_argument_type;
+         typedef void result_type;
+
+         Bind2( FunctorType functor, BindArgType arg )
+            : functor_( functor )
+            , arg_( arg )
+         {
+         }
+
+         void operator()(first_argument_type arg1)
+         {
+            functor_(arg1, arg_);
+         }
+      private:
+         FunctorType functor_;
+         BindArgType arg_;
+      };
+      
+      template<class ReturnType, class FunctorType, class BindArgType>
+      class BindR2
+      {
+      public:
+         typedef CPPTL_TYPENAME FunctorType::first_argument_type first_argument_type;
+         typedef ReturnType result_type;
+
+         BindR2( FunctorType functor, BindArgType arg )
+            : functor_( functor )
+            , arg_( arg )
+         {
+         }
+
+         ReturnType operator()(first_argument_type arg1)
+         {
+            return functor_(arg1, arg_);
+         }
+      private:
+         FunctorType functor_;
+         BindArgType arg_;
+      };
+      
+
+   } // namespace Impl
+
+
+
+   class Functor0
+   {
+   public:
+      typedef void result_type;
+
+      explicit Functor0( Impl::Functor0Base<void> *impl = 0 )
+         : impl_( impl )
+      {
+      }
+
+      void operator()()
+      {
+         (*impl_)();
+      }
+
+      operator bool() const
+      {
+         return impl_.get() != 0;   
+      }
+      
+      bool operator !() const
+      {
+         return impl_.get() == 0;
+      }
+         
+   private:
+      CppTL::SharedPtr< Impl::Functor0Base<void> > impl_;
+   };
+
+   template <class ReturnType>
+   class FunctorR0
+   {
+   public:
+      typedef ReturnType result_type;
+
+      explicit FunctorR0( Impl::Functor0Base<ReturnType> *impl = 0 )
+         : impl_( impl )
+      {
+      }
+
+      ReturnType operator()()
+      {
+         return (*impl_)();
+      }
+
+      operator bool() const
+      {
+         return impl_.get() != 0;   
+      }
+      
+      bool operator !() const
+      {
+         return impl_.get() == 0;
+      }
+         
+   private:
+      CPPTL_TYPENAME CppTL::SharedPtr< Impl::Functor0Base<ReturnType> > impl_;
+   };
+
+
+
+   template <class Arg1Type>
+   class Functor1
+   {
+   public:
+      typedef Arg1Type first_argument_type;
+      typedef void result_type;
+
+      explicit Functor1( Impl::Functor1Base<void, Arg1Type> *impl = 0 )
+         : impl_( impl )
+      {
+      }
+
+      void operator()(Arg1Type arg1)
+      {
+         (*impl_)(arg1);
+      }
+
+      operator bool() const
+      {
+         return impl_.get() != 0;   
+      }
+      
+      bool operator !() const
+      {
+         return impl_.get() == 0;
+      }
+         
+   private:
+      CPPTL_TYPENAME CppTL::SharedPtr< Impl::Functor1Base<void, Arg1Type> > impl_;
+   };
+
+   template <class ReturnType, class Arg1Type>
+   class FunctorR1
+   {
+   public:
+      typedef Arg1Type first_argument_type;
+      typedef ReturnType result_type;
+
+      explicit FunctorR1( Impl::Functor1Base<ReturnType, Arg1Type> *impl = 0 )
+         : impl_( impl )
+      {
+      }
+
+      ReturnType operator()(Arg1Type arg1)
+      {
+         return (*impl_)(arg1);
+      }
+
+      operator bool() const
+      {
+         return impl_.get() != 0;   
+      }
+      
+      bool operator !() const
+      {
+         return impl_.get() == 0;
+      }
+         
+   private:
+      CPPTL_TYPENAME CppTL::SharedPtr< Impl::Functor1Base<ReturnType, Arg1Type> > impl_;
+   };
+
+
+
+   template <class Arg1Type, class Arg2Type>
+   class Functor2
+   {
+   public:
+      typedef Arg1Type first_argument_type;
+      typedef Arg2Type second_argument_type;
+      typedef void result_type;
+
+      explicit Functor2( Impl::Functor2Base<void, Arg1Type, Arg2Type> *impl = 0 )
+         : impl_( impl )
+      {
+      }
+
+      void operator()(Arg1Type arg1, Arg2Type arg2)
+      {
+         (*impl_)(arg1, arg2);
+      }
+
+      operator bool() const
+      {
+         return impl_.get() != 0;   
+      }
+      
+      bool operator !() const
+      {
+         return impl_.get() == 0;
+      }
+         
+   private:
+      CPPTL_TYPENAME CppTL::SharedPtr< Impl::Functor2Base<void, Arg1Type, Arg2Type> > impl_;
+   };
+
+   template <class ReturnType, class Arg1Type, class Arg2Type>
+   class FunctorR2
+   {
+   public:
+      typedef Arg1Type first_argument_type;
+      typedef Arg2Type second_argument_type;
+      typedef ReturnType result_type;
+
+      explicit FunctorR2( Impl::Functor2Base<ReturnType, Arg1Type, Arg2Type> *impl = 0 )
+         : impl_( impl )
+      {
+      }
+
+      ReturnType operator()(Arg1Type arg1, Arg2Type arg2)
+      {
+         return (*impl_)(arg1, arg2);
+      }
+
+      operator bool() const
+      {
+         return impl_.get() != 0;   
+      }
+      
+      bool operator !() const
+      {
+         return impl_.get() == 0;
+      }
+         
+   private:
+      CPPTL_TYPENAME CppTL::SharedPtr< Impl::Functor2Base<ReturnType, Arg1Type, Arg2Type> > impl_;
+   };
+
+
+   template<class FunctorType>
+   Functor0
+   makeFn0( FunctorType functor )
+   {
+      return Functor0(
+                new Impl::Functor0<FunctorType>( functor ) );
+   }
+   
+   template<class ReturnType, class FunctorType>
+   FunctorR0<ReturnType>
+   makeFnR0( FunctorType functor )
+   {
+      return FunctorR0<ReturnType>(
+                new Impl::FunctorR0<FunctorType,
+                    ReturnType>( functor ) );
+   }
+   
+   inline Functor0
+   makeCFn0( void (*function)() )
+   {
+      typedef void (*FunctionType)();
+      return Functor0(
+                   new Impl::Functor0<FunctionType>( function ) );
+   }
+   
+   template <class ReturnType>
+   inline FunctorR0<ReturnType>
+   makeCFnR0( ReturnType (*function)() )
+   {
+      typedef ReturnType (*FunctionType)();
+      return FunctorR0<ReturnType>(
+                   new Impl::FunctorR0<FunctionType, ReturnType>( function ) );
+   }
+   
+   template<class ObjectType>
+   Functor0
+   makeMemFn0( ObjectType * object,
+                void (ObjectType::*method)() )
+   {
+      return makeFn0( Impl::MemFn0< ObjectType, ObjectType * >( object, method ) );
+   }
+   
+   template<class ObjectType>
+   Functor0
+   makeMemFn0( CppTL::SharedPtr<ObjectType> object,
+                void (ObjectType::*method)() )
+   {
+      return makeFn0( Impl::MemFn0< ObjectType, CppTL::SharedPtr<ObjectType> >( object, method ) );
+   }
+   
+   template<class ReturnType, class ObjectType>
+   FunctorR0<ReturnType>
+   makeMemFnR0( ObjectType * object,
+                ReturnType (ObjectType::*method)() )
+   {
+      return makeFnR0<ReturnType>( Impl::MemFnR0< ObjectType, ObjectType *, ReturnType >( object, method ) );
+   }
+   
+   template<class ReturnType, class ObjectType>
+   FunctorR0<ReturnType>
+   makeMemFnR0( CppTL::SharedPtr<ObjectType> object,
+                ReturnType (ObjectType::*method)() )
+   {
+      return makeFnR0<ReturnType>( Impl::MemFnR0< ObjectType, CppTL::SharedPtr<ObjectType>, ReturnType >( object, method ) );
+   }
+   
+
+   template<class FunctorType>
+   Functor1<CPPTL_TYPENAME FunctorType::first_argument_type>
+   makeFn1( FunctorType functor )
+   {
+      return Functor1<CPPTL_TYPENAME FunctorType::first_argument_type>(
+                new Impl::Functor1<FunctorType,
+                    CPPTL_TYPENAME FunctorType::first_argument_type>( functor ) );
+   }
+   
+   template<class ReturnType, class FunctorType>
+   FunctorR1<ReturnType,
+            CPPTL_TYPENAME FunctorType::first_argument_type>
+   makeFnR1( FunctorType functor )
+   {
+      return FunctorR1<ReturnType,
+            CPPTL_TYPENAME FunctorType::first_argument_type>(
+                new Impl::FunctorR1<FunctorType,
+                    ReturnType,
+                    CPPTL_TYPENAME FunctorType::first_argument_type>( functor ) );
+   }
+   
+   template <class Arg1Type>
+   inline Functor1<Arg1Type>
+   makeCFn1( void (*function)(Arg1Type arg1) )
+   {
+      typedef void (*FunctionType)(Arg1Type arg1);
+      return Functor1<Arg1Type>(
+                   new Impl::Functor1<FunctionType, Arg1Type>( function ) );
+   }
+   
+   template <class ReturnType, class Arg1Type>
+   inline FunctorR1<ReturnType, Arg1Type>
+   makeCFnR1( ReturnType (*function)(Arg1Type arg1) )
+   {
+      typedef ReturnType (*FunctionType)(Arg1Type arg1);
+      return FunctorR1<ReturnType, Arg1Type>(
+                   new Impl::FunctorR1<FunctionType, ReturnType, Arg1Type>( function ) );
+   }
+   
+   template<class ObjectType, class Arg1Type>
+   Functor1<Arg1Type>
+   makeMemFn1( ObjectType * object,
+                void (ObjectType::*method)(Arg1Type arg1) )
+   {
+      return makeFn1( Impl::MemFn1< ObjectType, ObjectType *, Arg1Type >( object, method ) );
+   }
+   
+   template<class ObjectType, class Arg1Type>
+   Functor1<Arg1Type>
+   makeMemFn1( CppTL::SharedPtr<ObjectType> object,
+                void (ObjectType::*method)(Arg1Type arg1) )
+   {
+      return makeFn1( Impl::MemFn1< ObjectType, CppTL::SharedPtr<ObjectType>, Arg1Type >( object, method ) );
+   }
+   
+   template<class ReturnType, class ObjectType, class Arg1Type>
+   FunctorR1<ReturnType, Arg1Type>
+   makeMemFnR1( ObjectType * object,
+                ReturnType (ObjectType::*method)(Arg1Type arg1) )
+   {
+      return makeFnR1<ReturnType>( Impl::MemFnR1< ObjectType, ObjectType *, ReturnType, Arg1Type >( object, method ) );
+   }
+   
+   template<class ReturnType, class ObjectType, class Arg1Type>
+   FunctorR1<ReturnType, Arg1Type>
+   makeMemFnR1( CppTL::SharedPtr<ObjectType> object,
+                ReturnType (ObjectType::*method)(Arg1Type arg1) )
+   {
+      return makeFnR1<ReturnType>( Impl::MemFnR1< ObjectType, CppTL::SharedPtr<ObjectType>, ReturnType, Arg1Type >( object, method ) );
+   }
+   
+   template<class FunctorType, class ArgType>
+   Functor0
+   bind1( FunctorType functor, ArgType arg )
+   {
+      return makeFn0(
+                Impl::Bind1<CPPTL_TYPENAME FunctorType::result_type, FunctorType, ArgType>(
+                         functor, arg ) );
+   }
+
+   template<class FunctorType, class ArgType>
+   FunctorR0<CPPTL_TYPENAME FunctorType::result_type>
+   bindR1( FunctorType functor, ArgType arg )
+   {
+      return makeFnR0<CPPTL_TYPENAME FunctorType::result_type>(
+                Impl::BindR1<CPPTL_TYPENAME FunctorType::result_type, FunctorType, ArgType>(
+                         functor, arg ) );
+   }
+
+
+   template<class FunctorType>
+   Functor2<CPPTL_TYPENAME FunctorType::first_argument_type,
+            CPPTL_TYPENAME FunctorType::second_argument_type>
+   makeFn2( FunctorType functor )
+   {
+      return Functor2<CPPTL_TYPENAME FunctorType::first_argument_type,
+            CPPTL_TYPENAME FunctorType::second_argument_type>(
+                new Impl::Functor2<FunctorType,
+                    CPPTL_TYPENAME FunctorType::first_argument_type,
+                    CPPTL_TYPENAME FunctorType::second_argument_type>( functor ) );
+   }
+   
+   template<class ReturnType, class FunctorType>
+   FunctorR2<ReturnType,
+            CPPTL_TYPENAME FunctorType::first_argument_type,
+            CPPTL_TYPENAME FunctorType::second_argument_type>
+   makeFnR2( FunctorType functor )
+   {
+      return FunctorR2<ReturnType,
+            CPPTL_TYPENAME FunctorType::first_argument_type,
+            CPPTL_TYPENAME FunctorType::second_argument_type>(
+                new Impl::FunctorR2<FunctorType,
+                    ReturnType,
+                    CPPTL_TYPENAME FunctorType::first_argument_type,
+                    CPPTL_TYPENAME FunctorType::second_argument_type>( functor ) );
+   }
+   
+   template <class Arg1Type, class Arg2Type>
+   inline Functor2<Arg1Type, Arg2Type>
+   makeCFn2( void (*function)(Arg1Type arg1, Arg2Type arg2) )
+   {
+      typedef void (*FunctionType)(Arg1Type arg1, Arg2Type arg2);
+      return Functor2<Arg1Type, Arg2Type>(
+                   new Impl::Functor2<FunctionType, Arg1Type, Arg2Type>( function ) );
+   }
+   
+   template <class ReturnType, class Arg1Type, class Arg2Type>
+   inline FunctorR2<ReturnType, Arg1Type, Arg2Type>
+   makeCFnR2( ReturnType (*function)(Arg1Type arg1, Arg2Type arg2) )
+   {
+      typedef ReturnType (*FunctionType)(Arg1Type arg1, Arg2Type arg2);
+      return FunctorR2<ReturnType, Arg1Type, Arg2Type>(
+                   new Impl::FunctorR2<FunctionType, ReturnType, Arg1Type, Arg2Type>( function ) );
+   }
+   
+   template<class ObjectType, class Arg1Type, class Arg2Type>
+   Functor2<Arg1Type, Arg2Type>
+   makeMemFn2( ObjectType * object,
+                void (ObjectType::*method)(Arg1Type arg1, Arg2Type arg2) )
+   {
+      return makeFn2( Impl::MemFn2< ObjectType, ObjectType *, Arg1Type, Arg2Type >( object, method ) );
+   }
+   
+   template<class ObjectType, class Arg1Type, class Arg2Type>
+   Functor2<Arg1Type, Arg2Type>
+   makeMemFn2( CppTL::SharedPtr<ObjectType> object,
+                void (ObjectType::*method)(Arg1Type arg1, Arg2Type arg2) )
+   {
+      return makeFn2( Impl::MemFn2< ObjectType, CppTL::SharedPtr<ObjectType>, Arg1Type, Arg2Type >( object, method ) );
+   }
+   
+   template<class ReturnType, class ObjectType, class Arg1Type, class Arg2Type>
+   FunctorR2<ReturnType, Arg1Type, Arg2Type>
+   makeMemFnR2( ObjectType * object,
+                ReturnType (ObjectType::*method)(Arg1Type arg1, Arg2Type arg2) )
+   {
+      return makeFnR2<ReturnType>( Impl::MemFnR2< ObjectType, ObjectType *, ReturnType, Arg1Type, Arg2Type >( object, method ) );
+   }
+   
+   template<class ReturnType, class ObjectType, class Arg1Type, class Arg2Type>
+   FunctorR2<ReturnType, Arg1Type, Arg2Type>
+   makeMemFnR2( CppTL::SharedPtr<ObjectType> object,
+                ReturnType (ObjectType::*method)(Arg1Type arg1, Arg2Type arg2) )
+   {
+      return makeFnR2<ReturnType>( Impl::MemFnR2< ObjectType, CppTL::SharedPtr<ObjectType>, ReturnType, Arg1Type, Arg2Type >( object, method ) );
+   }
+   
+   template<class FunctorType, class ArgType>
+   Functor1<CPPTL_TYPENAME FunctorType::first_argument_type>
+   bind2( FunctorType functor, ArgType arg )
+   {
+      return makeFn1(
+                Impl::Bind2<CPPTL_TYPENAME FunctorType::result_type, FunctorType, ArgType>(
+                         functor, arg ) );
+   }
+
+   template<class FunctorType, class ArgType>
+   FunctorR1<CPPTL_TYPENAME FunctorType::result_type,
+         CPPTL_TYPENAME FunctorType::first_argument_type>
+   bindR2( FunctorType functor, ArgType arg )
+   {
+      return makeFnR1<CPPTL_TYPENAME FunctorType::result_type>(
+                Impl::BindR2<CPPTL_TYPENAME FunctorType::result_type, FunctorType, ArgType>(
+                         functor, arg ) );
+   }
+
+    
+   template<class FunctorType, class Arg1Type>
+   Functor0 bind( FunctorType functor, Arg1Type arg1 )
+   {
+      return bind1( functor, arg1 );
+   }
+    
+   template<class FunctorType, class Arg1Type, class Arg2Type>
+   Functor0 bind( FunctorType functor, Arg1Type arg1, Arg2Type arg2 )
+   {
+      return bind1( bind2( functor, arg2 ), arg1 );
+   }
+
+} //namespace CppUT
+
+#endif // CPPUT_FUNCTOR_H_INCLUDED
+
+@
+
+
+1.6
+log
+@* fixed generator: should use CPPTL_TYPENAME instead of CPPUT_DEDUCED_TYPENAME
+@
+text
+@@
+
+
+1.5
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@d416 1
+a416 1
+         typedef CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type first_argument_type;
+d438 1
+a438 1
+         typedef CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type first_argument_type;
+d517 1
+a517 1
+      CPPUT_DEDUCED_TYPENAME CppTL::SharedPtr< Impl::Functor0Base<ReturnType> > impl_;
+d550 1
+a550 1
+      CPPUT_DEDUCED_TYPENAME CppTL::SharedPtr< Impl::Functor1Base<void, Arg1Type> > impl_;
+d581 1
+a581 1
+      CPPUT_DEDUCED_TYPENAME CppTL::SharedPtr< Impl::Functor1Base<ReturnType, Arg1Type> > impl_;
+d615 1
+a615 1
+      CPPUT_DEDUCED_TYPENAME CppTL::SharedPtr< Impl::Functor2Base<void, Arg1Type, Arg2Type> > impl_;
+d647 1
+a647 1
+      CPPUT_DEDUCED_TYPENAME CppTL::SharedPtr< Impl::Functor2Base<ReturnType, Arg1Type, Arg2Type> > impl_;
+d719 1
+a719 1
+   Functor1<CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type>
+d722 1
+a722 1
+      return Functor1<CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type>(
+d724 1
+a724 1
+                    CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type>( functor ) );
+d729 1
+a729 1
+            CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type>
+d733 1
+a733 1
+            CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type>(
+d736 1
+a736 1
+                    CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type>( functor ) );
+d794 1
+a794 1
+                Impl::Bind1<CPPUT_DEDUCED_TYPENAME FunctorType::result_type, FunctorType, ArgType>(
+d799 1
+a799 1
+   FunctorR0<CPPUT_DEDUCED_TYPENAME FunctorType::result_type>
+d802 2
+a803 2
+      return makeFnR0<CPPUT_DEDUCED_TYPENAME FunctorType::result_type>(
+                Impl::BindR1<CPPUT_DEDUCED_TYPENAME FunctorType::result_type, FunctorType, ArgType>(
+d809 2
+a810 2
+   Functor2<CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type,
+            CPPUT_DEDUCED_TYPENAME FunctorType::second_argument_type>
+d813 2
+a814 2
+      return Functor2<CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type,
+            CPPUT_DEDUCED_TYPENAME FunctorType::second_argument_type>(
+d816 2
+a817 2
+                    CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type,
+                    CPPUT_DEDUCED_TYPENAME FunctorType::second_argument_type>( functor ) );
+d822 2
+a823 2
+            CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type,
+            CPPUT_DEDUCED_TYPENAME FunctorType::second_argument_type>
+d827 2
+a828 2
+            CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type,
+            CPPUT_DEDUCED_TYPENAME FunctorType::second_argument_type>(
+d831 2
+a832 2
+                    CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type,
+                    CPPUT_DEDUCED_TYPENAME FunctorType::second_argument_type>( functor ) );
+d886 1
+a886 1
+   Functor1<CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type>
+d890 1
+a890 1
+                Impl::Bind2<CPPUT_DEDUCED_TYPENAME FunctorType::result_type, FunctorType, ArgType>(
+d895 2
+a896 2
+   FunctorR1<CPPUT_DEDUCED_TYPENAME FunctorType::result_type,
+         CPPUT_DEDUCED_TYPENAME FunctorType::first_argument_type>
+d899 2
+a900 2
+      return makeFnR1<CPPUT_DEDUCED_TYPENAME FunctorType::result_type>(
+                Impl::BindR2<CPPUT_DEDUCED_TYPENAME FunctorType::result_type, FunctorType, ArgType>(
+@
+
+
+1.4
+log
+@* added /Za setting to project to force conformance to ANSI C++
+* fixed issues related to ANSI C++ conformance
+* fixed bug in SliceEnumerator copy constructor & added test
+@
+text
+@d6 1
+a6 1
+# include <cpput/smartptr.h>
+d487 1
+a487 1
+      SmartPtr< Impl::Functor0Base<void> > impl_;
+d517 1
+a517 1
+      CPPUT_DEDUCED_TYPENAME SmartPtr< Impl::Functor0Base<ReturnType> > impl_;
+d550 1
+a550 1
+      CPPUT_DEDUCED_TYPENAME SmartPtr< Impl::Functor1Base<void, Arg1Type> > impl_;
+d581 1
+a581 1
+      CPPUT_DEDUCED_TYPENAME SmartPtr< Impl::Functor1Base<ReturnType, Arg1Type> > impl_;
+d615 1
+a615 1
+      CPPUT_DEDUCED_TYPENAME SmartPtr< Impl::Functor2Base<void, Arg1Type, Arg2Type> > impl_;
+d647 1
+a647 1
+      CPPUT_DEDUCED_TYPENAME SmartPtr< Impl::Functor2Base<ReturnType, Arg1Type, Arg2Type> > impl_;
+d695 1
+a695 1
+   makeMemFn0( SmartPtr<ObjectType> object,
+d698 1
+a698 1
+      return makeFn0( Impl::MemFn0< ObjectType, SmartPtr<ObjectType> >( object, method ) );
+d711 1
+a711 1
+   makeMemFnR0( SmartPtr<ObjectType> object,
+d714 1
+a714 1
+      return makeFnR0<ReturnType>( Impl::MemFnR0< ObjectType, SmartPtr<ObjectType>, ReturnType >( object, method ) );
+d767 1
+a767 1
+   makeMemFn1( SmartPtr<ObjectType> object,
+d770 1
+a770 1
+      return makeFn1( Impl::MemFn1< ObjectType, SmartPtr<ObjectType>, Arg1Type >( object, method ) );
+d783 1
+a783 1
+   makeMemFnR1( SmartPtr<ObjectType> object,
+d786 1
+a786 1
+      return makeFnR1<ReturnType>( Impl::MemFnR1< ObjectType, SmartPtr<ObjectType>, ReturnType, Arg1Type >( object, method ) );
+d863 1
+a863 1
+   makeMemFn2( SmartPtr<ObjectType> object,
+d866 1
+a866 1
+      return makeFn2( Impl::MemFn2< ObjectType, SmartPtr<ObjectType>, Arg1Type, Arg2Type >( object, method ) );
+d879 1
+a879 1
+   makeMemFnR2( SmartPtr<ObjectType> object,
+d882 1
+a882 1
+      return makeFnR2<ReturnType>( Impl::MemFnR2< ObjectType, SmartPtr<ObjectType>, ReturnType, Arg1Type, Arg2Type >( object, method ) );
+@
+
+
+1.3
+log
+@* updated functor.h generation script
+@
+text
+@d919 1
+a919 1
+#endif CPPUT_FUNCTOR_H_INCLUDED
+@
+
+
+1.2
+log
+@* SmartPtr now subclass boost::shared_ptr to make templated function
+  overloading easier.
+* Added our own smart pointer implementation
+* Added AtomicCounter as implementation detail.
+  Can use boost::detail::atomic_counter.
+@
+text
+@d695 1
+a695 1
+   makeMemFn0( const SmartPtr<ObjectType> & object,
+d711 1
+a711 1
+   makeMemFnR0( const SmartPtr<ObjectType> & object,
+d767 1
+a767 1
+   makeMemFn1( const SmartPtr<ObjectType> & object,
+d783 1
+a783 1
+   makeMemFnR1( const SmartPtr<ObjectType> & object,
+d863 1
+a863 1
+   makeMemFn2( const SmartPtr<ObjectType> & object,
+d879 1
+a879 1
+   makeMemFnR2( const SmartPtr<ObjectType> & object,
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a5 1
+# include <cpput/config.h>
+d487 1
+a487 1
+      SmartPtr< Impl::Functor0Base<void> >::Ptr impl_;
+d517 1
+a517 1
+      CPPUT_DEDUCED_TYPENAME SmartPtr< Impl::Functor0Base<ReturnType> >::Ptr impl_;
+d550 1
+a550 1
+      CPPUT_DEDUCED_TYPENAME SmartPtr< Impl::Functor1Base<void, Arg1Type> >::Ptr impl_;
+d581 1
+a581 1
+      CPPUT_DEDUCED_TYPENAME SmartPtr< Impl::Functor1Base<ReturnType, Arg1Type> >::Ptr impl_;
+d615 1
+a615 1
+      CPPUT_DEDUCED_TYPENAME SmartPtr< Impl::Functor2Base<void, Arg1Type, Arg2Type> >::Ptr impl_;
+d647 1
+a647 1
+      CPPUT_DEDUCED_TYPENAME SmartPtr< Impl::Functor2Base<ReturnType, Arg1Type, Arg2Type> >::Ptr impl_;
+d695 1
+a695 1
+   makeMemFn0( const boost::shared_ptr<ObjectType> & object,
+d698 1
+a698 1
+      return makeFn0( Impl::MemFn0< ObjectType, boost::shared_ptr<ObjectType> >( object, method ) );
+d711 1
+a711 1
+   makeMemFnR0( const boost::shared_ptr<ObjectType> & object,
+d714 1
+a714 1
+      return makeFnR0<ReturnType>( Impl::MemFnR0< ObjectType, boost::shared_ptr<ObjectType>, ReturnType >( object, method ) );
+d767 1
+a767 1
+   makeMemFn1( const boost::shared_ptr<ObjectType> & object,
+d770 1
+a770 1
+      return makeFn1( Impl::MemFn1< ObjectType, boost::shared_ptr<ObjectType>, Arg1Type >( object, method ) );
+d783 1
+a783 1
+   makeMemFnR1( const boost::shared_ptr<ObjectType> & object,
+d786 1
+a786 1
+      return makeFnR1<ReturnType>( Impl::MemFnR1< ObjectType, boost::shared_ptr<ObjectType>, ReturnType, Arg1Type >( object, method ) );
+d863 1
+a863 1
+   makeMemFn2( const boost::shared_ptr<ObjectType> & object,
+d866 1
+a866 1
+      return makeFn2( Impl::MemFn2< ObjectType, boost::shared_ptr<ObjectType>, Arg1Type, Arg2Type >( object, method ) );
+d879 1
+a879 1
+   makeMemFnR2( const boost::shared_ptr<ObjectType> & object,
+d882 1
+a882 1
+      return makeFnR2<ReturnType>( Impl::MemFnR2< ObjectType, boost::shared_ptr<ObjectType>, ReturnType, Arg1Type, Arg2Type >( object, method ) );
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

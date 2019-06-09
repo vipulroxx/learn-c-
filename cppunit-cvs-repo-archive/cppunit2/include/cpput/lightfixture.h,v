@@ -1,0 +1,122 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2007.08.15.17.48.29;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@   Added support for light test fixture (a la CppUnitLite).
+See lightfixture.h and example/light_fixture.
+   Added support for direct declaration and registration of test in plain C
+function. See testfunction.h and example/test_function.
+@
+text
+@#ifndef CPPUT_LIGHTFIXTURE_H_INCLUDED
+# define CPPUT_LIGHTFIXTURE_H_INCLUDED
+
+# include "forwards.h"
+# include "extendeddata.h"
+# include "testcase.h"
+# include "registry.h"
+
+/*! \bief Implementation detail for light fixture: make class name.
+ */
+#define _CPPUT_LF_CLASS( FixtureType, testName ) \
+   FixtureType##_##testName
+
+/*! \brief Implementation detail for light fixture.
+ * Implementation Notes: a class deriving from the \c FixtureType is created 
+ * for each test. The user actually implement the member function named after \c testName.
+ */
+#define _CPPUT_TEST_LIGHT_FIXTURE_IMPL( FixtureType, testName, specificsCode )            \
+   class _CPPUT_LF_CLASS(FixtureType,testName) : public FixtureType                       \
+                                               , public ::CppUT::TestExtendedDataFactory  \
+   {                                                                                      \
+   public:                                                                                \
+      static ::CppUT::TestPtr cpputMakeTest() /* TestFactory */                           \
+      {                                                                                   \
+         ::CppUT::TestPtr test( ::CppUT::makeTestCase(                                    \
+            &_CPPUT_LF_CLASS(FixtureType,testName)::cpputTest, #testName ) );             \
+         specificsCode                                                                    \
+         return test;                                                                     \
+      }                                                                                   \
+   public:                                                                                \
+      static void cpputTest()                                                             \
+      {                                                                                   \
+         _CPPUT_LF_CLASS(FixtureType,testName) fixture;                                   \
+         fixture.testName();                                                              \
+      }                                                                                   \
+      void testName();                                                                    \
+   };                                                                                     \
+   CPPUT_REGISTER_TESTFACTORY_IN( &_CPPUT_LF_CLASS(FixtureType,testName)::cpputMakeTest,  \
+                                  #FixtureType );                                         \
+   void _CPPUT_LF_CLASS(FixtureType,testName)::testName()
+
+/*! \brief Declare and register a light fixture test case.
+ * The test case is named after the function name and register in the suite named after 
+ * FixtureType.
+ * \code
+ * struct A    // The fixture
+ * {
+ *     A() 
+ *         : text_( "hello" )
+ *     {
+ *     }
+ *     std::string text_;
+ * };
+ * CPPUT_TEST_LIGHT_FIXTURE( A, testInit )     // Defines a test case for the fixture.
+ * {
+ *     CPPUT_CHECK_TRUE( text_ == "hello" );   // Directly access fixture members.
+ * }
+ * \endCode
+ */
+#define CPPUT_TEST_LIGHT_FIXTURE( FixtureType, testName )                      \
+   _CPPUT_TEST_LIGHT_FIXTURE_IMPL( FixtureType, testName, (void)0; )
+
+/*! \brief Declare and register a light fixture test case with extended data.
+ * The test case is named after the function name and register in the suite named after 
+ * FixtureType.
+ * \code
+ * struct A    // The fixture
+ * {
+ *     A() 
+ *         : text_( "hello" )
+ *     {
+ *     }
+ *     std::string text_;
+ * };
+ * CPPUT_TEST_LIGHT_FIXTURE_WITH_SPECIFICS( A, testInit, (timeout(0.2), group("init")) )
+ * {
+ *     CPPUT_CHECK_TRUE( text_ == "hello" );   // Directly access fixture members.
+ * }
+ * \endCode
+ */
+#define CPPUT_TEST_LIGHT_FIXTURE_WITH_SPECIFICS( FixtureType, testName, specifics )       \
+   _CPPUT_TEST_LIGHT_FIXTURE_IMPL( FixtureType, testName,                                 \
+         ( specifics ).apply( *test ); )
+
+/*! \brief register the light fixture suite to the default Registry suite.
+ */
+#define CPPUT_REGISTER_LIGHT_FIXTURE( FixtureType ) \
+   CPPUT_REGISTER_SUITE_RELATIONSHIP_TO_DEFAULT( #FixtureType )
+
+/*! \brief register the light fixture suite to the specified Registry suite.
+ */
+#define CPPUT_REGISTER_LIGHT_FIXTURE_IN( FixtureType, parentSuiteName ) \
+   CPPUT_REGISTER_SUITE_RELATIONSHIP( #FixtureType, parentSuiteName )
+
+
+#endif // CPPUT_LIGHTFIXTURE_H_INCLUDED
+@

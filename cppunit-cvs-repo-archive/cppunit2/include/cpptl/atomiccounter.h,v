@@ -1,0 +1,664 @@
+head	1.11;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.11
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.2
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.2
+	TG_AFTER_REMOVING_TESTCONTEXT:1.1
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.1
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.11
+date	2006.09.06.19.23.26;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2006.03.06.22.50.53;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.11.09.22.03.55;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.03.07.21.34.44;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.03.06.21.12.38;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2005.03.06.20.28.41;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.03.06.20.26.35;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.03.06.20.23.32;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.03.06.20.12.31;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.02.26.11.53.08;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.11.15.08.22.51;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.11
+log
+@- made atomic counter copyable
+- added implementation of CPPTL_ assertions.
+- fixed wrong assertions in smallmap.h
+- fixed buggy iterator usage in smallmaptest.
+- no longer require a library to use cpptl threads.
+@
+text
+@#ifndef CPPTL_ATOMICCOUNTER_H_INCLUDED
+# define CPPTL_ATOMICCOUNTER_H_INCLUDED
+
+# include <cpptl/config.h>
+# if CPPTL_USE_PTHREAD_ATOMIC
+#  include <pthread.h>
+# endif
+
+# if CPPTL_USE_WIN32_ATOMIC // Forwards declaration for WIN32 (avoid including windows.h)
+
+#  if _MSC_VER <= 1200    // VC++ 6 platform SDK as not volatile
+extern "C" __declspec(dllimport) long __stdcall InterlockedIncrement(long *);
+extern "C" __declspec(dllimport) long __stdcall InterlockedDecrement(long *);
+#  else
+extern "C" __declspec(dllimport) long __stdcall InterlockedIncrement(long volatile *);
+extern "C" __declspec(dllimport) long __stdcall InterlockedDecrement(long volatile *);
+#  endif
+ 
+# endif // ifdef CPPTL_USE_WIN32_ATOMIC
+
+
+
+namespace CppTL {
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// AtomicCounter implementation for WIN32
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+# if CPPTL_USE_WIN32_ATOMIC
+
+class CPPTL_API AtomicCounter
+{
+public:
+   AtomicCounter( long count = 0 )
+      : count_( count )
+   {
+   }
+
+   void increment()
+   {
+      InterlockedIncrement( const_cast< long * >( &count_ ) ); 
+   }
+
+   /// Decrements the count
+   /// @@returns true if count is non null.
+   bool decrement()
+   {
+      return InterlockedDecrement( const_cast< long * >( &count_ ) ) != 0; 
+   }
+
+   /// Should returns the current value of the count.
+   /// \warning this method is only defined for debugging and testing
+   /// purpose, you should not rely on it in production code path.
+   long count() const
+   {
+      return count_;
+   }
+
+private:
+   volatile long count_;
+};
+
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// AtomicCounter implementation using pthread mutex
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+#elif CPPTL_USE_PTHREAD_ATOMIC
+
+class CPPTL_API AtomicCounter
+{
+public:
+   AtomicCounter( long count = 0 )
+      : count_( count )
+   {
+      pthread_mutex_init( &lock_, 0 );
+   }
+
+   AtomicCounter( const AtomicCounter &other )
+   {
+      pthread_mutex_init( &lock_, 0 );
+   }
+
+   ~AtomicCounter()
+   {
+      pthread_mutex_destroy( &lock_ );
+   }
+
+   AtomicCounter &operator =( const AtomicCounter &other )
+   {
+      return *this;
+   }
+
+   void increment()
+   {
+      pthread_mutex_lock( &lock_ );
+      ++count_;
+      pthread_mutex_unlock( &lock_ );
+   }
+
+   /// Decrements the count
+   /// @@returns true if count is non null.
+   bool decrement()
+   {
+      pthread_mutex_lock( &lock_ );
+      bool isNotNull = --count_ != 0;
+      pthread_mutex_unlock( &lock_ );
+      return isNotNull;
+   }
+
+   /// Should returns the current value of the count.
+   /// \warning this method is only defined for debugging and testing
+   /// purpose, you should not rely on it in production code path.
+   long count() const
+   {
+      pthread_mutex_lock( &lock_ );
+      long value = count_;
+      pthread_mutex_unlock( &lock_ );
+      return value;
+   }
+
+private:
+   mutable pthread_mutex_t lock_;
+   volatile long count_;
+};
+
+
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// NON thread-safe implementation of AtomicCounter
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+#else
+
+class CPPTL_API AtomicCounter
+{
+public:
+   AtomicCounter( long count = 0 );
+      : count_( count )
+   {
+   }
+
+   void increment()
+   {
+      return ++count_;
+   }
+
+   bool decrement()
+   {
+      return --count_ != 0;
+   }
+
+   long count() const
+   {
+      return count_;
+   }
+
+private:
+   long count_;
+};
+
+# endif // ifdef CPPTL_USE_WIN32_ATOMIC
+
+
+} // namespace CppTL
+
+
+#endif // CPPTL_ATOMICCOUNTER_H_INCLUDED
+
+@
+
+
+1.10
+log
+@* fixed msvc6 compilation issues
+@
+text
+@d32 1
+a32 1
+class CPPTL_API AtomicCounter : public NonCopyable
+d72 1
+a72 1
+class CPPTL_API AtomicCounter : public NonCopyable
+d81 5
+d91 5
+d138 1
+a138 1
+class CPPTL_API AtomicCounter : public NonCopyable
+@
+
+
+1.9
+log
+@- removed support for atomic counter on linux (warning on include, don't work reliably)
+@
+text
+@a8 2
+// Notes: linux implementation only guaranty a 24 bits range for the atomic integer.
+
+d11 4
+d17 1
+@
+
+
+1.8
+log
+@* added global define to indicate if atomic counter is thread-safe
+* removed vacpp specific atomic counter implementation (couldn't get it to compile)
+* added pthread mutex based atomic counter implementation
+@
+text
+@d5 1
+a5 3
+# if CPPTL_USE_LINUX_ATOMIC
+#  include <asm/atomic.h>
+# elif CPPTL_USE_PTHREAD_ATOMIC
+a115 38
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// AtomicCounter implementation for Linux
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+#elif CPPTL_USE_LINUX_ATOMIC
+
+
+class CPPTL_API AtomicCounter : public NonCopyable
+{
+public:
+   AtomicCounter( long count = 0 )
+   {
+      atomic_t value = ATOMIC_INIT(count);
+      count_ = value;
+   }
+
+
+   void increment()
+   {
+      atomic_inc( &count_ );
+   }
+
+
+   bool decrement()
+   {
+      return !atomic_dec_and_test( &count_ );
+   }
+
+
+   long count() const
+   {
+      return atomic_read( &count_ );
+   }
+
+private:
+   atomic_t count_;
+};
+@
+
+
+1.7
+log
+@* added pthread api activation
+* added CPPTL_USE_WIN32_ATOMIC for WIN32
+@
+text
+@d7 2
+a12 3
+// For AIX implementation, see bulit-in function __check_lock_mp, __check_lock_up:
+// http://publib.boulder.ibm.com/infocenter/pseries/index.jsp?topic=/com.ibm.vacpp7a.doc/compiler/ref/rubifunc.htm
+
+a23 33
+# if CPPTL_HAS_VACPP_CHECKLOCK
+   typedef int AtomicCounterIntegerType;
+   typedef volatile AtomicCounterIntegerType AtomicCounterStorageType;
+# elif CPPTL_USE_LINUX_ATOMIC
+   typedef long AtomicCounterIntegerType;
+   typedef atomic_t AtomicCounterStorageType;
+# else
+   typedef long AtomicCounterIntegerType;
+   typedef volatile AtomicCounterIntegerType AtomicCounterStorageType;
+# endif
+
+   class CPPTL_API AtomicCounter : public NonCopyable
+   {
+   public:
+      AtomicCounter( AtomicCounterIntegerType count = 0 );
+
+      void increment();
+
+      /// Decrements the count
+      /// @@returns true if count is non null.
+      bool decrement();
+
+      /// Should returns the current value of the count.
+      /// \warning this method is only defined for debugging and testing
+      /// purpose, you should not rely on it in production code path.
+      AtomicCounterIntegerType count() const;
+
+   private:
+      AtomicCounterStorageType count_;
+   };
+
+
+
+d31 1
+a31 3
+inline 
+AtomicCounter::AtomicCounter( AtomicCounterIntegerType count )
+   : count_( count )
+d33 5
+a37 1
+}
+d39 4
+d44 6
+a49 5
+inline void 
+AtomicCounter::increment()
+{
+   InterlockedIncrement( const_cast< AtomicCounterIntegerType * >( &count_ ) ); 
+}
+d51 7
+d59 3
+a61 6
+inline bool
+AtomicCounter::decrement()
+{
+   return InterlockedDecrement( const_cast< AtomicCounterIntegerType * >( &count_ ) ) != 0; 
+}
+
+a62 5
+inline AtomicCounterIntegerType 
+AtomicCounter::count() const
+{
+   return count_;
+}
+d66 1
+a66 1
+// AtomicCounter implementation for Visual Age C++
+d69 1
+a69 1
+#elif CPPTL_HAS_VACPP_CHECKLOCK
+d71 1
+a71 7
+// __check_lock( void *p, old_value, new_value )
+// it is a compare and swap built-in. The implementation below spins 
+// until the old_value matches the value we just read.
+
+inline 
+AtomicCounter::AtomicCounter( AtomicCounterIntegerType count )
+   : count_( count )
+d73 6
+a78 1
+}
+d80 4
+d85 32
+a116 30
+inline void
+AtomicCounter::increment()
+{
+   AtomicCounterIntegerType value;
+   do
+      value = count_;
+   while ( __check_lock( &count_, value, value+1 ) );
+}
+
+
+inline bool
+AtomicCounter::decrement()
+{
+   AtomicCounterIntegerType value;
+   do
+      value = count_;
+   while ( __check_lock( &count_, value, value-1 ) );
+   return value == 1;
+}
+
+
+inline AtomicCounterIntegerType 
+AtomicCounter::count() const
+{
+   AtomicCounterIntegerType value;
+   do
+      value = count_;
+   while ( __check_lock( &count_, value, value ) );
+   return value;
+}
+d125 2
+a126 2
+inline 
+AtomicCounter::AtomicCounter( AtomicCounterIntegerType count )
+d128 7
+a134 3
+   atomic_t value = ATOMIC_INIT(count);
+   count_ = value;
+}
+d136 4
+a140 5
+inline void
+AtomicCounter::increment()
+{
+   atomic_inc( &count_ );
+}
+d142 4
+a146 5
+inline bool
+AtomicCounter::decrement()
+{
+   return !atomic_dec_and_test( &count_ );
+}
+d148 4
+d153 3
+a155 5
+inline AtomicCounterIntegerType 
+AtomicCounter::count() const
+{
+   return atomic_read( &count_ );
+}
+d165 1
+a165 3
+inline 
+AtomicCounter::AtomicCounter( AtomicCounterIntegerType count )
+   : count_( count )
+d167 5
+a171 1
+}
+d173 4
+d178 4
+a181 12
+inline AtomicCounterIntegerType 
+AtomicCounter::increment()
+{
+   return ++count_;
+}
+
+
+inline AtomicCounterIntegerType 
+AtomicCounter::decrement()
+{
+   return --count_;
+}
+d183 4
+d188 3
+a190 5
+inline AtomicCounterIntegerType 
+AtomicCounter::count() const
+{
+   return count_;
+}
+@
+
+
+1.6
+log
+@* removed volatile when using atomic_t as storage.
+@
+text
+@d14 1
+a14 1
+# ifdef WIN32 // Forwards declaration for WIN32 (avoid including windows.h)
+d19 1
+a19 1
+# endif // ifdef WIN32
+d63 1
+a63 1
+# ifdef WIN32
+d211 1
+a211 1
+# endif // ifdef WIN32
+@
+
+
+1.5
+log
+@* can not use member initializer to initialize atomic counter on linux.
+@
+text
+@d27 1
+a27 1
+   typedef AtomicCounterIntegerType AtomicCounterStorageType;
+d33 1
+a33 1
+   typedef AtomicCounterIntegerType AtomicCounterStorageType;
+d53 1
+a53 1
+      volatile AtomicCounterStorageType count_;
+@
+
+
+1.4
+log
+@* can not use member initializer to initialize atomic counter on linux.
+@
+text
+@d151 2
+a152 1
+   count_ = ATOMIC_INIT(count);
+@
+
+
+1.3
+log
+@* added automatic detection of pthread support
+* added atomic counter implementation for linux
+@
+text
+@a149 1
+   : count_( ATOMIC_INIT(count) )
+d151 1
+@
+
+
+1.2
+log
+@* updated doc
+@
+text
+@d5 8
+d25 11
+d39 1
+a39 1
+      AtomicCounter( long count = 0 );
+d41 1
+a41 1
+      long increment();
+d44 2
+a45 2
+      /// @@returns 0 if the count is null, non zero otherwise.
+      long decrement();
+d49 2
+a50 2
+      /// purpose, you should not rely on it in production code.
+      long count() const;
+d53 1
+a53 1
+      volatile long count_;
+d66 1
+a66 1
+AtomicCounter::AtomicCounter( long count )
+d72 1
+a72 1
+inline long 
+d75 1
+a75 1
+   return InterlockedIncrement( const_cast< long * >( &count_ ) ); 
+d79 1
+a79 1
+inline long 
+d82 1
+a82 1
+   return InterlockedDecrement( const_cast< long * >( &count_ ) ); 
+d86 1
+a86 1
+inline long 
+d92 83
+d184 1
+a184 1
+AtomicCounter::AtomicCounter( long count )
+d190 1
+a190 1
+inline long 
+d197 1
+a197 1
+inline long 
+d204 1
+a204 1
+inline long 
+@
+
+
+1.1
+log
+@* moved shared_ptr & atomiccounter from CppUT to cppTL
+* simplified implementation of AtomicCounter using forward declaration on windows instead of using pimpl.
+@
+text
+@d24 2
+a25 1
+      /// Decrements the count and returns the decremented count
+@
+

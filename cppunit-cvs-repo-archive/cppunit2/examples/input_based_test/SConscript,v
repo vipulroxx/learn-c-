@@ -1,0 +1,104 @@
+head	1.4;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.4;
+locks; strict;
+comment	@# @;
+
+
+1.4
+date	2005.03.05.11.02.23;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.03.01.22.16.46;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.02.28.22.11.54;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.02.28.20.48.56;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* changed from using string split() method to scons Split() helper function for portability with python 1.5.2.
+@
+text
+@Import( 'env_testing buildCppUnitExample' )
+
+buildCppUnitExample( env_testing, Split( """
+    main.cpp
+     """ ),
+    'input_based_test' )
+@
+
+
+1.3
+log
+@* factorised build sequence for simple examples
+@
+text
+@d3 1
+a3 1
+buildCppUnitExample( env_testing, """
+d5 1
+a5 1
+     """.split(),
+@
+
+
+1.2
+log
+@* moved texttestdriver.h class implementations into a .cpp
+@
+text
+@d1 1
+a1 1
+# input_based_test build script
+d3 1
+a3 3
+Import( 'env_testing' )
+
+input_based_test_sources="""
+d5 2
+a6 7
+     """.split()
+
+input_based_test_exe = env_testing.Program( target='input_based_test',
+                                            source=input_based_test_sources )
+
+bin_dir='#bin'
+env_testing.Install( bin_dir, input_based_test_exe )
+@
+
+
+1.1
+log
+@* added input based test
+@
+text
+@d3 1
+a3 2
+Import( 'env' )
+env = env.Copy( LIBPATH = '#libs', LIBS = ['cpput'] )
+d9 2
+a10 2
+input_based_test_exe = env.Program( target='input_based_test',
+                                    source=input_based_test_sources )
+d13 1
+a13 1
+env.Install( bin_dir, input_based_test_exe )
+@
+

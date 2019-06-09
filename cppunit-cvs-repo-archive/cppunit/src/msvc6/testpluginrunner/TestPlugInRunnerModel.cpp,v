@@ -1,0 +1,286 @@
+head	1.4;
+access;
+symbols
+	REL_1_12_1:1.4
+	REL_1_11_6:1.4
+	REL_1_11_4:1.4
+	REL_1_11_0:1.4
+	TG_CPPUNIT_NO_STREAM_AFTER:1.4
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.4
+	REL_1_10_2:1.4
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.4
+date	2004.06.18.11.25.34;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.05.22.17.27.26;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.27.21.23.22;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugIn.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerModel.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerModel.h: bug #952912,
+  memory leaks when loading/reloading plug-ins.
+@
+text
+@// //////////////////////////////////////////////////////////////////////////
+// Implementation file TestPlugInRunnerModel.cpp for class TestPlugInRunnerModel
+// (c)Copyright 2000, Baptiste Lepilleur.
+// Created: 2001/06/24
+// //////////////////////////////////////////////////////////////////////////
+
+#include "StdAfx.h"
+#include "TestPlugInRunnerModel.h"
+#include <cppunit/TestSuite.h>
+#include "TestPlugIn.h"
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+
+TestPlugInRunnerModel::TestPlugInRunnerModel() : 
+    TestRunnerModel( new CPPUNIT_NS::TestSuite( "Default" ) ),
+    m_plugIn( new TestPlugIn( "default plug-in" ) )
+{
+}
+
+
+TestPlugInRunnerModel::~TestPlugInRunnerModel()
+{
+  freeRootTest();
+  delete m_plugIn;
+}
+
+
+void 
+TestPlugInRunnerModel::setPlugIn( TestPlugIn *plugIn )
+{
+  freeRootTest();
+  delete m_plugIn;
+  m_plugIn = plugIn;
+  reloadPlugIn();
+}
+
+
+void 
+TestPlugInRunnerModel::reloadPlugIn()
+{
+  try 
+  {
+    CWaitCursor waitCursor;
+    m_history.clear();
+    freeRootTest();
+    setRootTest( m_plugIn->makeTest() );
+
+    loadHistory();
+  }
+  catch (...)
+  {
+    setRootTest( new CPPUNIT_NS::TestSuite( "Default" ) );  
+    loadHistory();
+    throw;
+  }
+}
+
+
+void 
+TestPlugInRunnerModel::freeRootTest()
+{
+  delete m_rootTest;
+  m_rootTest = 0;
+}
+
+
+void 
+TestPlugInRunnerModel::setRootTest( CPPUNIT_NS::Test *rootTest )
+{
+  freeRootTest();
+  TestRunnerModel::setRootTest( rootTest );
+}
+@
+
+
+1.3
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d12 6
+d28 1
+d36 1
+d50 1
+d62 16
+@
+
+
+1.2
+log
+@* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/Resource.h:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerModel.cpp: integrated patch from
+Marco Welti (Welti@@GretagMacbeth.ch) with a few clean up.
+Display the name of the test being run during above the progress bar. Allow the
+VC++ add-ins to works with TestPlugInRunner (COM init). DLL name can be specified
+on the command line after flag '-testsuite'. Display wait cursor, clear and reload
+history when reloading DLL.
+
+* THANKS: added Marco Welti to the list.
+@
+text
+@d14 1
+a14 1
+    TestRunnerModel( new CppUnit::TestSuite( "Default" ) ),
+d48 1
+a48 1
+    setRootTest( new CppUnit::TestSuite( "Default" ) );  
+@
+
+
+1.1
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+moved dll copy from post-build to custom build setting, so that the
+dll is copied even if the CppUnitTestApp was not modified.
+
+* examples/msvc6/TestPlugIn/: a new example of test plug in.
+
+* src/msvc6/TestRunner/ListCtrlFormatter.*
+* src/msvc6/TestRunner/ListCtrlSetter.*:
+added, helper to manipulate list control.
+
+* src/msvc6/TestRunner/TestRunnerDlg.*: change to make the error list
+more compact. text moved to string resources. icons added for typ
+test tfailure type.
+
+* src/msvc6/TestRunner/MostRecentTests.*: added, classes that will
+replace the current implementation of MRU test which make it hard
+to subclass the dialog.
+
+* src/msvc6/TestRunner/res/errortype.bmp: added, bitmap with error
+types (failure and error).
+
+* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+
+* src/cppunit/cppunit.dsp:
+removed config.h from project
+added Portability.h and config-msvc6.h
+
+* include/cppunit/config-msvc6.h:
+undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+@
+text
+@d40 2
+d43 2
+@
+

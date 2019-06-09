@@ -1,0 +1,78 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.2
+	TG_BRANCH_1_9_12:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2003.05.07.21.12.39;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* added : small utility to updated all .cvsignore
+@
+text
+@# Explore directory recursively and append the specified line
+# to all .cvsignore.
+# put together by a newbie to python, use at your own risk!
+
+import os
+
+def addEOL( line ):
+    if len(line) > 0:
+        line = line.rstrip( '\n\r' ) + '\n'
+    return line
+        
+def listFiles( dummy, dirName, fileNames ):
+    print "* Content of directory: ", os.path.abspath(dirName), ":"
+    for file in fileNames:
+        print file
+
+def updateCVSIgnore( linesToAdd, cvsignorePath ):
+    fread = file( cvsignorePath, 'r' )
+    lines = fread.readlines()
+    fread.close()
+
+    lines.extend( linesToAdd )
+    lines = [addEOL(line) for line in lines]
+
+    fwrite = file( cvsignorePath, 'w+' )
+    fwrite.writelines( lines )
+    fwrite.close()
+    print 'Updated: ', cvsignorePath
+
+def listCVSIgnore( linesToAdd, dirName, fileNames ):
+    print "Exploring: ", os.path.abspath( dirName )
+    if ( fileNames.count( 'CVS' ) > 0 ):
+        fileNames.remove( 'CVS' )
+    if ( fileNames.count( '.cvsignore' ) > 0 ):
+        cvsignorePath = os.path.join( dirName, '.cvsignore' )
+        updateCVSIgnore( linesToAdd, os.path.abspath( cvsignorePath ) )
+
+#if __name__ == '__main__':
+#    os.path.walk(sys.argv[1], lister, None)          # dir name in cmdline 
+
+lines = [ 'SunWS_cache', 'ir.out' ]
+
+os.path.walk( ".", listCVSIgnore, lines )
+@

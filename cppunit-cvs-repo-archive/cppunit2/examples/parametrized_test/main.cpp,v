@@ -1,0 +1,92 @@
+head	1.3;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3;
+locks; strict;
+comment	@// @;
+
+
+1.3
+date	2005.11.13.10.17.57;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.08.08.22.07.58;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.02.28.20.31.30;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@- renamed include/cpput/assert.h to include/cpput/assertion.h
+@
+text
+@#include <examples/common/examplecommon.h>
+#include <cpput/testcase.h>
+
+
+static void testMultiply( int x, int y, int expected_result )
+{
+   int result = x * y;
+   CPPUT_ASSERT_EQUAL( expected_result, result );
+}
+
+
+
+int main( int argc, const char *argv[] )
+{
+   CppUT::TestSuitePtr allSuite = CppUT::makeTestSuite( "All tests" );
+   allSuite->add( CppUT::makeTestCase( CppTL::bind_cfn( testMultiply, 7, 2, 7*2 ), 
+                                       "multiply 7*2" ) );
+   allSuite->add( CppUT::makeTestCase( CppTL::bind_cfn( testMultiply, 7, 5, 7*4 ), 
+                                       "multiply 7*5 (failing demo)" ) );
+
+   return runExampleTests( argc, argv, allSuite.get() );
+}
+@
+
+
+1.2
+log
+@* Centralized test running logic in examples/common/examplecommon.h
+@
+text
+@a2 1
+#include <cpput/assert.h>
+@
+
+
+1.1
+log
+@* an example of making parametrized test cases.
+@
+text
+@d1 1
+a2 2
+#include <cpput/testsuite.h>
+#include <cpput/testrunner.h>    // cppunit2 testrunner for opentest
+a3 2
+#include <opentest/texttestdriver.h>
+#include <opentest/properties.h>
+d22 1
+a22 8
+   CppUT::TestRunner runner;
+   CppUT::AbstractTestSuitePtr rootSuite = 
+      CppTL::staticPointerCast<CppUT::AbstractTestSuite>( allSuite );
+   runner.setRootSuite( rootSuite );
+
+   OpenTest::TextTestDriver driver( runner );
+   bool sucessful = driver.run();
+   return sucessful ? 0 : 1;
+@
+

@@ -1,0 +1,69 @@
+head	1.2;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2005.11.13.10.12.01;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.03.03.08.15.54;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@- renamed include/cpput/assert.h to include/cpput/assertcommon.h. This avoid clash with include <assert.h> in doxygen documentation
+- most Impl namespaces are now hidden from documentation using \cond and \endcond.
+@
+text
+@#ifndef CPPUT_REFLECTIONTEST_H
+# define CPPUT_REFLECTIONTEST_H
+
+# include <cpput/assertcommon.h>
+# include <cpput/testfixture.h>
+
+class ReflectionTest : public CppUT::TestFixture
+{
+   CPPUT_TESTSUITE_BEGIN( ReflectionTest );
+   CPPUT_TEST( testBasicReflection );
+   CPPUT_TESTSUITE_END();
+
+public:
+   ReflectionTest();
+
+   virtual ~ReflectionTest();
+
+   void setUp();
+   void tearDown();
+
+   void testBasicReflection();
+private:
+};
+
+
+#endif  // CPPUT_REFLECTIONTEST_H
+
+@
+
+
+1.1
+log
+@* added unit tests for CppTL::Reflect
+@
+text
+@d4 1
+a4 1
+# include <cpput/assert.h>
+@
+

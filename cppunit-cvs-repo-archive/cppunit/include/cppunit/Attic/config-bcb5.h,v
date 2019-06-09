@@ -1,0 +1,192 @@
+head	1.5;
+access;
+symbols
+	REL_1_9_0:1.4
+	REL_1_8_0:1.4
+	REL_1_7_8:1.4
+	REL_1_7_3:1.4
+	REL_1_7_1:1.4
+	REL_1_6_2:1.4
+	BRANCH_1_6:1.4.0.2
+	REL_1_6_1:1.4
+	REL_1_6_0:1.4;
+locks; strict;
+comment	@ * @;
+
+
+1.5
+date	2002.04.15.15.20.56;	author blep;	state dead;
+branches;
+next	1.4;
+
+1.4
+date	2001.08.07.15.48.10;	author smr99;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.07.07.16.05.47;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.07.06.01.31.25;	author smr99;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.17.22.58.21;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* NEWS: updated.
+
+* configure.in: added include/cppunit/config/Makefile and
+  include/cppunit/plugin/Makefile to the list of target.
+
+* doc/CppUnit-win.dox: enabled generation of HTML Help documentation.
+
+* include/cppunit/config/Makefile.am:
+* include/cppunit/plugin/Makefile.am: added.
+
+* include/cppunit/config-bcb5.h:
+* include/cppunit/config-msvc6.h:
+* include/cppunit/config-mac.h: moved to include/cppunit/config/.
+
+* include/cppunit/Portability.h: updated config files location. Added macros
+  CPPUNIT_STRINGIZE and CPPUNIT_JOIN (implementation adapted from boost.org).
+  Added macro CPPUNIT_MAKE_UNIQUE_NAME.
+
+* include/cppunit/Test.h: modified methods order.
+
+* include/cppunit/extensions/HelperMacros.h: renamed macro
+  __CPPUNIT_MAKE_UNIQUE_NAME to CPPUNIT_MAKE_UNIQUE_NAME and moved its
+  definition to include/cppunit/Portability.h.
+
+* include/cppunit/extensions/TestDecorator.h: Inherits Test instead of TestLeaf.
+
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* src/cppunit/DynamicLibraryManager.cpp: added. DLL manager (load & lookup
+  symbol).
+
+* src/cppunit/BeOsDynamicLibraryManager.cpp:
+* src/cppunit/UnixDynamicLibraryManager.cpp:
+* src/cppunit/Win32DynamicLibraryManager.cpp: added. Implementation of
+  platform dependent methods of DynamicLibraryManager.
+
+* include/cppunit/plugin/DynamicLibraryManagerException.h:
+* src/cppunit/DynamicLibraryManagerException.cpp: added. Exception thrown
+  by DynamicLibraryManager.
+
+* include/cppunit/plugin/TestPlugIn.h: added. CppUnitTestPlugIn interface
+  definition. Helper macros to implements plug-in.
+
+* include/cppunit/plugin/TestPlugInSuite.h:
+* src/cppunit/plugin/TestPlugInSuite.cpp: added. A suite to wrap a test
+  plug-in.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: added. A default implementation
+  of the test plug-in interface.
+
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp: updated to use the
+  new TestPlugIn.
+
+* examples/cppunittest/TestResultCollectorTest.cpp: fixed typo.
+@
+text
+@#ifndef _INCLUDE_CPPUNIT_CONFIG_BCB5_H
+#define _INCLUDE_CPPUNIT_CONFIG_BCB5_H 1
+
+#define HAVE_CMATH 1
+ 
+/* include/cppunit/config-bcb5.h. Manually adapted from 
+   include/cppunit/config-auto.h */
+
+/* define if library uses std::string::compare(string,pos,n) */
+#ifndef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST 
+#define CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST  1 
+#endif
+
+/* Define if you have the <dlfcn.h> header file. */
+#ifdef CPPUNIT_HAVE_DLFCN_H 
+#undef CPPUNIT_HAVE_DLFCN_H 
+#endif
+
+/* define to 1 if the compiler implements namespaces */
+#ifndef CPPUNIT_HAVE_NAMESPACES 
+#define CPPUNIT_HAVE_NAMESPACES  1 
+#endif
+
+/* define if the compiler supports Run-Time Type Identification */
+#ifndef CPPUNIT_HAVE_RTTI 
+#define CPPUNIT_HAVE_RTTI  1 
+#endif
+
+/* Define to 1 to use type_info::name() for class names */
+#ifndef CPPUNIT_USE_TYPEINFO_NAME 
+#define CPPUNIT_USE_TYPEINFO_NAME  CPPUNIT_HAVE_RTTI 
+#endif
+
+#define CPPUNIT_HAVE_SSTREAM 1
+
+/* Name of package */
+#ifndef CPPUNIT_PACKAGE 
+#define CPPUNIT_PACKAGE  "cppunit" 
+#endif
+
+/* Version number of package */
+#ifndef CPPUNIT_VERSION 
+#define CPPUNIT_VERSION  "1.5.5" 
+#endif
+ 
+ 
+/* _INCLUDE_CPPUNIT_CONFIG_BCB5_H */
+#endif
+@
+
+
+1.4
+log
+@Fixes to allow building with SGI MIPSpro 7.30 compiler.
+The testsuite file examples/cppunittest/SubclassedTestCase.cpp
+causes the compiler to dump core, so that and HelperMacrosTest
+were not tested.  The rest of the test suite passes.
+@
+text
+@@
+
+
+1.3
+log
+@Use strstream if stringstream unavailable.
+@
+text
+@d3 2
+@
+
+
+1.2
+log
+@Change from CPPUNIT_USE_TYPEINFO to CPPUNIT_USE_TYPEINFO_NAME
+@
+text
+@d32 2
+@
+
+
+1.1
+log
+@added for new config handling.
+@
+text
+@d27 5
+@
+

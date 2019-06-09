@@ -1,0 +1,203 @@
+head	1.4;
+access;
+symbols
+	arelease:1.1.1.1 avendor:1.1.1;
+locks; strict;
+comment	@// @;
+
+
+1.4
+date	2004.08.03.22.36.15;	author blep;	state dead;
+branches;
+next	1.3;
+
+1.3
+date	2004.08.03.22.20.03;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.08.03.22.05.14;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.38;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.38;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* renamed TestFailure to TestResult (can now be a success or a failure)
+* renamed testfailure.h to testresult.h
+* renamed testresult.cpp to testtestrunresult.cpp
+@
+text
+@#include <cpput/testrunresult.h>
+#include <cpput/assert.h>
+#include <cpput/assertexception.h>
+#include <cpput/test.h>
+#include <cpput/testcontext.h>
+#include <iostream>
+
+namespace {
+   class DummyTest : public CppUT::AbstractTest
+   {
+   public:
+
+      void run( CppUT::TestContext &context )
+      {
+      }
+
+      void accept( CppUT::TestVisitor &visitor )
+      {
+      }
+
+      int totalTestCount() const
+      {
+         return 1;
+      }
+   };
+}
+
+
+bool testResult()
+{
+   try
+   {
+      CppUT::TestRunResult result;
+      CppUT::TestContext context;
+      CPPUT_ASSERT( result.successful() );
+      CPPUT_ASSERT_EQUAL( 0, result.failureCount() );
+
+      DummyTest dummyTest1;
+      CppUT::TestFailure failure1( dummyTest1, "message1", false );
+
+      result.testFailed( failure1, context );
+      CPPUT_ASSERT_FALSE( result.successful() );
+      CPPUT_ASSERT_EQUAL( 1, result.failureCount() );
+      const CppUT::TestFailure &failure1b = result.failureAt(0);
+      CPPUT_ASSERT_FALSE( failure1b.isAssertionFailure() );
+      CPPUT_ASSERT_EQUAL( 1, failure1b.message().count() );
+      CPPUT_ASSERT_EQUAL( "message1", failure1b.message().at(0) );
+
+      DummyTest dummyTest2;
+      CppUT::Message message2( "message2" );
+      message2.setFailureType( "assertion" );
+      CppUT::TestFailure failure2( dummyTest2, message2, 
+                                   CppUT::Location( "somefile.cpp", 123 ),
+                                   false );
+      result.testFailed( failure2, context );
+      CPPUT_ASSERT_FALSE( result.successful() );
+      CPPUT_ASSERT_EQUAL( 2, result.failureCount() );
+      const CppUT::TestFailure &failure2b = result.failureAt(1);
+      CPPUT_ASSERT( failure2b.isAssertionFailure() );
+      CPPUT_ASSERT_EQUAL( 1, failure2b.message().count() );
+      CPPUT_ASSERT_EQUAL( "message2", failure2b.message().at(0) );
+      CPPUT_ASSERT_EQUAL( "somefile.cpp", failure2b.location().fileName() );
+      CPPUT_ASSERT_EQUAL( 123, failure2b.location().lineNumber() );
+
+
+      DummyTest dummyTest3;
+      CppUT::Message message3( "message3" );
+      message3.setFailureType( "assertion" );
+      CppUT::TestFailure failure3( dummyTest3, message3, 
+                                   CppUT::Location( "somefile3.cpp", 23 ),
+                                   false );
+      result.testFailed( failure3, context );
+      CPPUT_ASSERT_EQUAL( 3, result.failureCount() );
+      CPPUT_ASSERT( result.failureAt(2).isAssertionFailure() );
+
+      DummyTest dummyTest4;
+      CppUT::TestFailure failure4( dummyTest4, "message4", false );
+      result.testFailed( failure4, context );
+      CPPUT_ASSERT_EQUAL( 4, result.failureCount() );
+      CPPUT_ASSERT_FALSE( result.failureAt(3).isAssertionFailure() );
+   }
+   catch ( CppUT::AssertException &e )
+   {
+      std::cout << "testResult() failed: "  <<  e.what()  <<  std::endl;
+      return false;
+   }
+
+   return true;
+}
+@
+
+
+1.3
+log
+@* renamed Result to TestRunResult (and cpput/result.h to cpput/testrunresult.h)
+@
+text
+@@
+
+
+1.2
+log
+@* test failure type is now parametrized. The framework recognize 'fault' and 'assertion', but the user can define any failure type.
+* properties are now associated to the failure message and can be used to pass any structured data to the test report (such as run time...).
+* TestFailure can now be either a success or a failure (need renaming).
+* Next step is to send a generic TestResult event to listener, and collect TestResult identically for both successful and failing tests.
+@
+text
+@d1 1
+a1 1
+#include <cpput/result.h>
+d33 1
+a33 1
+      CppUT::Result result;
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d39 1
+a39 1
+      CppUT::TestFailure failure1( dummyTest1, "message1" );
+d45 1
+a45 1
+      CPPUT_ASSERT_FALSE( failure1b.isAssertion() );
+d50 5
+a54 2
+      CppUT::TestFailure failure2( dummyTest2, "message2", 
+                                   CppUT::Location( "somefile.cpp", 123 ) );
+d59 1
+a59 1
+      CPPUT_ASSERT( failure2b.isAssertion() );
+d67 5
+a71 2
+      CppUT::TestFailure failure3( dummyTest3, "message3", 
+                                   CppUT::Location( "somefile3.cpp", 23 ) );
+d74 1
+a74 1
+      CPPUT_ASSERT( result.failureAt(2).isAssertion() );
+d77 1
+a77 1
+      CppUT::TestFailure failure4( dummyTest4, "message4" );
+d80 1
+a80 1
+      CPPUT_ASSERT_FALSE( result.failureAt(3).isAssertion() );
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

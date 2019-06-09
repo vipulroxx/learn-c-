@@ -1,0 +1,38 @@
+head	1.2;
+access;
+symbols
+	REL_1_5_5:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2001.08.07.14.25.22;	author smr99;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.15.12.53.46;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@Build changes.  Distribute all m4 files.
+@
+text
+@@
+
+
+1.1
+log
+@Set CONFIG_AUX_DIR to config and moved corresponding files from . to config.
+@
+text
+@@
+

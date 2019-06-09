@@ -1,0 +1,165 @@
+head	1.2;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.2
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.2
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.2
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@// @;
+
+
+1.2
+date	2004.06.14.23.28.29;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.35;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.35;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* adding table fixture (in progress)
+@
+text
+@#include <cpput/parametrizedsource.h>
+#include <cpput/test.h>
+#include <cpput/tablefixture.h>
+
+namespace CppUT {
+
+int 
+TestParameterFactoryImpl::testCaseCount()
+{
+   return tests_.size();
+}
+
+
+std::string 
+TestParameterFactoryImpl::testCaseNameSuffix( int index )
+{
+# ifdef CPPUT_HAS_VECTOR_AT
+   return tests_.at( index ).first;
+# else
+   return tests_[ index ].first;
+# endif
+}
+
+
+ParameterNodePtr 
+TestParameterFactoryImpl::testCaseParameter( int index )
+{
+# ifdef CPPUT_HAS_VECTOR_AT
+   return tests_.at( index ).second;
+# else
+   return tests_[ index ].second;
+# endif
+}
+
+
+void 
+TestParameterFactoryImpl::addTestCase( const std::string &nameSuffix,
+                                      const ParameterNodePtr &parameterNode )
+{
+   tests_.push_back( TestData( nameSuffix, parameterNode ) );
+}
+
+
+
+
+
+ParameterSourceRegistry &
+ParameterSourceRegistry::instance()
+{
+   static ParameterSourceRegistry registry;
+   return registry;
+}
+
+
+void 
+ParameterSourceRegistry::addSuiteSource(  
+                        const std::string &suiteName,
+                        const std::string &complementaryName,
+                        SuiteParameterFactory suiteParameterFactory )
+{
+   suitePath_[ SuiteKey(suiteName,complementaryName) ] = suiteParameterFactory;
+}
+
+
+SuiteParameterFactory 
+ParameterSourceRegistry::getSuiteParameterFactory( 
+                        const std::string &suiteName,
+                        const std::string &complementaryName ) const
+{
+   SuiteKey key( suiteName, complementaryName );
+   SuitePaths::const_iterator it = suitePath_.find( key );
+   if ( it != suitePath_.end() )
+      return it->second;
+   return SuiteParameterFactory();
+}
+
+
+
+
+void 
+ParameterNode::throwOperationNotSupported( const std::string &operationName ) const
+{
+   throw std::invalid_argument( "Operation not supported, ParameterNode::" 
+      + operationName );
+}
+
+
+ParameterNodePtr 
+ParameterNode::childNamed( const std::string &nodeName ) const
+{
+   int count = childCount();
+   for ( int index = 0; index < count; ++index )
+   {
+      const ParameterNodePtr &node = childAt( index );
+      if ( node->nodeName() == nodeName )
+         return node;
+   }
+
+   throw std::invalid_argument( "ParameterNode::childNamed(), no node named " +
+      nodeName + "." );
+}
+
+} // namespace CppUT
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 3
+a3 2
+# include <cpput/parametrizedsource.h>
+# include <cpput/test.h>
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

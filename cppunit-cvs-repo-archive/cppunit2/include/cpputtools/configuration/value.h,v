@@ -1,0 +1,190 @@
+head	1.3;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.3
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.3
+	TG_AFTER_REMOVING_TESTCONTEXT:1.3
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.3
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.3;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2004.06.23.18.44.39;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.15.00.45.52;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.06.14.23.31.25;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* replaced storage binding in OptionHandler by a ValueBinder
+@
+text
+@#ifndef CPPUTTOOLS_CONFIGURATION_VALUE_H_INCUDED
+# define CPPUTTOOLS_CONFIGURATION_VALUE_H_INCUDED
+
+# include "simplertti.h"
+# include "validator.h"
+# include <cpputtools/value.h>
+
+namespace CppUTTools { namespace CommandLineOptions {
+
+
+class OptionHandler
+{
+public:
+   virtual ~OptionHandler() {}
+
+   virtual Value validate( const Parameters &parameters ) const = 0;
+};
+
+
+
+template<class TheOptionType>
+class SimpleOptionHandler : public OptionHandler
+{
+public:
+   typedef TheOptionType OptionType;
+
+   SimpleOptionHandler();
+
+   SimpleOptionHandler( Validator *validator );
+
+   SimpleOptionHandler( Validator *validator, OptionType *storage );
+
+   ~SimpleOptionHandler();
+
+public: // overridden from OptionHandler
+   Value validate( const Parameters &parameters ) const;
+
+private:
+   Validator *validator_;
+};
+
+
+
+// template class SimpleOptionHandler
+// //////////////////////////////////////////////////////////////////
+
+template<class TheOptionType>
+SimpleOptionHandler<TheOptionType>::SimpleOptionHandler()
+   : storage_( 0 )
+   , validator_( new StringStreamValidator<TheOptionType>() )
+{
+}
+
+template<class TheOptionType>
+SimpleOptionHandler<TheOptionType>::SimpleOptionHandler( OptionType *storage )
+   : storage_( storage )
+   , validator_( new StringStreamValidator<TheOptionType>() )
+{
+}
+
+
+template<class TheOptionType>
+SimpleOptionHandler<TheOptionType>::SimpleOptionHandler( Validator *validator )
+   : storage_( 0 )
+   , validator_( validator )
+{
+}
+
+
+template<class TheOptionType>
+SimpleOptionHandler<TheOptionType>::SimpleOptionHandler( Validator *validator, 
+                                                         OptionType *storage )
+   : storage_( storage )
+   , validator_( validator )
+{
+}
+
+template<class TheOptionType>
+SimpleOptionHandler<TheOptionType>::~SimpleOptionHandler()
+{
+   delete validator_;
+}
+
+
+template<class TheOptionType>
+bool 
+SimpleOptionHandler<TheOptionType>::hasStorage() const
+{
+   return storage_ != 0;
+}
+
+template<class TheOptionType>
+void 
+SimpleOptionHandler<TheOptionType>::storeValue( const Value &value ) const
+{
+   if ( hasStorage() )
+      *storage_ = get<TheOptionType>( value );
+}
+
+
+template<class TheOptionType>
+Value
+SimpleOptionHandler<TheOptionType>::validate( const Parameters &parameters ) const
+{
+   return validator_->validate( parameters );
+}
+
+
+} } // namespace CommandLineOptions
+
+#endif // CPPUTTOOLS_CONFIGURATION_VALUE_H_INCUDED
+@
+
+
+1.2
+log
+@* fixed compilation issue related to changing OptionValue into the new Value library
+@
+text
+@a15 4
+   virtual bool hasStorage() const = 0;
+
+   virtual void storeValue( const Value &value ) const = 0;
+
+a28 2
+   SimpleOptionHandler( OptionType *storage );
+
+a35 5
+
+   bool hasStorage() const;
+
+   void storeValue( const Value &value ) const;
+
+a39 1
+   OptionType *storage_;
+@
+
+
+1.1
+log
+@* adding cpputtools library, command line options among other thing (for test runners). In progress.
+@
+text
+@d6 1
+a34 2
+   SimpleOptionHandler( OptionType *storage );
+
+a38 2
+   SimpleOptionHandler( Validator *validator, OptionType *storage );
+
+@
+

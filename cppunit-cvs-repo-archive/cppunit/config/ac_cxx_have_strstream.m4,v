@@ -1,0 +1,111 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.4
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2
+	REL_1_9_4:1.2
+	REL_1_9_0:1.2
+	REL_1_8_0:1.2
+	REL_1_7_8:1.2
+	REL_1_7_3:1.2
+	REL_1_7_1:1.2
+	REL_1_6_2:1.2
+	BRANCH_1_6:1.2.0.2
+	REL_1_6_1:1.2
+	REL_1_6_0:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2001.09.20.04.18.19;	author smr99;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.07.07.16.05.47;	author smr99;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@Improved strstream detection to use header <strstream>, if available.
+@
+text
+@dnl @@synopsis AC_CXX_HAVE_STRSTREAM
+dnl
+dnl If the C++ library has a working strstream, define HAVE_CLASS_STRSTREAM.
+dnl
+dnl Adapted from ac_cxx_have_sstream.m4 by Steve Robbins
+dnl
+AC_DEFUN([AC_CXX_HAVE_STRSTREAM],
+[AC_CACHE_CHECK(whether the library defines class strstream,
+ac_cv_cxx_have_class_strstream,
+[AC_REQUIRE([AC_CXX_NAMESPACES])
+ AC_LANG_SAVE
+ AC_LANG_CPLUSPLUS
+ AC_CHECK_HEADERS(strstream)
+ AC_TRY_COMPILE([
+#if HAVE_STRSTREAM
+#  include <strstream>
+#else
+#  include <strstream.h>
+#endif
+#ifdef HAVE_NAMESPACES
+using namespace std;
+#endif],[ostrstream message; message << "Hello"; return 0;],
+ ac_cv_cxx_have_class_strstream=yes, ac_cv_cxx_have_class_strstream=no)
+ AC_LANG_RESTORE
+])
+if test "$ac_cv_cxx_have_class_strstream" = yes; then
+  AC_DEFINE(HAVE_CLASS_STRSTREAM,1,[define if the library defines strstream])
+fi
+])
+@
+
+
+1.1
+log
+@Use strstream if stringstream unavailable.
+@
+text
+@d3 1
+a3 1
+dnl If the C++ library has a working strstream, define HAVE_STRSTREAM.
+d8 2
+a9 2
+[AC_CACHE_CHECK(whether the compiler has strstream,
+ac_cv_cxx_have_strstream,
+d13 7
+a19 1
+ AC_TRY_COMPILE([#include <strstream.h>
+d23 1
+a23 1
+ ac_cv_cxx_have_strstream=yes, ac_cv_cxx_have_strstream=no)
+d26 2
+a27 2
+if test "$ac_cv_cxx_have_strstream" = yes; then
+  AC_DEFINE(HAVE_STRSTREAM,1,[define if the compiler has strstream])
+@
+

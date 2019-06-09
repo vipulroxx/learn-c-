@@ -1,0 +1,190 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2007.01.12.05.56.34;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2003.05.07.21.13.38;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.08.27.21.51.14;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@Arrange class initializers in correct order.
+@
+text
+@#ifndef MOCKPROTECTOR_H
+#define MOCKPROTECTOR_H
+
+#include <stdexcept>
+#include <cppunit/Protector.h>
+
+
+class MockProtectorException : public std::runtime_error
+{
+public:
+  MockProtectorException() 
+    : std::runtime_error( "MockProtectorException" )
+  {
+  }
+};
+
+
+class MockProtector : public CPPUNIT_NS::Protector
+{
+public:
+  MockProtector()
+    : m_wasCalled( false )
+    , m_wasTrapped( false )
+    , m_expectException( false )
+    , m_hasExpectation( false )
+    , m_shouldPropagateException( false )
+  {
+  }
+
+  bool protect( const CPPUNIT_NS::Functor &functor,
+                const CPPUNIT_NS::ProtectorContext &context )
+  {
+    try
+    {
+      m_wasCalled = true;
+      return functor();
+    }
+    catch ( MockProtectorException & )
+    {
+      m_wasTrapped = true;
+
+      if ( m_shouldPropagateException )
+        throw;
+
+      reportError( context, CPPUNIT_NS::Message("MockProtector trap") );
+    }
+
+    return false;
+  }
+
+  void setExpectException()
+  {
+    m_expectException = true;
+    m_hasExpectation = true;
+  }
+
+  void setExpectNoException()
+  {
+    m_expectException = false;
+    m_hasExpectation = true;
+  }
+
+  void setExpectCatchAndPropagateException()
+  {
+    setExpectException();
+    m_shouldPropagateException = true;
+  }
+
+  void verify()
+  {
+    if ( m_hasExpectation )
+    {
+      CPPUNIT_ASSERT_MESSAGE( "MockProtector::protect() was not called",
+                              m_wasCalled );
+
+      std::string message;
+      if ( m_expectException )
+        message = "did not catch the exception.";
+      else
+        message = "caught an unexpected exception.";
+      CPPUNIT_ASSERT_EQUAL_MESSAGE( "MockProtector::protect() " + message,
+                                    m_expectException,
+                                    m_wasTrapped );
+    }
+  }
+
+private:
+  bool m_wasCalled;
+  bool m_wasTrapped;
+  bool m_expectException;
+  bool m_hasExpectation;
+  bool m_shouldPropagateException;
+};
+
+
+#endif // MOCKPROTECTOR_H
+@
+
+
+1.2
+log
+@* added new lines
+@
+text
+@d22 3
+a24 1
+    : m_expectException( false )
+a25 2
+    , m_wasCalled( false )
+    , m_wasTrapped( false )
+@
+
+
+1.1
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d96 1
+a96 1
+#endif // MOCKPROTECTOR_H@
+

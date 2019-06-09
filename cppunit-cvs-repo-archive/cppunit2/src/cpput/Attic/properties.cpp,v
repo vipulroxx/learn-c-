@@ -1,0 +1,1686 @@
+head	1.14;
+access;
+symbols
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.7
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.6
+	TG_AFTER_REMOVING_TESTCONTEXT:1.4
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.14
+date	2005.11.11.23.23.49;	author blep;	state dead;
+branches;
+next	1.13;
+
+1.13
+date	2005.07.02.09.19.06;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2005.07.01.20.32.04;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2005.06.24.19.45.49;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2005.03.05.12.29.11;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.03.05.12.21.08;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.03.04.22.16.59;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.02.27.10.17.05;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.11.21.22.26.32;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.11.20.16.17.33;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.11.20.15.07.00;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.11.20.12.12.01;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.11.19.22.57.57;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.11.19.19.32.18;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.14
+log
+@Rough documentation: placed most function/class/macro in group.
+@
+text
+@#include <opentest/properties.h>
+#include <cpptl/stringtools.h>
+#include <string.h>
+
+namespace OpenTest {
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// class Value
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+   
+Value::Value()
+{
+   guts_.type_ = vtNone;
+}
+
+
+Value::Value( bool value )
+{
+   guts_.type_ = vtBoolean;
+   guts_.boolValue_ = value;
+}
+
+
+Value::Value( int value )
+{
+   guts_.type_ = vtSignedInteger;
+   guts_.intValue_ = value;
+}
+
+
+Value::Value( unsigned int value )
+{
+   guts_.type_ = vtUnsignedInteger;
+   guts_.intValue_ = value;
+}
+
+# ifndef CPPTL_NO_INT64
+Value::Value( CppTL::int64_t value )
+{
+   guts_.type_ = vtSignedInteger;
+   guts_.intValue_ = value;
+}
+
+
+Value::Value( CppTL::uint64_t value )
+{
+   guts_.type_ = vtUnsignedInteger;
+   guts_.intValue_ = value;
+}
+# endif
+
+
+Value::Value( float value )
+{
+   guts_.type_ = vtReal;
+   guts_.realValue_ = value;
+}
+
+
+Value::Value( double value )
+{
+   guts_.type_ = vtReal;
+   guts_.realValue_ = value;
+}
+
+
+Value::Value( const char *value )
+{
+   guts_.type_ = vtString;
+   const unsigned int length = strlen(value) + 1;
+   char *buffer = new char[ length ];
+   memcpy( buffer, value, length );
+   guts_.stringValue_ = buffer;
+}
+
+
+Value::Value( const CppTL::ConstString &value )
+{
+   guts_.type_ = vtString;
+   char *buffer = new char[ value.size() + 1 ];
+   memcpy( buffer, value.c_str(), value.size() + 1 );
+   guts_.stringValue_ = buffer;
+}
+
+
+Value::Value( const Properties &value )
+{
+   guts_.type_ = vtProperties;
+   guts_.propertiesValue_ = new Properties( value );
+}
+
+
+Value::Value( const Value &other )
+{
+   guts_ = other.guts_;
+   switch ( guts_.type_ )
+   {
+   case vtString:
+      {
+         unsigned int length = ::strlen( other.guts_.stringValue_ ) + 1;
+         char *buffer = new char[ length ];
+         memcpy( buffer, other.guts_.stringValue_, length );
+         guts_.stringValue_ = buffer;
+      }
+      break;
+   case vtProperties:
+      guts_.propertiesValue_ = new Properties( *other.guts_.propertiesValue_ );
+      break;
+   default: // copy already handled by the initial binary copy.
+      break;
+   }
+}
+
+
+Value &
+Value::operator =( const Value &other )
+{
+   Value temp( other );
+   swap( temp );
+   return *this;
+}
+
+
+Value::~Value()
+{
+   switch ( guts_.type_ )
+   {
+   case vtString:
+      delete[] guts_.stringValue_;
+      break;
+   case vtProperties:
+      delete guts_.propertiesValue_;
+      break;
+   default: // not dynamically allocated
+      break;
+   }
+}
+
+
+void 
+Value::swap( Value &other )
+{
+   Storage temp( guts_ );
+   guts_ = other.guts_;
+   other.guts_ = temp;
+}
+
+
+bool
+Value::asBool() const
+{
+   switch ( type() )
+   {
+   case vtBoolean:
+      return guts_.boolValue_;
+   case vtSignedInteger:
+   case vtUnsignedInteger:
+      return guts_.intValue_ != 0;
+   case vtReal:
+      return guts_.realValue_ != 0.0;
+   default:
+      throwBadCast();
+      return 0;      // keep the compiler happy
+   }
+}
+
+int
+Value::asInt() const
+{
+   switch ( type() )
+   {
+   case vtBoolean:
+      return guts_.boolValue_ ? 1 : 0;
+   case vtSignedInteger:
+   case vtUnsignedInteger:
+      return int(guts_.intValue_);
+   case vtReal:
+      return int( guts_.realValue_ );
+   default:
+      throwBadCast();
+      return 0;      // keep the compiler happy
+   }
+}
+
+
+unsigned int
+Value::asUInt() const
+{
+   switch ( type() )
+   {
+   case vtBoolean:
+      return guts_.boolValue_ ? 1 : 0;
+   case vtSignedInteger:
+   case vtUnsignedInteger:
+      return (unsigned int)(guts_.uintValue_);
+   case vtReal:
+      return (unsigned int)( guts_.realValue_ );
+   default:
+      throwBadCast();
+      return 0;      // keep the compiler happy
+   }
+}
+
+
+# ifndef CPPTL_NO_INT64
+
+Value::StorageInt
+Value::asInt64() const
+{
+   switch ( type() )
+   {
+   case vtBoolean:
+      return guts_.boolValue_ ? 1 : 0;
+   case vtSignedInteger:
+   case vtUnsignedInteger:
+      return guts_.intValue_;
+   case vtReal:
+      return int( guts_.realValue_ );
+   default:
+      throwBadCast();
+      return 0;      // keep the compiler happy
+   }
+}
+
+
+Value::StorageUInt
+Value::asUInt64() const
+{
+   switch ( type() )
+   {
+   case vtBoolean:
+      return guts_.boolValue_ ? 1 : 0;
+   case vtSignedInteger:
+   case vtUnsignedInteger:
+      return guts_.uintValue_;
+   case vtReal:
+      return int( guts_.realValue_ );
+   default:
+      throwBadCast();
+      return 0;      // keep the compiler happy
+   }
+}
+
+# endif // ifndef CPPTL_NO_INT64
+
+double 
+Value::asReal() const
+{
+   switch ( type() )
+   {
+   case vtBoolean:
+      return guts_.boolValue_ ? 1.0 : 0.0;
+// @@todo implement "hand-made" conversion of int64 to double
+#ifndef CPPTL_NO_INT64_TO_DOUBLE
+   case vtSignedInteger:
+      return (double)(guts_.intValue_);
+   case vtUnsignedInteger:
+      return (double)(guts_.uintValue_);
+#endif
+   case vtReal:
+      return guts_.realValue_;
+   default:
+      throwBadCast();
+      return 0.0;      // keep the compiler happy
+   }
+}
+
+CppTL::ConstString 
+Value::asString() const
+{
+   switch ( type() )
+   {
+   case vtString:
+      return guts_.stringValue_;
+   default:
+      throwBadCast();
+      return CppTL::ConstString();      // keep the compiler happy
+   }
+}
+
+
+const Properties &
+Value::asProperties() const
+{
+   return const_cast<Value *>(this)->asProperties();
+}
+
+
+Properties &
+Value::asProperties()
+{
+   switch ( type() )    // ? should we provide conversion of numeric type to string ?
+   {
+   case vtProperties:
+      return *(guts_.propertiesValue_);
+   default:
+      throwBadCast();
+      return *( static_cast<Properties *>(0) );      // keep the compiler happy
+   }
+}
+
+
+bool 
+Value::isNone() const
+{
+   return type() == vtNone;
+}
+
+
+bool 
+Value::isBoolean() const
+{
+   return type() == vtBoolean;
+}
+
+
+bool 
+Value::isInteger() const
+{
+   return isSignedInteger()  ||  isUnsignedInteger();
+}
+
+
+bool 
+Value::isSignedInteger() const
+{
+   return type() == vtSignedInteger;
+}
+
+
+bool 
+Value::isUnsignedInteger() const
+{
+   return type() == vtUnsignedInteger;
+}
+
+
+bool 
+Value::isReal() const
+{
+   return type() == vtReal;
+}
+
+
+bool 
+Value::isString() const
+{
+   return type() == vtString;
+}
+
+
+bool 
+Value::isProperties() const
+{
+   return type() == vtProperties;
+}
+
+
+bool 
+Value::isConvertibleTo( Type type ) const
+{
+   switch ( guts_.type_ )
+   {
+   case vtNone:
+      return type == vtNone;
+   case vtBoolean:
+   case vtSignedInteger:
+   case vtUnsignedInteger:
+   case vtReal:
+      return type == vtBoolean  ||
+             type == vtSignedInteger  ||
+             type == vtUnsignedInteger  ||
+             type == vtReal;
+   case vtString:
+      return type == vtString;
+   case vtProperties:
+      return type == vtProperties;
+   default: // unreachable
+      CPPTL_DEBUG_ASSERT_UNREACHABLE;
+      return false;
+   }
+}
+
+
+Value::Type 
+Value::type() const
+{
+   return guts_.type_;
+}
+
+
+
+Value &
+Value::operator[]( unsigned int index )
+{
+   return asProperties()[ index ];
+}
+
+
+Value &
+Value::operator[]( const PropertyPath &path )
+{
+   return asProperties()[ path ];
+}
+
+
+const Value &
+Value::operator[]( unsigned int index ) const
+{
+   return asProperties()[ index ];
+}
+
+
+const Value &
+Value::operator[]( const PropertyPath &path ) const
+{
+   return asProperties()[ path ];
+}
+
+
+Properties &
+Value::append( const Value &value )
+{
+   return asProperties().append( value );
+}
+
+
+void 
+Value::throwBadCast() const
+{
+   throw ValueBadCast();
+}
+
+
+CppTL::ConstString 
+Value::toString() const
+{
+   switch ( type() )
+   {
+   case vtNone:
+      return "<:none:>";
+   case vtBoolean:
+      return CppTL::toString( asBool() );
+   case vtSignedInteger:
+      return CppTL::toString( guts_.intValue_ );
+   case vtUnsignedInteger:
+      return CppTL::toString( guts_.uintValue_ );
+   case vtReal:
+      return CppTL::toString( guts_.realValue_ );
+   case vtString:
+      return CppTL::quoteString( asString() );
+   case vtProperties:
+      return asProperties().toString();
+   default: // unreachable
+      CPPTL_DEBUG_ASSERT_UNREACHABLE;
+      return "";
+   }
+}
+
+
+bool 
+Value::operator ==( const Value &other ) const
+{
+   const StorageUInt maxInt = StorageUInt(-1) >> 1;
+   switch ( type() )
+   {
+   case vtNone:
+      return type() == other.type();
+   case vtBoolean:
+      return type() == other.type()  
+             &&  asBool() == other.asBool();
+   case vtSignedInteger:
+      {
+         if ( type() == other.type()  &&  guts_.intValue_ == other.guts_.intValue_ )
+            return true;
+
+         if ( other.type() == vtUnsignedInteger  &&  other.guts_.uintValue_ <= maxInt )
+            return guts_.intValue_ == other.guts_.intValue_;
+         return false;
+      }
+   case vtUnsignedInteger:
+      {
+         if ( type() == other.type()  &&  guts_.uintValue_ == other.guts_.uintValue_ )
+            return true;
+
+         if ( other.type() == vtSignedInteger  &&  guts_.uintValue_ <= maxInt )
+            return guts_.intValue_ == other.guts_.intValue_;
+         return false;
+      }
+   case vtReal:
+      return type() == other.type()  
+             &&  guts_.realValue_ == other.guts_.realValue_;
+   case vtString:
+      return type() == other.type()  
+             &&  asString() == other.asString();
+   case vtProperties:
+      return type() == other.type()  
+             &&  asProperties() == other.asProperties();
+   default: // unreachable
+      CPPTL_DEBUG_ASSERT_UNREACHABLE;
+      return false;
+   }
+}
+
+
+bool 
+Value::operator !=( const Value &other ) const
+{
+   return !( *this == other );
+}
+
+
+
+// Inline implementation of Property
+// //////////////////////////////////////////////////////////////////
+
+Property::Property( const CppTL::ConstString &name, 
+                    const Value &value )
+  : name_( name )
+  , value_( value )
+{
+}
+
+
+const CppTL::ConstString &
+Property::name() const
+{
+   return name_;
+}
+
+
+const Value &
+Property::value() const
+{
+   return value_;
+}
+
+
+Value &
+Property::value()
+{
+   return value_;
+}
+
+
+bool 
+Property::operator ==( const Property &other ) const
+{
+   return name_ == other.name_  &&  value_ == other.value_;
+}
+
+
+bool 
+Property::operator !=( const Property &other ) const
+{
+   return !( *this == other );
+}
+
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Class PropertyPath
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+
+PropertyPath::PropertyPath( const PropertyNames &names )
+   : names_( names )
+{
+}
+
+
+PropertyPath::PropertyPath( const CppTL::ConstString &path,
+                            char separator )
+{
+   initialize( path.c_str(), separator );
+}
+
+
+PropertyPath::PropertyPath( const char *path,
+                            char separator )
+{
+   initialize( path, separator );
+}
+
+
+void 
+PropertyPath::initialize( const char *path, 
+                          char separator )
+{
+   unsigned int startIndex = 0;
+   unsigned int index = 0;
+   while ( path[index] != 0 )
+   {
+      if ( path[index] == separator )
+      {
+         names_.push_back( CppTL::ConstString( path+startIndex, path + index ) );
+         startIndex = index + 1;
+      }
+      ++index;
+   }
+
+   if ( startIndex < index )
+      names_.push_back( CppTL::ConstString( path+startIndex, path + index ) );
+}
+
+
+PropertyPath::NamesEnum 
+PropertyPath::names() const
+{
+   return CppTL::Enum::anyContainer( names_ );
+}
+
+
+PropertyPath &
+PropertyPath::add( const CppTL::ConstString &name )
+{
+   names_.push_back( name );
+   return *this;
+}
+
+
+PropertyPath &
+PropertyPath::addPath( const PropertyPath &path )
+{
+   PropertyNames::const_iterator it = path.names_.begin();
+   PropertyNames::const_iterator itEnd = path.names_.end();
+   while ( it != itEnd )
+      names_.push_back( *it++ );
+   return *this;
+}
+
+
+PropertyPath 
+PropertyPath::parent() const
+{
+   if ( isEmpty() )
+      return PropertyPath( *this );
+   return PropertyPath( PropertyNames( names_.begin(), names_.end() - 1 ) );
+}
+
+
+bool 
+PropertyPath::isEmpty() const
+{
+   return names_.empty();
+}
+
+
+const CppTL::ConstString &
+PropertyPath::name() const
+{
+   return names_.back();
+}
+
+
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Class PropertiesAccessor
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+
+PropertiesAccessor::PropertiesAccessor( const Properties *properties )
+   : properties_( properties )
+{
+}
+
+
+const Properties &
+PropertiesAccessor::properties() const
+{
+   CPPTL_ASSERT_MESSAGE( properties_ != 0, 
+                         "PropertiesAccessor::properties() called on invalid accessor." );
+   return *properties_;
+}
+
+
+bool 
+PropertiesAccessor::isValid() const
+{
+   return properties_ != 0;
+}
+
+
+PropertiesAccessor 
+PropertiesAccessor::operator[]( unsigned int index ) const
+{
+   if ( !properties_  ||  index > properties_->listSize() )
+      return PropertiesAccessor();
+
+   const Value &value = (*properties_)[ index ];
+   if ( !value.isProperties() )
+      throw std::invalid_argument( "PropertiesAccessor[]: not a properties." );
+   return PropertiesAccessor( &value.asProperties() );
+}
+
+
+PropertiesAccessor 
+PropertiesAccessor::operator[]( const PropertyPath &path ) const
+{
+   if ( !properties_  ||  !properties_->has( path ) )
+      return PropertiesAccessor();
+
+   const Value &value = (*properties_)[ path ];
+   if ( !value.isProperties() )
+      throw std::invalid_argument( "PropertiesAccessor[]: not a properties." );
+   return PropertiesAccessor( &value.asProperties() );
+}
+
+
+bool 
+PropertiesAccessor::has( const PropertyPath &path ) const
+{
+   return properties_ ? properties_->has( path ) : false;
+}
+
+
+const Property &
+PropertiesAccessor::getProperty( const PropertyPath &path ) const
+{
+   if ( !properties_ )
+      throw std::invalid_argument( "PropertiesAccessor::getProperty() : null" );
+   return properties_->getProperty( path );
+}
+
+
+Value 
+PropertiesAccessor::getValue( const PropertyPath &path ) const
+{
+   return properties_ ? properties_->getValue( path ) : Value();
+}
+
+
+Value 
+PropertiesAccessor::at( unsigned int index ) const
+{
+   return properties_ ? properties_->at( index ) : Value();
+}
+
+
+Value 
+PropertiesAccessor::getValue( const PropertyPath &path,
+                              const Value &defaultValue ) const
+{
+   return properties_ ? properties_->getValue( path, defaultValue ) 
+                      : defaultValue;
+}
+
+
+Value 
+PropertiesAccessor::at( unsigned int index,
+                        const Value &defaultValue ) const
+{
+   return properties_ ? properties_->at( index, defaultValue ) 
+                      : defaultValue;
+}
+
+
+Properties::ValueEnum 
+PropertiesAccessor::listValues() const
+{
+   return properties_ ? properties_->listValues() : Properties::ValueEnum();
+}
+
+
+unsigned int 
+PropertiesAccessor::listSize() const
+{
+   return properties_ ? properties_->listSize() : 0;
+}
+
+
+bool 
+PropertiesAccessor::hasList() const
+{
+   return properties_ ? properties_->hasList() : false;
+}
+
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Class Properties
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+
+Properties::Properties()
+{
+}
+
+
+Properties::Properties( const Property &property )
+{
+   set( property );
+}
+
+
+Properties::Properties( const Properties &other )
+   : properties_( other.properties_ )
+   , indexedProperties_( other.indexedProperties_ )
+{
+}
+
+
+Properties &
+Properties::operator =( const Properties &other )
+{
+   Properties temp( other );
+   swap( temp );
+   return *this;
+}
+
+
+Properties::~Properties()
+{
+}
+
+
+void 
+Properties::swap( Properties &other )
+{
+   properties_.swap( other.properties_ );
+   indexedProperties_.swap( other.indexedProperties_ );
+}
+
+
+void 
+Properties::clear()
+{
+   properties_.clear();
+   indexedProperties_.clear();
+}
+
+
+Properties &
+Properties::set( const Property &property )
+{
+   PropertyList::iterator it = find( property.name() );
+   if ( it != properties_.end() )
+      *it = property;
+   else
+      properties_.push_back( property );
+   return *this;
+}
+
+
+Properties &
+Properties::set( const CppTL::ConstString &name,
+                 const Value &value )
+{
+   return set( Property( name, value ) );
+}
+
+
+Properties &
+Properties::setIfNew( const Property &property )
+{
+   PropertyList::iterator it = find( property.name() );
+   if ( it == properties_.end() )
+      properties_.push_back( property );
+   return *this;
+}
+
+
+Properties &
+Properties::setIfNew( const CppTL::ConstString &name,
+                      const Value &value )
+{
+   return setIfNew( Property( name, value ) );
+}
+
+Properties &
+Properties::mergeReplacingExisting( const Properties &properties )
+{
+   PropertyList::const_iterator it = properties.properties_.begin();
+   PropertyList::const_iterator itEnd = properties.properties_.end();
+   while ( it != itEnd )
+      set( *it++ );
+   return *this;
+}
+
+
+Properties &
+Properties::mergePreservingExisting( const Properties &properties )
+{
+   PropertyList::const_iterator it = properties.properties_.begin();
+   PropertyList::const_iterator itEnd = properties.properties_.end();
+   while ( it != itEnd )
+      setIfNew( *it++ );
+   return *this;
+}
+
+
+bool 
+Properties::has( const PropertyPath &path ) const
+{
+   const Properties *parent = tryGetProperties( path.parent() );
+   if ( path.isEmpty()  ||  !parent )
+      return false;
+   return parent->find( path.name() ) != parent->properties_.end();
+}
+
+
+const Property &
+Properties::getProperty( const PropertyPath &path ) const
+{
+   return *resolvePath( path );
+}
+
+
+const Value &
+Properties::getValue( const PropertyPath &path ) const
+{
+   return (*this)[ path ];
+}
+
+
+const Value &
+Properties::at( unsigned int index ) const
+{
+   return CPPTL_AT( indexedProperties_, index );
+}
+
+
+Value
+Properties::getValue( const PropertyPath &path,
+                      const Value &defaultValue ) const
+{
+   const Properties *parent = tryGetProperties( path.parent() );
+   if ( !parent )
+      return defaultValue;
+
+   PropertyList::const_iterator it = parent->find( path.name() );
+   if ( it == parent->properties_.end() )
+      return defaultValue;
+   return it->value();
+}
+
+
+Value
+Properties::at( unsigned int index,
+                const Value &defaultValue ) const
+{
+   return index < indexedProperties_.size() ? CPPTL_AT(indexedProperties_, index )
+                                            : defaultValue;
+}
+
+
+const Value &
+Properties::operator[]( unsigned int index ) const
+{
+   return CPPTL_AT( indexedProperties_, index );
+}
+
+
+const Value &
+Properties::operator[]( const PropertyPath &path ) const
+{
+   return resolvePath( path )->value();
+}
+
+
+Value &
+Properties::operator[]( unsigned int index )
+{
+   return CPPTL_AT( indexedProperties_, index );
+}
+
+
+Value &
+Properties::operator[]( const PropertyPath &path )
+{
+   checkPathNotEmpty( path );
+   Properties &parent = makeProperties( path.parent() );
+   PropertyList::iterator it = parent.find( path.name() );
+   if ( it == parent.properties_.end() )
+   {
+      Property property( path.name(), Value( Properties() ) );
+      parent.properties_.push_back( property );
+      it = parent.properties_.end() - 1;
+   }
+   return it->value();
+}
+
+
+Properties &
+Properties::append( const Value &value )
+{
+   indexedProperties_.push_back( value );
+   return *this;
+}
+
+
+Properties &
+Properties::remove( unsigned int index )
+{
+   if ( index <= indexedProperties_.size() )
+      indexedProperties_.erase( indexedProperties_.begin() + index );
+   return *this;
+}
+
+
+Properties &
+Properties::remove( const PropertyPath &path )
+{
+   Properties *properties = tryGetProperties( path );
+   if ( !properties )
+      return *this;
+
+   PropertyList::iterator it = properties->find( path.name() );
+   if ( it != properties->properties_.end() )
+      properties->properties_.erase( it );
+   return *this;
+}
+
+
+unsigned int 
+Properties::listSize() const
+{
+   return indexedProperties_.size();
+}
+
+
+bool 
+Properties::hasList() const
+{
+   return listSize() > 0;
+}
+
+
+PropertiesAccessor 
+Properties::accessor() const
+{
+   return PropertiesAccessor( this );
+}
+
+
+Properties::ValueEnum 
+Properties::listValues() const
+{
+   return CppTL::Enum::anyContainer( indexedProperties_ );
+}
+
+
+Properties::NameEnum 
+Properties::names() const
+{
+   return CppTL::Enum::anyTransform( CppTL::Enum::container( properties_ ),
+                                     NameAdaptor() );
+}
+
+
+Properties::PropertyEnum 
+Properties::properties() const
+{
+   return CppTL::Enum::anyContainer( properties_ );
+}
+
+
+Properties::PropertyList::iterator 
+Properties::find( const CppTL::ConstString &name )
+{
+   PropertyList::iterator it = properties_.begin();
+   PropertyList::iterator itEnd = properties_.end();
+   for ( ; it != itEnd; ++it )
+      if ( it->name() == name )
+         return it;
+   return itEnd;
+}
+
+
+Properties::PropertyList::const_iterator 
+Properties::find( const CppTL::ConstString &name ) const
+{
+   PropertyList::const_iterator it = properties_.begin();
+   PropertyList::const_iterator itEnd = properties_.end();
+   for ( ; it != itEnd; ++it )
+      if ( it->name() == name )
+         return it;
+   return itEnd;
+}
+
+
+Properties::PropertyList::const_iterator 
+Properties::resolvePath( const PropertyPath &path ) const
+{
+   PropertyPath::NamesEnum names = path.names();
+   checkPathNotEmpty( path );
+   const Properties *properties = this;
+   while ( true )
+   {
+      const CppTL::ConstString &propertyName = names.next();
+      PropertyList::const_iterator it = properties->find( propertyName );
+      if ( it == properties->properties_.end() )
+      {
+         throw std::invalid_argument( std::string("OpenTest::Properties: bad property path, '")
+            + propertyName.c_str() + "' is not defined." );
+      }
+      const Value &value = it->value();
+      if ( !names.hasNext() )
+         return it;
+      properties = &value.asProperties();
+   }
+}
+
+
+const Properties *
+Properties::tryGetProperties( const PropertyPath &path ) const
+{
+   if ( path.isEmpty() )
+      return this;
+
+   PropertyPath::NamesEnum names = path.names();
+   const Properties *properties = this;
+   while ( names.hasNext() )
+   {
+      const CppTL::ConstString &propertyName = names.next();
+      PropertyList::const_iterator it = properties->find( propertyName );
+      if ( it == properties->properties_.end() )
+         return 0;
+      const Value &value = it->value();
+      if ( value.type() != Value::vtProperties )
+         return 0;
+      properties = &value.asProperties();
+   }
+   return properties;
+}
+
+Properties *
+Properties::tryGetProperties( const PropertyPath &path )
+{
+   const Properties *constThis = this;
+   return const_cast<Properties *>( constThis->tryGetProperties( path ) );
+}
+
+
+Properties &
+Properties::makeProperties( const PropertyPath &path )
+{
+   if ( path.isEmpty() )
+      return *this;
+
+   PropertyPath::NamesEnum names = path.names();
+   Properties *properties = this;
+   while ( names.hasNext() )
+   {
+      const CppTL::ConstString &name = names.next();
+      PropertyList::iterator it = properties->find( name );
+      if ( it == properties->properties_.end() )
+      {
+         Property property( name, Value( Properties() ) );
+         properties_.push_back( property );
+         it = properties_.end() - 1;
+      }
+      if ( !it->value().isProperties() )
+      {
+         throw std::invalid_argument( std::string("Properties: invalid path, '") 
+                                      + name.c_str() + "' is not a properties." );
+      }
+      properties = &(it->value().asProperties());
+   }
+   return *properties;
+}
+
+
+void 
+Properties::checkPathNotEmpty( const PropertyPath &path ) const
+{
+   if ( path.isEmpty() )
+      throw std::invalid_argument( "Properties: invalid path (empty)." );
+}
+
+
+CppTL::ConstString 
+Properties::toString() const
+{
+   return toString( "" );
+}
+
+
+CppTL::ConstString 
+Properties::toString( const CppTL::ConstString &prefix ) const
+{
+   CppTL::StringBuffer str;
+   PropertyList::const_iterator it = properties_.begin();
+   PropertyList::const_iterator itEnd = properties_.end();
+   for ( ;it != itEnd; ++it )
+   {
+      const Value &value = it->value();
+      if ( value.isProperties() )
+         str += value.asProperties().toString( prefix+ "/" + it->name() );
+      else
+         str += prefix + "/" + it->name() + " = " + value.toString() + "\n";
+   }
+
+   for ( unsigned int index = 0; index < indexedProperties_.size(); ++index )
+   {
+      CppTL::ConstString localPrefix = prefix + "[" + CppTL::toString(index) + "]";
+      if ( indexedProperties_[index].isProperties() )
+         str += indexedProperties_[index].asProperties().toString( localPrefix );
+      else
+         str += localPrefix + " = " + indexedProperties_[index].toString() + "\n";
+   }
+   return str;
+}
+
+
+bool 
+Properties::operator ==( const Properties &other ) const
+{
+   if ( properties_.size() != other.properties_.size()  
+        ||  indexedProperties_.size() != other.indexedProperties_.size() )
+      return false;
+
+   PropertyList::const_iterator it = properties_.begin();
+   PropertyList::const_iterator itOther = other.properties_.begin();
+   for ( ; it != properties_.end(); ++it, ++itOther )
+   {
+      if ( !(*it == *itOther) )
+         return false;
+   }
+
+   IndexedProperties::const_iterator itIndexed = indexedProperties_.begin();
+   IndexedProperties::const_iterator itIndexedOther = other.indexedProperties_.begin();
+   for ( ; itIndexed != indexedProperties_.end(); ++itIndexed, ++itIndexedOther )
+   {
+      if ( !(*itIndexed == *itIndexedOther) )
+         return false;
+   }
+   return true;
+}
+
+
+bool 
+Properties::operator !=( const Properties &other ) const
+{
+   return !( *this == other );
+}
+
+
+} // namespace OpenTest
+@
+
+
+1.13
+log
+@Made Value operator == deal nicely with int/unsigned int value comparison.
+@
+text
+@@
+
+
+1.12
+log
+@* added more unit tests for serializer
+* fixed bugs
+* added strict operator == for Value and Properties.
+@
+text
+@d466 1
+a466 2
+   if ( type() != other.type() )
+      return false;
+d470 1
+a470 1
+      return true;
+d472 2
+a473 1
+      return asBool() == other.asBool();
+d475 8
+a482 1
+      return guts_.intValue_ == other.guts_.intValue_;
+d484 8
+a491 1
+      return guts_.uintValue_ == other.guts_.uintValue_;
+d493 2
+a494 1
+      return guts_.realValue_ == other.guts_.realValue_;
+d496 2
+a497 1
+      return asString() == other.asString();
+d499 2
+a500 1
+      return asProperties() == other.asProperties();
+@
+
+
+1.11
+log
+@removed support for 'long double'. Not much support for that type in the standard library => it would raise too much portability issue.
+@
+text
+@d463 35
+d531 14
+d1191 34
+@
+
+
+1.10
+log
+@* returned bool instead of string in unreachable default.
+@
+text
+@a68 7
+Value::Value( long double value )
+{
+   guts_.type_ = vtReal;
+   guts_.realValue_ = value;
+}
+
+
+d248 1
+a248 1
+long double 
+d258 1
+a258 1
+      return (long double)(guts_.intValue_);
+d260 1
+a260 1
+      return (long double)(guts_.uintValue_);
+@
+
+
+1.9
+log
+@* added config macro CPPTL_NO_SSTREAM and CPPTL_NO_STL_SEQUENCE_AT for gcc 2.95
+* added portability macro CPPTL_AT to access sequence container portably
+@
+text
+@d465 1
+a465 1
+      return false;
+@
+
+
+1.8
+log
+@* added CPPTL_NO_INT64_TO_DOUBLE if compiler does not support conversion from int64 to double (vc6)
+@
+text
+@d863 1
+a863 1
+   return indexedProperties_.at( index );
+d886 1
+a886 1
+   return index < indexedProperties_.size() ? indexedProperties_.at( index )
+d894 1
+a894 1
+   return indexedProperties_.at( index );
+d908 1
+a908 1
+   return indexedProperties_.at( index );
+@
+
+
+1.7
+log
+@* use CppTL::ConstString instead of std::string for thread-safety
+@
+text
+@d262 2
+d268 1
+@
+
+
+1.6
+log
+@* fixed bug in Properties::hasList()
+* added PropertiesAccessor::listValues()
+@
+text
+@d86 1
+a86 1
+Value::Value( const std::string &value )
+d274 1
+a274 1
+std::string 
+d283 1
+a283 1
+      return std::string();      // keep the compiler happy
+d441 1
+a441 1
+std::string 
+d457 1
+a457 1
+      return "'" + asString() + "'";      /// @@todo string should be escaped...
+d471 1
+a471 1
+Property::Property( const std::string &name, 
+d479 1
+a479 1
+const std::string &
+d512 1
+a512 1
+PropertyPath::PropertyPath( const std::string &path,
+d536 1
+a536 1
+         names_.push_back( std::string( path+startIndex, path + index ) );
+d543 1
+a543 1
+      names_.push_back( std::string( path+startIndex, path + index ) );
+d555 1
+a555 1
+PropertyPath::add( const std::string &name )
+d589 1
+a589 1
+const std::string &
+d787 1
+a787 1
+Properties::set( const std::string &name,
+d805 1
+a805 1
+Properties::setIfNew( const std::string &name,
+d1000 1
+a1000 1
+Properties::find( const std::string &name )
+d1012 1
+a1012 1
+Properties::find( const std::string &name ) const
+d1031 1
+a1031 1
+      const std::string &propertyName = names.next();
+d1035 2
+a1036 2
+         throw std::invalid_argument( "OpenTest::Properties: bad property path, '"
+            + propertyName + "' is not defined." );
+d1056 1
+a1056 1
+      const std::string &propertyName = names.next();
+d1086 1
+a1086 1
+      const std::string &name = names.next();
+d1096 2
+a1097 2
+         throw std::invalid_argument( "Properties: invalid path, '" 
+                                      + name + "' is not a properties." );
+d1113 1
+a1113 1
+std::string 
+d1120 2
+a1121 2
+std::string 
+Properties::toString( const std::string &prefix ) const
+d1123 1
+a1123 1
+   std::string str;
+d1130 1
+a1130 1
+         str += value.asProperties().toString( prefix + "/" + it->name() );
+d1132 1
+a1132 8
+      {
+         str += prefix;
+         str += "/";
+         str += it->name();
+         str += " = ";
+         str += value.toString();
+         str += "\n";
+      }
+d1137 1
+a1137 4
+      std::string localPrefix = prefix;
+      localPrefix += "[";
+      localPrefix += CppTL::toString( index );
+      localPrefix += "]";
+d1141 1
+a1141 6
+      {
+         str += localPrefix;
+         str += " = ";
+         str += indexedProperties_[index].toString();
+         str += "\n";
+      }
+@
+
+
+1.5
+log
+@* added support for test descriptive data
+@
+text
+@d699 7
+d966 1
+a966 1
+   return listSize() == 0;
+@
+
+
+1.4
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@d659 1
+a659 1
+PropertiesAccessor::getProperty( const std::string &name ) const
+d663 1
+a663 1
+   return properties_->getProperty( name );
+d668 1
+a668 1
+PropertiesAccessor::getValue( const std::string &name ) const
+d670 1
+a670 1
+   return properties_ ? properties_->getValue( name ) : Value();
+d682 2
+a683 2
+PropertiesAccessor::getValue( const std::string &name,
+                                   const Value &defaultValue ) const
+d685 1
+a685 1
+   return properties_ ? properties_->getValue( name, defaultValue ) 
+d692 1
+a692 1
+                             const Value &defaultValue ) const
+d837 1
+a837 1
+Properties::getProperty( const std::string &name ) const
+d839 1
+a839 4
+   PropertyList::const_iterator it = find( name );
+   if ( it == properties_.end() )
+      throw std::invalid_argument( "Properties::getProperty(" + name + ")" );
+   return *it;
+d844 1
+a844 1
+Properties::getValue( const std::string &name ) const
+d846 1
+a846 1
+   return getProperty( name ).value();
+d891 1
+a891 17
+   PropertyPath::NamesEnum names = path.names();
+   checkPathNotEmpty( path );
+   const Properties *properties = this;
+   while ( true )
+   {
+      const std::string &propertyName = names.next();
+      PropertyList::const_iterator it = properties->find( propertyName );
+      if ( it == properties->properties_.end() )
+      {
+         throw std::invalid_argument( "OpenTest::Properties: bad property path, '"
+            + propertyName + "' is not defined." );
+      }
+      const Value &value = it->value();
+      if ( !names.hasNext() )
+         return value;
+      properties = &value.asProperties();
+   }
+d1016 23
+@
+
+
+1.3
+log
+@* added getter to PropertyAccessor to retreive the valid Properties.
+@
+text
+@d699 14
+@
+
+
+1.2
+log
+@* added toString() to Value & Properties.
+@
+text
+@d609 9
+d1109 2
+d1119 13
+a1131 6
+      str += prefix;
+      str += "[";
+      str += CppTL::toString( index );
+      str += "] = ";
+      str += indexedProperties_[index].toString();
+      str += "\n";
+@
+
+
+1.1
+log
+@* added support for PropertyPath
+@
+text
+@d2 1
+d441 26
+d1079 39
+@
+

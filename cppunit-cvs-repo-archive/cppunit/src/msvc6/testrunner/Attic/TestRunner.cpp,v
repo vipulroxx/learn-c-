@@ -1,0 +1,422 @@
+head	1.6;
+access;
+symbols
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.5
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.5
+	REL_1_9_6:1.5
+	REL_1_9_4:1.5
+	REL_1_9_0:1.5
+	REL_1_8_0:1.5
+	REL_1_7_8:1.3
+	REL_1_7_3:1.3
+	REL_1_7_1:1.3
+	REL_1_6_2:1.3
+	BRANCH_1_6:1.3.0.2
+	REL_1_6_1:1.3
+	REL_1_6_0:1.3
+	REL_1_5_5:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.6
+date	2002.07.13.10.33.50;	author blep;	state dead;
+branches;
+next	1.5;
+
+1.5
+date	2002.04.10.15.22.30;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.03.28.15.47.08;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.09.14.19.27.58;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.28.14.27.24;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@// //////////////////////////////////////////////////////////////////////////
+// Implementation file TestRunner.cpp for class TestRunner
+// (c)Copyright 2000, Baptiste Lepilleur.
+// Created: 2001/04/26
+// //////////////////////////////////////////////////////////////////////////
+
+#include "StdAfx.h"
+#include <cppunit/ui/mfc/TestRunner.h>
+#include <cppunit/TestSuite.h>
+#include "TestRunnerModel.h"
+#include "TestRunnerDlg.h"
+
+
+
+namespace CppUnit
+{
+
+namespace MfcUi
+{
+
+
+TestRunner::TestRunner() :
+    m_suite( new CppUnit::TestSuite() )
+{
+}
+
+
+TestRunner::~TestRunner() 
+{
+  delete m_suite;
+
+  for ( Tests::iterator it = m_tests.begin(); it != m_tests.end(); ++it )
+    delete *it;
+}
+
+
+void 
+TestRunner::run() 
+{ 
+  bool comInit = SUCCEEDED( CoInitialize( NULL) );
+
+  TestRunnerModel model( getRootTest() );
+  TestRunnerDlg dlg( &model ); 
+  dlg.DoModal (); 
+
+  if ( comInit)
+    CoUninitialize();
+}
+
+
+void            
+TestRunner::addTest(CppUnit::Test *test) 
+{ 
+  m_tests.push_back( test );
+}
+
+
+void            
+TestRunner::addTests ( const std::vector<CppUnit::Test *> &tests ) 
+{ 
+  for ( std::vector<CppUnit::Test *>::const_iterator it=tests.begin();
+        it != tests.end();
+        ++it )
+  {
+    addTest( *it );
+  }
+}
+
+
+CppUnit::Test *   
+TestRunner::getRootTest()
+{
+  if ( m_tests.size() != 1 )
+  {
+    for ( Tests::iterator it = m_tests.begin(); it != m_tests.end(); ++it )
+      m_suite->addTest( *it );
+    m_tests.clear();
+    return m_suite;
+  }
+  return m_tests[0];
+}
+
+} // namespace MfcUi
+
+} // namespace CppUnit
+@
+
+
+1.5
+log
+@* include/cppunitui/: moved to include/cppunit/ui (fix unix install problem).
+
+* doc/cookbook.dox:
+* examples/cppunittest/CppUnitTestMain.cpp:
+* examples/msvc/CppUnitTestApp/HostApp.cpp:
+* examples/msvc/HostApp/HostApp.cpp:
+* examples/qt/Main.Cpp:
+* examples/src/cppunit/TestRunner.cpp:
+* examples/src/msvc6/TestRunner/TestRunner.cpp:
+* examples/src/qttestrunner/TestRunner.cpp: updated to use <cppunit/ui/...>
+instead of <cppunitui/...> in include directives.
+
+* doc/CppUnit-win.dox: generated documentation give the include path at the
+bottom of the page for each class.
+
+* NEWS: added compatibility break for 1.7.10 users.
+@
+text
+@@
+
+
+1.4
+log
+@* doc/cookbook.html: removed. Replaced by cookbook.doc.
+
+* doc/cookbook.dox: added, conversion of cookbook.html to Doxygen format.
+
+* doc/other_documentation.dox: added groups definition.
+
+* doc/Makefile.am: replaced cookbook.html by cookbook.dox
+
+* doc/Doxyfile.in: added predefined CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION.
+Replaced cookbook.html by cookbook.dox.
+
+* include/cppunitui/mfc/TestRunner.h: added, extracted from
+include/msvc6/testrunner/TestRunner.h. Moved class TestRunner to namespace
+CppUnit::MfcUi.
+
+* include/msvc6/testrunner/TestRunner.h: deprecated. A simple typedef to
+CppUnit::MfcUi::TestRunner.
+
+* include/textui/TestRuner.h: added, extracted from
+include/cppunit/TextTestRunner.h.
+
+* src/cppunit/TextTestRunner.cpp: renamed TestRunner.cpp. Moved into
+namespace CppUnit::TextUi.
+
+* src/msvc6/testruner/TestRunner.cpp: moved into namespace CppUnit::MfcUi.
+
+* src/cppunit/CompilerOutputter.cpp: removed printing "- " before
+NotEqualException addional message, for consistency between different
+TestRunner (Mfc,Text...)
+
+* include/cppunit/Asserter.h:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/Outputter.h:
+* include/cppunit/SourceLine.h:
+* include/cppunit/TestAssert.h:
+* include/cppunit/TestCaller.h:
+* include/cppunit/TestFailure.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: doc update. organization
+in groups.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.cpp:
+* examples/msvc6/HostApp/HostApp.cpp: updated to use
+CppUnit::MfcUi::TestRunner.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use
+CppUnit::TextUi::TestRunner.
+@
+text
+@d8 1
+a8 1
+#include <cppunitui/mfc/TestRunner.h>
+@
+
+
+1.3
+log
+@* src/msvc6/testrunner/TestRunner.dsp: fixed release configuration.
+
+* src/msvc6/testrunner/TestRunner.dsw: added DSPlugIn.dsp. TestRunner
+depends on DSPlugIn.
+
+* src/msvc6/testrunner/TestRunner.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/DSPlugIn/*: integrated patch from
+Patrick Berny (PPBerny@@web.de). An add-ins for VC++. Double-cliking
+a failed test in the TestRunner, VC++ will open the source file and
+go to the failure location.
+
+* src/cppunit/Exception.cpp:
+* include/cppunit/Exception.h: compile fix, call to overrided
+operator = of parent class failed. Using typedef to the parent
+class fix that.
+
+* src/cppunit/cppunit.dsp: added TestFixture.h
+
+* src/cppunit/TestFactoryRegistry.cpp: removed <utility> which isn't
+needed any more.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/extensions/TestFactoryRegistry.h: added
+include <Portability.h> before any other includes to remove warning
+with VC++.
+
+* include/cppunit/Portability.h: moved platform specific includes at
+the beginning of the header. fixed CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION
+declaration.
+
+* include/cppunit/config-msvc6.h: removed pragma once (useless, should
+be put in each header to have an effect).
+@
+text
+@d8 2
+a9 1
+#include <msvc6/testrunner/TestRunner.h>
+d14 8
+d82 4
+@
+
+
+1.2
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@d31 2
+d36 3
+@
+
+
+1.1
+log
+@Merged msvc6 specific TestRunner and example adapted from Michael Feathers
+version by Baptiste Lepilleur.
+@
+text
+@d1 10
+a10 2
+// TestRunner.cpp : Defines the initialization routines for the DLL.
+//
+a11 2
+#include "stdafx.h"
+#include <afxdllx.h>
+d13 5
+a17 5
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+d19 3
+d23 31
+a53 1
+static AFX_EXTENSION_MODULE TestRunnerDLL = { NULL, NULL };
+d55 3
+a57 2
+extern "C" int APIENTRY
+DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
+d59 8
+a66 32
+    // Remove this if you use lpReserved
+    UNREFERENCED_PARAMETER(lpReserved);
+
+    if (dwReason == DLL_PROCESS_ATTACH)
+    {
+        TRACE0("TESTRUNNER.DLL Initializing!\n");
+        
+        // Extension DLL one-time initialization
+        if (!AfxInitExtensionModule(TestRunnerDLL, hInstance))
+            return 0;
+
+        // Insert this DLL into the resource chain
+        // NOTE: If this Extension DLL is being implicitly linked to by
+        //  an MFC Regular DLL (such as an ActiveX Control)
+        //  instead of an MFC application, then you will want to
+        //  remove this line from DllMain and put it in a separate
+        //  function exported from this Extension DLL.  The Regular DLL
+        //  that uses this Extension DLL should then explicitly call that
+        //  function to initialize this Extension DLL.  Otherwise,
+        //  the CDynLinkLibrary object will not be attached to the
+        //  Regular DLL's resource chain, and serious problems will
+        //  result.
+
+        new CDynLinkLibrary(TestRunnerDLL);
+    }
+    else if (dwReason == DLL_PROCESS_DETACH)
+    {
+        TRACE0("TESTRUNNER.DLL Terminating!\n");
+        // Terminate the library before destructors are called
+        AfxTermExtensionModule(TestRunnerDLL);
+    }
+    return 1;   // ok
+@
+

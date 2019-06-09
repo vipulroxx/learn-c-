@@ -1,0 +1,275 @@
+head	1.5;
+access;
+symbols
+	TG_AFTER_REMOVING_TESTCONTEXT:1.3
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.3
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.3
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.5
+date	2005.02.27.10.14.56;	author blep;	state dead;
+branches;
+next	1.4;
+
+1.4
+date	2005.02.23.08.54.05;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.08.04.07.55.37;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.08.03.22.05.14;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.28;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.28;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* removed, replaced by opentest/properties.
+@
+text
+@#ifndef CPPUT_PROPERTIES_H_INCLUDED
+# define CPPUT_PROPERTIES_H_INCLUDED
+
+# include <cpput/config.h>
+# include <cpptl/enumerator.h>
+# include <cpputtools/value.h>
+# include <map>
+
+
+// @@todo thread-safety issue when using copy constructor with std::string...
+
+namespace CppUT {
+
+using CppUTTools::ValueBadCast;
+using CppUTTools::Value;
+using CppUTTools::value;
+   
+
+class CPPUT_API Properties
+{
+public:
+   Properties()
+   {
+   }
+
+   virtual ~Properties()
+   {
+   }
+
+   void add( const Properties &other )
+   {
+      ValuesByName::const_iterator it = other.valuesByName_.begin();
+      for ( ; it != other.valuesByName_.end(); ++it )
+         if ( valuesByName_.count( it->first ) == 0 )
+            valuesByName_[ it->first ] = it->second;
+   }
+
+   void replace( const Properties &other )
+   {
+      ValuesByName::const_iterator it = other.valuesByName_.begin();
+      for ( ; it != other.valuesByName_.end(); ++it )
+         valuesByName_[ it->first ] = it->second;
+   }
+
+   void set( const std::string &name, 
+             const CppUTTools::Value &value )
+   {
+      valuesByName_[ name ] = value;
+   }
+
+   void copy( const Properties &other,
+              const std::string &name )
+   {
+      set( name, other.get( name ) );
+   }
+
+   CppTL::AnyEnumerator<std::string> names() const
+   {
+      return CppTL::Enum::anyKeys( valuesByName_, CppTL::Type<std::string>() );
+   }
+
+   bool has( const std::string &name ) const
+   {
+      return valuesByName_.count( name ) > 0;
+   }
+
+   Value get( const std::string &name ) const
+   {
+      ValuesByName::const_iterator it = valuesByName_.find( name );
+      if ( it == valuesByName_.end() )
+         throw std::invalid_argument( "No properties named '" + name + "'." );
+      return it->second;
+   }
+
+   Value tryGet( const std::string &name,
+                 const CppUTTools::Value &defaultValue = CppUTTools::Value() ) const
+   {
+      ValuesByName::const_iterator it = valuesByName_.find( name );
+      if ( it == valuesByName_.end() )
+         return defaultValue;
+      return it->second;
+   }
+
+/*
+   int getInt( const std::string &name ) const
+   {
+      return get<int>( get( name ) );
+   }
+*/
+
+private:
+   typedef std::map<std::string,CppUTTools::Value> ValuesByName;
+   ValuesByName valuesByName_;
+};
+
+
+
+} // namespace CppUT
+
+
+#endif // CPPUT_PROPERTIES_H_INCLUDED
+@
+
+
+1.4
+log
+@* removed include/cpput/enumerator.h which has been replaced by include/cpptl/enumerator.h
+* added explicit type passing to any*() generator functions.
+@
+text
+@@
+
+
+1.3
+log
+@* TestResult: succeeded status moved to property "cpput.status' of the message
+* Reworked exception hierarchy to allow for a 'success' exception.
+* Reworked TestFailureGuard & TestFailureHandler to handle a generic ResultException.
+@
+text
+@d5 1
+a5 1
+# include <cpput/enumerator.h>
+d57 1
+a57 1
+   Enumerator<std::string> names() const
+d59 1
+a59 1
+      return enumStlMapKeys( valuesByName_, Type<std::string>() );
+@
+
+
+1.2
+log
+@* test failure type is now parametrized. The framework recognize 'fault' and 'assertion', but the user can define any failure type.
+* properties are now associated to the failure message and can be used to pass any structured data to the test report (such as run time...).
+* TestFailure can now be either a success or a failure (need renaming).
+* Next step is to send a generic TestResult event to listener, and collect TestResult identically for both successful and failing tests.
+@
+text
+@d9 3
+d62 1
+a62 1
+   bool has( const std::string &name )
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d6 1
+a7 1
+# include <stdexcept>
+d11 4
+d23 1
+a23 1
+   Properties( const Property &property )
+a24 1
+      add( property );
+d27 1
+a27 1
+   Properties &add( const Property &property )
+d29 4
+a32 4
+      properties.erase( property.name() );
+      properties.insert( Map::value_type( property.name(), 
+                                          property.value() ) );
+      return *this;
+d35 1
+a35 2
+   Properties &set( const std::string &name,
+                    const std::string &value )
+d37 15
+a51 1
+      return add( Property( name, value ) );
+d56 1
+a56 1
+      return enumStlMapValues( properties );
+d61 1
+a61 1
+      return properties_.count( name ) > 0;
+d64 1
+a64 1
+   std::string get( const std::string &name ) const
+d66 3
+a68 3
+      Map::const_iterator it = properties_.find( name );
+      if ( it == properties_.end() )
+         throw std::invalid_argument( "No properties named " + name );
+d72 2
+a73 1
+   std::string tryGet( const std::string &name ) const
+d75 3
+a77 3
+      Map::const_iterator it = properties_.find( name );
+      if ( it == properties_.end() )
+         return "";
+d81 2
+a82 1
+   bool has( const std::string &name ) const
+d84 1
+a84 1
+      return properties_.count( name ) > 0;
+d86 1
+d89 2
+a90 2
+   typedef std::map<std::string,std::string> Map;
+   Map properties_;
+d98 1
+a98 2
+
+#endif // CPPUT_PROPERTIES_H_INCLUDED@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

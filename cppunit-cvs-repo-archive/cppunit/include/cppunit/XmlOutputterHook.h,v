@@ -1,0 +1,431 @@
+head	1.6;
+access;
+symbols
+	REL_1_12_1:1.6
+	REL_1_11_6:1.5
+	REL_1_11_4:1.5
+	REL_1_11_0:1.5
+	TG_CPPUNIT_NO_STREAM_AFTER:1.4
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.4
+	REL_1_10_2:1.4
+	REL_1_10_0:1.4
+	REL_1_9_14:1.4
+	REL_1_9_12:1.4
+	BRANCH_1_9_12:1.4.0.2
+	TG_BRANCH_1_9_12:1.4
+	TG_BEFORE_HPUX_PLUGIN:1.4
+	TG_BEFORE_SUN4_PORT:1.4
+	REL_1_9_10:1.4;
+locks; strict;
+comment	@ * @;
+
+
+1.6
+date	2007.01.12.05.52.49;	author smr99;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.07.09.07.42.47;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.08.03.16.00.46;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.06.16.17.55.58;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.06.14.20.21.00;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@Ensure virtual class has virtual destructor.
+@
+text
+@#ifndef CPPUNIT_XMLOUTPUTTERHOOK_H
+#define CPPUNIT_XMLOUTPUTTERHOOK_H
+
+#include <cppunit/Portability.h>
+
+
+CPPUNIT_NS_BEGIN
+
+
+class Test;
+class TestFailure;
+class XmlDocument;
+class XmlElement;
+
+
+
+/*! \brief Hook to customize Xml output.
+ *
+ * XmlOutputterHook can be passed to XmlOutputter to customize the XmlDocument.
+ *
+ * Common customizations are:
+ * - adding some datas to successfull or failed test with
+ *   failTestAdded() and successfulTestAdded(),
+ * - adding some statistics with statisticsAdded(),
+ * - adding other datas with beginDocument() or endDocument().
+ *
+ * See examples/ClockerPlugIn which makes use of most the hook.
+ *
+ * Another simple example of an outputter hook is shown below. It may be  
+ * used to add some meta information to your result files. In the example,
+ * the author name as well as the project name and test creation date is
+ * added to the head of the xml file.
+ *
+ * In order to make this information stored within the xml file, the virtual 
+ * member function beginDocument() is overriden where a new 
+ * XmlElement object is created.
+ *
+ * This element is simply added to the root node of the document which
+ * makes the information automatically being stored when the xml file
+ * is written.
+ *
+ * \code
+ * #include <cppunit/XmlOutputterHook.h>
+ * #include <cppunit/XmlElement.h>
+ * #include <cppunit/tools/StringTools.h>
+ * 
+ * ...
+ * 
+ * class MyXmlOutputterHook : public CppUnit::XmlOutputterHook
+ * {
+ * public:
+ *   MyXmlOutputterHook(const std::string projectName,
+ *                      const std::string author)
+ *   {
+ *      m_projectName = projectName;
+ *      m_author      = author;
+ *   };
+ * 
+ *   virtual ~MyXmlOutputterHook()
+ *   {
+ *   };
+ * 
+ *   void beginDocument(CppUnit::XmlDocument* document)
+ *   {
+ *     if (!document)
+ *       return;
+ *
+ *     // dump current time
+ *     std::string szDate          = CppUnit::StringTools::toString( (int)time(0) );
+ *     CppUnit::XmlElement* metaEl = new CppUnit::XmlElement("SuiteInfo", 
+ *                                                           "");
+ *
+ *     metaEl->addElement( new CppUnit::XmlElement("Author", m_author) );
+ *     metaEl->addElement( new CppUnit::XmlElement("Project", m_projectName) );
+ *     metaEl->addElement( new CppUnit::XmlElement("Date", szDate ) );
+ *    
+ *     document->rootElement().addElement(metaEl);
+ *   };
+ * private:
+ *   std::string m_projectName;
+ *   std::string m_author;
+ * }; 
+ * \endcode
+ *
+ * Within your application's main code, you need to snap the hook 
+ * object into your xml outputter object like shown below:
+ *
+ * \code
+ * CppUnit::TextUi::TestRunner runner;
+ * std::ofstream outputFile("testResults.xml");
+ * 
+ * CppUnit::XmlOutputter* outputter = new CppUnit::XmlOutputter( &runner.result(),
+ *                                                               outputFile );    
+ * MyXmlOutputterHook hook("myProject", "meAuthor");
+ * outputter->addHook(&hook);
+ * runner.setOutputter(outputter);    
+ * runner.addTest( VectorFixture::suite() );   
+ * runner.run();
+ * outputFile.close();
+ * \endcode
+ *
+ * This results into the following output:
+ *
+ * \code
+ * <TestRun>
+ *   <suiteInfo>
+ *     <author>meAuthor</author>
+ *     <project>myProject</project>
+ *     <date>1028143912</date>
+ *   </suiteInfo>
+ *   <FailedTests>
+ *    ...
+ * \endcode
+ *
+ * \see XmlOutputter, CppUnitTestPlugIn.
+ */
+class CPPUNIT_API XmlOutputterHook
+{
+public:
+  /*! Called before any elements is added to the root element.
+   * \param document XML Document being created.
+   */
+  virtual void beginDocument( XmlDocument *document );
+
+  /*! Called after adding all elements to the root element.
+   * \param document XML Document being created.
+   */
+  virtual void endDocument( XmlDocument *document );
+
+  /*! Called after adding a fail test element.
+   * \param document XML Document being created.
+   * \param testElement \<FailedTest\> element.
+   * \param test Test that failed.
+   * \param failure Test failure data.
+   */
+  virtual void failTestAdded( XmlDocument *document,
+                              XmlElement *testElement,
+                              Test *test,
+                              TestFailure *failure );
+
+  /*! Called after adding a successful test element.
+   * \param document XML Document being created.
+   * \param testElement \<Test\> element.
+   * \param test Test that was successful.
+   */
+  virtual void successfulTestAdded( XmlDocument *document,
+                                    XmlElement *testElement,
+                                    Test *test );
+
+  /*! Called after adding the statistic element.
+   * \param document XML Document being created.
+   * \param statisticsElement \<Statistics\> element.
+   */
+  virtual void statisticsAdded( XmlDocument *document,
+                                XmlElement *statisticsElement );
+
+  virtual ~XmlOutputterHook() {}
+};
+
+
+CPPUNIT_NS_END
+
+#endif  // CPPUNIT_XMLOUTPUTTERHOOK_H
+@
+
+
+1.5
+log
+@* doc/Money.dox:
+* include/cppunit/TestSuite.h:
+* include/cppunit/XmlOutputterHook.h: applied Brad Hards patch
+  that correct miscellaneous doc generation issues (unescaped <>, \...).
+
+* include/cppunit/plugin/TestPlugIn.h:
+* include/cppunit/CompilerOutputter.h:
+* doc/CppUnit-win.dox: removed a few documentation generation warnings.
+
+  * include/cppunit/plugin/TestPlugIn.h:
+  * include/cppunit/CompilerOutputter.h:
+  * doc/CppUnit-win.dox: removed a few documentation generation warnings.
+@
+text
+@d156 2
+@
+
+
+1.4
+log
+@* include/cppunit/XmlOutputterHook.h: integrated Stephan Stapel
+  documentation update.
+@
+text
+@d132 1
+a132 1
+   * \param testElement <FailedTest> element.
+d143 1
+a143 1
+   * \param testElement <Test> element.
+d152 1
+a152 1
+   * \param statisticsElement <Statistics> element.
+@
+
+
+1.3
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d29 85
+a113 1
+ * %Test plug-ins can also implement hook to customize XML output.
+@
+
+
+1.2
+log
+@* release 1.9.8
+
+* include/cppunit/plugin/TestPlugIn.h: updated documentation.
+
+* include/cppunit/tools/XmlDocument.h: updated documentation.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/StringTools.cpp: added split() and wrap() functions.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp: extracted wrap() and
+  splitMessageIntoLines() to StringTools.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: removed rooNode parameter from
+  beginDocument() and endDocument(). It can be retreive from document.
+  Renamed 'node' occurences to 'element'.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against
+  XmlOutputterHook changes. Renamed 'node' occurences to 'element'.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: updated against
+  XmlOutputterHook changes.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: Renamed 'node' occurences
+  to 'element'.
+
+* examples/cppunittest/XmlOutputterTest.cpp: updated against
+  XmlOutputterHook changes.
+
+* examples/cppunittest/StringToolsTest.h:
+* examples/cppunittest/StringToolsTest.cpp: added. Unit tests for
+  StringTools. Turn out that VC++ dismiss empty lines in tools output,
+  which is the reason why empty lines where not printed in
+  CompilerOutputter.
+@
+text
+@d7 2
+a8 2
+namespace CppUnit
+{
+d75 1
+a75 3
+
+} //  namespace CppUnit
+
+@
+
+
+1.1
+log
+@* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added two methods to use the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugIn.h: added two methods to the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugInAdapter.h:
+* src/cppunit/plugin/TestPlugInAdapter.cpp: renamed TestPlugInDefaultImpl.
+  Added empty implementation for Xml outputter hook methods.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/tools/StringTools.cpp: added. Functions to manipulate string
+  (conversion, wrapping...)
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/XmlElement.cpp: renamed addNode() to addElement(). Added
+  methods to walk and modify XmlElement (for hook). Added documentation.
+  Use StringTools.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: added hook calls & management.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: added. Hook to customize XML output.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: call plug-in XmlOutputterHook
+  when writing XML output. Modified so that memory is freed before
+  unloading the test plug-in (caused crash when freeing the XmlDocument).
+
+* examples/ReadMe.txt:
+* examples/ClockerPlugIn/ReadMe.txt: added details about the plug-in
+  (usage, xml content...)
+
+* examples/ClockerPlugIn/ClockerModel.h:
+* examples/ClockerPlugIn/ClockerModel.cpp: extracted from ClockerListener.
+  Represents the test hierarchy and tracked time for each test.
+
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/ClockerListener.cpp: extracted test hierarchy
+  tracking to ClockerModel. Replaced the 'flat' view option with a 'text'
+  option to print the timed test tree to stdout.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp: updated to hook the XML
+  output and use the new classes.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: added. XmlOutputterHook to
+  includes the timed test hierarchy and test timing in the XML output.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added new test cases.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: added tests for
+  XmlOutputterHook.
+@
+text
+@d18 14
+d36 4
+a39 2
+  virtual void beginDocument( XmlDocument *document,
+                              XmlElement *rootNode );
+d41 4
+a44 2
+  virtual void endDocument( XmlDocument *document,
+                            XmlElement *rootNode );
+d46 6
+d53 1
+a53 1
+                              XmlElement *testNode,
+d57 5
+d63 1
+a63 1
+                                    XmlElement *testNode,
+d66 4
+d71 1
+a71 1
+                                XmlElement *statisticsNode );
+@
+

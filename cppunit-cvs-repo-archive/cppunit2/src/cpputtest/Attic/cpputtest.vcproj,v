@@ -1,0 +1,647 @@
+head	1.19;
+access;
+symbols
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.11
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.10
+	TG_AFTER_REMOVING_TESTCONTEXT:1.9
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.8
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.7
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@# @;
+
+
+1.19
+date	2005.09.06.07.45.56;	author blep;	state dead;
+branches;
+next	1.18;
+
+1.18
+date	2005.03.03.08.15.54;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2005.02.28.20.43.02;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2005.02.27.17.42.32;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2005.02.27.16.12.07;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2005.02.27.15.47.38;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2005.02.27.15.27.09;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2005.02.27.14.38.28;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2005.02.27.10.17.54;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2005.02.26.11.40.58;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2004.11.20.12.17.51;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2004.11.17.21.47.10;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2004.10.22.06.20.07;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.08.03.22.36.15;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.06.23.20.42.45;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.02.08.15.54.07;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.02.01.16.12.56;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.27.21.13.55;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.19
+log
+@* moved project files to cppunit2/makefiles/vs71
+@
+text
+@<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="7.10"
+	Name="cpputtest"
+	ProjectGUID="{BC6A1042-3AC9-44E7-BCEB-1B2DB7D1ABE7}"
+	SccProjectName=""
+	SccLocalPath="">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<Configurations>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory=".\..\..\build\cpputtest\release"
+			IntermediateDirectory=".\..\..\build\cpputtest\release"
+			ConfigurationType="1"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="..\..\include"
+				PreprocessorDefinitions="WIN32,NDEBUG,_CONSOLE"
+				StringPooling="TRUE"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="TRUE"
+				DisableLanguageExtensions="TRUE"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\..\..\build\cpputtest\release/cpputtest.pch"
+				AssemblerListingLocation=".\..\..\build\cpputtest\release/"
+				ObjectFile=".\..\..\build\cpputtest\release/"
+				ProgramDataBaseFileName=".\..\..\build\cpputtest\release/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="/MACHINE:I386"
+				AdditionalDependencies="odbc32.lib odbccp32.lib"
+				OutputFile=".\..\..\build\cpputtest\release/cpputtest.exe"
+				LinkIncremental="1"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\build\cpput\release"
+				ProgramDatabaseFile=".\..\..\build\cpputtest\release/cpputtest.pdb"
+				SubSystem="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				TypeLibraryName=".\..\..\build\cpputtest\release/cpputtest.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Testing cpput library..."
+				CommandLine="$(TargetPath)"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1036"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory=".\..\..\build\cpputtest\debug"
+			IntermediateDirectory=".\..\..\build\cpputtest\debug"
+			ConfigurationType="1"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="..\..\include"
+				PreprocessorDefinitions="WIN32,_DEBUG,_CONSOLE"
+				StringPooling="TRUE"
+				BasicRuntimeChecks="3"
+				SmallerTypeCheck="TRUE"
+				RuntimeLibrary="1"
+				BufferSecurityCheck="TRUE"
+				EnableFunctionLevelLinking="TRUE"
+				DisableLanguageExtensions="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\..\..\build\cpputtest\debug/cpputtest.pch"
+				AssemblerListingLocation=".\..\..\build\cpputtest\debug/"
+				ObjectFile=".\..\..\build\cpputtest\debug/"
+				ProgramDataBaseFileName=".\..\..\build\cpputtest\debug/"
+				BrowseInformation="1"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="4"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="/MACHINE:I386"
+				AdditionalDependencies="odbc32.lib odbccp32.lib"
+				OutputFile=".\..\..\build\cpputtest\debug/cpputtest.exe"
+				LinkIncremental="2"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="..\..\build\cpput\debug"
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile=".\..\..\build\cpputtest\debug/cpputtest.pdb"
+				SubSystem="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				TypeLibraryName=".\..\..\build\cpputtest\debug/cpputtest.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Testing cpput library..."
+				CommandLine="$(TargetPath)"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1036"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<File
+			RelativePath="assertenumtest.cpp">
+		</File>
+		<File
+			RelativePath="assertenumtest.h">
+		</File>
+		<File
+			RelativePath="assertstringtest.cpp">
+		</File>
+		<File
+			RelativePath="assertstringtest.h">
+		</File>
+		<File
+			RelativePath=".\commandlineoptionstest.cpp">
+		</File>
+		<File
+			RelativePath=".\commandlineoptionstest.h">
+		</File>
+		<File
+			RelativePath="enumeratortest.cpp">
+		</File>
+		<File
+			RelativePath="enumeratortest.h">
+		</File>
+		<File
+			RelativePath=".\main.cpp">
+			<FileConfiguration
+				Name="Release|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					DisableLanguageExtensions="TRUE"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath=".\minitestrunner.h">
+		</File>
+		<File
+			RelativePath=".\mocktestvisitor.h">
+		</File>
+		<File
+			RelativePath=".\reflectiontest.cpp">
+		</File>
+		<File
+			RelativePath=".\reflectiontest.h">
+		</File>
+		<File
+			RelativePath="registrytest.cpp">
+		</File>
+		<File
+			RelativePath="registrytest.h">
+		</File>
+		<File
+			RelativePath=".\testbasicassertion.cpp">
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					GeneratePreprocessedFile="0"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath=".\testexceptionguard.cpp">
+		</File>
+		<File
+			RelativePath="testfixturetest.cpp">
+		</File>
+		<File
+			RelativePath="testfixturetest.h">
+		</File>
+		<File
+			RelativePath="testfunctor.cpp">
+		</File>
+		<File
+			RelativePath=".\testtestcase.cpp">
+		</File>
+		<File
+			RelativePath=".\testtestrunresult.cpp">
+			<FileConfiguration
+				Name="Release|Win32"
+				ExcludedFromBuild="TRUE">
+				<Tool
+					Name="VCCLCompilerTool"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32"
+				ExcludedFromBuild="TRUE">
+				<Tool
+					Name="VCCLCompilerTool"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath=".\testtestsuite.cpp">
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>
+@
+
+
+1.18
+log
+@* added unit tests for CppTL::Reflect
+@
+text
+@@
+
+
+1.17
+log
+@* added testexceptionguard.cpp which replaces testtestcontext.cpp
+@
+text
+@d193 6
+a199 10
+			<FileConfiguration
+				Name="Release|Win32">
+				<Tool
+					Name="VCCLCompilerTool"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCLCompilerTool"/>
+			</FileConfiguration>
+a217 10
+			<FileConfiguration
+				Name="Release|Win32">
+				<Tool
+					Name="VCCLCompilerTool"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCLCompilerTool"/>
+			</FileConfiguration>
+@
+
+
+1.16
+log
+@* added tests for ExceptionGuard.
+* fixed bug in ExceptionGuard::append()
+@
+text
+@a189 3
+			RelativePath=".\mocktestlistener.h">
+		</File>
+		<File
+@
+
+
+1.15
+log
+@* ported the TestFixture tests back to the new framework architecture.
+@
+text
+@d221 3
+a245 15
+			RelativePath=".\testtestcontext.cpp">
+			<FileConfiguration
+				Name="Release|Win32"
+				ExcludedFromBuild="TRUE">
+				<Tool
+					Name="VCCLCompilerTool"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32"
+				ExcludedFromBuild="TRUE">
+				<Tool
+					Name="VCCLCompilerTool"/>
+			</FileConfiguration>
+		</File>
+		<File
+@
+
+
+1.14
+log
+@* extracted MiniTestRunner from registry test.
+@
+text
+@d223 1
+a223 2
+				Name="Release|Win32"
+				ExcludedFromBuild="TRUE">
+d228 1
+a228 2
+				Name="Debug|Win32"
+				ExcludedFromBuild="TRUE">
+@
+
+
+1.13
+log
+@* ported the Registry tests back to the new framework architecture.
+@
+text
+@d187 3
+@
+
+
+1.12
+log
+@* changed cppunit 2 to use the new functors (cpptl/functor.h). bind_cfn & bind_memfn simplified some of the test code.
+@
+text
+@d195 1
+a195 2
+				Name="Release|Win32"
+				ExcludedFromBuild="TRUE">
+d200 1
+a200 2
+				Name="Debug|Win32"
+				ExcludedFromBuild="TRUE">
+@
+
+
+1.11
+log
+@* added ConstString and StringBuffer
+@
+text
+@a240 3
+			RelativePath=".\testfunctor3.cpp">
+		</File>
+		<File
+@
+
+
+1.10
+log
+@* simpler implementation of functors.
+* complete rewrote of the generator (much easier to maintain)
+@
+text
+@d105 1
+@
+
+
+1.9
+log
+@* moved the assertion implementation to using TestInfo.
+* added assertion (tested/failed) counter to TestInfo.
+@
+text
+@d240 1
+a240 1
+			RelativePath=".\testfunctor2.cpp">
+@
+
+
+1.8
+log
+@* started removing TestDriver stuff from CppUnit 2
+* Removed Test::run(), Test::totalTestCount and Test::parent
+* User can only subclass AbstractTestSuite or AbstractTestCase.
+* AbstractTest has been inlined into Test
+* Test no longer have parent
+* Removed TestListener::enterTest() & TestListener::exitTest()
+* Moved responsibility of running TestCase from AbstractTestCase to TestContext::run( AbstractTestCase &test ).
+* Removed method related to suite and enter/exit event from TestContext.
+* Disabled some unit tests (rely on running test which will change again shortly)
+@
+text
+@d211 6
+@
+
+
+1.7
+log
+@* Replaced the EnumerationSugar strangely curring template  with a macro (compiler was too stressed)
+* Fixed Internal compiler error on Keys
+* Added sugar() enumeration for custom enumerator
+* Test cases for all enumerator
+@
+text
+@d193 12
+d214 12
+d241 12
+d256 12
+@
+
+
+1.6
+log
+@* renamed TestFailure to TestResult (can now be a success or a failure)
+* renamed testfailure.h to testresult.h
+* renamed testresult.cpp to testtestrunresult.cpp
+@
+text
+@d210 3
+@
+
+
+1.5
+log
+@* added command line options stuff
+@
+text
+@d210 1
+a210 1
+			RelativePath=".\testresult.cpp">
+d213 1
+a213 1
+			RelativePath=".\testtestcase.cpp">
+d216 1
+a216 1
+			RelativePath=".\testtestcontext.cpp">
+@
+
+
+1.4
+log
+@* added portable api to load dynamic libraries
+@
+text
+@d165 6
+@
+
+
+1.3
+log
+@* added /Za setting to project to force conformance to ANSI C++
+* fixed issues related to ANSI C++ conformance
+* fixed bug in SliceEnumerator copy constructor & added test
+@
+text
+@d6 1
+d91 1
+d96 1
+d172 6
+@
+
+
+1.2
+log
+@* added .cvsignore files and a bit of documentation.
+@
+text
+@d29 1
+d94 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 1
+a1 1
+<?xml version="1.0" encoding = "Windows-1252"?>
+d4 1
+a4 1
+	Version="7.00"
+d68 2
+d71 4
+d135 2
+d138 4
+d144 2
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

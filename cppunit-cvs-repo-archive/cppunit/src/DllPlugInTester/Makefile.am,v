@@ -1,0 +1,415 @@
+head	1.11;
+access;
+symbols
+	REL_1_12_1:1.11
+	REL_1_11_6:1.11
+	REL_1_11_4:1.11
+	REL_1_11_0:1.11
+	TG_CPPUNIT_NO_STREAM_AFTER:1.11
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.11
+	REL_1_10_2:1.11
+	REL_1_10_0:1.11
+	REL_1_9_14:1.11
+	REL_1_9_12:1.11
+	BRANCH_1_9_12:1.11.0.2
+	TG_BRANCH_1_9_12:1.11
+	TG_BEFORE_HPUX_PLUGIN:1.10
+	TG_BEFORE_SUN4_PORT:1.10
+	REL_1_9_10:1.10
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.10
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.10
+	REL_1_9_6:1.10
+	REL_1_9_4:1.7;
+locks; strict;
+comment	@# @;
+
+
+1.11
+date	2003.05.07.20.07.17;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2002.04.21.10.57.52;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2002.04.20.21.59.58;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2002.04.20.21.51.33;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2002.04.18.10.16.09;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.04.18.10.12.21;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.04.18.10.11.22;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.04.18.10.10.12;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.18.10.05.00;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.18.09.41.15;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.17.22.27.28;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.11
+log
+@* Makefile.am
+* configure.in
+* config/ac_dll.m4
+* examples/cppunittest/Makefile.am
+* examples/hierarchy/Makefile.am
+* examples/money/Makefile.am
+* examples/simple/Makefile.am
+* include/cppunit/config/SelectDllLoader.h
+* include/cppunit/plugin/TestPlugIn.h
+* include/cppunit/tools/Algorithm.h
+* src/DllPlugInTester/Makefile.am
+* src/cppunit/Makefile.am
+* src/cppunit/TestDecorator.cpp
+* src/cppunit/ShlDynamicLibraryManager.cpp
+* src/cppunit/UnixDynamicLibraryManager.cpp
+* src/cppunit/Win32DynamicLibraryManager.cpp: applied patch from
+  Abdessattar Sassi <abdesassi@@users.sourceforge.net> to add support
+  for plug-in to hp-ux.
+@
+text
+@EXTRA_DIST = DllPlugInTester.dsp DllPlugInTesterTest.dsp
+
+INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include
+
+bin_PROGRAMS=DllPlugInTester
+
+TESTS = DllPlugInTesterTest
+check_PROGRAMS = $(TESTS)
+
+DllPlugInTester_SOURCES= DllPlugInTester.cpp \
+	CommandLineParser.h \
+	CommandLineParser.cpp
+
+DllPlugInTester_LDADD= \
+  $(top_builddir)/src/cppunit/libcppunit.la
+
+DllPlugInTester_LDFLAGS = $(LIBADD_DL)
+
+DllPlugInTesterTest_SOURCES = DllPlugInTesterTest.cpp \
+	CommandLineParser.cpp \
+	CommandLineParser.h \
+	CommandLineParserTest.cpp \
+	CommandLineParserTest.h
+
+DllPlugInTesterTest_LDADD= \
+  $(top_builddir)/src/cppunit/libcppunit.la
+
+DllPlugInTesterTest_LDFLAGS = $(LIBADD_DL)
+@
+
+
+1.10
+log
+@* src/DllPlugInTester/makefile.am: removed ld.so from LDADD flags.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: rewrote, fixed problem
+  with double quotes in command line...
+
+* src/DllPlugInTester/CommandLineParserTest.h:
+* src/DllPlugInTester/CommandLineParserTest.cpp:
+* src/DllPlugInTester/DllPlugInTesterTest.cpp: added, unit tests for
+  CommandLineParser.
+
+* src/msvc6/TestPlugIn/*: removed.
+@
+text
+@d17 1
+a17 1
+DllPlugInTester_LDFLAGS = -ldl
+d28 1
+a28 1
+DllPlugInTesterTest_LDFLAGS = -ldl
+@
+
+
+1.9
+log
+@* removed ld.so
+@
+text
+@d1 1
+a1 1
+EXTRA_DIST = DllPlugInTester.dsp
+d7 3
+d18 11
+@
+
+
+1.8
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@d12 1
+a12 1
+  $(top_builddir)/src/cppunit/libcppunit.la ld.so
+@
+
+
+1.7
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d7 3
+a9 1
+DllPlugInTester_SOURCES= DllPlugInTester.cpp
+d14 1
+@
+
+
+1.6
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d10 1
+a10 1
+  $(top_builddir)/src/cppunit/libcppunit.la dl
+@
+
+
+1.5
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d10 1
+a10 1
+  $(top_builddir)/src/cppunit/libcppunit.la dl.so
+@
+
+
+1.4
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d10 1
+a10 1
+  $(top_builddir)/src/cppunit/libcppunit.la ld
+@
+
+
+1.3
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d10 1
+a10 1
+  $(top_builddir)/src/cppunit/libcppunit.la ld.so
+@
+
+
+1.2
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d10 1
+a10 1
+  $(top_builddir)/src/cppunit/libcppunit.la 
+@
+
+
+1.1
+log
+@* bumped version to 1.9.3
+
+* FAQ: added question about 4786 warning on VC++.
+
+* NEWS: updated.
+
+* contrib/msvc/readme.txt: moved to contrib/readme.txt.
+
+* contrib/xml-xsl/report.xsl: added XML style sheet contributed by
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for
+  startTestRun()/endTestRun().
+
+* examples/simple/*: added. A simple example.
+
+* include/cppunit/BriefTestProgressListener.h:
+* src/cppunit/BriefTestProgressListener.cpp: added. Verbose progess listener
+  that print the test name before running the test.
+
+* include/cppunit/TestListener.h: added startTestRun()/endTestRun().
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: added runTest(), to be called to run
+  a test by test runner.
+
+* src/cppunit/TextTestRunner.cpp:
+* src/cppunit/TestRunner.cpp: updated to use TestResult::runTest().
+
+* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added. Managers for all loaded plug-ins.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: renamed TestPlugInAdapter. All
+  implementations are empty.
+
+* include/cppunit/plugin/TestPlugInSuite.h: removed.
+* src/cppunit/TestPlugInSuite.cpp: removed. Replaced by PlugInManager.
+
+* include/cppunit/plugin/TestPlugIn.h: rewrote the plug-in interface to
+  provide more versatility. updated macros to match new interface.
+
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestFactoryRegistry.cpp: Added unregisterFactory().
+  Added convenience method addRegistry(). Rewrote registry life cycle
+  management. AutoRegisterSuite can now detect that the registry has been
+  destroy and not call to it to unregister its test factory.
+
+* include/cppunit/extensions/AutoRegisterTest.h: on destruction, the registered
+  factory is unregistered from the registry.
+
+* include/cppunit/extensions/HelperMacros.h: added macros
+  CPPUNIT_REGISTRY_ADD_TO_DEFAULT and CPPUNIT_REGISTRY_ADD to help
+  build test suite hierarchy.
+
+* src/cppunit/msvc/DllPlugInTester/*: moved to src/cppunit/DllPlugInTester/.
+
+* src/cppunit/DllPlugInTester/DllPlugInTester.cpp: removed UNICODE stuffs. Use
+  the PlugInManager instead of PlugInTestSuite. Simplified: only one test on
+  command line, but many DLL can be specified. Added configurations to link
+  against cppunit dll, those are now the default configuration (static linking
+  don't make much sense for plug-in).
+@
+text
+@d5 1
+a5 7
+hierarchy_SOURCES= BoardGame.cpp \
+                   Chess.cpp \
+                   main.cpp \
+                   BoardGame.h \
+                   Chess.h \
+                   BoardGameTest.h \
+                   ChessTest.h
+d7 3
+a9 1
+hierarchy_LDADD= \
+@
+

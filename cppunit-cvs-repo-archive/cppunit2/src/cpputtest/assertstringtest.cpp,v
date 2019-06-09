@@ -1,0 +1,367 @@
+head	1.8;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.6
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.4
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.4
+	TG_AFTER_REMOVING_TESTCONTEXT:1.3
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@// @;
+
+
+1.8
+date	2008.06.26.16.24.11;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2007.08.14.17.30.52;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2006.02.01.18.26.17;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.09.06.07.31.42;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.02.23.23.09.29;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.11.20.15.07.00;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.08.04.08.01.15;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.8
+log
+@* Added check version of string assertions
+@
+text
+@#include "assertstringtest.h"
+#include <cpput/assertstring.h>
+#include <string.h>     // use string.h for easier portability
+
+#if _MSC_VER >= 1400 // VC++ 8.0
+#pragma warning( disable : 4996 )   // disable warning about strdup being deprecated.
+#endif
+
+
+namespace {
+
+   // A small string wrapper to test 'custom' string comparison
+   class StringWrapper
+   {
+   public:
+      StringWrapper( const char *str )
+         : str_( str )
+      {
+      }
+
+      std::string str() const
+      {
+         return str_;
+      }
+
+   private:
+      const char *str_;
+   };
+}
+
+namespace CppUT {
+
+   // Specialize convertToStringImpl function to handle StringWrapper type.
+   // @@todo Does this work on VC6 without putting it in CppUT namespace
+   inline std::string getStdString( const StringWrapper &str )
+   {
+      return str.str();
+   }
+}
+
+
+void 
+AssertStringTest::setUp()
+{
+}
+
+
+void 
+AssertStringTest::tearDown()
+{
+}
+
+
+void 
+AssertStringTest::testStringStartsWith()
+{
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_START( "abcdef", "bc" ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_START( "abcdef", "AB" ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_START( "abcdef", "ef" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_START( "abcdef", "ab" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_START( "abcdef", "abcdef" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_START( "abcdef", "" ) ));
+
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_CHECKSTR_START( "abcdef", "ab" ) ));
+}
+
+
+void 
+AssertStringTest::testStringEndsWith()
+{
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_END( "abcdef", "de" ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_END( "abcdef", "EF" ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_END( "abcdef", "ab" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_END( "abcdef", "def" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_END( "abcdef", "abcdef" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_END( "abcdef", "" ) ));
+
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_CHECKSTR_END( "abcdef", "def" ) ));
+}
+
+
+void 
+AssertStringTest::testStringContains()
+{
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "fe" ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "BC" ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "abcdefg" ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "0abcdef" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "ab" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "ef" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "cd" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "abcdef" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "" ) ));
+
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_CHECKSTR_CONTAIN( "abcdef", "cd" ) ));
+}
+
+
+void 
+AssertStringTest::testStringEquals()
+{
+   std::string abcdef( "abcdef" );
+   char duplicate[32];
+   strcpy( duplicate, "abcdef" );   
+   // we use duplicate of the string to ensure that comparison of
+   // two 'char *' string are different pointers.
+
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_EQUAL( "abcdef", "ABCDEF" ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_EQUAL( "ABCDEF", "abcdef" ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_EQUAL( "abcdef", "abcde" ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_EQUAL( "abcdef", "def" ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_EQUAL( "abcdef", "" ) ));
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_EQUAL( "", "abcdef" ) ));
+
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_EQUAL( "abcdef", duplicate ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_EQUAL( "abcdef", abcdef ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_EQUAL( abcdef, "abcdef" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_EQUAL( "", std::string() ) ));
+
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_CHECKSTR_EQUAL( "abcdef", abcdef ) ));
+}
+
+
+void 
+AssertStringTest::testCustomStringTypeHandling()
+{
+   StringWrapper abcdefWrap( "abcdef" );
+   std::string abcdef( "abcdef" );
+
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_EQUAL( abcdefWrap, "def" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_EQUAL( abcdef, abcdefWrap ) ));
+
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_START( abcdefWrap, "ef" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_START( abcdefWrap, "ab" ) ));
+
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_END( abcdefWrap, "ab" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_END( abcdefWrap, "def" ) ));
+
+   CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERTSTR_CONTAIN( abcdefWrap, "0abcdef" ) ));
+   CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERTSTR_CONTAIN( abcdefWrap, "ab" ) ));
+}
+
+
+
+
+
+
+
+@
+
+
+1.7
+log
+@   Modified assertion implementation to force evaluation of user
+condition expression first, while preserving delegation to
+function, overloading and optional parameters feature.
+   See CPPUT_BEGIN_ASSERTION_MACRO() documentation in testinfo.h for an example
+to update your custom assertion code.
+
+   New implementation rely on operator evaluation order and operator overloading. The trick is documented in CPPUT_BEGIN_ASSERTION_MACRO().
+@
+text
+@d63 2
+d77 2
+d94 2
+d119 2
+@
+
+
+1.6
+log
+@* worked-around security deprecation warning on VC++ 2005.
+@
+text
+@d9 1
+d135 6
+@
+
+
+1.5
+log
+@* fixed compilation without RTTI
+* revised stringize implementation to allow an additional customization point by overloading toString().
+* added test and corrected bug in serialization/packets implementation.
+@
+text
+@d5 3
+@
+
+
+1.4
+log
+@* preprocessor portability fix: enclosed all CPPUT_ASSERT_ASSERTION... within double brace to ensure that the tested assertion is used as the first argument of the macro
+@
+text
+@d30 2
+a31 1
+   inline std::string convertToString( const StringWrapper &str )
+@
+
+
+1.3
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@d52 6
+a57 6
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_START( "abcdef", "bc" ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_START( "abcdef", "AB" ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_START( "abcdef", "ef" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_START( "abcdef", "ab" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_START( "abcdef", "abcdef" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_START( "abcdef", "" ) );
+d64 6
+a69 6
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_END( "abcdef", "de" ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_END( "abcdef", "EF" ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_END( "abcdef", "ab" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_END( "abcdef", "def" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_END( "abcdef", "abcdef" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_END( "abcdef", "" ) );
+d76 9
+a84 9
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "fe" ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "BC" ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "abcdefg" ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "0abcdef" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "ab" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "ef" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "cd" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "abcdef" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_CONTAIN( "abcdef", "" ) );
+d97 11
+a107 11
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_EQUAL( "abcdef", "ABCDEF" ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_EQUAL( "ABCDEF", "abcdef" ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_EQUAL( "abcdef", "abcde" ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_EQUAL( "abcdef", "def" ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_EQUAL( "abcdef", "" ) );
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_EQUAL( "", "abcdef" ) );
+
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_EQUAL( "abcdef", duplicate ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_EQUAL( "abcdef", abcdef ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_EQUAL( abcdef, "abcdef" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_EQUAL( "", std::string() ) );
+d117 2
+a118 2
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_EQUAL( abcdefWrap, "def" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_EQUAL( abcdef, abcdefWrap ) );
+d120 2
+a121 2
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_START( abcdefWrap, "ef" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_START( abcdefWrap, "ab" ) );
+d123 2
+a124 2
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_END( abcdefWrap, "ab" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_END( abcdefWrap, "def" ) );
+d126 2
+a127 2
+   CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERTSTR_CONTAIN( abcdefWrap, "0abcdef" ) );
+   CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERTSTR_CONTAIN( abcdefWrap, "ab" ) );
+@
+
+
+1.2
+log
+@* renamed cpput/assertexception.h to cpput/resultexception.h
+@
+text
+@a2 1
+#include <cpput/resultexception.h>
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d3 1
+a3 1
+#include <cpput/assertexception.h>
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

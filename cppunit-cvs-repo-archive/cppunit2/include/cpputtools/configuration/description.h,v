@@ -1,0 +1,1092 @@
+head	1.6;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.6
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.6
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.6
+	TG_AFTER_REMOVING_TESTCONTEXT:1.6
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.6
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.6;
+locks; strict;
+comment	@ * @;
+
+
+1.6
+date	2004.06.23.20.41.24;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.06.23.20.00.52;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.06.23.18.44.39;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.06.15.01.19.56;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.15.00.45.52;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.06.14.23.31.25;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@* fixed bug on updating parameter requirement when setting default value
+@
+text
+@#ifndef CPPUTTOOLS_CONFIGURATION_DESCRIPTION_H_INCUDED
+# define CPPUTTOOLS_CONFIGURATION_DESCRIPTION_H_INCUDED
+
+# include "forwards.h"
+# include "errors.h"
+# include "validator.h"
+# include <cpputtools/valuebinder.h>
+
+# include <iostream>
+# include <map>
+# include <set>
+
+namespace CppUTTools { namespace CommandLineOptions {
+
+
+class OptionDescription // not copyable
+{
+public:
+   enum ParameterRequirement
+   {
+      noParameter,         // |
+      optionalParameter,   // ?
+      requiredParameter,   // :
+      oneOrMoreParameter,  // +
+      zeroOrMoreParameter  // *
+   };
+
+   OptionDescription( const Char &shortName, 
+                      const String &longName,
+                      const String &description,
+                      const ValidatorPtr &validator );
+
+   // @@param packedName Has the following format: "longName,shortName". 
+   //                   ShortName must be a single letter. Example: "exclude,x"
+   //                   Will match --exclude or -x on the command line.
+   OptionDescription( const String &packedName,
+                      const String &description,
+                      const ValidatorPtr &validator );
+
+   ~OptionDescription();
+
+   OptionDescription &setValidator( const ValidatorPtr &validator );
+
+   // Switch parameter requirement as follow:
+   // * if value is empty:
+   // optionalParameter -> requiredParameter
+   // * if value is not empty:
+   // noParameter, requiredParameter -> optionalParameter
+   // oneOrMoreParameter -> zeroOrMoreParameter
+   OptionDescription &setDefaultValue( const Value &value );
+
+   OptionDescription &setStorage( const ValueBinder &storage );
+
+   const Value &defaultValue() const;
+
+   bool hasDefaultValue() const;
+
+   bool hasStorage() const;
+
+   bool hasShortName() const;
+
+   bool hasLongName() const;
+
+   String shortName() const;
+
+   String longName() const;
+
+   String name() const;
+
+   String description() const;
+
+   bool hasNoParameter() const;
+
+   bool mayHaveParameter() const;
+
+   bool requireParameter() const;
+
+   // @@exception ValidatorError if validation fail.
+   Value validate( const Parameters &parameters ) const;
+
+   // Store the final value into the location specified by the user if any.
+   void store( const Value &value ) const;
+
+private:
+   void setDefaultParameterRequirement();
+
+   Value defaultValue_;
+   String shortName_;
+   String longName_;
+   ValueBinder storage_;
+   String description_;
+   ParameterRequirement parameter_;
+   ValidatorPtr validator_;
+};
+
+
+class OptionsDescription
+{
+public:
+   OptionsDescription( const String &caption );
+   virtual ~OptionsDescription();
+
+   /// @@exception OptionsDescriptionError if an option has already been registered with conflicting
+   ///                                    names.
+   OptionsDescription &add( const OptionDescription &description );
+
+   /// @@exception OptionsDescriptionError if an option has already been registered with conflicting
+   ///                                    names.
+   OptionsDescription &add( const String &optionName,
+                            const String &description );
+
+
+#if 0
+   /// @@exception OptionsDescriptionError if an option has already been registered with conflicting
+   ///                                    names.
+   OptionsDescription &add( const String &optionName,
+                            const OptionHandlerHelper &handlerHelper,
+                            const String &description );
+
+   /// @@exception OptionsDescriptionError if an option has already been registered with conflicting
+   ///                                    names.
+   OptionsDescription &add( const String &optionName,
+                            const OptionHandlerHelper &handlerHelper,
+                            Validator *validator,
+                            const String &description );
+
+   /// @@exception OptionsDescriptionError if an option has already been registered with conflicting
+   ///                                    names.
+   OptionsDescription &add( const String &optionName,
+                            Validator *validator,
+                            const String &description );
+
+   /// @@exception OptionsDescriptionError if an option has already been registered with conflicting
+   ///                                    names.
+   OptionsDescription &add( const String &optionName,
+                            OptionHandler *handler,
+                            const String &description );
+
+   /// @@exception OptionsDescriptionError if an option has already been registered with conflicting
+   ///                                    names.
+   OptionsDescription &add( const String &optionName,
+                            OptionHandler *handler,
+                            Validator *validator,
+                            const String &description );
+#endif
+
+   std::set<String> optionNames() const;
+
+   bool hasOption( const String &optionName ) const;
+
+   // long name or -shortName
+   const OptionDescription &description( const String &optionName ) const;
+
+   friend std::ostream &operator <<( std::ostream &os, 
+                                     const OptionsDescription &options );
+
+private:
+   typedef std::deque<OptionDescription> Options;
+   Options options_;
+   String caption_;
+
+   typedef std::map<String,int> OptionIndexes;
+   OptionIndexes shortNameIndexes_;
+   OptionIndexes longNameIndexes_;
+   OptionIndexes nameIndexes_;
+};
+
+
+template<class ValueType>
+OptionDescription option( const std::string &optionName,
+                          const std::string &description );
+
+template<class DefaultValueType>
+OptionDescription optionDefault( const std::string &optionName,
+                                 const DefaultValueType &defaultValue,
+                                 const std::string &description );
+
+template<class StorageValueType>
+OptionDescription option( const std::string &optionName,
+                          StorageValueType &storageValue,
+                          const std::string &description );
+
+template<class StorageValueType
+        ,class DefaultValueType>
+OptionDescription option( const std::string &optionName,
+                          StorageValueType &storageValue,
+                          const DefaultValueType &defaultValue,
+                          const std::string &description );
+
+
+template<class ValueType>
+OptionDescription validatedOption( const std::string &optionName,
+                                   const std::string &description,
+                                   const ValidatorPtr &validator );
+
+template<class DefaultValueType>
+OptionDescription validatedOptionDefault( const std::string &optionName,
+                                          const DefaultValueType &defaultValue,
+                                          const std::string &description,
+                                          const ValidatorPtr &validator );
+
+template<class StorageValueType>
+OptionDescription validatedOption( const std::string &optionName,
+                                   StorageValueType &storageValue,
+                                   const std::string &description,
+                                   const ValidatorPtr &validator );
+
+template<class StorageValueType
+        ,class DefaultValueType>
+OptionDescription validatedOption( const std::string &optionName,
+                                   StorageValueType &storageValue,
+                                   const DefaultValueType &defaultValue,
+                                   const std::string &description,
+                                   const ValidatorPtr &validator );
+
+
+
+// class OptionDescription
+// //////////////////////////////////////////////////////////////////
+
+inline
+OptionDescription::OptionDescription( const String &packedName,
+                                      const String &description,
+                                      const ValidatorPtr &validator )
+   : description_( description )
+   , validator_( validator )
+{
+   unsigned int commaPos = packedName.find( ',' );
+   String parameter( "|?:+*" );
+   String cleanPackedName = packedName;
+   Char parameterRequirement = cleanPackedName.at( cleanPackedName.length()-1 );
+   int pos = parameter.find( parameterRequirement );
+   if ( pos != String::npos )
+   {
+      static ParameterRequirement parameters[] = { 
+         noParameter, optionalParameter, requiredParameter, oneOrMoreParameter, zeroOrMoreParameter
+         };
+      parameter_ = parameters[pos];
+      cleanPackedName.resize( cleanPackedName.length()-1 );
+   }
+   else
+      setDefaultParameterRequirement();
+
+   if ( commaPos != String::npos )
+   {
+      longName_ = cleanPackedName.substr(0,commaPos);
+      shortName_ = cleanPackedName.substr(commaPos+1,1);
+   }
+   else
+      longName_ = cleanPackedName;
+
+}
+
+
+inline 
+OptionDescription::OptionDescription( const Char &shortName, 
+                                      const String &longName,
+                                      const String &description,
+                                      const ValidatorPtr &validator )
+   : shortName_( String(1,shortName) )
+   , longName_( longName )
+   , description_( description )
+   , validator_( validator )
+{
+   setDefaultParameterRequirement();
+}
+
+
+inline void 
+OptionDescription::setDefaultParameterRequirement()
+{
+   if ( hasStorage()  ||  hasDefaultValue() )
+      parameter_ = hasDefaultValue() ? optionalParameter 
+                                     : requiredParameter;
+   else
+      parameter_ = noParameter;
+}
+
+
+inline 
+OptionDescription::~OptionDescription()
+{
+}
+
+
+inline OptionDescription &
+OptionDescription::setValidator( const ValidatorPtr &validator )
+{
+   validator_ = validator;
+   return *this;
+}
+
+
+inline OptionDescription &
+OptionDescription::setDefaultValue( const Value &value )
+{
+   defaultValue_ = value;
+   if ( value.isEmpty() )
+   {
+      if ( parameter_ == optionalParameter )
+         parameter_ = requiredParameter;
+   }
+   else
+   {
+      if ( parameter_ == noParameter  ||  parameter_ == requiredParameter )
+         parameter_ = optionalParameter;
+      else if ( parameter_ == oneOrMoreParameter )
+         parameter_ = zeroOrMoreParameter;
+   }
+   return *this;
+}
+
+
+inline OptionDescription &
+OptionDescription::setStorage( const ValueBinder &storage )
+{
+   storage_ = storage;
+   return *this;
+}
+
+
+inline const Value &
+OptionDescription::defaultValue() const
+{
+   return defaultValue_;
+}
+
+
+inline bool 
+OptionDescription::hasDefaultValue() const
+{
+   return !defaultValue_.isEmpty();
+}
+
+
+inline bool 
+OptionDescription::hasStorage() const
+{
+   return !storage_.isEmpty();
+}
+
+
+inline bool 
+OptionDescription::hasShortName() const
+{
+   return !shortName_.empty();
+}
+
+
+inline bool 
+OptionDescription::hasLongName() const
+{
+   return !longName_.empty();
+}
+
+
+inline String 
+OptionDescription::shortName() const
+{
+   return shortName_;
+}
+
+
+inline String 
+OptionDescription::longName() const
+{
+   return longName_;
+}
+
+
+inline String 
+OptionDescription::name() const
+{
+   return longName_.empty() ? "-" + shortName() : longName_;
+}
+
+
+inline String 
+OptionDescription::description() const
+{
+   return description_;
+}
+
+
+inline bool 
+OptionDescription::hasNoParameter() const
+{
+   return parameter_ == noParameter;
+}
+
+
+inline bool 
+OptionDescription::mayHaveParameter() const
+{
+   return parameter_ == optionalParameter 
+          ||  parameter_ == zeroOrMoreParameter;
+}
+
+
+inline bool 
+OptionDescription::requireParameter() const
+{
+   return parameter_ == requiredParameter
+          ||  parameter_ == oneOrMoreParameter;
+}
+
+
+inline Value
+OptionDescription::validate( const Parameters &parameters ) const
+{
+   if ( requireParameter()  &&  parameters.empty() )
+      throw ValidatorError( ValidatorError::missingParameter, "required parameter is missing." );
+
+   if ( requireParameter()
+        ||  ( mayHaveParameter()  &&  !parameters.empty() ) )
+   {
+      if ( !validator_ )
+         throw ValidatorError( ValidatorError::undefinedValidator, "no validator set for this option." );
+      return validator_->validate( parameters );
+   }
+
+   return defaultValue();
+}
+
+
+inline void
+OptionDescription::store( const Value &value ) const
+{
+   if ( hasStorage() )
+      storage_.set( value );
+}
+
+
+
+// class OptionsDescription
+// //////////////////////////////////////////////////////////////////
+inline
+OptionsDescription::OptionsDescription( const String &caption )
+   : caption_( caption )
+{
+}
+
+
+inline
+OptionsDescription::~OptionsDescription()
+{
+}
+
+
+inline OptionsDescription &
+OptionsDescription::add( const OptionDescription &description )
+{
+   int index = options_.size();
+   options_.push_back( description );
+
+   if ( longNameIndexes_.count( description.longName() ) > 0 )
+      throw OptionsDescriptionError( "More than one option registered with long name '" 
+                                     + description.longName() + "'." );
+   if ( shortNameIndexes_.count( description.shortName() ) > 0 )
+      throw OptionsDescriptionError( "More than one option registered with short name '" 
+                                     + description.shortName() + "'." );
+
+   if ( description.hasLongName() )
+   {
+      longNameIndexes_.insert( OptionIndexes::value_type( description.longName(), index ) );
+      nameIndexes_.insert( OptionIndexes::value_type( description.longName(), index ) );
+   }
+
+   if ( description.hasShortName() )
+   {
+      shortNameIndexes_.insert( OptionIndexes::value_type( description.shortName(), index ) );
+      nameIndexes_.insert( OptionIndexes::value_type( "-" + description.shortName(), index ) );
+   }
+
+   return *this;
+}
+
+
+inline OptionsDescription &
+OptionsDescription::add( const String &optionName,
+                         const String &description )
+{
+   return add( option<std::string>( optionName, description ) );
+}
+
+
+inline std::set<String>
+OptionsDescription::optionNames() const
+{
+   std::set<String> optionNames;
+   Options::const_iterator it = options_.begin();
+   for ( ; it != options_.end(); ++it )
+   {
+      const OptionDescription &option = *it;
+      optionNames.insert( option.name() );
+   }
+   return optionNames;
+}
+
+
+inline bool 
+OptionsDescription::hasOption( const String &optionName ) const
+{
+   return nameIndexes_.count( optionName) > 0;
+}
+
+
+inline const OptionDescription &
+OptionsDescription::description( const String &optionName ) const
+{
+   OptionIndexes::const_iterator it = nameIndexes_.find( optionName );
+   if ( it == nameIndexes_.end() )
+   {
+      std::ostringstream os;
+      os << "No option registered for name '" + optionName + "'.";
+      throw OptionsDescriptionError( os.str() );
+   }
+
+   return options_[it->second];
+}
+
+// template function option
+// //////////////////////////////////////////////////////////////////
+
+template<class ValueType>
+OptionDescription option( const std::string &optionName,
+                          const std::string &description )
+{
+   return OptionDescription( optionName, description, defaultValidator<ValueType>() );
+}
+
+template<class DefaultValueType>
+OptionDescription optionDefault( const std::string &optionName,
+                                 const DefaultValueType &defaultValue,
+                                 const std::string &description )
+{
+   Value value;
+   set( value, defaultValue );
+   OptionDescription option( optionName, description, defaultValidator<DefaultValueType>() );
+   return option.setDefaultValue( value );
+}
+
+template<class StorageValueType>
+OptionDescription option( const std::string &optionName,
+                          StorageValueType &storageValue,
+                          const std::string &description )
+{
+   OptionDescription option( optionName, description, defaultValidator<StorageValueType>() );
+   return option.setStorage( valueBinder( storageValue ) );
+}
+
+template<class StorageValueType
+        ,class DefaultValueType>
+OptionDescription option( const std::string &optionName,
+                          StorageValueType &storageValue,
+                          const DefaultValueType &defaultValue,
+                          const std::string &description )
+{
+   Value value;
+   set( value, StorageValueType( defaultValue ) );
+   OptionDescription option( optionName, description, defaultValidator<StorageValueType>() );
+   option.setDefaultValue( value );
+   return option.setStorage( valueBinder( storageValue ) );
+}
+
+
+template<class ValueType>
+OptionDescription validatedOption( const std::string &optionName,
+                                   const std::string &description,
+                                   const ValidatorPtr &validator )
+{
+   return OptionDescription( optionName, description, validator );
+}
+
+template<class DefaultValueType>
+OptionDescription validatedOptionDefault( const std::string &optionName,
+                                          const DefaultValueType &defaultValue,
+                                          const std::string &description,
+                                          const ValidatorPtr &validator )
+{
+   Value value;
+   set( value, defaultValue );
+   OptionDescription option( optionName, description, validator );
+   return option.setDefaultValue( value );
+}
+
+template<class StorageValueType>
+OptionDescription validatedOption( const std::string &optionName,
+                                   StorageValueType &storageValue,
+                                   const std::string &description,
+                                   const ValidatorPtr &validator )
+{
+   OptionDescription option( optionName, description, validator );
+   return option.setStorage( valueBinder( storageValue ) );
+}
+
+template<class StorageValueType
+        ,class DefaultValueType>
+OptionDescription validatedOption( const std::string &optionName,
+                                   StorageValueType &storageValue,
+                                   const DefaultValueType &defaultValue,
+                                   const std::string &description,
+                                   const ValidatorPtr &validator )
+{
+   Value value;
+   set( value, StorageValueType( defaultValue ) );
+   OptionDescription option( optionName, description, validator );
+   option.setDefaultValue( value );
+   return option.setStorage( valueBinder( storageValue ) );
+}
+
+
+
+} } // namespace CommandLineOptions
+
+#endif // CPPUTTOOLS_CONFIGURATION_DESCRIPTION_H_INCUDED
+@
+
+
+1.5
+log
+@* fixed compilation issues
+@
+text
+@d44 6
+d298 12
+@
+
+
+1.4
+log
+@* replaced storage binding in OptionHandler by a ValueBinder
+@
+text
+@d6 2
+a14 10
+struct OptionDescriptionInitializer
+{
+   Char shortName_;
+   String longName_;
+   String packedName_;
+   String description_;
+   ValidatorPtr validator_;
+   ValueBinder storage_;
+};
+
+d99 1
+a99 1
+   OptionsDescription &add( OptionDescription *description );
+a103 1
+                            const OptionHandlerHelper &handlerHelper,
+d106 2
+a111 1
+                            Validator *validator,
+d117 2
+d139 1
+d152 1
+a152 1
+   typedef std::deque<OptionDescription *> Options;
+d163 46
+a208 41
+class OptionHandlerHelper
+{
+public:
+   OptionHandlerHelper( int &storage );
+   OptionHandlerHelper( unsigned int &storage );
+   OptionHandlerHelper( long &storage );
+   OptionHandlerHelper( unsigned long &storage );
+   OptionHandlerHelper( float &storage );
+   OptionHandlerHelper( double &storage );
+   OptionHandlerHelper( bool &storage );
+   OptionHandlerHelper( Char &storage );
+   OptionHandlerHelper( String &storage );
+
+   ~OptionHandlerHelper();
+
+   OptionHandler *takeHandler();
+
+private:
+   OptionHandler *handler_;
+};
+
+
+// Creates an option of the specified type, with the default constructed type has default value.
+template<class OptionType>
+SimpleOptionHandler<OptionType> *option();
+
+// Creates an option of the specified type, with the default constructed type has default value,
+// and store the value after parsing in the specified storage location.
+template<class OptionType>
+SimpleOptionHandler<OptionType> *option( OptionType &storage );
+
+// Creates an option of the specified type using the specified default value,
+// and store the value after parsing in the specified storage location.
+template<class OptionType
+        ,class DefaultType>
+SimpleOptionHandler<OptionType> *option( OptionType &storage, 
+                                         const DefaultType &defaultValue );
+
+// Creates an option of the specified type using the specified default value.
+template<class OptionType>
+SimpleOptionHandler<OptionType> *optionDefault( const OptionType &defaultValue );
+d217 2
+a218 1
+                                      const String &description )
+d220 1
+d252 2
+a253 1
+                                      const String &description )
+d257 1
+d300 1
+a428 3
+   Options::iterator it = options_.begin();
+   for ( ; it != options_.end(); ++it )
+      delete *it;
+d433 1
+a433 1
+OptionsDescription::add( OptionDescription *description )
+d438 1
+a438 1
+   if ( longNameIndexes_.count( description->longName() ) > 0 )
+d440 2
+a441 2
+                                     + description->longName() + "'." );
+   if ( shortNameIndexes_.count( description->shortName() ) > 0 )
+d443 1
+a443 1
+                                     + description->shortName() + "'." );
+d445 1
+a445 1
+   if ( description->hasLongName() )
+d447 2
+a448 2
+      longNameIndexes_.insert( OptionIndexes::value_type( description->longName(), index ) );
+      nameIndexes_.insert( OptionIndexes::value_type( description->longName(), index ) );
+d451 1
+a451 1
+   if ( description->hasShortName() )
+d453 2
+a454 2
+      shortNameIndexes_.insert( OptionIndexes::value_type( description->shortName(), index ) );
+      nameIndexes_.insert( OptionIndexes::value_type( "-" + description->shortName(), index ) );
+a462 11
+                         const OptionHandlerHelper &handlerHelper,
+                         const String &description )
+{
+   return add( optionName, handlerHelper, 0, description );
+}
+
+
+inline OptionsDescription &
+OptionsDescription::add( const String &optionName,
+                         const OptionHandlerHelper &handlerHelper,
+                         Validator *validator,
+d465 1
+a465 43
+   OptionHandler *handler = const_cast<OptionHandlerHelper &>(handlerHelper).takeHandler();
+   return add( optionName, handler, validator, description );
+}
+
+
+inline OptionsDescription &
+OptionsDescription::add( const String &optionName,
+                         const String &description )
+{
+   OptionHandler *handler = new SimpleOptionHandler<String>();
+   return add( optionName, handler, description );
+}
+
+
+inline OptionsDescription &
+OptionsDescription::add( const String &optionName,
+                         Validator *validator,
+                         const String &description )
+{
+   OptionHandler *handler = new SimpleOptionHandler<String>(validator);
+   return add( optionName, handler, description );
+}
+
+
+inline OptionsDescription &
+OptionsDescription::add( const String &optionName,
+                         OptionHandler *handler,
+                         const String &description )
+{
+   return add( optionName, handler, 0, description );
+}
+
+
+inline OptionsDescription &
+OptionsDescription::add( const String &optionName,
+                         OptionHandler *handler,
+                         Validator *validator,
+                         const String &description )
+{
+   OptionDescription *option = new OptionDescription( optionName, handler, description );
+   if ( validator )
+      option->setValidator( validator );
+   return add( option );
+d476 1
+a476 1
+      const OptionDescription &option = **it;
+d501 1
+a501 1
+   return *( options_[it->second] );
+d504 1
+a504 2
+
+// class OptionHandlerHelper
+a505 4
+inline OptionHandlerHelper::OptionHandlerHelper( int &storage )
+   : handler_( new SimpleOptionHandler<int>( &storage ) )
+{
+}
+d507 3
+a509 2
+inline OptionHandlerHelper::OptionHandlerHelper( unsigned int &storage )
+   : handler_( new SimpleOptionHandler<unsigned int>( &storage ) )
+d511 1
+d514 4
+a517 2
+inline OptionHandlerHelper::OptionHandlerHelper( long &storage )
+   : handler_( new SimpleOptionHandler<long>( &storage ) )
+d519 4
+d525 4
+a528 2
+inline OptionHandlerHelper::OptionHandlerHelper( unsigned long &storage )
+   : handler_( new SimpleOptionHandler<unsigned long>( &storage ) )
+d530 2
+d534 6
+a539 2
+inline OptionHandlerHelper::OptionHandlerHelper( float &storage )
+   : handler_( new SimpleOptionHandler<float>( &storage ) )
+d541 5
+a547 4
+inline OptionHandlerHelper::OptionHandlerHelper( double &storage )
+   : handler_( new SimpleOptionHandler<double>( &storage ) )
+{
+}
+d549 4
+a552 2
+inline OptionHandlerHelper::OptionHandlerHelper( bool &storage ) 
+   : handler_( new SimpleOptionHandler<bool>( &storage ) )
+d554 1
+d557 5
+a561 2
+inline OptionHandlerHelper::OptionHandlerHelper( Char &storage ) 
+   : handler_( new SimpleOptionHandler<Char>( &storage ) )
+d563 4
+d569 5
+a573 5
+inline OptionHandlerHelper::OptionHandlerHelper( String &storage )
+   : handler_( new SimpleOptionHandler<String>( &storage ) )
+{
+}
+inline OptionHandlerHelper::~OptionHandlerHelper()
+d575 2
+a576 1
+   delete handler_;
+d579 7
+a585 1
+inline OptionHandler *OptionHandlerHelper::takeHandler()
+d587 5
+a591 3
+   OptionHandler *handler = handler_;
+   handler_ = 0;
+   return handler;
+a593 2
+// template function option
+// //////////////////////////////////////////////////////////////////
+a594 28
+template<class OptionType>
+SimpleOptionHandler<OptionType> *option()
+{
+   return new SimpleOptionHandler<OptionType>();
+}
+
+template<class OptionType>
+SimpleOptionHandler<OptionType> *option( OptionType &storage )
+{
+   return new SimpleOptionHandler<OptionType>( &storage );
+}
+
+/* // can not be implemented anymore
+template<class OptionType
+        ,class DefaultType>
+SimpleOptionHandler<OptionType> *option( OptionType &storage, 
+                                         const DefaultType &defaultValue )
+{
+   return new SimpleOptionHandler<OptionType>( &storage, OptionType(defaultValue) );
+}
+
+template<class OptionType>
+SimpleOptionHandler<OptionType> *optionDefault( const OptionType &defaultValue )
+{
+   OptionType *storage = 0;
+   return new SimpleOptionHandler<OptionType>( storage, defaultValue );
+}
+*/
+@
+
+
+1.3
+log
+@* option storage clean up
+@
+text
+@a5 1
+# include "value.h"
+a14 6
+   OptionDescriptionInitializer()
+      : validator_( 0 )
+      , handler_( 0 )
+   {
+   }
+
+d19 2
+a20 2
+   Validator *validator_;
+   OptionHandler *handler_;
+d38 2
+a39 2
+                      OptionHandler *handler,
+                      const String &description );
+d45 2
+a46 2
+                      OptionHandler *handler,
+                      const String &description );
+d50 1
+a50 1
+   OptionDescription &setValidator( Validator *validator );
+d54 2
+d60 2
+a86 2
+   OptionDescription( const OptionDescription &other );
+   void operator =( const OptionDescription &other );
+d92 1
+a92 1
+   OptionHandler *handler_;
+d95 1
+a95 1
+   Validator *validator_;
+a216 1
+                                      OptionHandler *handler,
+d218 1
+a218 3
+   : handler_( handler )
+   , description_( description )
+   , validator_( 0 )
+a249 1
+                                      OptionHandler *handler,
+a252 1
+   , handler_( handler )
+a253 1
+   , validator_( 0 )
+d262 1
+a262 1
+   if ( handler_->hasStorage()  ||  hasDefaultValue() )
+a272 2
+   delete validator_;
+   delete handler_;
+d277 1
+a277 1
+OptionDescription::setValidator( Validator *validator )
+a278 1
+   delete validator_;
+d292 7
+d314 7
+d394 3
+a396 3
+      if ( validator_ )
+         return validator_->validate( parameters );
+      return handler_->validate( parameters );
+d406 2
+a407 2
+   if ( handler_->hasStorage() )
+      handler_->storeValue( value );
+@
+
+
+1.2
+log
+@* fixed compilation issue related to changing OptionValue into the new Value library
+@
+text
+@d14 16
+@
+
+
+1.1
+log
+@* adding cpputtools library, command line options among other thing (for test runners). In progress.
+@
+text
+@d41 1
+a41 1
+   void setValidator( Validator *validator );
+d43 1
+a43 1
+   void setDefaultValue( const Value &value );
+d68 1
+a68 1
+   OptionValue *validate( const Parameters &parameters ) const;
+d70 2
+a71 1
+   void store( OptionValue &value ) const;
+d257 3
+a259 3
+   if ( handler_->hasStorage()  ||  handler_->hasDefaultValue() )
+      parameter_ = handler_->hasDefaultValue() ? optionalParameter 
+                                               : requiredParameter;
+d273 1
+a273 1
+inline void 
+d278 1
+d282 1
+a282 1
+inline void 
+d286 1
+d369 1
+a369 1
+inline OptionValue *
+d383 1
+a383 1
+   return handler_->defaultValue();
+d387 2
+a388 2
+inline void 
+OptionDescription::store( OptionValue &value ) const
+d390 2
+a391 1
+   handler_->storeValue( value );
+d395 1
+d613 1
+d628 1
+a628 1
+
+@
+

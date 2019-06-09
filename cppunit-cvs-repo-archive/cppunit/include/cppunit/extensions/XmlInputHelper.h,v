@@ -1,0 +1,82 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.2
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2002.12.02.19.45.53;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* include/cppunit/plugin/DynamicLibraryManagerException.h: added constructor
+  to fix compilation issues on recents version of gcc and sun CC (bug #619059)
+
+* include/cppunit/input/XmlInputHelper.h: added.
+
+* include/cppunit/extensions/TestSuiteBuilderContext.h:
+* src/cppunit/TestSuiteBuilderContext.cpp: added addProperty() and
+  getStringProperty(). Added macros CPPUNIT_TEST_SUITE_PROPERTY.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: integrated Tim Threlkeld's
+  bug fix #610162: browse button was disabled if history was empty.
+
+* src/msvc6/testrunner/DynamicWindow/cdxCSizeIconCtrl.cpp: integrated
+  Tim Threlkeld's bug fix #610191: common control were not initialized.
+
+* include/cppunit/extensions/ExceptionTestCaseDecorator.h: bug #603172,
+  missing Message construction.
+
+* src/cppunit/DefaultProtector.cpp: bug #603172. Fixed missing ';'.
+
+* src/cppunit/TestCase.cpp: bug #603671. Removed unguarded typeinfo
+  include.
+
+* examples/cppunittests/*Suite.h: bug #603666. Added missing Portability.h
+  include.
+@
+text
+@#ifndef CPPUNIT_EXTENSIONS_XMLINPUTHELPER_H
+#define CPPUNIT_EXTENSIONS_XMLINPUTHELPER_H
+
+#include <cppunit/ParameterizedTestCase.h>
+
+
+/*! \brief Adds a parameterized test method to the suite.
+ * \param testMethod Name of the method of the test case to add to the
+ *                   suite. The signature of the method must be of
+ *                   type: void testMethod(std::istream& param_in, std::istream& exp_in);
+ * \see  CPPUNIT_TEST_SUITE.
+ */
+#define CPPUNIT_TEST_XML( testMethod)											                    \
+	CPPUNIT_TEST_ADD( new CppUnit::ParameterizedTestCase<ThisTestFixtureType>(  \
+					context.getTestNameFor( #testMethod ),							                \
+					#testMethod,												                                \
+					&TestFixtureType::testMethod,							                          \
+					context.makeFixture(),										                          \
+					context.getStringProperty( std::string("XmlFileName") ) ) )
+
+
+
+#endif // CPPUNIT_EXTENSIONS_XMLINPUTHELPER_H@

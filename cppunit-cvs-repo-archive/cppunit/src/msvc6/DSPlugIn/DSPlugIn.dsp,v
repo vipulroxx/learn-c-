@@ -1,0 +1,1057 @@
+head	1.8;
+access;
+symbols
+	REL_1_12_1:1.8
+	REL_1_11_6:1.7
+	REL_1_11_4:1.7
+	REL_1_11_0:1.7
+	TG_CPPUNIT_NO_STREAM_AFTER:1.7
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.7
+	REL_1_10_2:1.7
+	REL_1_10_0:1.7
+	REL_1_9_14:1.7
+	REL_1_9_12:1.7
+	BRANCH_1_9_12:1.7.0.2
+	TG_BRANCH_1_9_12:1.7
+	TG_BEFORE_HPUX_PLUGIN:1.7
+	TG_BEFORE_SUN4_PORT:1.7
+	REL_1_9_10:1.7
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.6
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.6
+	REL_1_9_6:1.6
+	REL_1_9_4:1.6
+	REL_1_9_0:1.6
+	REL_1_8_0:1.5
+	REL_1_7_8:1.5
+	REL_1_7_3:1.5
+	REL_1_7_1:1.5
+	REL_1_6_2:1.4
+	BRANCH_1_6:1.4.0.2
+	REL_1_6_1:1.4
+	REL_1_6_0:1.4;
+locks; strict;
+comment	@# @;
+
+
+1.8
+date	2006.07.25.06.55.30;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2002.07.10.18.50.02;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.04.13.15.12.54;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.10.07.19.36.47;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.09.21.19.20.04;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.09.19.20.13.31;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.09.18.19.05.08;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.09.14.19.27.58;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.8
+log
+@- fixed bug #1527879 (SourceSafe traces in project)
+@
+text
+@# Microsoft Developer Studio Project File - Name="DSPlugIn" - Package Owner=<4>
+# Microsoft Developer Studio Generated Build File, Format Version 6.00
+# ** DO NOT EDIT **
+
+# TARGTYPE "Win32 (x86) Dynamic-Link Library" 0x0102
+
+CFG=DSPlugIn - Win32 Debug Unicode
+!MESSAGE This is not a valid makefile. To build this project using NMAKE,
+!MESSAGE use the Export Makefile command and run
+!MESSAGE 
+!MESSAGE NMAKE /f "DSPlugIn.mak".
+!MESSAGE 
+!MESSAGE You can specify a configuration when running NMAKE
+!MESSAGE by defining the macro CFG on the command line. For example:
+!MESSAGE 
+!MESSAGE NMAKE /f "DSPlugIn.mak" CFG="DSPlugIn - Win32 Debug Unicode"
+!MESSAGE 
+!MESSAGE Possible choices for configuration are:
+!MESSAGE 
+!MESSAGE "DSPlugIn - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "DSPlugIn - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "DSPlugIn - Win32 Release Unicode" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "DSPlugIn - Win32 Debug Unicode" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE 
+
+# Begin Project
+# PROP AllowPerConfigDependencies 0
+CPP=cl.exe
+MTL=midl.exe
+RSC=rc.exe
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+# PROP BASE Use_MFC 2
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "Release"
+# PROP BASE Intermediate_Dir "Release"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 2
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "Release"
+# PROP Intermediate_Dir "Release"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "../../../include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_USRDLL" /YX /FD /c
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "NDEBUG" /win32
+# SUBTRACT MTL /mktyplib203
+# ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x409 /i "../../../../lib" /d "NDEBUG" /d "_AFXDLL"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 /nologo /subsystem:windows /dll /machine:I386
+# ADD LINK32 /nologo /subsystem:windows /dll /machine:I386 /out:"Release/TestRunnerDSPlugIn.dll"
+# Begin Custom Build - Performing Registration
+OutDir=.\Release
+TargetPath=.\Release\TestRunnerDSPlugIn.dll
+InputPath=.\Release\TestRunnerDSPlugIn.dll
+SOURCE="$(InputPath)"
+
+"$(OutDir)\regsvr32.trg" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	rem echo Automatically done when the add-in is registered with VC++ 
+	rem regsvr32 "$(TargetPath)" 
+	echo regsvr32 exec. time > "$(OutDir)\regsvr32.trg" 
+	rem echo Server registration done! 
+	
+# End Custom Build
+# Begin Special Build Tool
+SOURCE="$(InputPath)"
+PostBuild_Desc=duplicating DLL to lib directory
+PostBuild_Cmds=echo The following command may fail if you have already registered the add-in	copy Release\TestRunnerDSPlugIn.dll ..\..\..\lib\TestRunnerDSPlugIn.dll
+# End Special Build Tool
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP BASE Use_MFC 2
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "Debug"
+# PROP BASE Intermediate_Dir "Debug"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 2
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "Debug"
+# PROP Intermediate_Dir "Debug"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_USRDLL" /YX /FD /GZ /c
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "_DEBUG" /win32
+# SUBTRACT MTL /mktyplib203
+# ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x409 /i "../../../../lib" /d "_DEBUG" /d "_AFXDLL"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 /nologo /subsystem:windows /dll /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 /nologo /subsystem:windows /dll /debug /machine:I386 /out:"Debug/TestRunnerDSPlugInD.dll" /pdbtype:sept
+# SUBTRACT LINK32 /pdb:none
+# Begin Custom Build - Performing Registration
+OutDir=.\Debug
+TargetPath=.\Debug\TestRunnerDSPlugInD.dll
+InputPath=.\Debug\TestRunnerDSPlugInD.dll
+SOURCE="$(InputPath)"
+
+"$(OutDir)\regsvr32.trg" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	rem echo Automatically done when the add-in is registered with VC++ 
+	rem regsvr32 "$(TargetPath)" 
+	echo regsvr32 exec. time > "$(OutDir)\regsvr32.trg" 
+	rem echo Server registration done! 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP BASE Use_MFC 2
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "DSPlugIn___Win32_Release_Unicode"
+# PROP BASE Intermediate_Dir "DSPlugIn___Win32_Release_Unicode"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 2
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "ReleaseUnicode"
+# PROP Intermediate_Dir "ReleaseUnicode"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MD /W3 /GX /O2 /I "../../../include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_USRDLL" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "../../../include" /D "NDEBUG" /D "_MBCS" /D "_USRDLL" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "WIN32" /D "_UNICODE" /YX /FD /c
+# ADD BASE MTL /nologo /D "NDEBUG" /win32
+# SUBTRACT BASE MTL /mktyplib203
+# ADD MTL /nologo /D "NDEBUG" /win32
+# SUBTRACT MTL /mktyplib203
+# ADD BASE RSC /l 0x409 /i "../../../../lib" /d "NDEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x409 /i "../../../../lib" /d "NDEBUG" /d "_AFXDLL"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 /nologo /subsystem:windows /dll /machine:I386 /out:"Release/TestRunnerDSPlugIn.dll"
+# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /dll /machine:I386 /out:"ReleaseUnicode/TestRunnerDSPlugIn.dll"
+# Begin Custom Build - Performing Registration
+OutDir=.\ReleaseUnicode
+TargetPath=.\ReleaseUnicode\TestRunnerDSPlugIn.dll
+InputPath=.\ReleaseUnicode\TestRunnerDSPlugIn.dll
+SOURCE="$(InputPath)"
+
+"$(OutDir)\regsvr32.trg" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	rem echo Automatically done when the add-in is registered with VC++ 
+	rem regsvr32 "$(TargetPath)" 
+	echo regsvr32 exec. time > "$(OutDir)\regsvr32.trg" 
+	rem echo Server registration done! 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP BASE Use_MFC 2
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "DSPlugIn___Win32_Debug_Unicode"
+# PROP BASE Intermediate_Dir "DSPlugIn___Win32_Debug_Unicode"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 2
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "DebugUnicode"
+# PROP Intermediate_Dir "DebugUnicode"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_USRDLL" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../include" /D "_DEBUG" /D "_MBCS" /D "_USRDLL" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "WIN32" /D "_UNICODE" /YX /FD /GZ /c
+# ADD BASE MTL /nologo /D "_DEBUG" /win32
+# SUBTRACT BASE MTL /mktyplib203
+# ADD MTL /nologo /D "_DEBUG" /win32
+# SUBTRACT MTL /mktyplib203
+# ADD BASE RSC /l 0x409 /i "../../../../lib" /d "_DEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x409 /i "../../../../lib" /d "_DEBUG" /d "_AFXDLL"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 /nologo /subsystem:windows /dll /debug /machine:I386 /out:"Debug/TestRunnerDSPlugInD.dll" /pdbtype:sept
+# SUBTRACT BASE LINK32 /pdb:none
+# ADD LINK32 /nologo /subsystem:windows /dll /debug /machine:I386 /out:"DebugUnicode/TestRunnerDSPlugInD.dll" /pdbtype:sept
+# SUBTRACT LINK32 /pdb:none
+# Begin Custom Build - Performing Registration
+OutDir=.\DebugUnicode
+TargetPath=.\DebugUnicode\TestRunnerDSPlugInD.dll
+InputPath=.\DebugUnicode\TestRunnerDSPlugInD.dll
+SOURCE="$(InputPath)"
+
+"$(OutDir)\regsvr32.trg" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	rem echo Automatically done when the add-in is registered with VC++ 
+	rem regsvr32 "$(TargetPath)" 
+	echo regsvr32 exec. time > "$(OutDir)\regsvr32.trg" 
+	rem echo Server registration done! 
+	
+# End Custom Build
+# Begin Special Build Tool
+SOURCE="$(InputPath)"
+PostBuild_Desc=duplicating DLL to lib directory
+PostBuild_Cmds=echo The following command may fail if you have already registered the add-in	copy Debug\TestRunnerDSPlugInD.dll ..\..\..\lib\TestRunnerDSPlugInD.dll
+# End Special Build Tool
+
+!ENDIF 
+
+# Begin Target
+
+# Name "DSPlugIn - Win32 Release"
+# Name "DSPlugIn - Win32 Debug"
+# Name "DSPlugIn - Win32 Release Unicode"
+# Name "DSPlugIn - Win32 Debug Unicode"
+# Begin Group "Source Files"
+
+# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Source File
+
+SOURCE=.\DSAddIn.cpp
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\DSPlugIn.cpp
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\DSPlugIn.def
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\DSPlugIn.rc
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\StdAfx.cpp
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+# ADD CPP /Yc"stdafx.h"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+# ADD CPP /Yc"stdafx.h"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+# ADD CPP /Yc"stdafx.h"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+# ADD CPP /Yc"stdafx.h"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestRunnerDSPlugin.idl
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+# ADD MTL /tlb "TestRunnerDSPlugin.tlb" /h "ToAddToDistribution/TestRunnerDSPluginVC6.h" /iid "ToAddToDistribution/TestRunnerDSPluginVC6_i.c"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+# ADD MTL /tlb "TestRunnerDSPlugin.tlb" /h "ToAddToDistribution/TestRunnerDSPluginVC6.h" /iid "ToAddToDistribution/TestRunnerDSPluginVC6_i.c" /Oicf
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+# ADD BASE MTL /tlb "TestRunnerDSPlugin.tlb" /h "ToAddToDistribution/TestRunnerDSPluginVC6.h" /iid "ToAddToDistribution/TestRunnerDSPluginVC6_i.c"
+# ADD MTL /tlb "TestRunnerDSPlugin.tlb" /h "ToAddToDistribution/TestRunnerDSPluginVC6.h" /iid "ToAddToDistribution/TestRunnerDSPluginVC6_i.c"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+# ADD BASE MTL /tlb "TestRunnerDSPlugin.tlb" /h "ToAddToDistribution/TestRunnerDSPluginVC6.h" /iid "ToAddToDistribution/TestRunnerDSPluginVC6_i.c" /Oicf
+# ADD MTL /tlb "TestRunnerDSPlugin.tlb" /h "ToAddToDistribution/TestRunnerDSPluginVC6.h" /iid "ToAddToDistribution/TestRunnerDSPluginVC6_i.c" /Oicf
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\ToAddToDistribution\TestRunnerDSPluginVC6_i.c
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Group "Header Files"
+
+# PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\COMHelper.h
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\DSAddIn.h
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\DSPlugIn.h
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\Resource.h
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\StdAfx.h
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Group "Resource Files"
+
+# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\res\DSPlugIn.rc2
+# PROP Exclude_From_Scan -1
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=.\DSPlugIn.rgs
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\TBarLrge.bmp
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\TBarMedm.bmp
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=.\ReadMe.txt
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestRunnerDSPlugin.tlb
+
+!IF  "$(CFG)" == "DSPlugIn - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "DSPlugIn - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# End Target
+# End Project
+@
+
+
+1.7
+log
+@* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/Orthodox.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h:
+* include/cppunit/TestCaller.h:
+* examples/hierarchy/BoardGameTest.h:
+* examples/hierarchy/ChessTest.h: replaced usage of 'typename' in template
+  declaration with 'class'.
+
+* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to use the generic TestRunner.
+  Removed methods runTestByName() and runTest(). Inherits
+  CppUnit::TestRunner.
+
+* include/cppunit/extensions/TestSuiteBuilder.h: removed templatized method
+  addTestCallerForException(). It is no longer used since release 1.9.8.
+
+* examples/cppunittest/MockTestCase.h
+* examples/cppunittest/MockTestCase.cpp: removed the usage of 'mutable'
+  keyword.
+@
+text
+@a27 2
+# PROP Scc_ProjName "DSPlugIn"
+# PROP Scc_LocalPath ".."
+@
+
+
+1.6
+log
+@* NEWS: updated
+
+* doc/other_documentation.dox: addded new module for test plug-in.
+
+* include/msvc6/DSPlugin/TestRunnerDSPlugin.h:
+* include/msvc6/DSPlugin/TestRunnerDSPlugin_i.c: added. Those file are
+  generated by project src/msvc/DSPlugin. They are provided to allow
+  compilation of TestRunner without compiling DSPlugIn which does not
+  build on VC++ 7.
+
+* examples/examples.dsw: removed DSPlugIn for workspace (fail to build
+  with VC++ 7). Added DllPlugInTester.dsp to workspace.
+
+* examples/msvc6/TestPlugIn/TestPlugIn.dsp: added post-build unit testing
+  using the new DllPlugInTester.
+
+* examples/msvc6/EasyTestPlugIn/*: a new project that
+  demonstrates the use of CPPUNIT_TESTPLUGIN_IMPL to create a test plug-in.
+
+* src/cppunit/cppunit.dsw:
+* src/TestPlugInRunner.dsw:
+* src/TestRunner.dsw: removed. Should use src/CppUnitLibraries.dsw instead.
+
+* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: removed findTestName() method. Replaced
+  by Test::findTest().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp:
+* src/msvc6/DSPlugIn/DSAddIn.h: changed include for add-in. MIDL generates
+  files in sub-directory ToAddToDistribution. Generated file should be
+  copied to include/msvc6/DSPlugin when modified. This remove the dependecy
+  of MfcTestRunner on DSPlugIn.
+
+* src/msvc6/testrunner/ListCtrlFormatter.h:
+* src/msvc6/testrunner/ListCtrlFormatter.cpp: added GetNextColumnIndex().
+
+* src/msvc6/testrunner/src/TestRunnerDlg.h:
+* src/msvc6/testrunner/src/TestRunnerDlg.cpp: set column number in
+  MsDevCallerListCtrl when initializing the list.
+
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.cpp: column indexes for
+  file and line number are no longer static. Added methods to set those
+  indexes. Changed DSPlugIn header name.
+
+* include/msvc6/testrunner/TestPlugInInterface.h: fixed inclusion of
+  windows header for WINAPI. Added macro CPPUNIT_TESTPLUGIN_IMPL to
+  automatically implements a test plug-in.
+
+* src/msvc6/DllPlugInTester/*: added new project. A application to test DLL
+  and report using CompilerOutputter. Target for post-build testing and
+  debugging of DLL.
+@
+text
+@a118 5
+# Begin Special Build Tool
+SOURCE="$(InputPath)"
+PostBuild_Desc=duplicating DLL to lib directory
+PostBuild_Cmds=echo The following command may fail if you have already registered the add-in	copy Debug\TestRunnerDSPlugInD.dll ..\..\..\lib\TestRunnerDSPlugInD.dll
+# End Special Build Tool
+d147 1
+a147 1
+# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /dll /machine:I386 /out:"Release/TestRunnerDSPlugIn.dll"
+d150 2
+a151 2
+TargetPath=.\Release\TestRunnerDSPlugIn.dll
+InputPath=.\Release\TestRunnerDSPlugIn.dll
+a160 5
+# Begin Special Build Tool
+SOURCE="$(InputPath)"
+PostBuild_Desc=duplicating DLL to lib directory
+PostBuild_Cmds=echo The following command may fail if you have already registered the add-in	copy Release\TestRunnerDSPlugIn.dll ..\..\..\lib\TestRunnerDSPlugIn.dll
+# End Special Build Tool
+d190 1
+a190 1
+# ADD LINK32 /nologo /entry:"" /subsystem:windows /dll /debug /machine:I386 /out:"Debug/TestRunnerDSPlugInD.dll" /pdbtype:sept
+d194 2
+a195 2
+TargetPath=.\Debug\TestRunnerDSPlugInD.dll
+InputPath=.\Debug\TestRunnerDSPlugInD.dll
+d225 17
+d246 17
+d267 17
+d288 17
+d309 13
+d323 8
+d342 1
+d347 1
+d353 1
+d363 17
+d388 17
+d409 17
+d430 17
+d451 17
+d472 17
+d504 17
+d525 17
+d546 17
+d568 17
+d589 17
+@
+
+
+1.5
+log
+@* include/cppunit/CompilerTestResultOutputter.h :
+renamed CompilerOutputter.h
+
+* src/cppunit/CompilerTestResultOutputter.cpp :
+renamed CompilerOutputter.cpp
+
+* include/cppunit/CompilerTestResultOutputter.h :
+* src/cppunit/CompilerTestResultOutputter.cpp : ajust max line length
+for wrapping. Added static factory method defaultOutputter(). Print
+the number of test runs on success.
+
+* include/cppunit/CompilerTestResultOutputter.h : renamed
+CompilerOutputter.h.
+
+* src/cppunit/CompilerTestResultOutputter.cpp : renamed
+CompilerOutputter.cpp.
+
+* examples/cppunittest/CppUnitTestMain.cpp : use factory method
+CompilerTestResultOutputter::defaultOutputter().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp : removed COM registration in
+post-build step. IT is automatically done by VC++ when the add-in is
+added. Caused build to failed if the add-in was used in VC++.
+
+* NEWS : updated.
+
+* src/cppunit/TestAssert.cpp : modified deprecated assert
+implementations to use Asserter.
+
+* examples/cppunittest/XmlTestResultOutputterTest.h :
+renamed XmlOutputterTest.h.
+
+* examples/cppunittest/XmlTestResultOutputterTest.cpp :
+renamed XmlOutputterTest.cpp.
+
+* NEWS :
+* examples/cppunittest/CppUnitTestMain.cpp :
+* examples/cppunittest/CppUnitTestMain.dsp :
+* examples/cppunittest/Makefile.am :
+* examples/cppunittest/XmlTestResultOutputterTest.h :
+* examples/cppunittest/XmlTestResultOutputterTest.cpp :
+* examples/msvc6/CppUniTestApp/CppUnitTestApp.dsp
+* include/cppunit/CompilerOutputter.h :
+* include/cppunit/Makefile.am :
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/CompilerOutputter.cpp :
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* src/cppunit/XmlTestResultOutputter.cpp : change due to renaming
+CompilerTestResultOutputter to CompilerOutputter,
+XmlTestResultOutputter to XmlOuputter, XmlTestResultOutputterTest
+to XmlOutputterTest.
+@
+text
+@d7 1
+a7 1
+CFG=DSPlugIn - Win32 Debug
+d16 1
+a16 1
+!MESSAGE NMAKE /f "DSPlugIn.mak" CFG="DSPlugIn - Win32 Debug"
+d22 2
+d125 96
+d227 2
+d259 1
+a259 1
+# ADD MTL /tlb "TestRunnerDSPlugin.tlb" /h "../../../include/msvc6/DSPlugin/TestRunnerDSPlugin.h" /iid "../../../include/msvc6/DSPlugin/TestRunnerDSPlugin_i.c"
+d263 11
+a273 1
+# ADD MTL /tlb "TestRunnerDSPlugin.tlb" /h "../../../include/msvc6/DSPlugin/TestRunnerDSPlugin.h" /iid "../../../include/msvc6/DSPlugin/TestRunnerDSPlugin_i.c" /Oicf
+d280 1
+a280 1
+SOURCE=..\..\..\include\msvc6\DSPlugin\TestRunnerDSPlugin_i.c
+@
+
+
+1.4
+log
+@* include/cppunit/TestFailure.h : made destructor virtual.
+
+* INSTALL-WIN32.txt : added some more infos about DSPlugIn.
+
+* src/msvc6/DSPlugIn/DSPlugIn.rgs: added some registry data
+that where missing to register the COM object.
+
+* src/msvc6/DSPlugIn/DSPlugIn.rc: updated some dll version info.
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp: fixed the custom build step to
+register the DLL using regsvr32.exe. Added a post-build step to
+copy the dll to the lib/ directory. This prevent a blocking
+compilation error if the DLL is in use by VC++.
+@
+text
+@d65 2
+a66 1
+	regsvr32 "$(TargetPath)" 
+d68 1
+a68 1
+	echo Server registration done! 
+d111 2
+a112 1
+	regsvr32 "$(TargetPath)" 
+d114 1
+a114 1
+	echo Server registration done! 
+@
+
+
+1.3
+log
+@* examples/cppunittest/makefile.am : added TestSetupTest.(cpp/h)
+
+* examples/examples.dsw: removed some unnecessary dependencies.
+
+* examples/msvc6/HostApp/HostApp.dsp: fixed release configuration
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp: fixed release configuration, and
+disabled the custom build command that does not work.
+
+* include/cppunit/extensions/HelperMacros.h: reordered header to remove
+some warning with VC++.
+
+* INSTALL-WIN32.txt : detailed what was in each project. Added a FAQ
+about the failing test case in cppunittest.
+@
+text
+@d57 1
+a57 1
+# ADD LINK32 /nologo /subsystem:windows /dll /machine:I386 /out:"../../../lib/TestRunnerDSPlugIn.dll"
+d60 2
+a61 2
+TargetPath=\prg\vc\Lib\cppunit\lib\TestRunnerDSPlugIn.dll
+InputPath=\prg\vc\Lib\cppunit\lib\TestRunnerDSPlugIn.dll
+d65 1
+a65 2
+	rem Following command disabled since it does not work 
+	rem "$(TargetPath)" /RegServer 
+d70 5
+d101 1
+a101 1
+# ADD LINK32 /nologo /subsystem:windows /dll /debug /machine:I386 /out:"../../../lib/TestRunnerDSPlugInD.dll" /pdbtype:sept
+d105 2
+a106 2
+TargetPath=\prg\vc\Lib\cppunit\lib\TestRunnerDSPlugInD.dll
+InputPath=\prg\vc\Lib\cppunit\lib\TestRunnerDSPlugInD.dll
+d110 1
+a110 2
+	rem Following command disabled since it does not work 
+	rem "$(TargetPath)" /RegServer 
+d115 5
+@
+
+
+1.2
+log
+@* examples/examples.dsw:
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsw:
+* examples/msvc6/HostApp/HostApp.dsw:
+* examples/msvc6/TestPlugIn/TestPlugIn.dsw: Added missing
+project dependency.
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp: fixed *.tlb output directory.
+
+* include/msvc6/testrunner/TestPlugInInterface.h: does not define
+NOMINMAX if already defined.
+@
+text
+@d65 2
+a66 1
+	"$(TargetPath)" /RegServer 
+d106 2
+a107 1
+	"$(TargetPath)" /RegServer 
+d149 1
+a149 1
+# ADD MTL /tlb "../../../lib/TestRunnerDSPlugin.tlb" /h "../../../include/msvc6/DSPlugin/TestRunnerDSPlugin.h" /iid "../../../include/msvc6/DSPlugin/TestRunnerDSPlugin_i.c"
+@
+
+
+1.1
+log
+@* src/msvc6/testrunner/TestRunner.dsp: fixed release configuration.
+
+* src/msvc6/testrunner/TestRunner.dsw: added DSPlugIn.dsp. TestRunner
+depends on DSPlugIn.
+
+* src/msvc6/testrunner/TestRunner.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/DSPlugIn/*: integrated patch from
+Patrick Berny (PPBerny@@web.de). An add-ins for VC++. Double-cliking
+a failed test in the TestRunner, VC++ will open the source file and
+go to the failure location.
+
+* src/cppunit/Exception.cpp:
+* include/cppunit/Exception.h: compile fix, call to overrided
+operator = of parent class failed. Using typedef to the parent
+class fix that.
+
+* src/cppunit/cppunit.dsp: added TestFixture.h
+
+* src/cppunit/TestFactoryRegistry.cpp: removed <utility> which isn't
+needed any more.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/extensions/TestFactoryRegistry.h: added
+include <Portability.h> before any other includes to remove warning
+with VC++.
+
+* include/cppunit/Portability.h: moved platform specific includes at
+the beginning of the header. fixed CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION
+declaration.
+
+* include/cppunit/config-msvc6.h: removed pragma once (useless, should
+be put in each header to have an effect).
+@
+text
+@d151 1
+a151 1
+# ADD MTL /tlb "../../../lib/TestRunnerDSPlugin.tlb" /h "../../../include/msvc6/DSPlugin/TestRunnerDSPlugin.h" /iid "../../../include/msvc6/DSPlugin/TestRunnerDSPlugin_i.c" /Oicf
+a158 1
+# ADD CPP /I "../../../include"
+@
+

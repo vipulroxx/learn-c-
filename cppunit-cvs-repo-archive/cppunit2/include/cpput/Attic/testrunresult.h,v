@@ -1,0 +1,212 @@
+head	1.4;
+access;
+symbols
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.3
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.3;
+locks; strict;
+comment	@ * @;
+
+
+1.4
+date	2004.11.20.15.06.59;	author blep;	state dead;
+branches;
+next	1.3;
+
+1.3
+date	2004.08.04.06.43.53;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.08.03.22.36.14;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.08.03.22.20.27;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@#ifndef CPPUT_TESTRUNRESULT_H_INCLUDED
+# define CPPUT_TESTRUNRESULT_H_INCLUDED
+
+# include <cpput/config.h>
+# include <cpput/forwards.h>
+# include <cpput/testlistener.h>
+# include <cpput/testresult.h>
+# include <deque>
+
+namespace CppUT {
+
+class CPPUT_API TestRunResult : public TestListener
+{
+public:
+   int testCount() const
+   {
+      return int(results_.size());
+   }
+
+   int successCount() const
+   {
+      return int(successes_.size());
+   }
+
+   int failureCount() const
+   {
+      return int(failures_.size());
+   }
+
+   const TestResult &testResultAt( int index ) const
+   {
+#if CPPUT_HAS_VECTOR_AT
+      return results_.at( index );
+#else
+      return results_[ index ];
+#endif
+   }
+
+   const TestResult &failureAt( int index ) const
+   {
+#if CPPUT_HAS_VECTOR_AT
+      return results_.at( failures_.at(index) );
+#else
+      return results_[ failures_[index] ];
+#endif
+   }
+
+   const TestResult &successAt( int index ) const
+   {
+#if CPPUT_HAS_VECTOR_AT
+      return results_.at( failures_.at(index) );
+#else
+      return results_[ failures_[index] ];
+#endif
+   }
+
+   bool successful() const
+   {
+      return failures_.empty();
+   }
+
+// overridden from TestListener
+   void processTestResult( TestResult &result,
+                           TestContext &context )
+   {
+      if ( result.failed() )
+         failures_.push_back( results_.size() );
+      else
+         successes_.push_back( results_.size() );
+      results_.push_back( result );
+   }
+
+private:
+   typedef std::deque<TestResult> Results;
+   Results results_;
+
+   typedef std::deque<int> Failures;
+   Failures failures_;
+
+   typedef std::deque<int> Successes;
+   Successes successes_;
+};
+
+
+} // namespace CppUT
+
+#endif // CPPUT_TESTRUNRESULT_H_INCLUDED
+@
+
+
+1.3
+log
+@* Replaced TestListener::testFailed() with TestListener::processTestResul(). TestResult can be either success or failure and is mutable: the callback can add structured data to the result.
+* TestContext::protectTestRun() assumes test succeeded if no failing TestResult were dispatched during the test.
+@
+text
+@@
+
+
+1.2
+log
+@* renamed TestFailure to TestResult (can now be a success or a failure)
+* renamed testfailure.h to testresult.h
+* renamed testresult.cpp to testtestrunresult.cpp
+@
+text
+@d17 6
+a22 1
+      return int(tests_.size());
+d30 9
+d42 1
+a42 1
+      return failures_.at( index );
+d44 10
+a53 1
+      return failures_[ index ];
+d63 2
+a64 2
+   void testFailed( const TestResult &failure,
+                    TestContext &context )
+d66 5
+a70 1
+      failures_.push_back( failure );
+d73 3
+a75 4
+   void enterTest( Test &test, TestContext &context )
+   {
+      tests_.push_back( &test );
+   }
+d77 1
+a77 2
+private:
+   typedef std::deque<TestResult> Failures;
+d80 2
+a81 2
+   typedef std::deque<Test *> Tests;
+   Tests tests_;
+a86 2
+
+
+@
+
+
+1.1
+log
+@* renamed Result to TestRunResult (and cpput/result.h to cpput/testrunresult.h)
+@
+text
+@d1 2
+a2 2
+#ifndef CPPUT_RESULT_H_INCLUDED
+# define CPPUT_RESULT_H_INCLUDED
+d7 1
+a7 1
+# include <cpput/testfailure.h>
+d25 1
+a25 1
+   const TestFailure &failureAt( int index ) const
+d40 1
+a40 1
+   void testFailed( const TestFailure &failure,
+d52 1
+a52 1
+   typedef std::deque<TestFailure> Failures;
+d64 1
+a64 1
+#endif // CPPUT_RESULT_H_INCLUDED
+@
+

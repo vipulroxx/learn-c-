@@ -1,0 +1,51 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.1
+date	2005.11.11.20.54.15;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@- added unit tests for TestInfo
+- fixed bug in CPPUT_IGNORE_FAILURE and exception guard.
+- added 'isIgnoredFailure' to Assertion.
+- lighttestrunner now print ignored failure and skipped tests.
+@
+text
+@#include <examples/common/examplecommon.h>
+#include <cpput/testcase.h>
+
+static int half( int x )
+{
+   return (x+1) / 2;
+}
+
+static void testIgnoreFailure()
+{
+   CPPUT_CHECK_EQUAL( 1, half(2) );
+   CPPUT_IGNORE_FAILURE(( CPPUT_CHECK_EQUAL( 2, half(5) ) ));
+   CPPUT_CHECK_EQUAL( 5, half(10) );
+}
+
+
+
+int main( int argc, const char *argv[] )
+{
+   CppUT::TestSuitePtr allSuite = CppUT::makeTestSuite( "All tests" );
+   allSuite->add( CppUT::makeTestCase( CppTL::cfn0( &testIgnoreFailure ), 
+                                       "testIgnoreFailure" ) );
+   return runExampleTests( argc, argv, allSuite.get() );
+}
+@

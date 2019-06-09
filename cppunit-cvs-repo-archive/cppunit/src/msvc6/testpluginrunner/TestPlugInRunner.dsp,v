@@ -1,0 +1,996 @@
+head	1.10;
+access;
+symbols
+	REL_1_12_1:1.10
+	REL_1_11_6:1.10
+	REL_1_11_4:1.10
+	REL_1_11_0:1.9
+	TG_CPPUNIT_NO_STREAM_AFTER:1.9
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.9
+	REL_1_10_2:1.9
+	REL_1_10_0:1.8
+	REL_1_9_14:1.8
+	REL_1_9_12:1.8
+	BRANCH_1_9_12:1.8.0.2
+	TG_BRANCH_1_9_12:1.8
+	TG_BEFORE_HPUX_PLUGIN:1.8
+	TG_BEFORE_SUN4_PORT:1.8
+	REL_1_9_10:1.8
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.5
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.5
+	REL_1_9_6:1.4
+	REL_1_9_4:1.4
+	REL_1_9_0:1.3
+	REL_1_8_0:1.3
+	REL_1_7_8:1.3
+	REL_1_7_3:1.2
+	REL_1_7_1:1.2
+	REL_1_6_2:1.2
+	BRANCH_1_6:1.2.0.2
+	REL_1_6_1:1.2
+	REL_1_6_0:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.10
+date	2005.10.13.20.35.51;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2004.06.17.19.25.26;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2002.07.03.07.02.49;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2002.06.14.20.21.01;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.06.14.11.12.17;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.05.22.17.27.26;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.04.19.14.38.07;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.03.26.08.30.01;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.09.17.21.27.15;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.27.21.23.22;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.10
+log
+@* removed most warning when compiling with vc++ 6sp6.
+@
+text
+@# Microsoft Developer Studio Project File - Name="TestPlugInRunner" - Package Owner=<4>
+# Microsoft Developer Studio Generated Build File, Format Version 6.00
+# ** DO NOT EDIT **
+
+# TARGTYPE "Win32 (x86) Application" 0x0101
+
+CFG=TestPlugInRunner - Win32 Debug
+!MESSAGE This is not a valid makefile. To build this project using NMAKE,
+!MESSAGE use the Export Makefile command and run
+!MESSAGE 
+!MESSAGE NMAKE /f "TestPlugInRunner.mak".
+!MESSAGE 
+!MESSAGE You can specify a configuration when running NMAKE
+!MESSAGE by defining the macro CFG on the command line. For example:
+!MESSAGE 
+!MESSAGE NMAKE /f "TestPlugInRunner.mak" CFG="TestPlugInRunner - Win32 Debug"
+!MESSAGE 
+!MESSAGE Possible choices for configuration are:
+!MESSAGE 
+!MESSAGE "TestPlugInRunner - Win32 Release" (based on "Win32 (x86) Application")
+!MESSAGE "TestPlugInRunner - Win32 Debug" (based on "Win32 (x86) Application")
+!MESSAGE 
+
+# Begin Project
+# PROP AllowPerConfigDependencies 0
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
+CPP=cl.exe
+MTL=midl.exe
+RSC=rc.exe
+
+!IF  "$(CFG)" == "TestPlugInRunner - Win32 Release"
+
+# PROP BASE Use_MFC 6
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "Release"
+# PROP BASE Intermediate_Dir "Release"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 6
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "Release"
+# PROP Intermediate_Dir "Release"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /Zd /O2 /I "../../include" /I "../TestRunner" /I "..\..\..\include" /I "..\..\..\include\msvc6" /I "..\TestRunner" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /D "CPPUNIT_SUBCLASSING_TESTRUNNERDLG_BUILD" /D "CPPUNIT_DLL" /Yu"stdafx.h" /FD /c
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x40c /d "NDEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x40c /d "NDEBUG" /d "_AFXDLL"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
+# ADD LINK32 cppunit_dll.lib winmm.lib /nologo /subsystem:windows /machine:I386 /libpath:"../../../lib/"
+# SUBTRACT LINK32 /incremental:yes
+# Begin Special Build Tool
+TargetPath=.\Release\TestPlugInRunner.exe
+TargetName=TestPlugInRunner
+SOURCE="$(InputPath)"
+PostBuild_Desc=Copying target to lib/
+PostBuild_Cmds=copy "$(TargetPath)" ..\..\..\lib\$(TargetName).exe
+# End Special Build Tool
+
+!ELSEIF  "$(CFG)" == "TestPlugInRunner - Win32 Debug"
+
+# PROP BASE Use_MFC 6
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "Debug"
+# PROP BASE Intermediate_Dir "Debug"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 6
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "Debug"
+# PROP Intermediate_Dir "Debug"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /I "..\TestRunner" /D "_DEBUG" /D "CPPUNIT_TESTPLUGINRUNNER_BUILD" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /D "CPPUNIT_SUBCLASSING_TESTRUNNERDLG_BUILD" /D "CPPUNIT_DLL" /Yu"stdafx.h" /FD /GZ /c
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x40c /d "_DEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x40c /d "_DEBUG" /d "_AFXDLL"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 cppunitd_dll.lib winmm.lib /nologo /subsystem:windows /incremental:no /debug /machine:I386 /out:"Debug/TestPlugInRunnerd.exe" /pdbtype:sept /libpath:"../../../lib/"
+# Begin Special Build Tool
+TargetPath=.\Debug\TestPlugInRunnerd.exe
+TargetName=TestPlugInRunnerd
+SOURCE="$(InputPath)"
+PostBuild_Desc=Copying target to lib/
+PostBuild_Cmds=copy "$(TargetPath)" ..\..\..\lib\$(TargetName).exe
+# End Special Build Tool
+
+!ENDIF 
+
+# Begin Target
+
+# Name "TestPlugInRunner - Win32 Release"
+# Name "TestPlugInRunner - Win32 Debug"
+# Begin Group "Resource Files"
+
+# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\res\errortype.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\ico00001.ico
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\res\ico00001.ico
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\res\ico00002.ico
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\res\idr_test.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\test_type.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\res\test_type.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\TestPlugInRunner.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\TestPlugInRunner.rc2
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\res\tfwkui_r.bmp
+# End Source File
+# End Group
+# Begin Group "Gui"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\Resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\StdAfx.cpp
+# ADD CPP /Yc"stdafx.h"
+# End Source File
+# Begin Source File
+
+SOURCE=.\StdAfx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestPlugInRunner.rc
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestPlugInRunnerApp.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestPlugInRunnerApp.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestPlugInRunnerDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestPlugInRunnerDlg.h
+# End Source File
+# End Group
+# Begin Group "Interface"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\..\include\msvc6\testrunner\TestPlugInInterface.h
+# End Source File
+# End Group
+# Begin Group "Models"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\TestPlugIn.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestPlugIn.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestPlugInException.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestPlugInException.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestPlugInRunnerModel.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestPlugInRunnerModel.h
+# End Source File
+# End Group
+# Begin Group "DLL"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\..\lib\cppunit_dll.dll
+
+!IF  "$(CFG)" == "TestPlugInRunner - Win32 Release"
+
+# Begin Custom Build - Updating $(InputPath)
+IntDir=.\Release
+InputPath=..\..\..\lib\cppunit_dll.dll
+InputName=cppunit_dll
+
+"$(IntDir)\$(InputName).dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) $(IntDir)\$(InputName).dll
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "TestPlugInRunner - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\lib\cppunitd_dll.dll
+
+!IF  "$(CFG)" == "TestPlugInRunner - Win32 Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "TestPlugInRunner - Win32 Debug"
+
+# Begin Custom Build - Updating $(InputPath)
+IntDir=.\Debug
+InputPath=..\..\..\lib\cppunitd_dll.dll
+InputName=cppunitd_dll
+
+"$(IntDir)\$(InputName).dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) $(IntDir)\$(InputName).dll
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\lib\testrunner.dll
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\lib\testrunnerd.dll
+# PROP Exclude_From_Build 1
+# End Source File
+# End Group
+# Begin Group "TestRunner-Was-In-Dll"
+
+# PROP Default_Filter ""
+# Begin Group "UserInterface"
+
+# PROP Default_Filter ""
+# Begin Group "DynamicWindow"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCDynamicBar.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCDynamicBar.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCDynamicControlsManager.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCDynamicControlsManager.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCDynamicDialog.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCDynamicDialog.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCDynamicFormView.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCDynamicFormView.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCDynamicPropSheet.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCDynamicPropSheet.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCDynamicWnd.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCDynamicWnd.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCDynamicWndEx.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCDynamicWndEx.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCSizeIconCtrl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\cdxCSizeIconCtrl.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\SizeCBar.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\DynamicWindow\SizeCBar.h
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=..\testrunner\ListCtrlFormatter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\ListCtrlFormatter.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\ListCtrlSetter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\ListCtrlSetter.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\MsDevCallerListCtrl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\MsDevCallerListCtrl.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\ProgressBar.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\ProgressBar.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\ResourceLoaders.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\ResourceLoaders.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\TestRunnerDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\TestRunnerDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\TreeHierarchyDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\TreeHierarchyDlg.h
+# End Source File
+# End Group
+# Begin Group "Components"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\testrunner\ActiveTest.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\ActiveTest.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\MfcSynchronizationObject.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\TestRunnerModel.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\TestRunnerModel.h
+# End Source File
+# End Group
+# Begin Group "NewFiles"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\testrunner\MostRecentTests.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\testrunner\MostRecentTests.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\include\msvc6\DSPlugin\TestRunnerDSPluginVC6_i.c
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# End Group
+# End Group
+# Begin Source File
+
+SOURCE=.\ReadMe.txt
+# End Source File
+# End Target
+# End Project
+@
+
+
+1.9
+log
+@* src/*/*.dsp: bug #933154, post build fail in directory with spaces.
+@
+text
+@d46 1
+a46 1
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "../../include" /I "../TestRunner" /I "..\..\..\include" /I "..\..\..\include\msvc6" /I "..\TestRunner" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /D "CPPUNIT_SUBCLASSING_TESTRUNNERDLG_BUILD" /D "CPPUNIT_DLL" /Yu"stdafx.h" /FD /c
+d57 1
+d80 1
+a80 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /I "..\TestRunner" /D "_DEBUG" /D "CPPUNIT_TESTPLUGINRUNNER_BUILD" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /D "CPPUNIT_SUBCLASSING_TESTRUNNERDLG_BUILD" /D "CPPUNIT_DLL" /Yu"stdafx.h" /FD /GZ /c
+d90 1
+a90 1
+# ADD LINK32 cppunitd_dll.lib winmm.lib /nologo /subsystem:windows /debug /machine:I386 /out:"Debug/TestPlugInRunnerd.exe" /pdbtype:sept /libpath:"../../../lib/"
+@
+
+
+1.8
+log
+@* include/cppunit/XmlOutputter.h: fixed XmlOutputter constructed default
+  value initializatino which caused compilation error with BC5.
+
+* src/cppunit/PlugInManager.cpp: added missing CPPUNIT_NO_TESTPLUGIN guard.
+
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp:
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h: applied Steven Mitter
+  patch to fix bug #530426 (conflict between TestRunner and host application
+  resources). Adapted patch to compile work with Unicode.
+
+* src/msvc6/testrunner/ResourceLoaders.h:
+* src/msvc6/testrunner/ResourceLoaders.cpp:
+* src/msvc6/testrunner/Change-Diary-ResourceBugFix.txt: added, from
+  Steven Mitter's patch. Simplified loadCString() to compile with Unicode.
+
+* src/cppunit/cppunit.dsp:
+* src/cppunit/cppunit_dll.dsp:
+* src/DllPlugInTester/DllPlugInTester.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: all lib, dll and exe are
+  now created in the intermediate directory. A post-build rule is used to
+  copy them to the lib/ directory.
+@
+text
+@d62 1
+a62 1
+PostBuild_Cmds=copy $(TargetPath) ..\..\..\lib\$(TargetName).exe
+d95 1
+a95 1
+PostBuild_Cmds=copy $(TargetPath) ..\..\..\lib\$(TargetName).exe
+@
+
+
+1.7
+log
+@* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added two methods to use the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugIn.h: added two methods to the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugInAdapter.h:
+* src/cppunit/plugin/TestPlugInAdapter.cpp: renamed TestPlugInDefaultImpl.
+  Added empty implementation for Xml outputter hook methods.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/tools/StringTools.cpp: added. Functions to manipulate string
+  (conversion, wrapping...)
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/XmlElement.cpp: renamed addNode() to addElement(). Added
+  methods to walk and modify XmlElement (for hook). Added documentation.
+  Use StringTools.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: added hook calls & management.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: added. Hook to customize XML output.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: call plug-in XmlOutputterHook
+  when writing XML output. Modified so that memory is freed before
+  unloading the test plug-in (caused crash when freeing the XmlDocument).
+
+* examples/ReadMe.txt:
+* examples/ClockerPlugIn/ReadMe.txt: added details about the plug-in
+  (usage, xml content...)
+
+* examples/ClockerPlugIn/ClockerModel.h:
+* examples/ClockerPlugIn/ClockerModel.cpp: extracted from ClockerListener.
+  Represents the test hierarchy and tracked time for each test.
+
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/ClockerListener.cpp: extracted test hierarchy
+  tracking to ClockerModel. Replaced the 'flat' view option with a 'text'
+  option to print the timed test tree to stdout.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp: updated to hook the XML
+  output and use the new classes.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: added. XmlOutputterHook to
+  includes the timed test hierarchy and test timing in the XML output.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added new test cases.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: added tests for
+  XmlOutputterHook.
+@
+text
+@d57 7
+d89 8
+a96 1
+# ADD LINK32 cppunitd_dll.lib winmm.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /libpath:"../../../lib/"
+d399 8
+@
+
+
+1.6
+log
+@* src/cppunit/TypeInfoHelper.cpp: added work around for bug #565481.
+  gcc 3.0 RTTI name() returns the type prefixed with a number (the
+  length of the type). The work around strip the number.
+
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp: registry key is now
+  set. Allow to save settings.
+
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp: added layout
+  initialization for resizing.
+
+* src/msvc6/testpluginrunner/TestPlugRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: added TestRunner
+  project files. Somehow I can't get cdxCDynamicDialog to compile
+  as a MFC extension. Included all sources files and resources
+  as a very dirt work around.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h: those classes are no longer
+  exported in the MFC extension. See TestPlugInRunner issue with
+  cdxCDynamicDialog.
+
+* include/cppunit/Message.h:
+* include/cppunit/TestPath.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TestFactoryRegistry.h:
+* include/cppunit/XmlElement.h:
+* include/cppunit/TypeInfoHelper.h: commented out STL template export
+  in DLL. This caused conflicts when instantiting the same template in
+  a user project.
+@
+text
+@a258 3
+
+!IF  "$(CFG)" == "TestPlugInRunner - Win32 Release"
+
+a259 7
+
+!ELSEIF  "$(CFG)" == "TestPlugInRunner - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+a263 3
+
+!IF  "$(CFG)" == "TestPlugInRunner - Win32 Release"
+
+a264 7
+
+!ELSEIF  "$(CFG)" == "TestPlugInRunner - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+@
+
+
+1.5
+log
+@* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/Resource.h:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerModel.cpp: integrated patch from
+Marco Welti (Welti@@GretagMacbeth.ch) with a few clean up.
+Display the name of the test being run during above the progress bar. Allow the
+VC++ add-ins to works with TestPlugInRunner (COM init). DLL name can be specified
+on the command line after flag '-testsuite'. Display wait cursor, clear and reload
+history when reloading DLL.
+
+* THANKS: added Marco Welti to the list.
+@
+text
+@d56 1
+a56 1
+# ADD LINK32 cppunit_dll.lib testrunner.lib /nologo /subsystem:windows /machine:I386 /libpath:"../../../lib/"
+d82 1
+a82 1
+# ADD LINK32 cppunitd_dll.lib testrunnerd.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /libpath:"../../../lib/"
+d95 4
+d115 4
+d262 12
+a273 4
+# Begin Custom Build - Updating $(InputPath)
+IntDir=.\Release
+InputPath=..\..\..\lib\testrunner.dll
+InputName=testrunner
+d275 1
+a275 2
+"$(IntDir)\$(InputName).dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) $(IntDir)\$(InputName).dll
+d277 1
+a277 1
+# End Custom Build
+d286 10
+d298 1
+a298 1
+SOURCE=..\..\..\lib\testrunnercd.dll
+d303 58
+a360 1
+SOURCE=..\..\..\lib\testrunnerd.dll
+d362 3
+a364 1
+!IF  "$(CFG)" == "TestPlugInRunner - Win32 Release"
+d366 1
+d368 67
+d436 7
+a442 1
+!ELSEIF  "$(CFG)" == "TestPlugInRunner - Win32 Debug"
+d444 4
+a447 3
+# Begin Custom Build - Updating DLL: $(InputPath)
+IntDir=.\Debug
+InputPath=..\..\..\lib\testrunnerd.dll
+d449 2
+a450 2
+"$(IntDir)\testrunnerd.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) $(IntDir)\testrunnerd.dll
+d452 3
+a454 1
+# End Custom Build
+d456 3
+a458 1
+!ENDIF 
+d460 2
+d463 1
+@
+
+
+1.4
+log
+@* release 1.9.4
+@
+text
+@d220 1
+a220 9
+# Begin Custom Build - Updating $(InputPath)
+IntDir=.\Debug
+InputPath=..\..\..\lib\cppunit_dll.dll
+InputName=cppunit_dll
+
+"$(IntDir)\$(InputName).dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) $(IntDir)\$(InputName).dll
+
+# End Custom Build
+a273 3
+
+!IF  "$(CFG)" == "TestPlugInRunner - Win32 Release"
+
+a274 7
+
+!ELSEIF  "$(CFG)" == "TestPlugInRunner - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+@
+
+
+1.3
+log
+@* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: fixed release configuration.
+@
+text
+@d46 1
+a46 1
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "../../include" /I "../TestRunner" /I "..\..\..\include" /I "..\..\..\include\msvc6" /I "..\TestRunner" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /D "CPPUNIT_SUBCLASSING_TESTRUNNERDLG_BUILD" /Yu"stdafx.h" /FD /c
+d56 1
+a56 1
+# ADD LINK32 ../../../lib/cppunit.lib ../../../lib/testrunner.lib /nologo /subsystem:windows /machine:I386
+d72 1
+a72 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /I "..\TestRunner" /D "_DEBUG" /D "CPPUNIT_TESTPLUGINRUNNER_BUILD" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /D "CPPUNIT_SUBCLASSING_TESTRUNNERDLG_BUILD" /Yu"stdafx.h" /FD /GZ /c
+d82 1
+a82 1
+# ADD LINK32 ../../../lib/cppunitd.lib ../../../lib/testrunnerd.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+d204 54
+d262 1
+a262 1
+# Begin Custom Build - Updating DLL: $(InputPath)
+d265 1
+d267 2
+a268 2
+"$(IntDir)\testrunner.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) $(IntDir)\testrunner.dll
+d282 3
+d286 7
+@
+
+
+1.2
+log
+@* Makefile.am: Added INSTALL-WIN32.txt to EXTRA_DIST.
+
+* INSTALL-WIN32.txt: added, short documentation for CppUnit and VC++.
+
+* include/cppunit/extensions/HelperMacros.h: bug #448363, removed
+an extraneous ';' at the end of CPPUNIT_TEST_SUITE_END macro.
+
+* examples/cppunittest/TestCallerTest.cpp: bug #448332, fixed
+memory leaks.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp: change to define
+IDD to a dummy value when subclassing the dialog.
+
+* src/cppunit/cppunit.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* examples/cppunitttest/CppUnitTestMain.dsp:
+* examples/hierarchy.dsp:
+* examples/msvc6/TestPlugIn/TestPlugIn.dsp:
+* examples/msvc6/HostApp/HostApp.dsp: all configurations can be compiled.
+
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsw: added dependency to
+cppunit.dsp and TestRunner.dsp.
+@
+text
+@d56 1
+a56 1
+# ADD LINK32 /nologo /subsystem:windows /machine:I386
+@
+
+
+1.1
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+moved dll copy from post-build to custom build setting, so that the
+dll is copied even if the CppUnitTestApp was not modified.
+
+* examples/msvc6/TestPlugIn/: a new example of test plug in.
+
+* src/msvc6/TestRunner/ListCtrlFormatter.*
+* src/msvc6/TestRunner/ListCtrlSetter.*:
+added, helper to manipulate list control.
+
+* src/msvc6/TestRunner/TestRunnerDlg.*: change to make the error list
+more compact. text moved to string resources. icons added for typ
+test tfailure type.
+
+* src/msvc6/TestRunner/MostRecentTests.*: added, classes that will
+replace the current implementation of MRU test which make it hard
+to subclass the dialog.
+
+* src/msvc6/TestRunner/res/errortype.bmp: added, bitmap with error
+types (failure and error).
+
+* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+
+* src/cppunit/cppunit.dsp:
+removed config.h from project
+added Portability.h and config-msvc6.h
+
+* include/cppunit/config-msvc6.h:
+undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+@
+text
+@d43 1
+d46 1
+a46 1
+# ADD CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /c
+d72 1
+a72 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../../include" /I "../TestRunner" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
+a82 9
+# Begin Custom Build
+IntDir=.\Debug
+InputPath=.\Debug\TestPlugInRunner.exe
+SOURCE="$(InputPath)"
+
+"$(IntDir)\testrunned.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy ..\..\..\lib\testrunnerd.dll $(IntDir)
+
+# End Custom Build
+d197 53
+@
+

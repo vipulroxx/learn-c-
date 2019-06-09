@@ -1,0 +1,366 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2007.08.19.20.13.24;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2007.08.16.15.51.04;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@In progress of adding CppTL::Value to replace CppTL::Any in table fixture and input based fixture. Value allows optionaly comparison, conversion to other type, conversion to string...
+@
+text
+@<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="8,00"
+	Name="cpptl_lib"
+	ProjectGUID="{4037D758-74CD-412B-B67C-BA3CA89FEF28}"
+	Keyword="Win32Proj"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="../../build/cpptl/debug"
+			IntermediateDirectory="../../build/cpptl/debug"
+			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				BufferSecurityCheck="true"
+				TreatWChar_tAsBuiltInType="true"
+				ForceConformanceInForLoopScope="true"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)/cpptl_vc71_libmdd.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="../../build/cpptl/release"
+			IntermediateDirectory="../../build/cpptl/release"
+			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="../../include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				StringPooling="true"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				TreatWChar_tAsBuiltInType="true"
+				ForceConformanceInForLoopScope="true"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)/cpptl_vc71_libmd.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="json"
+			>
+			<File
+				RelativePath="..\..\include\json\autolink.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\json\config.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\json\forwards.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\json\json.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\cpptl\json_reader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\cpptl\json_value.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\cpptl\json_writer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\json\reader.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\json\value.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\json\writer.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="cpptl"
+			>
+			<File
+				RelativePath="..\..\include\cpptl\any.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\atomiccounter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\autolink.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\config.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\conststring.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\enumerator.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\forwards.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\functor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\intrusiveptr.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\reflection.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\reflection.inl"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\reflectionimpl10.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\scopedptr.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\sharedptr.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\stringtools.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\cpptl\thread.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\thread.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\typeinfo.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\typename.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\typetraits.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cpptl\value.h"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath="..\..\include\cpptl\_stlimpl.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpptl\deque.cpp"
+			>
+			<FileConfiguration
+				Name="Debug|Win32"
+				ExcludedFromBuild="true"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|Win32"
+				ExcludedFromBuild="true"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\deque.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\enum2string.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\include\cpptl\smallmap.h"
+			>
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>
+@
+
+
+1.1
+log
+@   Added initial support for column fixture supported by fitness. Still missing
+automatic type convertion and correct reporting of error with regard to
+originating cell.
+@
+text
+@d282 4
+@
+

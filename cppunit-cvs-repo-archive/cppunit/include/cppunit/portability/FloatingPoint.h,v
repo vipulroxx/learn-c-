@@ -1,0 +1,134 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2007.03.05.03.17.27;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2007.02.25.03.54.35;	author smr99;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2007.02.24.21.13.04;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@Make floatingPointIsFinite() return int.  Fix comment about comparisons and IEEE NaN.
+@
+text
+@#ifndef CPPUNIT_PORTABILITY_FLOATINGPOINT_H_INCLUDED
+#define CPPUNIT_PORTABILITY_FLOATINGPOINT_H_INCLUDED
+
+#include <cppunit/Portability.h>
+#include <math.h>
+
+CPPUNIT_NS_BEGIN
+
+/// \brief Tests if a floating-point is a NaN.
+// According to IEEE-754 floating point standard, 
+// (see e.g. page 8 of
+// http://www.cs.berkeley.edu/~wkahan/ieee754status/ieee754.ps) 
+// all comparisons with NaN are false except "x != x", which is true.
+//
+// At least Microsoft Visual Studio 6 is known not to implement this test correctly.
+// It emits the following code to test equality:
+//  fcomp       qword ptr [nan]
+//  fnstsw      ax                        // copie fp (floating-point) status register to ax
+//  test        ah,40h                    // test bit 14 of ax (0x4000) => C3 of fp status register
+// According to the following documentation on the x86 floating point status register,
+// the C2 bit should be tested to test for NaN value. 
+// http://webster.cs.ucr.edu/AoA/Windows/HTML/RealArithmetic.html#1000117
+// In Microsoft Visual Studio 2003 & 2005, the test is implemented with:
+//  test        ah,44h         // Visual Studio 2005 test both C2 & C3...
+//
+// To work around this, a NaN is assumed to be detected if no strict ordering is found.
+inline bool floatingPointIsUnordered( double x )
+{
+   // x != x will detect a NaN on conformant platform
+   // (2.0 < x  &&  x < 1.0) will detect a NaN on non conformant platform:
+   // => no ordering can be found for x.
+   return  (x != x) ||  (2.0 < x  &&  x < 1.0);
+}
+
+
+/// \brief Tests if a floating-point is finite.
+/// @@return \c true if x is neither a NaN, nor +inf, nor -inf, \c false otherwise.
+inline int floatingPointIsFinite( double x )
+{
+#if defined(CPPUNIT_HAVE_ISFINITE)
+   return isfinite( x );
+#elif defined(CPPUNIT_HAVE_FINITE)
+   return finite( x );
+#elif defined(CPPUNIT_HAVE__FINITE)
+   return _finite(x);
+#else
+   double testInf = x * 0.0;  // Produce 0.0 if x is finite, a NaN otherwise.
+   return testInf == 0.0  &&  !floatingPointIsUnordered(testInf);
+#endif
+}
+
+CPPUNIT_NS_END
+
+#endif // CPPUNIT_PORTABILITY_FLOATINGPOINT_H_INCLUDED
+@
+
+
+1.2
+log
+@portability/FloatingPoint.h must include Portability.h
+@
+text
+@d10 5
+a14 2
+// According to IEEE-754 floating point standard, NaN comparison should always
+// be 'false'. 
+d38 1
+a38 1
+inline bool floatingPointIsFinite( double x )
+d41 1
+a41 1
+   return (bool)isfinite( x );
+d43 1
+a43 1
+   return (bool)finite( x );
+@
+
+
+1.1
+log
+@* src/cppunit/TestAssert.cpp (assertDoubleEquals): Moved finite & NaN
+  tests to include/cppunit/portability/FloatingPoint.h. Changed
+  implementation assertDoubleEquals to explicitly test for NaN
+  in case of non-finite values to force equality failure in the
+  presence of NaN. Previous implementation failed on Microsoft
+  Visual Studio 6 (on this platform: NaN == NaN).
+* examples/cppunittest/TestAssertTest.cpp: Add more unit tests to
+  test the portable floating-point primitive. Added missing
+  include <limits>.
+
+* include/cppunit/portability/Makefile.am:
+* include/cppunit/portability/FloatingPoint.h: Added file. Extracted
+  isfinite() from TestAssert.cpp.
+
+* include/cppunit/config-evc4:
+* include/cppunit/config-msvc6: Added support for _finite().
+@
+text
+@d4 1
+@
+

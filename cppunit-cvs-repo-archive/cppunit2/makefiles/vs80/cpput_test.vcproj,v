@@ -1,0 +1,408 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2007.08.19.20.13.24;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2007.08.16.15.51.04;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@In progress of adding CppTL::Value to replace CppTL::Any in table fixture and input based fixture. Value allows optionaly comparison, conversion to other type, conversion to string...
+@
+text
+@<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="8,00"
+	Name="cpput_test"
+	ProjectGUID="{2506991E-13CA-49C9-8686-AACDE35C21B6}"
+	RootNamespace="cpput_test"
+	Keyword="Win32Proj"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="../../build/cpput_test/debug"
+			IntermediateDirectory="../../build/cpput_test/debug"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				BufferSecurityCheck="true"
+				TreatWChar_tAsBuiltInType="true"
+				ForceConformanceInForLoopScope="true"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				OutputFile="$(OutDir)/cpput_test.exe"
+				LinkIncremental="2"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(OutDir)/cpput_test.pdb"
+				SubSystem="1"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Running post-build unit tests"
+				CommandLine="$(TargetPath)"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="../../build/cpput_test/release"
+			IntermediateDirectory="../../build/cpput_test/release"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="../../include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				StringPooling="true"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				TreatWChar_tAsBuiltInType="true"
+				ForceConformanceInForLoopScope="true"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				OutputFile="$(OutDir)/cpput_test.exe"
+				LinkIncremental="1"
+				GenerateDebugInformation="true"
+				SubSystem="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Running post-build unit tests"
+				CommandLine="$(TargetPath)"
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="codetorevisit"
+			>
+			<File
+				RelativePath="..\..\src\cpputtest\testfunctor2.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\src\cpputtest\testfunctor3.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\src\cpputtest\testtestrunresult.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+		</Filter>
+		<File
+			RelativePath="..\..\src\cpputtest\assertenumtest.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\assertenumtest.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\assertstringtest.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\assertstringtest.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\commandlineoptionstest.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\commandlineoptionstest.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\enumeratortest.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\enumeratortest.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\main.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\minitestrunner.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\mocktestlistener.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\mocktestvisitor.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\reflectiontest.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\reflectiontest.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\registrytest.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\registrytest.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\smallmaptest.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\smallmaptest.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\testbasicassertion.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\testexceptionguard.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\testfixturetest.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\testfixturetest.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\testfunctor.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\testinfotest.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\testtestcase.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\testtestsuite.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\valuetest.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\cpputtest\valuetest.h"
+			>
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>
+@
+
+
+1.1
+log
+@   Added initial support for column fixture supported by fitness. Still missing
+automatic type convertion and correct reporting of error with regard to
+originating cell.
+@
+text
+@d357 8
+@
+

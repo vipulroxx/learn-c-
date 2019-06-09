@@ -1,0 +1,313 @@
+head	1.5;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.5
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.4
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.4
+	TG_AFTER_REMOVING_TESTCONTEXT:1.4
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.4
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.4
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.5
+date	2005.02.27.14.38.26;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.11.17.08.59.05;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.02.01.16.12.51;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.27.23.37.21;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.28;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.28;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* changed cppunit 2 to use the new functors (cpptl/functor.h). bind_cfn & bind_memfn simplified some of the test code.
+@
+text
+@#ifndef CPPUT_PARAMETRIZEDSOURCE_H_INCLUDED
+# define CPPUT_PARAMETRIZEDSOURCE_H_INCLUDED
+
+# include <cpput/config.h>
+# include <cpput/testcase.h>
+# include <cpptl/sharedptr.h>
+# include <map>
+# include <stdexcept>
+# include <string>
+# include <sstream>
+# include <vector>
+
+
+namespace CppUT {
+
+class ParameterNode;
+class Test;
+class TestParameterSource;
+class SuiteParameterSource;
+
+
+typedef CppTL::SharedPtr<ParameterNode> ParameterNodePtr;
+
+
+class TestParameterFactory
+{
+public:
+   virtual ~TestParameterFactory()
+   {
+   }
+
+   virtual int testCaseCount() = 0;
+
+   virtual std::string testCaseNameSuffix( int index ) = 0;
+
+   virtual ParameterNodePtr testCaseParameter( int index ) = 0;
+};
+
+class TestParameterFactoryImpl : public TestParameterFactory
+{
+public:
+   int testCaseCount();
+
+   std::string testCaseNameSuffix( int index );
+
+   ParameterNodePtr testCaseParameter( int index );
+
+   void addTestCase( const std::string &nameSuffix,
+                     const ParameterNodePtr &parameterNode );
+
+private:
+   typedef std::pair<std::string,ParameterNodePtr> TestData;
+   typedef std::vector<TestData> Tests;
+   Tests tests_;
+};
+
+typedef CppTL::SharedPtr<TestParameterFactory> TestParameterFactoryPtr;
+typedef CppTL::Functor1R<TestParameterFactoryPtr, std::string> SuiteParameterFactory;
+
+
+class ParameterSourceRegistry
+{
+public:
+   static ParameterSourceRegistry &instance();
+
+   void addSuiteSource( const std::string &suiteName,
+                        const std::string &complementaryName,
+                        SuiteParameterFactory suiteParameterFactory );
+
+   SuiteParameterFactory getSuiteParameterFactory( 
+                        const std::string &suiteName,
+                        const std::string &complementaryName = "" ) const;
+
+private:
+   typedef std::pair<std::string,std::string> SuiteKey;
+
+   typedef std::map<SuiteKey, SuiteParameterFactory> SuitePaths;
+   SuitePaths suitePath_;
+};
+/*
+class ParametrizedTestCase : public AbstractTestCase
+{
+public:
+};
+*/
+
+
+
+class ParameterNode
+{
+public:
+   virtual ~ParameterNode()
+   {
+   }
+
+   void throwOperationNotSupported( const std::string &operationName ) const;
+
+   virtual std::string nodeName() const = 0;
+
+   virtual int childCount() const = 0;
+
+   virtual ParameterNodePtr childAt( int index ) const = 0;
+
+   virtual ParameterNodePtr childNamed( const std::string &nodeName ) const;
+
+   virtual std::string text() const = 0;
+
+//   virtual std::wstring unicodeText() const = 0;
+};
+
+
+/*
+
+namespace Impl
+{
+   struct BindStringStreamsFunctor
+   {
+      BindStringStreamsFunctor( const std::string &str1,
+                                const std::string &str2,
+                                ::CppUT::Functor2<std::istringstream &
+                                                 ,std::istringstream &> run )
+         : str1_( str1 )
+         , str2_( str2 )
+         , run_( run )
+      {
+      }
+
+      void operator()()
+      {
+         std::istringstream is1( str1_ );
+         std::istringstream is2( str2_ );
+         run_( is1, is2 );
+      }
+
+      std::string str1_;
+      std::string str2_;
+      ::CppUT::Functor2<std::istringstream &,std::istringstream &> run_;
+   };
+
+} // namespace Impl
+
+
+TestCasePtr makeSimpleParametrizedTestCase( const std::string &testName,
+                                 Functor0 setUp,
+                                 Functor2<std::istringstream &,std::istringstream &> run,
+                                 Functor0 teardown )
+{
+   ParameterSourceRegistry::instance().getTestParameterFactory( testName
+
+   Functor0 runFn = makeFn0( Impl::BindStringStreamsFunctor( inputText, expectedText, run ) );
+   return makeTestCase( setUp, runFn, teardown, testName );
+}
+*/
+
+
+/*
+ *	Parametrized tests
+ * Two kinds:
+ * Suite => global settings for the fixture indicates how to get parameters
+ * Case: => settings are specified for the test case, along with the method name.
+ * Dismiss Case, too complex and can be easily implemented using a suite source that
+ * do some dispatching.
+ *
+ * Parameter source is associated using:
+ * - the suite name
+ * - an additional optional ambiguity riser.
+ *
+ *
+ */
+
+
+
+
+} // namespace CppUT
+
+
+/*
+#define CPPUT_TEST_FLAT_PARAMETER( testMethod )                              \
+
+# define CPPUT_TEST( testMethod )                                            \
+      fixture = fixtureFactory();                                            \
+      suite->add( ::CppUT::makeFixtureTestCase( fixture,                     \
+                   ::CppUT::makeMemFn0<CppUT_ThisType>( fixture,             \
+                                       &CppUT_ThisType::testMethod ),        \
+                   #testMethod ) )
+*/
+
+
+#endif // CPPUT_PARAMETRIZEDSOURCE_H_INCLUDED
+@
+
+
+1.4
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@d58 1
+a58 1
+typedef FunctorR1<TestParameterFactoryPtr, std::string> SuiteParameterFactory;
+@
+
+
+1.3
+log
+@* added /Za setting to project to force conformance to ANSI C++
+* fixed issues related to ANSI C++ conformance
+* fixed bug in SliceEnumerator copy constructor & added test
+@
+text
+@d6 1
+a6 1
+# include <cpput/smartptr.h>
+d22 1
+a22 1
+typedef SmartPtr<ParameterNode> ParameterNodePtr;
+d57 1
+a57 1
+typedef SmartPtr<TestParameterFactory> TestParameterFactoryPtr;
+@
+
+
+1.2
+log
+@* SmartPtr now subclass boost::shared_ptr to make templated function
+  overloading easier.
+* Added our own smart pointer implementation
+* Added AtomicCounter as implementation detail.
+  Can use boost::detail::atomic_counter.
+@
+text
+@d189 1
+a189 1
+#endif // CPPUT_PARAMETRIZEDSOURCE_H_INCLUDED@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d22 1
+a22 1
+typedef SmartPtr<ParameterNode>::Ptr ParameterNodePtr;
+d57 1
+a57 1
+typedef SmartPtr<TestParameterFactory>::Ptr TestParameterFactoryPtr;
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

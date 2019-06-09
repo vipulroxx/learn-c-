@@ -1,0 +1,95 @@
+head	1.1;
+branch	1.1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1.1.1
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.1.1.1
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.1.1.1
+	TG_AFTER_REMOVING_TESTCONTEXT:1.1.1.1
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.1.1.1
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.1.1.1
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	2004.01.27.20.34.29;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.29;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+
+1.1
+log
+@Initial revision
+@
+text
+@#ifndef CPPUT_CPPUNIT_EXTENSIONS_HELPERMACROS_H
+# define CPPUT_CPPUNIT_EXTENSIONS_HELPERMACROS_H
+
+# include <cpput/testfixture.h>
+# include <cpput/registry.h>
+
+// Macros not supported by the compatibility layer:
+
+//#define CPPUNIT_TEST_SUITE_ADD_TEST( test )
+//#define CPPUNIT_TEST_EXCEPTION( testMethod, ExceptionType )
+//#define CPPUNIT_TEST_FAIL( testMethod )
+//#define CPPUNIT_TEST_SUITE_ADD_CUSTOM_TESTS( testAdderMethod )
+//#define CPPUNIT_TEST_SUITE_PROPERTY( APropertyKey, APropertyValue )
+
+
+namespace CppUnit
+{
+   typedef CppUT::TestFixture TestFixture;
+
+} // namespace CppUnit
+
+
+#define CPPUNIT_TEST_SUITE( ATestFixtureType )                                \
+   CPPUT_TESTSUITE_BEGIN( ATestFixtureType )
+
+#define CPPUNIT_TEST_SUB_SUITE( ATestFixtureType, ASuperClass )               \
+   CPPUT_TESTSUITE_EXTEND( ATestFixtureType, ASuperClass )
+
+#define CPPUNIT_TEST_SUITE_END() CPPUT_TESTSUITE_END()
+
+#define CPPUNIT_TEST_SUITE_END_ABSTRACT() CPPUT_ABSTRACT_TESTSUITE_END()
+
+#define CPPUNIT_TEST( testMethod ) CPPUT_TEST( testMethod )
+
+#define CPPUNIT_TEST_SUITE_REGISTRATION( ATestFixtureType )                   \
+   CPPUT_REGISTER_SUITE_TO_DEFAULT( ATestFixtureType )
+
+#define CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( ATestFixtureType, suiteName )  \
+   CPPUT_REGISTER_SUITE_IN( ATestFixtureType, suiteName )
+
+#define CPPUNIT_REGISTRY_ADD( which, to )                                     \
+   CPPUT_REGISTER_SUITE_RELATIONSHIP( to, which )
+
+#define CPPUNIT_REGISTRY_ADD_TO_DEFAULT( which )                              \
+   CPPUT_REGISTER_SUITE_RELATIONSHIP_TO_DEFAULT( which )
+
+
+#endif  // CPPUT_CPPUNIT_EXTENSIONS_HELPERMACROS_H
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

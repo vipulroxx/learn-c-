@@ -1,0 +1,428 @@
+head	1.7;
+access;
+symbols
+	REL_1_12_1:1.7
+	REL_1_11_6:1.7
+	REL_1_11_4:1.7
+	REL_1_11_0:1.7
+	TG_CPPUNIT_NO_STREAM_AFTER:1.7
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.7
+	REL_1_10_2:1.7
+	REL_1_10_0:1.6
+	REL_1_9_14:1.6
+	REL_1_9_12:1.6
+	BRANCH_1_9_12:1.6.0.2
+	TG_BRANCH_1_9_12:1.6
+	TG_BEFORE_HPUX_PLUGIN:1.6
+	TG_BEFORE_SUN4_PORT:1.5
+	REL_1_9_10:1.5
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.7
+date	2004.06.18.08.15.29;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2003.03.15.10.21.28;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.08.27.21.51.18;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.07.14.19.48.32;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.25.19.05.22;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.21.10.57.52;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.20.21.51.33;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@* src/DllPlugInTester/*.cpp: bug #941625, string literal using char *
+  instead of const char *. Patch contributed by Curt Arnold has been
+  applied.
+@
+text
+@#ifndef CPPUNIT_HELPER_COMMANDLINEPARSER_H
+#define CPPUNIT_HELPER_COMMANDLINEPARSER_H
+
+#include <cppunit/Portability.h>
+#include <cppunit/portability/CppUnitDeque.h>
+#include <cppunit/plugin/PlugInParameters.h>
+#include <string>
+#include <stdexcept>
+
+
+/*! Exception thrown on error while parsing command line.
+ */
+class CommandLineParserException : public std::runtime_error
+{
+public:
+  CommandLineParserException( std::string message )
+    : std::runtime_error( message )
+  {
+  }
+};
+
+
+struct CommandLinePlugInInfo
+{
+  std::string m_fileName;
+  CPPUNIT_NS::PlugInParameters m_parameters;
+};
+
+
+/*! \brief Parses a command line.
+
+-c --compiler
+-x --xml [filename]
+-s --xsl stylesheet
+-e --encoding encoding
+-b --brief-progress
+-n --no-progress
+-t --text
+-o --cout
+-w --wait
+filename[="options"]
+:testpath
+
+ */
+class CommandLineParser
+{
+public:
+  /*! Constructs a CommandLineParser object.
+   */
+  CommandLineParser( int argc, 
+                     const char *argv[] );
+
+  /// Destructor.
+  virtual ~CommandLineParser();
+
+  /*! Parses the command line.
+   * \exception CommandLineParserException if an error occurs.
+   */
+  void parse();
+
+  bool useCompilerOutputter() const;
+  bool useXmlOutputter() const;
+  std::string getXmlFileName() const;
+  std::string getXmlStyleSheet() const;
+  std::string getEncoding() const;
+  bool useBriefTestProgress() const;
+  bool noTestProgress() const;
+  bool useTextOutputter() const;
+  bool useCoutStream() const;
+  bool waitBeforeExit() const;
+  std::string getTestPath() const;
+  int getPlugInCount() const;
+  CommandLinePlugInInfo getPlugInAt( int index ) const;
+
+protected:
+  /// Prevents the use of the copy constructor.
+  CommandLineParser( const CommandLineParser &copy );
+
+  /// Prevents the use of the copy operator.
+  void operator =( const CommandLineParser &copy );
+
+  void readNonOptionCommands();
+
+  bool hasNextArgument() const;
+
+  std::string getNextArgument();
+
+  std::string getCurrentArgument() const;
+
+  bool argumentStartsWith( const std::string &expected ) const;
+
+  void getNextOption();
+
+  bool isOption( const std::string &shortName,
+                 const std::string &longName );
+
+  std::string getNextParameter();
+
+  std::string getNextOptionalParameter();
+
+  void fail( std::string message );
+
+protected:
+  bool m_useCompiler;
+  bool m_useXml;
+  std::string m_xmlFileName;
+  std::string m_xsl;
+  std::string m_encoding;
+  bool m_briefProgress;
+  bool m_noProgress;
+  bool m_useText;
+  bool m_useCout;
+  bool m_waitBeforeExit;
+  std::string m_testPath;
+
+  typedef CppUnitDeque<CommandLinePlugInInfo> PlugIns;
+  PlugIns m_plugIns;
+
+  typedef CppUnitDeque<std::string> Arguments;
+  Arguments m_arguments;
+  unsigned int m_currentArgument;
+
+  std::string m_option;
+};
+
+
+#endif  // CPPUNIT_HELPER_COMMANDLINEPARSER_H
+@
+
+
+1.6
+log
+@* include/cppunit/tools/Algorithm.h:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlUniformiser.*:
+* src/cppunit/CompilerOutputter.cpp:
+* src/cppunit/ProtectorChain.cpp:
+* src/cppunit/StringTools.cpp:
+* src/cppunit/TestPath.cpp:
+* src/cppunit/TypeInfoHelper.cpp:
+* src/cppunit/XmlElement.cpp:
+* src/cppunit/XmlOutputter.cpp:
+* src/DllPlugInTester/CommandLineParser.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: switched to using unsigned index in loop to
+  avoid signed/unsigned warning in vc7.
+@
+text
+@d51 1
+a51 1
+                     char *argv[] );
+@
+
+
+1.5
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d121 1
+a121 1
+  int m_currentArgument;
+@
+
+
+1.4
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d6 1
+a6 1
+#include <cppunit/plugin/Parameters.h>
+d26 1
+a26 1
+  CPPUNIT_NS::Parameters m_parameters;
+@
+
+
+1.3
+log
+@* src/cppunit/XmlOutputter.cpp: bugfix, use ISO-8859-1 encoding if an
+  empty string is given.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp:
+* src/DllPlugInTester/DllPlugInTester.cpp: added option -w to wait for
+  the user to press a key before exiting (Philippe Lavoie patch,
+  with change).
+@
+text
+@d5 1
+a8 1
+#include <deque>
+d26 1
+a26 1
+  CppUnit::Parameters m_parameters;
+d116 1
+a116 1
+  typedef std::deque<CommandLinePlugInInfo> PlugIns;
+d119 1
+a119 1
+  typedef std::deque<std::string> Arguments;
+@
+
+
+1.2
+log
+@* src/DllPlugInTester/makefile.am: removed ld.so from LDADD flags.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: rewrote, fixed problem
+  with double quotes in command line...
+
+* src/DllPlugInTester/CommandLineParserTest.h:
+* src/DllPlugInTester/CommandLineParserTest.cpp:
+* src/DllPlugInTester/DllPlugInTesterTest.cpp: added, unit tests for
+  CommandLineParser.
+
+* src/msvc6/TestPlugIn/*: removed.
+@
+text
+@d40 1
+d70 1
+d113 1
+@
+
+
+1.1
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@d80 12
+d95 4
+a98 10
+  bool hasNext() const;
+  bool startsWith( const std::string &expected ) const;
+  char next();
+  void skipNext( int count =1 );
+  bool isSpace() const;
+
+  std::string getParameter();
+  std::string getQuotedParameter();
+  std::string getUnquotedParameter();
+  std::string getOptionalParameter();
+a99 5
+  void getNextOption();
+  void skipSpaces();
+  static bool isSpace( unsigned char c );
+
+  void readNonOptionCommands();
+a101 4
+  std::string m_line;
+  int m_currentIndex;
+  std::string m_option;
+
+d115 6
+@
+

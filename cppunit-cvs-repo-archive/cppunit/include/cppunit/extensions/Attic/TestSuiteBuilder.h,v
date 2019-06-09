@@ -1,0 +1,770 @@
+head	1.18;
+access;
+symbols
+	TG_BEFORE_SUN4_PORT:1.17
+	REL_1_9_10:1.17
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.15
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.15
+	REL_1_9_6:1.14
+	REL_1_9_4:1.14
+	REL_1_9_0:1.13
+	REL_1_8_0:1.13
+	REL_1_7_8:1.12
+	REL_1_7_3:1.11
+	REL_1_7_1:1.11
+	REL_1_6_2:1.10
+	BRANCH_1_6:1.10.0.2
+	REL_1_6_1:1.10
+	REL_1_6_0:1.10
+	REL_1_5_5:1.4;
+locks; strict;
+comment	@ * @;
+
+
+1.18
+date	2003.04.06.09.51.46;	author blep;	state dead;
+branches;
+next	1.17;
+
+1.17
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2002.07.10.18.50.02;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2002.05.25.09.27.39;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2002.04.19.14.11.38;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2002.03.28.15.47.07;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2002.03.25.22.35.34;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2001.10.02.06.49.27;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2001.07.06.01.31.25;	author smr99;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2001.06.17.16.59.07;	author bastiaan;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2001.06.11.20.00.08;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.06.02.22.29.52;	author smr99;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.06.02.19.53.06;	author smr99;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.05.18.19.32.42;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.05.06.20.04.02;	author bastiaan;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.05.06.17.21.31;	author bastiaan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.05.06.16.19.32;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.18
+log
+@* include/cppunit/extensions/TestSuiteBuilder.h: removed (unused)
+@
+text
+@#ifndef CPPUNIT_EXTENSIONS_TESTSUITEBUILDER_H
+#define CPPUNIT_EXTENSIONS_TESTSUITEBUILDER_H
+
+#include <cppunit/Portability.h>
+#include <cppunit/TestCaller.h>
+#include <cppunit/TestSuite.h>
+#include <cppunit/extensions/TestNamer.h>
+#include <memory>
+
+
+CPPUNIT_NS_BEGIN
+
+
+/*! \brief Helper to add tests to a TestSuite.
+ * \ingroup WritingTestFixture
+ *
+ * All tests added to the TestSuite are prefixed by TestSuite name. The resulting
+ * TestCase name has the following pattern:
+ *
+ * MyTestSuiteName.myTestName
+ * \see TestNamer.
+ */
+template<class Fixture>
+class TestSuiteBuilder
+{
+public:
+  typedef void (Fixture::*TestMethod)();
+  TestSuiteBuilder( TestSuite *suite,
+                    const TestNamer &namer ) 
+    : m_suite( suite )
+    , m_testNamer( namer )
+  {
+  }
+
+
+  TestSuiteBuilder( const TestNamer &namer ) 
+    : m_suite( new TestSuite( namer.getFixtureName() ) )
+    , m_testNamer( namer )
+  {
+  }
+
+  
+  TestSuite *suite() const
+  {
+    return m_suite.get();
+  }
+
+  TestSuite *takeSuite()
+  {
+    return m_suite.release();
+  }
+
+  void addTest( Test *test )
+  {
+    m_suite->addTest( test );
+  }
+
+  void addTestCaller( std::string methodName, 
+                      TestMethod testMethod )
+  {
+      Test *test = 
+          new TestCaller<Fixture>( makeTestName( methodName ), 
+                                   testMethod );
+      addTest( test );
+  }
+
+  void addTestCaller( std::string methodName, 
+                      TestMethod testMethod, 
+                      Fixture *fixture )
+  {
+      Test *test = 
+          new TestCaller<Fixture>( makeTestName( methodName ), 
+                                   testMethod,
+                                   fixture);
+      addTest( test );
+  }
+
+  std::string makeTestName( const std::string &methodName )
+  {
+    return m_testNamer.getTestNameFor( methodName );
+  }
+
+private:
+  std::auto_ptr<TestSuite> m_suite;
+  const TestNamer &m_testNamer;
+};
+
+
+CPPUNIT_NS_END
+
+#endif  // CPPUNIT_EXTENSIONS_TESTSUITEBUILDER_H
+@
+
+
+1.17
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@@
+
+
+1.16
+log
+@* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/Orthodox.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h:
+* include/cppunit/TestCaller.h:
+* examples/hierarchy/BoardGameTest.h:
+* examples/hierarchy/ChessTest.h: replaced usage of 'typename' in template
+  declaration with 'class'.
+
+* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to use the generic TestRunner.
+  Removed methods runTestByName() and runTest(). Inherits
+  CppUnit::TestRunner.
+
+* include/cppunit/extensions/TestSuiteBuilder.h: removed templatized method
+  addTestCallerForException(). It is no longer used since release 1.9.8.
+
+* examples/cppunittest/MockTestCase.h
+* examples/cppunittest/MockTestCase.cpp: removed the usage of 'mutable'
+  keyword.
+@
+text
+@d11 2
+a12 1
+namespace CppUnit {
+d89 1
+a89 1
+}  // namespace CppUnit
+@
+
+
+1.15
+log
+@* include/cppunit/extensions/TestSuiteBuilder.h: updated to use TestNamer. Removed
+template method addTestCallerForException() which should solve the compilation
+issue with Sun 5.0/6.0 compiler.
+
+* include/cppunit/extensions/HelperMacros.h: updated against TestSuiteBuilder
+change. Added CPPUNIT_TEST_CUSTOM and CPPUNIT_TEST_CUSTOMS to add custom
+tests to the fixture suite.
+
+* include/cppunit/extensions/TestNamer.h:
+* src/cppunit/TestNamer.cpp: added, TestNamer to name test case and fixture.
+@
+text
+@d22 1
+a22 1
+template<typename Fixture>
+a75 14
+
+  template<typename ExceptionType>
+  void addTestCallerForException( std::string methodName, 
+                                  TestMethod testMethod, 
+                                  Fixture *fixture,
+                                  ExceptionType *dummyPointer )
+  {
+      Test *test = new TestCaller<Fixture,ExceptionType>( 
+                                   makeTestName( methodName ), 
+                                   testMethod,
+                                   fixture);
+      addTest( test );
+  }
+
+@
+
+
+1.14
+log
+@* src/cppunit/PlugInManager.cpp: fixed bug in unload().
+
+* include/cppunit/TypeInfoHelper.h:
+* src/cppunit/TypeInfoHelper.cpp: Implementation is now always available
+  is CPPUNIT_HAVE_RTTI is not 0. This removes the need to use
+  different libraries. CPPUNIT_USE_TYPEINFO_NAME can be set on a
+  case by case basis for HelperMacros.
+
+* src/cppunit/TestFactoryRegistry.cpp: removed unused include of
+  TypeInfoHelper.h.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: used endTest() instead
+  of done() to finalize.
+
+* src/msvc6/TestPlugInRunner/TestPlugIn.h:
+* src/msvc6/TestPlugInRunner/TestPlugIn.cpp: updated to use the
+  new test plug-in system.
+
+* examples/simple/SimplePlugIn.cpp:
+* examples/simple/simple_plugin.dsp: crossplatform test plug-in
+  example using 'simple'.
+
+* examples/msvc6/EasyTestPlugIn/*: projects replaced with the
+  crossplatform projecct examples/simple/simple_plugin.dsp.
+@
+text
+@d5 3
+a8 3
+#include <cppunit/TestSuite.h>
+#include <cppunit/TestCaller.h>
+#include <cppunit/extensions/TypeInfoHelper.h>
+d13 88
+a100 87
+  /*! \brief Helper to add tests to a TestSuite.
+   * \ingroup WritingTestFixture
+   *
+   * All tests added to the TestSuite are prefixed by TestSuite name. The resulting
+   * TestCase name has the following pattern:
+   *
+   * MyTestSuiteName.myTestName
+   */
+  template<typename Fixture>
+  class TestSuiteBuilder
+  {
+    public:
+      typedef void (Fixture::*TestMethod)();
+
+#if CPPUNIT_USE_TYPEINFO_NAME
+      TestSuiteBuilder() : 
+          m_suite( new TestSuite( 
+              TypeInfoHelper::getClassName( typeid(Fixture) )  ) )
+      {
+      }
+#endif
+
+      TestSuiteBuilder( TestSuite *suite ) : m_suite( suite ) 
+      {
+      }
+
+      TestSuiteBuilder(std::string name) : m_suite( new TestSuite(name) ) 
+      {
+      }
+
+      TestSuite *suite() const
+      {
+        return m_suite.get();
+      }
+
+      TestSuite *takeSuite()
+      {
+        return m_suite.release();
+      }
+
+      void addTest( Test *test )
+      {
+        m_suite->addTest( test );
+      }
+
+      void addTestCaller( std::string methodName, 
+                          TestMethod testMethod )
+      {
+          Test *test = 
+              new TestCaller<Fixture>( makeTestName( methodName ), 
+                                       testMethod );
+          addTest( test );
+      }
+
+      void addTestCaller( std::string methodName, 
+                          TestMethod testMethod, 
+                          Fixture *fixture )
+      {
+          Test *test = 
+              new TestCaller<Fixture>( makeTestName( methodName ), 
+                                       testMethod,
+                                       fixture);
+          addTest( test );
+      }
+
+      template<typename ExceptionType>
+      void addTestCallerForException( std::string methodName, 
+                                      TestMethod testMethod, 
+                                      Fixture *fixture,
+                                      ExceptionType *dummyPointer )
+      {
+          Test *test = new TestCaller<Fixture,ExceptionType>( 
+                                       makeTestName( methodName ), 
+                                       testMethod,
+                                       fixture);
+          addTest( test );
+      }
+
+    
+      std::string makeTestName( const std::string &methodName )
+      {
+        return m_suite->getName() + "." + methodName;
+      }
+
+    private:
+      std::auto_ptr<TestSuite> m_suite;
+  };
+@
+
+
+1.13
+log
+@* doc/cookbook.html: removed. Replaced by cookbook.doc.
+
+* doc/cookbook.dox: added, conversion of cookbook.html to Doxygen format.
+
+* doc/other_documentation.dox: added groups definition.
+
+* doc/Makefile.am: replaced cookbook.html by cookbook.dox
+
+* doc/Doxyfile.in: added predefined CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION.
+Replaced cookbook.html by cookbook.dox.
+
+* include/cppunitui/mfc/TestRunner.h: added, extracted from
+include/msvc6/testrunner/TestRunner.h. Moved class TestRunner to namespace
+CppUnit::MfcUi.
+
+* include/msvc6/testrunner/TestRunner.h: deprecated. A simple typedef to
+CppUnit::MfcUi::TestRunner.
+
+* include/textui/TestRuner.h: added, extracted from
+include/cppunit/TextTestRunner.h.
+
+* src/cppunit/TextTestRunner.cpp: renamed TestRunner.cpp. Moved into
+namespace CppUnit::TextUi.
+
+* src/msvc6/testruner/TestRunner.cpp: moved into namespace CppUnit::MfcUi.
+
+* src/cppunit/CompilerOutputter.cpp: removed printing "- " before
+NotEqualException addional message, for consistency between different
+TestRunner (Mfc,Text...)
+
+* include/cppunit/Asserter.h:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/Outputter.h:
+* include/cppunit/SourceLine.h:
+* include/cppunit/TestAssert.h:
+* include/cppunit/TestCaller.h:
+* include/cppunit/TestFailure.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: doc update. organization
+in groups.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.cpp:
+* examples/msvc6/HostApp/HostApp.cpp: updated to use
+CppUnit::MfcUi::TestRunner.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use
+CppUnit::TextUi::TestRunner.
+@
+text
+@d8 1
+a9 3
+#if CPPUNIT_USE_TYPEINFO_NAME
+#  include <cppunit/extensions/TypeInfoHelper.h>
+#endif
+@
+
+
+1.12
+log
+@* include/cppunit/makefile.am: removed TestRegistry.h
+
+* include/cppunit/TestRegistry.h: removed. Obsolete, replaced by
+TestFactoryRegistry.
+
+* src/cppunit/makefile.am: removed TestRegistry.cpp. Added cppunit_dll.dsp.
+
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/SynchronizedObject.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TextOutputter.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestResult.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/TestFactory.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: minor doc update.
+
+* include/cppunit/TestFixture.h: added DLL export.
+
+* include/cppunit/msvc6/TestPlugInInterface.h: updated doc. Added automatic
+exportation of TestPlugIn publishing function.
+
+* src/cppunit/TestCase.cpp:
+* include/cppunit/TestCase.h: inherits setUp() and tearDown() from
+class TestFixture.
+@
+text
+@d15 2
+a16 1
+  /*! \brief Helper to add test to a TestSuite.
+d18 2
+a19 2
+   * All test added to the TestSuite are prefixed by TestSuite name. The resulting
+   * Test name has the following pattern:
+@
+
+
+1.11
+log
+@* NEWS : updated.
+
+* doc/other_documentation.dox : added all the authors to the list of
+authors.
+
+* examples/cppunittest/HelperMacrosTest.*: added unit tests for
+CPPUNIT_TEST_FAIL & CPPUNIT_TEST_EXCEPTION.
+
+* examples/cppunittest/TestAssertTest.*: added unit tests for
+CPPUNIT_FAIL. Corrected spelling error. Relaxed constraint on message
+produced by CPPUNIT_ASSERT_MESSAGE. Refactored some tests.
+
+* include/cppunit/extensions/HelperMacros.h : added macro
+CPPUNIT_TEST_EXCEPTION to create a test case for the specified method
+that must throw an exception of the specified type.
+
+* include/cppunit/extensions/TestSuiteBuilder.h : made makeTestName() public.
+Added addTestCallerForException() to add a test case expecting an exception of
+the specified type to be caught.
+
+* include/cppunit/TestAssert.h : added macro CPPUNIT_FAIL as a
+shortcut for CPPUNIT_ASSERT_MESSAGE( message, false ).
+@
+text
+@d15 7
+@
+
+
+1.10
+log
+@Change from CPPUNIT_USE_TYPEINFO to CPPUNIT_USE_TYPEINFO_NAME
+@
+text
+@d72 14
+a85 1
+    protected:
+@
+
+
+1.9
+log
+@replaced #include of <config.h> with <cppunit/Portability.h>
+@
+text
+@d9 1
+a9 1
+#if CPPUNIT_USE_TYPEINFO
+d21 1
+a21 1
+#if CPPUNIT_USE_TYPEINFO
+d27 1
+a27 1
+#endif  // CPPUNIT_USE_TYPEINFO
+@
+
+
+1.8
+log
+@* include/cppunit/extensions/HelperMacros.h: static method suite()
+implemented by CPPUNIT_TEST_SUITE_END macro now returns a TestSuite
+instead of a Test.
+
+* include/cppunit/extensions/RepeatedTest.h: corrected countTestCases,
+operator = declaration.
+
+* include/cppunit/extensions/TestDecorator.h: removed const from run()
+method. Did not match run() declaration of Test class.
+
+* include/cppunit/extensions/TestFactory.h: fixed a comment.
+
+* include/cppunit/extensions/TestSetup.h: corrected run() method
+declaration. Methods setUp() and tearDown() were not declared virtual.
+
+* include/cppunit/extensions/TestSuiteBuilder.h: added a method
+addTestCaller() which take a pointer on a fixture.
+@
+text
+@d4 1
+a5 1
+#include <cppunit/config.h>
+@
+
+
+1.7
+log
+@Change to templatized TestAssert::assertEquals() and the new CPPUNIT_ASSERT* macros
+@
+text
+@d52 2
+a53 1
+      void addTestCaller( std::string name, TestMethod testMethod )
+d56 1
+a56 1
+              new TestCaller<Fixture>( m_suite->getName() + "." + name, 
+d59 17
+@
+
+
+1.6
+log
+@Replace CU_ by CPPUNIT_.
+@
+text
+@d5 1
+d9 3
+a11 3
+#ifdef CPPUNIT_USE_TYPEINFO
+#include <cppunit/extensions/TypeInfoHelper.h>
+#endif  // CPPUNIT_USE_TYPEINFO
+d21 1
+a21 1
+#ifdef CPPUNIT_USE_TYPEINFO
+@
+
+
+1.5
+log
+@  * Symbol CU_USE_TYPEINFO must be defined instead of USE_TYPEINFO to
+    compile RTTI.
+  * Added back default constructor to TestSuiteBuilder which use RTTI.
+    It is available only if CU_USE_TYPEINFO is defined.
+  * Moved TypeInfoHelper.h from src/cppunit to include/cppunit/extensions.
+  * Macro CU_TEST_SUITE in HelperMacros.h now use TestSuiteBuilder default
+    constructor if CU_USE_TYPEINFO is defined, otherwise it use the
+    type name given to the CU_TEST_SUITE macro.
+  * TestFactoryRegistry::registerFactory(factory) now generate a dummy
+    name based on a serial number instead of using RTTI. The macro
+    CU_TEST_SUITE_REGISTRATION and class AutoRegisterSuite can now
+    when CU_USE_TYPEINFO is not defined.
+  * Added a new Configuration named "Debug Without CU_USE_TYPEINFO" to
+    msvc6 projects. The flag CU_USE_TYPEINFO is not defined in that
+    configuration.
+@
+text
+@d8 1
+a8 1
+#ifdef CU_USE_TYPEINFO
+d10 1
+a10 1
+#endif  // CU_USE_TYPEINFO
+d20 1
+a20 1
+#ifdef CU_USE_TYPEINFO
+d26 1
+a26 1
+#endif  // CU_USE_TYPEINFO
+@
+
+
+1.4
+log
+@Added constructors to TestCaller which accept an already constucted Fixture.
+@
+text
+@d8 4
+d19 8
+@
+
+
+1.3
+log
+@Removed unnecessary #include's of TestSuiteBuilder.h
+Removed RTTI dependent stuff from TestSuite and TestSuiteBuilder.
+@
+text
+@d41 4
+a44 3
+        Test *test = makeTestCaller( m_suite->getName() + "." + name, 
+                                     testMethod );
+        addTest( test );
+@
+
+
+1.2
+log
+@Fixed #include's for cppunit headers.
+@
+text
+@d10 1
+a10 1
+  template<class Fixture>
+d20 1
+a20 2
+#ifdef USE_TYPEINFO
+      TestSuiteBuilder() : m_suite( new TestSuite( typeid( Fixture) ) ) 
+a22 1
+#endif // USE_TYPEINFO
+@
+
+
+1.1
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@d1 2
+a2 2
+#ifndef CPPUNIT_TESTSUITEBUILDER_H
+#define CPPUNIT_TESTSUITEBUILDER_H
+d5 2
+a6 3
+
+#include "cppunit/TestSuite.h"
+#include "cppunit/TestCaller.h"
+d54 1
+a54 1
+#endif  // CPPUNIT_TESTSUITEBUILDER_H
+@
+

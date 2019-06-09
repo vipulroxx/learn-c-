@@ -1,0 +1,108 @@
+head	1.3;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3;
+locks; strict;
+comment	@// @;
+
+
+1.3
+date	2005.08.08.22.07.58;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.02.28.22.31.36;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.02.28.20.48.56;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* Centralized test running logic in examples/common/examplecommon.h
+@
+text
+@#include <examples/common/examplecommon.h>
+#include <cpput/testcase.h>
+#include <cpput/testinfo.h>
+#include <cpput/assert.h>
+#include <opentest/properties.h>
+
+
+static void testMultiply()
+{
+   // Notes: getValue() returns None value if it doesn't exist.
+   // this makes it difficult to understand what property is missing in
+   // the input => need a getter that throw if the property does not exist.
+   OpenTest::PropertiesAccessor input = CppUT::TestInfo::result()["input"];
+   int x = input.getValue("x").asInt();
+   int y = input.getValue("y").asInt();
+   int expected = input.getValue("expected").asInt();
+   int result = x * y;
+   CPPUT_ASSERT_EQUAL( expected, result );
+}
+
+
+
+int main( int argc, const char *argv[] )
+{
+   CppUT::TestSuitePtr allSuite = CppUT::makeTestSuite( "All tests" );
+
+   CppUT::TestPtr test1 = CppUT::makeTestCase( CppTL::cfn0( testMultiply ), 
+                                               "multiply 7*2" );
+   test1->info()["input"]["x"] = 7;
+   test1->info()["input"]["y"] = 2;
+   test1->info()["input"]["expected"] = 7*2+1;
+
+   allSuite->add( test1 );
+
+   return runExampleTests( argc, argv, allSuite.get() );
+}
+@
+
+
+1.2
+log
+@* fixed propagation of test input.
+@
+text
+@d1 1
+a2 2
+#include <cpput/testsuite.h>
+#include <cpput/testrunner.h>    // cppunit2 testrunner for opentest
+a4 1
+#include <opentest/texttestdriver.h>
+d35 1
+a35 8
+   CppUT::TestRunner runner;
+   CppUT::AbstractTestSuitePtr rootSuite = 
+      CppTL::staticPointerCast<CppUT::AbstractTestSuite>( allSuite );
+   runner.setRootSuite( rootSuite );
+
+   OpenTest::TextTestDriver driver( runner );
+   bool sucessful = driver.run();
+   return sucessful ? 0 : 1;
+@
+
+
+1.1
+log
+@* added input based test
+@
+text
+@d31 3
+a33 3
+   test1->info()["x"] = 7;
+   test1->info()["x"] = 2;
+   test1->info()["expected"] = 7*2+1;
+@
+

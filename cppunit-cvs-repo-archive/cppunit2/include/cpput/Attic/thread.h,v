@@ -1,0 +1,478 @@
+head	1.9;
+access;
+symbols
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.8
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.8
+	TG_AFTER_REMOVING_TESTCONTEXT:1.8
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.8
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.8
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.9
+date	2005.03.06.18.37.26;	author blep;	state dead;
+branches;
+next	1.8;
+
+1.8
+date	2004.11.17.08.59.05;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2004.02.07.21.50.57;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.02.01.16.12.51;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.01.31.13.21.10;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.01.31.11.40.00;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.01.31.10.59.06;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.31.10.16.30;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.29;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.29;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.9
+log
+@* moved to cpptl/thread.h
+@
+text
+@#ifndef CPPUT_THREAD_H_INCLUDED
+# define CPPUT_THREAD_H_INCLUDED
+
+# include <cpput/config.h>
+# ifdef CPPUT_THREAD_SAFE
+#  include <cpput/functor.h>
+# endif // # ifdef CPPUT_THREAD_SAFE
+
+
+namespace CppUT {
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Implementation of thread API for NON THREAD-SAFE mode
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+# ifndef CPPUT_THREAD_SAFE
+
+class CPPUT_API Mutex
+{
+public:
+   void lock() 
+   {
+   }
+
+   void unlock() 
+   {
+   }
+};
+
+
+template<class Type>
+class ThreadLocalStorage
+{
+public:
+   typedef ThreadLocalStorage<Type> ThisType;
+
+   ThreadLocalStorage( const Type &defaultValue = Type() )
+      : value_( defaultValue )
+   {
+   }
+
+   Type get()
+   {
+      return value_;
+   }
+
+   void set( const Type &value )
+   {
+      value_ = value;
+   }
+private:
+   Type value_;
+};
+
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Implementation of thread API for THREAD-SAFE mode
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+# else // # ifndef CPPUT_THREAD_SAFE
+
+namespace Impl {
+   class CPPUT_API ThreadLocalStorageImpl
+   {
+   public:
+      // Notes: must never THROW, call at static initialization time
+      ThreadLocalStorageImpl( const ::CppUT::Functor1<void **> &allocateDefaultValue,
+                              const ::CppUT::Functor1<void *> &freeValue );
+
+      // Notes: must never THROW, call at static uninitialization time
+      ~ThreadLocalStorageImpl();
+
+      volatile void *get();
+
+   private:
+      ::CppUT::Functor1<void **> allocateDefaultValue_;
+      ::CppUT::Functor1<void *> freeValue_;
+#  ifdef CPPUT_USE_WIN32_THREAD
+      unsigned long tlsIndex_;
+#  elif defined(CPPUT_USE_PTHREAD_THREAD)
+      void *tlsKey_;
+#  endif // #   ifdef CPPUT_USE_WIN32_THREAD
+   };
+
+} // namespace Impl
+
+
+class CPPUT_API ThreadLocalStorageManager : public NonCopyable
+{
+public:
+   ~ThreadLocalStorageManager();
+
+   static ThreadLocalStorageManager &instance();
+
+   // Performs possible clean-up for the current thread.
+   void onThreadExit();
+
+   // should be private, template<class Type> class ThreadLocalStorage
+   // no guaranty that it will be called on thread exit. May only be called on
+   // programm exit
+   void atThreadExit( Functor0 cleaner );
+
+private:
+   class Implementation;
+   ThreadLocalStorageManager();
+
+   Implementation *impl_;
+};
+
+template<class Type>
+class ThreadLocalStorage
+{
+public:
+   typedef ThreadLocalStorage<Type> ThisType;
+
+   ThreadLocalStorage( const Type &defaultValue = Type() )
+      : impl_( bind2( makeCFn2( &ThisType::allocateDefaultValue ), defaultValue ),
+               makeCFn1( &ThisType::freeValue ) )
+   {
+   }
+
+   Type get()
+   {
+      volatile Type * value = static_cast<volatile Type *>( impl_.get() );
+      return *( const_cast<Type *>( value ) );
+   }
+
+   void set( const Type &value )
+   {
+      volatile Type *p = static_cast<volatile Type *>( impl_.get() );
+      *( const_cast<Type *>( p ) )= value;
+   }
+
+private:
+   static void allocateDefaultValue( void **p, const Type &defaultValue )
+   {
+      *p = new Type( defaultValue );
+   }
+
+   static void freeValue( void *p )
+   {
+      delete static_cast<Type *>( p );
+   }
+
+   Impl::ThreadLocalStorageImpl impl_;
+};
+
+
+class CPPUT_API Mutex : public NonCopyable
+{
+public:
+   Mutex();
+   ~Mutex();
+
+   void lock();
+   void unlock();
+private:
+   void *data_;
+};
+
+
+class CPPUT_API Thread
+{
+public:
+   typedef unsigned long ThreadIdType;
+
+//   Thread( Functor0 threadFunction );
+
+//   void join();
+
+   static ThreadIdType currentId();
+
+//   static void sleep( unsigned long durationInMillisecond );
+
+private:
+   void *data_;
+};
+
+# endif // #  ifndef CPPUT_THREAD_SAFE
+
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Implementation of thread API common to all thread-safety mode
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+
+class CPPUT_API MutexGuard
+{
+public:
+   MutexGuard( Mutex &mutex )
+      : mutex_( mutex )
+   {
+      mutex_.lock();
+   }
+
+   ~MutexGuard()
+   {
+      mutex_.unlock();
+   }
+
+private:
+   Mutex &mutex_;
+};
+
+/*
+
+class Thread;
+typedef CppTL::SharedPtr<Thread> ThreadPtr;
+
+inline ThreadPtr createThread( Functor0 threadFunction )
+{
+   return ThreadPtr( new Thread( threadFunction ) );
+}
+*/
+
+} // namespace CppUT
+
+
+
+#endif // CPPUT_THREAD_H_INCLUDED
+@
+
+
+1.8
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@@
+
+
+1.7
+log
+@* fixed compilation issue in thread safe mode
+@
+text
+@d211 1
+a211 1
+typedef SmartPtr<Thread> ThreadPtr;
+@
+
+
+1.6
+log
+@* added /Za setting to project to force conformance to ANSI C++
+* fixed issues related to ANSI C++ conformance
+* fixed bug in SliceEnumerator copy constructor & added test
+@
+text
+@d126 2
+a127 1
+      return *static_cast<volatile Type *>( impl_.get() );
+d133 1
+a133 1
+      *p = value;
+@
+
+
+1.5
+log
+@* added incomplete implementation of the thread api for pthread
+@
+text
+@d75 1
+a75 1
+      void *get();
+d126 1
+a126 1
+      return *static_cast<Type *>( impl_.get() );
+d131 1
+a131 1
+      Type *p = static_cast<Type *>( impl_.get() );
+@
+
+
+1.4
+log
+@* added thread api implementation for non thread-safe mode
+@
+text
+@d68 1
+d72 1
+d81 3
+a83 1
+      unsigned long tlsIndex_;   // Windows specific
+@
+
+
+1.3
+log
+@* fixed bug in ThreadLocalStorageManager
+@
+text
+@d4 4
+a7 1
+# include <cpput/functor.h>
+d12 52
+d65 1
+a65 1
+   class ThreadLocalStorageImpl
+d78 1
+d80 1
+d86 1
+a86 5
+
+class Thread;
+typedef SmartPtr<Thread> ThreadPtr;
+
+class ThreadLocalStorageManager
+d89 2
+a103 1
+   ~ThreadLocalStorageManager();
+d146 1
+a146 1
+class Mutex
+a154 3
+   Mutex( const Mutex &other );
+   void operator =( const Mutex &other );
+
+d159 1
+a159 1
+class Thread
+d176 2
+a177 1
+// common
+d179 7
+a185 1
+class MutexGuard
+d204 4
+@
+
+
+1.2
+log
+@* added a minimum thread api for cppunit thread-safety implementation
+@
+text
+@d60 2
+a61 2
+   ThreadLocalStorage( const Type &defaultValue )
+      : impl_( makeMemFn1( this, &ThisType::allocateDefaultValue ),
+d78 1
+a78 1
+   void allocateDefaultValue( void **p )
+d80 1
+a80 1
+      *p = new Type( defaultValue_ );
+a88 1
+   Type defaultValue_;
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d4 88
+a91 1
+# include <cpput/thread.h>
+d96 19
+a114 3
+	virtual ~Mutex()
+	{
+	}
+d116 1
+a116 1
+	virtual void lock() =0;
+d118 6
+a123 1
+	virtual void unlock() =0;
+d126 2
+d131 10
+a140 10
+	explicit MutexGuard( Mutex &lock )
+		: lock_( lock )
+	{
+		lock_.lock();
+	}
+
+	~MutexGuard()
+	{
+		lock_.unlock();
+	}
+d143 1
+a143 1
+	Mutex &lock;
+d146 10
+d157 1
+a157 1
+#endif // CPPUT_THREAD_H_INCLUDED@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

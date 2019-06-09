@@ -1,0 +1,944 @@
+head	1.36;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.31
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.4
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.4
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.36
+date	2008.07.08.20.42.00;	author blep;	state Exp;
+branches;
+next	1.35;
+
+1.35
+date	2007.08.16.15.51.04;	author blep;	state Exp;
+branches;
+next	1.34;
+
+1.34
+date	2007.08.15.17.35.39;	author blep;	state Exp;
+branches;
+next	1.33;
+
+1.33
+date	2007.08.15.11.20.57;	author blep;	state Exp;
+branches;
+next	1.32;
+
+1.32
+date	2007.08.14.17.30.52;	author blep;	state Exp;
+branches;
+next	1.31;
+
+1.31
+date	2007.03.16.22.41.39;	author blep;	state Exp;
+branches;
+next	1.30;
+
+1.30
+date	2006.09.06.19.23.26;	author blep;	state Exp;
+branches;
+next	1.29;
+
+1.29
+date	2006.09.01.19.51.22;	author blep;	state Exp;
+branches;
+next	1.28;
+
+1.28
+date	2006.06.05.14.03.23;	author blep;	state Exp;
+branches;
+next	1.27;
+
+1.27
+date	2006.06.05.13.22.57;	author blep;	state Exp;
+branches;
+next	1.26;
+
+1.26
+date	2006.06.05.12.02.56;	author blep;	state Exp;
+branches;
+next	1.25;
+
+1.25
+date	2006.03.07.23.02.56;	author blep;	state Exp;
+branches;
+next	1.24;
+
+1.24
+date	2006.03.06.21.43.07;	author blep;	state Exp;
+branches;
+next	1.23;
+
+1.23
+date	2005.12.11.17.16.08;	author blep;	state Exp;
+branches;
+next	1.22;
+
+1.22
+date	2005.11.11.20.54.14;	author blep;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2005.11.10.09.15.12;	author blep;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2005.11.10.09.05.41;	author blep;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2005.11.08.21.44.54;	author blep;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2005.11.08.19.11.38;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2005.11.07.22.43.06;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2005.09.06.07.31.42;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2005.08.11.07.18.23;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2005.08.08.22.11.14;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2005.06.24.19.51.28;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2005.03.06.21.44.18;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2005.03.06.21.27.12;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2005.03.06.18.49.05;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.03.05.10.52.18;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.03.04.22.23.20;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.03.04.08.23.39;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2005.03.01.22.16.30;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.02.28.22.11.53;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.02.26.11.42.21;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.02.24.07.15.03;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.02.23.23.13.16;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.02.01.10.18.01;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.36
+log
+@- Fixed bug in Registry::remove() when a suite had multiple child suites.
+- Added Registry suite removal tests
+@
+text
+@# Todo:
+# - Check for min Scons versio (0.96.90)
+# - doxygen generation does not work on Linux
+# - need to detect path and availability of DOT tool when generating doc.
+# - revisit doxygen generationg using DynamicSourceGenerator
+#   http://www.scons.org/wiki/DynamicSourceGenerator
+#  (see Gary mail on the user ML 19/07/2006 @@ 17h25)
+# May be a scons issue: tool is added without calling exists() [e.g. added tool may not exist]
+
+
+
+import os
+import os.path
+
+CPPUNIT_VERSION = '0.1'
+DIST_DIR = '#dist'
+
+
+
+options = Options()
+##options.Add( 'platform', 'platform used to build cppunit 2: suncc, vacpp, mingw, msvc6, msvc7, msvc71, msvc80, linux-gcc', 'mingw' )
+options.Add( EnumOption('platform',
+                        'Platform (compiler/stl) used to build the project',
+                        'msvc71',
+                        allowed_values='suncc vacpp mingw msvc6 msvc7 msvc71 msvc80 msvc90 linux-gcc'.split(),
+                        ignorecase=2) )
+
+try:
+    platform = ARGUMENTS['platform']
+except KeyError:
+    import sys
+    print 'You must specify a "platform"'
+    sys.exit(2)
+
+print "Building using PLATFORM =", platform
+
+rootbuild_dir = Dir('#buildscons')
+build_dir = os.path.join( '#buildscons', platform )
+bin_dir = os.path.join( '#bin', platform )
+lib_dir = os.path.join( '#libs', platform )
+sconsign_dir_path = Dir(build_dir).abspath
+sconsign_path = os.path.join( sconsign_dir_path, '.sconsign.dbm' )
+
+# Ensure build directory exist (SConsignFile fail otherwise!)
+if not os.path.exists( sconsign_dir_path ):
+    os.makedirs( sconsign_dir_path )
+
+# Store all dependencies signature in a database
+SConsignFile( sconsign_path )
+
+env = Environment( ENV = {'PATH' : os.environ['PATH']},
+                   toolpath = ['scons-tools'],
+                   tools=['doxygen', 'srcdist', 'substinfile', 'targz'] )
+
+if platform == 'suncc':
+    env.Tool( 'sunc++' )
+    env.Tool( 'sunlink' )
+    env.Tool( 'sunar' )
+    env.Append( LIBS = ['pthreads'] )
+elif platform == 'vacpp':
+    env.Tool( 'default' )
+    env.Tool( 'aixcc' )
+    env['CXX'] = 'xlC_r'   #scons does not pick-up the correct one !
+    # using xlC_r ensure multi-threading is enabled:
+    # http://publib.boulder.ibm.com/infocenter/pseries/index.jsp?topic=/com.ibm.vacpp7a.doc/compiler/ref/cuselect.htm
+    env.Append( CCFLAGS = '-qrtti=all',
+                LINKFLAGS='-bh:5' )  # -bh:5 remove duplicate symbol warning
+elif platform == 'msvc6':
+    env['MSVS_VERSION']='6.0'
+    for tool in ['msvc', 'msvs', 'mslink', 'masm', 'mslib']:
+        env.Tool( tool )
+    env['CXXFLAGS']='-GR -GX /nologo'
+elif platform == 'msvc70':
+    env['MSVS_VERSION']='7.0'
+    for tool in ['msvc', 'msvs', 'mslink', 'masm', 'mslib']:
+        env.Tool( tool )
+    env['CXXFLAGS']='-GR -GX /nologo'
+elif platform == 'msvc71':
+    env['MSVS_VERSION']='7.1'
+    for tool in ['msvc', 'msvs', 'mslink', 'masm', 'mslib']:
+        env.Tool( tool )
+    env['CXXFLAGS']='-GR -GX /nologo'
+elif platform == 'msvc80':
+    env['MSVS_VERSION']='8.0'
+    for tool in ['msvc', 'msvs', 'mslink', 'masm', 'mslib']:
+        env.Tool( tool )
+    env['CXXFLAGS']='-GR -EHsc /nologo'
+elif platform == 'msvc90':
+    env['MSVS_VERSION']='9.0'
+    for tool in ['msvc', 'msvs', 'mslink', 'masm', 'mslib']:
+        env.Tool( tool )
+    env['CXXFLAGS']='-GR -EHsc /nologo'
+elif platform == 'mingw':
+    env.Tool( 'mingw' )
+    env.Append( CPPDEFINES=[ "WIN32", "NDEBUG", "_MT" ] )
+elif platform == 'linux-gcc':
+    env.Tool( 'default' )
+    env.Append( LIBS = ['pthread'] )
+else:
+    print "UNSUPPORTED PLATFORM."
+    env.Exit(1)
+
+env.Append( CPPPATH = ['#include'],
+            LIBPATH = lib_dir )
+env.Append( CPPDEFINES = [ "CPPTL_NO_AUTOLINK" ] )  # naming convention are not respected
+env['CPPUNIT_VERSION'] = CPPUNIT_VERSION
+env['BUILD_DIR'] = env.Dir(build_dir)
+env['ROOTBUILD_DIR'] = env.Dir(rootbuild_dir)
+env['DIST_DIR'] = DIST_DIR
+env_testing = env.Copy( )
+env_testing.Append( LIBS = ['cpput','cpptl'] )
+
+env_cpptl = env.Copy()
+env_cpptl.Append( LIBS = ['cpptl'] )
+
+def buildExample( env, target_sources, target_name ):
+    env = env.Copy()
+    env.Append( CPPPATH = ['#'] )
+    exe = env.Program( target=target_name,
+                       source=target_sources )
+    global bin_dir
+    return env.Install( bin_dir, exe )
+
+buildCppUnitExample = buildExample
+buildJSONTests = buildExample
+
+def buildLibary( env, target_sources, target_name ):
+    static_lib = env.StaticLibrary( target=target_name,
+                                    source=target_sources )
+    global lib_dir
+    env.Install( lib_dir, static_lib )
+
+def buildLibraryUnitTest( env, target_sources, target_name, check_alias_name ):
+    exe = buildCppUnitExample( env, target_sources, target_name )
+    target_check_alias = env.Alias( check_alias_name, exe, exe[0].abspath )
+    env.AlwaysBuild( target_check_alias )
+    check_alias = env.Alias( 'check' )
+    env.Depends( check_alias, target_check_alias )
+
+def buildQTApplication( env, ui_sources, target_sources, target_name ):
+    env = env.Copy()
+    env.Replace( QT_MOCCXXSUFFIX = 'cpp' )   # doesn't work
+    qt_tool = Tool('qt')
+    qt_tool( env )
+    extra_include_dir = []
+    for ui_source in ui_sources:
+        ui_target = "ui_" + os.path.splitext( ui_source)[0] + ".h"
+        env.Uic( target = ui_target, source = ui_source )
+        if not extra_include_dir:
+            extra_include_dir = [ os.path.split( env.File( ui_target ).abspath ) [0] ]
+    env.Append( CPPPATH = extra_include_dir )
+    exe = env.Program( target=target_name,
+                       source=target_sources )
+    global bin_dir
+    env.Install( bin_dir, exe )
+
+Export( 'env env_testing env_cpptl buildExample buildCppUnitExample buildLibary buildLibraryUnitTest buildQTApplication buildJSONTests' )
+
+def buildProjectInDirectory( target_directory ):
+    global build_dir
+    target_build_dir = os.path.join( build_dir, target_directory )
+    target = os.path.join( target_directory, 'SConscript' )
+    SConscript( target, build_dir=target_build_dir, duplicate=0 )
+
+env.Alias( 'check' )
+
+buildProjectInDirectory( 'src/cpput' )
+buildProjectInDirectory( 'src/cpptl' )
+buildProjectInDirectory( 'src/cpputtest' )
+buildProjectInDirectory( 'src/jsontestrunner' )
+#buildProjectInDirectory( 'examples/input_based_test' )
+buildProjectInDirectory( 'examples/parametrized_test' )
+buildProjectInDirectory( 'examples/checking_assertions' )
+buildProjectInDirectory( 'examples/ignore_failure_demo' )
+buildProjectInDirectory( 'examples/log_demo' )
+buildProjectInDirectory( 'examples/stringize_demo' )
+buildProjectInDirectory( 'examples/light_fixture' )
+buildProjectInDirectory( 'examples/test_function' )
+buildProjectInDirectory( 'examples/table_fixture' )
+buildProjectInDirectory( 'examples/input_test' )
+##buildProjectInDirectory( 'examples/opentest_demo' )
+#buildProjectInDirectory( 'src/qttestdriver' )
+buildProjectInDirectory( 'doc' )
+@
+
+
+1.35
+log
+@   Added initial support for column fixture supported by fitness. Still missing
+automatic type convertion and correct reporting of error with regard to
+originating cell.
+@
+text
+@d25 1
+a25 1
+                        allowed_values='suncc vacpp mingw msvc6 msvc7 msvc71 msvc80 linux-gcc'.split(),
+d88 5
+@
+
+
+1.34
+log
+@   Added initial support for table fixture (still like cell value automatic
+conversion, but it is usable).
+@
+text
+@d175 1
+@
+
+
+1.33
+log
+@   Added support for light test fixture (a la CppUnitLite).
+See lightfixture.h and example/light_fixture.
+   Added support for direct declaration and registration of test in plain C
+function. See testfunction.h and example/test_function.
+@
+text
+@d174 1
+@
+
+
+1.32
+log
+@   Modified assertion implementation to force evaluation of user
+condition expression first, while preserving delegation to
+function, overloading and optional parameters feature.
+   See CPPUT_BEGIN_ASSERTION_MACRO() documentation in testinfo.h for an example
+to update your custom assertion code.
+
+   New implementation rely on operator evaluation order and operator overloading. The trick is documented in CPPUT_BEGIN_ASSERTION_MACRO().
+@
+text
+@d172 2
+@
+
+
+1.31
+log
+@- made doxygen generation more robust: no longer attempt to manage dependencies.
+@
+text
+@d8 1
+@
+
+
+1.30
+log
+@- made atomic counter copyable
+- added implementation of CPPTL_ assertions.
+- fixed wrong assertions in smallmap.h
+- fixed buggy iterator usage in smallmaptest.
+- no longer require a library to use cpptl threads.
+@
+text
+@d30 1
+@
+
+
+1.29
+log
+@- opentest library has been moved to its own project: http://www.sf.net/projects/opentest/
+@
+text
+@d1 10
+@
+
+
+1.28
+log
+@* added doc and doc-dist target to generate doc and doc tarball.
+@
+text
+@d94 1
+a94 1
+env_testing.Append( LIBS = ['cpput','opentest','cpptl'] )
+a151 1
+buildProjectInDirectory( 'src/opentest' )
+a152 1
+buildProjectInDirectory( 'src/opentesttest' )
+d160 1
+a160 1
+buildProjectInDirectory( 'examples/opentest_demo' )
+a161 1
+buildProjectInDirectory( 'test/shmem_test' )
+@
+
+
+1.27
+log
+@- synchronized with lastest jsoncpp.
+@
+text
+@d4 5
+d25 1
+d40 2
+a41 1
+                   tools=[] ) #, tools=['default'] )
+d89 4
+a92 1
+                      
+d165 1
+@
+
+
+1.26
+log
+@* added CppTL:SmallMap, a std::map like container that use a sorted vector to hold item.
+@
+text
+@d98 1
+d130 1
+a130 1
+Export( 'env env_testing env_cpptl buildExample buildCppUnitExample buildLibary buildLibraryUnitTest buildQTApplication' )
+@
+
+
+1.25
+log
+@* added end to end test for shared memory transport.
+@
+text
+@d5 12
+a16 1
+options.Add( 'platform', 'platform used to build cppunit 2: suncc, vacpp, mingw, msvc6, msvc7, msvc71, msvc80, linux-gcc', 'mingw' )
+d18 1
+a18 3
+platform = ARGUMENTS.get( 'platform' )
+##print ARGUMENTS
+##print "PLATFORM=", platform
+d81 1
+d86 4
+a89 1
+def buildCppUnitExample( env, target_sources, target_name ):
+d96 2
+a97 1
+    
+d129 1
+a129 1
+Export( 'env env_testing buildCppUnitExample buildLibary buildLibraryUnitTest buildQTApplication' )
+d144 1
+@
+
+
+1.24
+log
+@Removed compilation warning with msvc 8.0
+@
+text
+@d138 1
+@
+
+
+1.23
+log
+@* rough sketch of a working OpenTest driver with CppUT adaptor for TestRunner.
+@
+text
+@d59 1
+a59 1
+    env['CXXFLAGS']='-GR -GX /nologo'
+@
+
+
+1.22
+log
+@- added unit tests for TestInfo
+- fixed bug in CPPUT_IGNORE_FAILURE and exception guard.
+- added 'isIgnoredFailure' to Assertion.
+- lighttestrunner now print ignored failure and skipped tests.
+@
+text
+@d5 1
+a5 1
+options.Add( 'platform', 'platform used to build cppunit 2: suncc, vacpp, mingw, msvc6, msvc7, msvc71, linux-gcc', 'mingw' )
+d136 1
+@
+
+
+1.21
+log
+@- added 'check' target to build script to run all unit tests.
+@
+text
+@d133 1
+@
+
+
+1.20
+log
+@- added check_cpput and check_opentest alias to build script to run unit tests.
+@
+text
+@d95 2
+d123 2
+@
+
+
+1.19
+log
+@- changed most interface to use std::string instead of CppTL::ConstString
+- CppTL::ConstString is now an implementation detail and is used to store string in objects as it is thread-safe.
+@
+text
+@a23 14
+##if platform == 'suncc':
+##   env = Environment( ENV = {'PATH' : os.environ['PATH']},
+##                      tools=['default','suncc'] )
+##elif platform == 'vacpp':
+##   env = Environment( ENV = {'PATH' : os.environ['PATH']},
+##                      CCFLAGS = '-qrtti=all',
+##                      tools=['default','aixcc'],
+##                      CXX ='xlC_r',
+##                      LINKFLAGS='-bh:5' )  # -bh:5 remove duplicate symbol warning
+##elif platform == 'msvc':
+##   env = Environment( CCFLAGS = '-GX -GR -nologo' )
+##elif platform == 'mingw':
+##   env = Environment( tools=['default','mingw'] )
+
+d55 5
+d82 2
+a83 1
+    env.Install( bin_dir, exe )
+d91 4
+a94 2
+def buildLibraryUnitTest( env, target_sources, target_name ):
+    buildCppUnitExample( env, target_sources, target_name )
+@
+
+
+1.18
+log
+@* fixed compilation on AIX
+@
+text
+@d79 1
+a79 1
+env.Append( CPPPATH = ['#include', '#dependencies/jsoncpp/include'],
+@
+
+
+1.17
+log
+@- replaced usage of OpenTest::Properties with Json::Value.
+  Json::Value provides a simpler interface and a standard *simple* serialization
+  format.
+- jsoncpp has been inlined in CppTL to make deploy easier and remove
+  an external dependency.
+@
+text
+@d42 3
+a44 1
+    env.Tools( 'suncc' )
+d47 5
+a51 1
+    env.Tool( 'default', 'aixcc' )
+a52 1
+                CXX ='xlC_r',   #scons does not pick-up the correct one !
+a53 2
+    # using xlC_r ensure multi-threading is enabled:
+    # http://publib.boulder.ibm.com/infocenter/pseries/index.jsp?topic=/com.ibm.vacpp7a.doc/compiler/ref/cuselect.htm
+@
+
+
+1.16
+log
+@* fixed compilation without RTTI
+* revised stringize implementation to allow an additional customization point by overloading toString().
+* added test and corrected bug in serialization/packets implementation.
+@
+text
+@d76 1
+a76 1
+env.Append( CPPPATH = '#include',
+@
+
+
+1.15
+log
+@* Added log support in test result output
+* Removed unsued method in TestResultUpdater
+* Added CppUT::log demo example.
+@
+text
+@d133 1
+@
+
+
+1.14
+log
+@* share examples/common in all examples.
+@
+text
+@d132 1
+@
+
+
+1.13
+log
+@added rough support to build qt 4.0 application.
+@
+text
+@d83 2
+d86 1
+a86 1
+                      source=target_sources )
+d128 2
+a129 1
+buildProjectInDirectory( 'examples/input_based_test' )
+@
+
+
+1.12
+log
+@fixed env_testing construction
+@
+text
+@d55 1
+a55 1
+    env['CXXFLAGS']='-GR -GX'
+d60 1
+a60 1
+    env['CXXFLAGS']='-GR -GX'
+d65 1
+a65 1
+    env['CXXFLAGS']='-GR -GX'
+d97 18
+a114 1
+Export( 'env env_testing buildCppUnitExample buildLibary buildLibraryUnitTest' )
+d129 1
+@
+
+
+1.11
+log
+@* link with pthread on linux
+@
+text
+@d79 2
+a80 1
+env_testing = env.Copy( LIBS = ['cpput','opentest','cpptl'] )
+@
+
+
+1.10
+log
+@* added a library for cpptl for threading functionnalies.
+@
+text
+@d43 1
+d71 1
+@
+
+
+1.9
+log
+@* added support for linux-gcc platform
+@
+text
+@d48 2
+d67 1
+d77 1
+a77 1
+env_testing = env.Copy( LIBS = ['cpput','opentest'] )
+d103 1
+@
+
+
+1.8
+log
+@* build platform must now be specified on the command-line: scons platform=mingw
+@
+text
+@d5 1
+a5 1
+options.Add( 'platform', 'platform used to build cppunit 2: suncc, vacpp, mingw, msvc6, msvc7, msvc71', 'mingw' )
+d65 2
+@
+
+
+1.7
+log
+@* added buildLibrary() and buildLibraryUnitTest() exported functions to sconstruct
+* refactored sconscript to use the exported functions
+* build productions are now placed in a platform specific subdirectory (bin/mingw/...)
+@
+text
+@d4 6
+a9 1
+platform = 'mingw'
+d24 17
+d42 1
+a42 4
+   env = Environment( ENV = {'PATH' : os.environ['PATH']},
+                      CPPPATH = '#include',
+                      LIBPATH = '#libs',
+                      tools=['default','suncc'] )
+d44 19
+a62 7
+   env = Environment( ENV = {'PATH' : os.environ['PATH']},
+                      CCFLAGS = '-qrtti=all',
+                      tools=['default','aixcc'],
+                      CXX ='xlC_r',
+                      LINKFLAGS='-bh:5' )  # -bh:5 remove duplicate symbol warning
+elif platform == 'msvc':
+   env = Environment( CCFLAGS = '-GX -GR -nologo' )
+d64 4
+a67 1
+   env = Environment( tools=['default','mingw'] )
+@
+
+
+1.6
+log
+@* factorised build sequence for simple examples
+@
+text
+@d4 8
+d13 2
+a14 2
+if not os.path.exists( Dir('#buildscons').abspath ):
+    os.mkdir( Dir('#buildscons').abspath )
+a16 1
+sconsign_path = os.path.join( Dir('#buildscons').abspath, '.sconsign.dbm' )
+d19 1
+a19 3
+platform = 'mingw'
+
+if platform == 'sun':
+d24 1
+a24 1
+elif platform == 'aix':
+a26 2
+                      CPPPATH = '#include',
+                      LIBPATH = '#libs',
+d31 1
+a31 3
+   env = Environment( CCFLAGS = '-GX -GR -nologo', 
+                      CPPPATH = '#include',
+                      LIBPATH = '#libs' )
+d33 1
+a33 3
+   env = Environment( CPPPATH = '#include',
+                      LIBPATH = '#libs',
+                      tools=['default','mingw'] )
+d35 3
+d40 1
+a40 2
+
+def buildCppUnitExample( env, taget_sources, target_name ):
+d42 2
+a43 2
+                      source=taget_sources )
+    bin_dir='#bin'
+d46 23
+a68 11
+Export( 'env env_testing buildCppUnitExample' )
+
+SConscript( 'src/cpput/SConscript', build_dir='#buildscons/cpput', duplicate=0 )
+SConscript( 'src/opentest/SConscript', build_dir='#buildscons/opentest', duplicate=0 )
+SConscript( 'src/cpputtest/SConscript', build_dir='#buildscons/cpputtest', duplicate=0 )
+SConscript( 'examples/input_based_test/SConscript', build_dir='#buildscons/examples/input_based_test', duplicate=0 )
+SConscript( 'examples/parametrized_test/SConscript', build_dir='#buildscons/examples/parametrized_test', duplicate=0 )
+SConscript( 'examples/checking_assertions/SConscript', build_dir='#buildscons/examples/checking_assertions', duplicate=0 )
+
+
+ @
+
+
+1.5
+log
+@* moved texttestdriver.h class implementations into a .cpp
+@
+text
+@d38 8
+a45 1
+Export( 'env env_testing' )
+d52 2
+d55 1
+@
+
+
+1.4
+log
+@* updated environment definition to build correctly on aix and sun.
+@
+text
+@d36 3
+a38 1
+Export( 'env' )
+d41 1
+d43 3
+@
+
+
+1.3
+log
+@* use a single sconsign database
+@
+text
+@d9 2
+a10 1
+SConsignFile( 'buildscons/.sconsign.dbm' )
+d12 1
+d14 21
+a34 5
+#env = Environment( CCFLAGS = '-GX -GR -nologo', 
+env = Environment( CCFLAGS = '', 
+                   CPPPATH = '#include',
+                   LIBPATH = '#libs',
+                        tools=['mingw'] )
+@
+
+
+1.2
+log
+@* scons can be used to build cppunit 2 using mingw
+@
+text
+@d1 10
+a10 1
+import sys
+@
+
+
+1.1
+log
+@* added very basic scons script
+@
+text
+@d3 5
+a7 3
+base_env = Environment( CCFLAGS = '-GX -GR -nologo', 
+                        CPPPATH = '#include',
+                        LIBPATH = '#libs' )
+d9 1
+a9 1
+Export( 'base_env' )
+@
+

@@ -1,0 +1,69 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2004.11.17.09.02.41;	author blep;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2004.02.07.19.20.14;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@#ifndef CPPUT_ATOMICCOUNTER_H_INCLUDED
+# define CPPUT_ATOMICCOUNTER_H_INCLUDED
+
+# include <cpput/config.h>
+
+namespace CppUT { namespace Impl {
+
+   class CPPUT_API AtomicCounter
+   {
+   public:
+      virtual ~AtomicCounter()
+      {
+      }
+
+      /// Increments the count and returns the incremented count
+      virtual long increment() = 0;
+
+      /// Decrements the count and returns the decremented count
+      virtual long decrement() = 0;
+
+      /// Should returns the current value of the count.
+      /// \warning this method is only defined for debugging and testing
+      /// purpose, you should not rely on it in production code.
+      virtual long count() const = 0;
+   };
+
+   AtomicCounter * CPPUT_API createAtomicCounter( long initialValue );
+
+} } // namespace CppUT { namespace Impl
+
+#endif // CPPUT_ATOMICCOUNTER_H_INCLUDED
+@
+
+
+1.1
+log
+@* added missing header impl/atomic_counter.h
+@
+text
+@@
+

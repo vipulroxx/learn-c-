@@ -1,0 +1,323 @@
+head	1.10;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.10
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.6
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.6
+	TG_AFTER_REMOVING_TESTCONTEXT:1.6
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.3
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@// @;
+
+
+1.10
+date	2005.11.13.10.12.01;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.08.10.21.34.29;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.02.27.16.50.36;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.02.27.16.30.34;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.11.20.15.26.38;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.11.20.15.07.00;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.11.20.12.17.52;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.11.17.21.47.10;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.08.04.08.01.15;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.38;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.38;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.10
+log
+@- renamed include/cpput/assert.h to include/cpput/assertcommon.h. This avoid clash with include <assert.h> in doxygen documentation
+- most Impl namespaces are now hidden from documentation using \cond and \endcond.
+@
+text
+@#include <cpput/assertcommon.h>
+#include <cpput/testcase.h>
+#include <cpput/testsuite.h>
+#include <stdio.h>
+#include "mocktestvisitor.h"
+
+/// @@todo Simplify this test some more...
+
+namespace {
+
+   class CalledTest : public CppUT::AbstractTestCase
+   {
+   public:
+      CalledTest( int &callCount )
+         : CppUT::AbstractTestCase( "CalledTest" )
+         , callCount_( callCount )
+      {
+      }
+
+      void run()
+      {
+         ++callCount_;
+      }
+
+      int &callCount_;
+   };
+}
+
+
+bool testTestSuite()
+{
+   printf( "Running bootstrap test: testTestSuite()...\n" );
+   try
+   {     
+      CppUT::TestInfo::threadInstance().startNewTest();
+      MockTestVisitor visitor;
+      CppUT::TestSuitePtr suite1 = CppUT::makeTestSuite( "Suite 1" );
+      suite1->accept( visitor );
+      CPPUT_ASSERT_EQUAL( 0, visitor.visitTestCaseCount_ );
+      CPPUT_ASSERT_EQUAL( 1, visitor.visitTestSuiteCount_ );
+
+      CPPUT_ASSERT_EQUAL( 0, suite1->testCount() );
+      CPPUT_ASSERT_EQUAL( "Suite 1", suite1->name() );
+
+      int callCount1 = 0;
+      CppUT::TestPtr test1( new CalledTest( callCount1 ) );
+      suite1->add( test1 );
+      CPPUT_ASSERT_EQUAL( 1, suite1->testCount() );
+      CPPUT_ASSERT( test1 == suite1->testAt(0), "returned test[0] is not added test" );
+
+      int callCount2 = 0;
+      CppUT::TestPtr test2( new CalledTest( callCount2 ) );
+      suite1->add( test2 );
+      CPPUT_ASSERT_EQUAL( 2, suite1->testCount() );
+      CPPUT_ASSERT( test1 == suite1->testAt(0), "returned test[0] is not added test" );
+      CPPUT_ASSERT( test2 == suite1->testAt(1), "returned test[1] is not added test" );
+   }
+   catch ( const CppUT::AbortingAssertionException &e )
+   {
+      printf( "testTestsuite() failed: %s\n", e.what() );
+      return false;
+   }
+   catch ( ... )
+   {
+      printf( "testTestsuite() failed (uncaught exception)." );
+      return false;
+   }
+
+   return true;
+}
+@
+
+
+1.9
+log
+@* Replaced function in namespace TestInfo by exposing the TestInfoData class and renaming it TestInfo. TestInfo in now an exposed per thread singleton.
+* startNewTest() is now called from TestCase::runTest() instead of being the test runner responsability. There still a few call to this method in cpput bootstrap test (which use assertion without run a test case).
+@
+text
+@d1 1
+a1 1
+#include <cpput/assert.h>
+@
+
+
+1.8
+log
+@* catch any exceptions that the test may leak.
+@
+text
+@d35 1
+a35 1
+      CppUT::TestInfo::startNewTest();
+@
+
+
+1.7
+log
+@* removed dependency on <iostream>.
+* added progress traces while running bootstrap tests.
+@
+text
+@d58 1
+a58 1
+   catch ( CppUT::AbortingAssertionException &e )
+d63 5
+@
+
+
+1.6
+log
+@* Removed TestContext.
+* TestContext/AbstractTestCase: moved responsibility of running the test to AbstractTestCase.
+@
+text
+@d4 1
+a4 1
+#include <iostream>
+d32 1
+d60 1
+a60 1
+      std::cout << "testTestsuite() failed: "  <<  e.what()  <<  std::endl;
+@
+
+
+1.5
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@a3 1
+#include <cpput/testcontext.h>
+@
+
+
+1.4
+log
+@* moved the assertion implementation to using TestInfo.
+* added assertion (tested/failed) counter to TestInfo.
+@
+text
+@a1 1
+#include <cpput/resultexception.h>
+@
+
+
+1.3
+log
+@* started removing TestDriver stuff from CppUnit 2
+* Removed Test::run(), Test::totalTestCount and Test::parent
+* User can only subclass AbstractTestSuite or AbstractTestCase.
+* AbstractTest has been inlined into Test
+* Test no longer have parent
+* Removed TestListener::enterTest() & TestListener::exitTest()
+* Moved responsibility of running TestCase from AbstractTestCase to TestContext::run( AbstractTestCase &test ).
+* Removed method related to suite and enter/exit event from TestContext.
+* Disabled some unit tests (rely on running test which will change again shortly)
+@
+text
+@d36 1
+d59 1
+a59 1
+   catch ( CppUT::AssertException &e )
+@
+
+
+1.2
+log
+@* renamed cpput/assertexception.h to cpput/resultexception.h
+@
+text
+@d3 1
+d9 1
+d13 1
+a13 1
+   class CalledTest : public CppUT::AbstractTest
+d17 2
+a18 1
+         : callCount_( callCount )
+d22 1
+a22 1
+      void run( CppUT::TestContext &context )
+a26 9
+      void accept( CppUT::TestVisitor &visitor )
+      {
+      }
+
+      int totalTestCount() const
+      {
+         return 1;
+      }
+
+a48 1
+      CPPUT_ASSERT_EQUAL( 1, suite1->totalTestCount() );
+a49 5
+      CPPUT_ASSERT( test1->parentTest() == &*suite1 );
+
+      CppUT::TestContext context;
+      suite1->run( context );
+      CPPUT_ASSERT_EQUAL( 1, callCount1, "test1 should have been called" );
+a54 1
+      CPPUT_ASSERT_EQUAL( 2, suite1->totalTestCount() );
+a56 14
+      CPPUT_ASSERT( test1->parentTest() == &*suite1 );
+      CPPUT_ASSERT( test2->parentTest() == &*suite1 );
+
+      suite1->run( context );
+      CPPUT_ASSERT_EQUAL( 2, callCount1, "test1 should have been called" );
+      CPPUT_ASSERT_EQUAL( 1, callCount2, "test2 should have been called" );
+
+      CppUT::TestSuitePtr suite2 = CppUT::makeTestSuite( "Suite 2" );
+      suite2->add( CppUT::TestPtr( new CalledTest( callCount1 ) ) );
+      suite2->add( CppUT::TestPtr( new CalledTest( callCount1 ) ) );
+      CPPUT_ASSERT_EQUAL( 2, suite2->totalTestCount() );
+
+      suite1->add( suite2 );
+      CPPUT_ASSERT_EQUAL( 4, suite1->totalTestCount() );
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 1
+a2 1
+#include <cpput/assertexception.h>
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

@@ -1,0 +1,51 @@
+head     1.1;
+branch   1.1.1;
+access   ;
+symbols  initial:1.1.1.1 cppunit:1.1.1;
+locks    ; strict;
+comment  @// @;
+
+
+1.1
+date     2002.04.18.23.10.52;  author blep;  state Exp;
+branches 1.1.1.1;
+next     ;
+
+1.1.1.1
+date     2002.04.18.23.10.52;  author blep;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+
+1.1
+log
+@Initial revision
+@
+text
+@// ©2001 Codejock.com Software, All Rights Reserved.
+//
+// You are free to use this source code unconditionally as long as this
+// notice is not removed. http://www.codejock.com
+//
+// stdafx.cpp : source file that includes just the standard includes
+//	MSDNIntegrator.pch will be the pre-compiled header
+//	stdafx.obj will contain the pre-compiled type information
+
+#include "stdafx.h"
+
+
+
+@
+
+
+1.1.1.1
+log
+@Initial import
+@
+text
+@@

@@ -1,0 +1,275 @@
+head	1.4;
+access;
+symbols
+	REL_1_12_1:1.4
+	REL_1_11_6:1.4
+	REL_1_11_4:1.4
+	REL_1_11_0:1.4
+	TG_CPPUNIT_NO_STREAM_AFTER:1.4
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.4
+	REL_1_10_2:1.4
+	REL_1_10_0:1.4
+	REL_1_9_14:1.4
+	REL_1_9_12:1.4
+	BRANCH_1_9_12:1.4.0.2
+	TG_BRANCH_1_9_12:1.4
+	TG_BEFORE_HPUX_PLUGIN:1.4
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3;
+locks; strict;
+comment	@// @;
+
+
+1.4
+date	2003.03.15.08.55.28;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.08.27.21.51.18;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.08.03.15.47.52;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.07.16.22.59.22;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* src/cppunit/CompilerOutputter.cpp:
+* src/cppunit/ProtectorChain.cpp:
+* src/cppunit/StringTools.cpp:
+* src/cppunit/TestPath.cpp:
+* src/cppunit/TypeInfoHelper.cpp:
+* src/cppunit/XmlElement.cpp:
+* src/cppunit/XmlOutputter.cpp: switched to using unsigned index in loop to
+	avoid signed/unsigned warning in vc7.
+
+* include/cppunit/extension/ExceptionTestCaseDecorator.h: removed dll export
+	on template (caused link error on vc7).
+@
+text
+@#include "ProtectorChain.h"
+
+CPPUNIT_NS_BEGIN
+
+
+class ProtectorChain::ProtectFunctor : public Functor
+{
+public:
+  ProtectFunctor( Protector *protector,
+                  const Functor &functor,
+                  const ProtectorContext &context )
+      : m_protector( protector )
+      , m_functor( functor )
+      , m_context( context )
+  {
+  }
+
+  bool operator()() const
+  {
+    return m_protector->protect( m_functor, m_context );
+  }
+
+private:
+  Protector *m_protector;
+  const Functor &m_functor;
+  const ProtectorContext &m_context;
+};
+
+
+ProtectorChain::~ProtectorChain()
+{
+  while ( count() > 0 )
+    pop();
+}
+
+
+void 
+ProtectorChain::push( Protector *protector )
+{
+  m_protectors.push_back( protector );
+}
+
+
+void 
+ProtectorChain::pop()
+{
+  delete m_protectors.back();
+  m_protectors.pop_back();
+}
+
+int 
+ProtectorChain::count() const
+{
+  return m_protectors.size();
+}
+
+
+bool 
+ProtectorChain::protect( const Functor &functor,
+                         const ProtectorContext &context )
+{
+  if ( m_protectors.empty() )
+    return functor();
+
+  Functors functors;
+  for ( int index = m_protectors.size()-1; index >= 0; --index )
+  {
+    const Functor &protectedFunctor = 
+              functors.empty() ? functor : *functors.back();
+
+    functors.push_back( new ProtectFunctor( m_protectors[index],
+                                            protectedFunctor, 
+                                            context ) );
+  }
+
+  const Functor &outermostFunctor = *functors.back();
+  bool succeed = outermostFunctor();
+
+  for ( unsigned int deletingIndex = 0; deletingIndex < m_protectors.size(); ++deletingIndex )
+    delete functors[deletingIndex];
+
+  return succeed;
+}
+
+
+CPPUNIT_NS_END
+@
+
+
+1.3
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d79 1
+a79 1
+  for ( int deletingIndex = 0; deletingIndex < m_protectors.size(); ++deletingIndex )
+@
+
+
+1.2
+log
+@* include/cppunit/Exception.h:
+* src/cppunit/Exception.h: added setMessage().
+
+* include/cppunit/Protector.h:
+* src/cppunit/Protector.cpp: added class ProtectorGuard. Change the
+  reportXXX() method to support Exception passing and SourceLine.
+
+* include/cppunit/TestCaller.h: removed 'expect exception' features.
+  It is now handled by ExceptionTestCaseDecorator and TestCaller no
+  longer need default template argument support.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/extensions/TestCaller.h: runTest() is now public
+  instead of protected, so that it can be decorated.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.h: added pushProtector() and popProtector()
+  methods. This allow user to specify their own exception trap when
+  running test case.
+
+* include/cppunit/extensions/TestDecorator.h:
+* src/cppunit/TestDecorator.cpp: added. Extracted from TestDecorator.h.
+  The test passed to the constructor is now owned by the decorator.
+
+* include/cppunit/extensions/TestCaseDecorator.h:
+* src/cppunit/TestCaseDecorator.cpp: added. Decorator for TestCase
+  setUp(), tearDown() and runTest().
+
+* include/cppunit/extensions/ExceptionTestCaseDecorator.h: added.
+  TestCaseDecorator to expect that a specific exception is thrown.
+
+* include/cppunit/extensions/HelperMacros.h: updated against TestCaller
+  change.
+
+* src/cppunit/DefaultFunctor.h: fixed bug (did not return underlying
+  test return code).
+
+* src/cppunit/ProtectorChain.cpp: fixed bug in chaing return code.
+
+* src/cppunit/DefaultFunctor.h: fixed bug.
+
+* src/msvc6/testrunner/ActiveTest.h:
+* src/msvc6/testrunner/ActiveTest.cpp: updated against
+  TestCaseDecorator ownership policy change. Moved inline functions
+  to .cpp.
+
+* examples/cppunittest/TestSetUpTest.cpp: updated to use MockTestCase
+  and against the new ownership policy.
+
+* examples/cppunittest/TestDecoratorTest.cpp:
+* examples/cppunittest/RepeatedTestTest.cpp: updated against
+  TestDecorator ownership policy change.
+
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.h:
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.cpp: added. Unit
+  tests for ExceptionTestCaseDecoratorTest.
+@
+text
+@d66 1
+a66 1
+  for ( int index = 0; index < m_protectors.size(); ++index )
+@
+
+
+1.1
+log
+@* include/cppunit/Protector.h:
+* src/cppunit/Protector.cpp: added. Base class for protectors.
+
+* src/cppunit/DefaultProtector.h:
+* src/cppunit/DefaultProtector.cpp: added. Implementation of the default
+  protector used to catch std::exception and any other exception.
+
+* src/cppunit/ProtectorChain.h:
+* src/cppunit/ProtectorChain.cpp: added. Implementation of a chain of
+  protector, allowing catching custom exception and implementation of
+  expected exception.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestResult.cpp: updated to use protector.
+@
+text
+@d63 1
+a63 4
+  {
+    functor();
+    return true;
+  }
+@
+

@@ -1,0 +1,135 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2007.01.12.05.52.49;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.09.16.18.36.52;	author esche;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.08.28.22.20.52;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@Ensure virtual class has virtual destructor.
+@
+text
+@#ifndef CPPUNIT_EXTENSIONS_TESTFIXTUREFACTORY_H
+#define CPPUNIT_EXTENSIONS_TESTFIXTUREFACTORY_H
+
+#include <cppunit/Portability.h>
+
+
+CPPUNIT_NS_BEGIN
+
+
+class TestFixture;
+
+/*! \brief Abstract TestFixture factory (Implementation).
+ *
+ * Implementation detail. Use by HelperMacros to handle TestFixture hierarchy.
+ */
+class TestFixtureFactory
+{
+public:
+  //! Creates a new TestFixture instance.
+  virtual TestFixture *makeFixture() =0;
+
+  virtual ~TestFixtureFactory() {}
+};
+
+
+/*! \brief Concret TestFixture factory (Implementation).
+ *
+ * Implementation detail. Use by HelperMacros to handle TestFixture hierarchy.
+ */
+template<class TestFixtureType>
+class ConcretTestFixtureFactory : public CPPUNIT_NS::TestFixtureFactory
+{
+  /*! \brief Returns a new TestFixture instance.
+   * \return A new fixture instance. The fixture instance is returned by
+   *         the TestFixtureFactory passed on construction. The actual type 
+   *         is that of the fixture on which the static method suite() 
+   *         was called.
+   */
+  TestFixture *makeFixture()
+  {
+    return new TestFixtureType();
+  }
+};
+
+
+CPPUNIT_NS_END
+
+
+#endif // CPPUNIT_EXTENSIONS_TESTFIXTUREFACTORY_H
+
+@
+
+
+1.2
+log
+@added newline at end of file (needed for some compilers to work)
+@
+text
+@d21 2
+@
+
+
+1.1
+log
+@* include/cppunit/Portability.h: added CPPUNIT_STATIC_CAST.
+
+* include/cppunit/extensions/TestFixtureFactory.h: extracted from
+  HelperMacros.h. Added template class ConcretTestFixtureFactory.
+
+* include/cppunit/extensions/TestSuiteBuilderContext.h:
+* src/cppunit/TestSuiteBuilderContext.cpp: added. Context used
+  to add test case to the fixture suite. Prevent future
+  compatibility break for custom test API.
+
+* include/cppunit/extensions/HelperMacros.h: mostly rewritten. No
+  longer use TestSuiteBuilder. Added support for abstract test fixture
+  through macro CPPUNIT_TEST_SUITE_END_ABSTRACT. Made custom test API
+  easier to use.
+
+* examples/cppunittest/HelperMacrosTest.h:
+* examples/cppunittest/HelperMacrosTest.cpp: updated against
+  HelperMacros.h changes.
+@
+text
+@d47 2
+a48 1
+#endif // CPPUNIT_EXTENSIONS_TESTFIXTUREFACTORY_H@
+

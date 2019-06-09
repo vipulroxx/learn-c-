@@ -1,0 +1,107 @@
+head	1.3;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3;
+locks; strict;
+comment	@# @;
+
+
+1.3
+date	2006.09.01.19.46.10;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2006.09.01.19.31.32;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2006.06.05.13.22.58;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@- synchronize with clean checkout instead of dev dir.
+@
+text
+@# synchronize cppunit2 directory with jsoncpp directory.
+# should be executed from script directory.
+
+import os
+import os.path
+import glob
+import shutil
+import sys
+
+source_dirs = {
+    "src/lib_json" : "src/cpptl",
+    "src/jsontestrunner" : "src/jsontestrunner",
+    "src/jsontestrunner/sconscript" : "src/jsontestrunner/SConscript",
+    "include/json" : "include/json",
+    "scons-tools" : "scons-tools"
+}
+
+jsoncpp_dir = '../../jsoncpp.svn'
+cppunit2_dir = '..'
+
+if not os.path.exists( os.path.join( cppunit2_dir, 'devtools', 'syncwithjsoncpp.py' ) ):
+    print 'You must executed this script from the cppunit2/devtools directory.'
+    sys.Exit(1)
+else:
+    for source_dir, target_dir in source_dirs.items():
+        source_dir = os.path.join( jsoncpp_dir, source_dir )
+        target_dir = os.path.join( cppunit2_dir, target_dir )
+        if os.path.isdir( source_dir ):
+            print 'Analysing', source_dir
+            for ext in 'cpp h py inl'.split():
+                ext = '*.' + ext
+                source_files = glob.glob(os.path.join(source_dir, ext))
+                for source in source_files:
+                    dest_path = os.path.join( target_dir, os.path.split(source)[1] )
+                    print ' => Copying %s to %s' % (source,dest_path)
+                    if os.path.exists( dest_path ):
+                        os.unlink( dest_path )
+                    shutil.copyfile( source, dest_path )
+        else:
+            print 'Direct file copy %s to %s' % (source_dir,target_dir)
+            if os.path.exists( target_dir ):
+                os.unlink( target_dir )
+            shutil.copyfile( source_dir, target_dir )
+
+@
+
+
+1.2
+log
+@- fixed bug (failure when target file did not exist).
+@
+text
+@d18 1
+a18 1
+jsoncpp_dir = '../../jsoncpp'
+d30 1
+a30 1
+            for ext in 'cpp h py'.split():
+@
+
+
+1.1
+log
+@- synchronized with lastest jsoncpp.
+@
+text
+@d36 2
+a37 1
+                    os.unlink( dest_path )
+d41 2
+a42 1
+            os.unlink( target_dir )
+@
+

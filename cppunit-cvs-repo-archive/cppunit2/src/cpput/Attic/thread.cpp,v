@@ -1,0 +1,463 @@
+head	1.6;
+access;
+symbols
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.5
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.5
+	TG_AFTER_REMOVING_TESTCONTEXT:1.5
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.5
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.5;
+locks; strict;
+comment	@// @;
+
+
+1.6
+date	2005.03.06.18.46.50;	author blep;	state dead;
+branches;
+next	1.5;
+
+1.5
+date	2004.02.01.16.12.56;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.01.31.13.21.05;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.01.31.11.40.00;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.31.10.58.52;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.31.10.16.30;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@* moved src/cpput/thread.cpp to src/cpptl/thread.cpp
+* implementation clean-up
+@
+text
+@#include <cpput/thread.h>
+#include <map>
+#include <list>
+#ifdef CPPUT_THREAD_SAFE
+# ifdef CPPUT_USE_WIN32_THREAD
+#  include <windows.h>
+# elif defined(CPPUT_USE_PTHREAD_THREAD)
+#  include <pthread.h>
+# endif // # elif defined(CPPUT_USE_PTHREAD_THREAD)
+#endif
+
+// Notes concerning threading implementation:
+// CppUnit need has very few thread-safety, hence the implementation of the threading
+// API need not to be highly performant.
+//
+// But, the ThreadLocalStorage should not use lock for each get/set (locking when creating
+// the variable in a new thread is ok though). ThreadLocalStorage is use by assertions
+// and this would therefore decrease the actually concurrency of the threads using assertions.
+
+
+#ifdef CPPUT_THREAD_SAFE
+
+namespace CppUT {
+
+# ifdef CPPUT_USE_WIN32_THREAD
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Thread API for WIN32
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+
+// class Mutex (win32)
+// //////////////////////////////////////////////////////////////////////
+
+Mutex::Mutex()
+   : data_( 0 )
+{
+   CRITICAL_SECTION *cs = new CRITICAL_SECTION();
+   ::InitializeCriticalSection( cs );
+   data_ = cs;
+}
+
+
+Mutex::~Mutex()
+{
+   CRITICAL_SECTION *cs = reinterpret_cast<CRITICAL_SECTION *>( data_ );
+   if ( cs )
+      ::DeleteCriticalSection( cs );
+   delete cs;
+}
+
+void 
+Mutex::lock()
+{
+   CRITICAL_SECTION *cs = reinterpret_cast<CRITICAL_SECTION *>( data_ );
+   ::EnterCriticalSection( cs );
+}
+
+
+void 
+Mutex::unlock()
+{
+   CRITICAL_SECTION *cs = reinterpret_cast<CRITICAL_SECTION *>( data_ );
+   ::LeaveCriticalSection( cs );
+}
+
+
+// class Impl::ThreadLocalStorageImpl (win32)
+// //////////////////////////////////////////////////////////////////////
+
+namespace Impl {
+   ThreadLocalStorageImpl::ThreadLocalStorageImpl( 
+                              const ::CppUT::Functor1<void **> &allocateDefaultValue,
+                              const ::CppUT::Functor1<void *> &freeValue )
+      : allocateDefaultValue_( allocateDefaultValue )
+      , freeValue_( freeValue )
+   {
+      tlsIndex_ = ::TlsAlloc();
+      //      if ( tlsIndex_ == TLS_OUT_OF_INDEXES ) // failed. 
+      // Can't throw exception => during static initialization
+   }
+
+   ThreadLocalStorageImpl::~ThreadLocalStorageImpl()
+   {
+      ::TlsFree( tlsIndex_ );
+   }
+
+   volatile void *
+   ThreadLocalStorageImpl::get()
+   {
+      void *p = ::TlsGetValue( tlsIndex_ );
+      if ( !p )
+      {
+         allocateDefaultValue_( &p );
+         ThreadLocalStorageManager::instance().atThreadExit( bind1( freeValue_, p ) );
+         if ( ::TlsSetValue( tlsIndex_, p ) == 0 )
+         {
+            // failure
+         }
+      }
+      return p;
+   }
+
+} // namespace Impl
+
+
+// class ThreadLocalStorageManager (win32)
+// //////////////////////////////////////////////////////////////////////
+
+class ThreadLocalStorageManager::Implementation
+{
+public:
+   typedef std::list<Functor0> Cleaners;
+   typedef std::map<Thread::ThreadIdType,Cleaners> ThreadCleaners;
+
+   void processCleaners( Cleaners &cleaners );
+
+   Mutex lock_;
+   ThreadCleaners threadCleaners_;
+};
+
+
+void 
+ThreadLocalStorageManager::Implementation::processCleaners( 
+   Cleaners &cleaners )
+{
+   while ( !cleaners.empty() )
+   {
+      cleaners.front()();
+      cleaners.pop_front();
+   }
+}
+
+
+ThreadLocalStorageManager &
+ThreadLocalStorageManager::instance()
+{
+   static ThreadLocalStorageManager manager;
+   return manager;
+}
+
+
+void 
+ThreadLocalStorageManager::atThreadExit( Functor0 cleaner )
+{
+   MutexGuard guard( impl_->lock_ );
+   impl_->threadCleaners_[ Thread::currentId() ].push_back( cleaner );
+}
+
+
+void 
+ThreadLocalStorageManager::onThreadExit()
+{
+   MutexGuard guard( impl_->lock_ );
+   Implementation::ThreadCleaners::iterator it = 
+      impl_->threadCleaners_.find( Thread::currentId() );
+   if ( it != impl_->threadCleaners_.end() )
+   {
+      impl_->processCleaners( it->second );
+      impl_->threadCleaners_.erase( it );
+   }
+}
+
+
+ThreadLocalStorageManager::ThreadLocalStorageManager()
+   : impl_( new ThreadLocalStorageManager::Implementation() )
+{
+}
+
+
+ThreadLocalStorageManager::~ThreadLocalStorageManager()
+{
+   impl_->lock_.lock();
+   Implementation::ThreadCleaners::iterator it = impl_->threadCleaners_.begin();
+   for ( ;it != impl_->threadCleaners_.end(); ++it )
+   {
+      try
+      {
+         impl_->processCleaners( it->second );
+      }
+      catch (...)    // in static destructor, must not propagate exception
+      {
+      }
+   }
+   impl_->lock_.unlock();
+
+   delete impl_;
+}
+
+
+// class Thread (win32)
+// //////////////////////////////////////////////////////////////////////
+
+/*
+Thread::Thread( Functor0 threadFunction )
+{
+//   threadFunction();
+}
+
+
+void 
+Thread::join()
+{
+}
+*/
+
+Thread::ThreadIdType 
+Thread::currentId()
+{
+   return ThreadIdType( ::GetCurrentThreadId() );
+}
+
+/*
+void 
+Thread::sleep( unsigned long durationInMillisecond )
+{
+   ::Sleep( durationInMillisecond );
+}
+*/
+
+
+
+
+# elif defined(CPPUT_USE_PTHREAD_THREAD)
+
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+// Thread API for PTHREAD
+// //////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
+
+// class Mutex (pthread)
+// //////////////////////////////////////////////////////////////////////
+
+Mutex::Mutex()
+   : data_( 0 )
+{
+   pthread_mutex_t *mutex = new pthread_mutex_t();
+   if ( pthread_mutex_init( mutex, 0 ) != 0 )
+   {  // initialization error
+   }
+   data_ = pthread_mutex_t;
+}
+
+
+Mutex::~Mutex()
+{
+   pthread_mutex_t *mutex = reinterpret_cast<pthread_mutex_t *>( data_ );
+   if ( mutex )
+      pthread_mutex_destroy( mutex );
+   delete mutex;
+}
+
+void 
+Mutex::lock()
+{
+   pthread_mutex_t *mutex = reinterpret_cast<pthread_mutex_t *>( data_ );
+   if ( pthread_mutex_lock( mutex ) != 0 )
+   {  // error
+   }
+}
+
+
+void 
+Mutex::unlock()
+{
+   pthread_mutex_t *mutex = reinterpret_cast<pthread_mutex_t *>( data_ );
+   if ( pthread_mutex_unlock( mutex ) != 0 )
+   {  // error
+   }
+}
+
+
+// class Impl::ThreadLocalStorageImpl (pthread)
+// //////////////////////////////////////////////////////////////////////
+
+namespace Impl {
+   ThreadLocalStorageImpl::ThreadLocalStorageImpl( 
+                              const ::CppUT::Functor1<void **> &allocateDefaultValue,
+                              const ::CppUT::Functor1<void *> &freeValue )
+      : allocateDefaultValue_( allocateDefaultValue )
+      , freeValue_( freeValue )
+      , tlsKey_( new pthread_key_t() )
+   {
+      pthread_key_t *key = reinterpret_cast<pthread_key_t *>( tlsKey_ );
+      if ( pthread_key_create( key, 0 ) != 0 )
+      { // error: Can't throw exception => during static initialization
+      }
+   }
+
+   ThreadLocalStorageImpl::~ThreadLocalStorageImpl()
+   {
+      pthread_key_t *key = reinterpret_cast<pthread_key_t *>( tlsKey_ );
+      if ( pthread_key_delete( key ) != 0 )
+      { // error: can't throw exception, during static uninitiazation
+      }
+      delete key;
+   }
+
+   void *
+   ThreadLocalStorageImpl::get()
+   {
+      pthread_key_t *key = reinterpret_cast<pthread_key_t *>( tlsKey_ );
+      void *p = pthread_getspecific( key );
+      if ( !p )
+      {
+         allocateDefaultValue_( &p );
+         ThreadLocalStorageManager::instance().atThreadExit( bind1( freeValue_, p ) );
+         pthread_setspecific( key, p );
+      }
+      return p;
+   }
+
+} // namespace Impl
+
+
+
+#endif // # elif defined(CPPUT_USE_PTHREAD_THREAD)
+
+
+} // namespace CppUT
+
+#endif // #ifdef CPPUT_THREAD_SAFE
+@
+
+
+1.5
+log
+@* added /Za setting to project to force conformance to ANSI C++
+* fixed issues related to ANSI C++ conformance
+* fixed bug in SliceEnumerator copy constructor & added test
+@
+text
+@@
+
+
+1.4
+log
+@* added incomplete implementation of the thread api for pthread
+@
+text
+@d89 1
+a89 1
+   void *
+d324 1
+a324 1
+#endif // #ifdef CPPUT_THREAD_SAFE@
+
+
+1.3
+log
+@* added thread api implementation for non thread-safe mode
+@
+text
+@d4 16
+a19 1
+#include <windows.h>
+d23 4
+d33 1
+a33 3
+namespace CppUT {
+
+// class Mutex
+d69 1
+a69 1
+// class Impl::ThreadLocalStorageImpl
+d95 1
+a95 1
+         allocateDefaultValue_( &p );     // @@todo need to plug into the manager to garbage collect this
+d108 1
+a108 1
+// class ThreadLocalStorageManager
+d192 1
+a192 1
+// class Thread
+d222 100
+@
+
+
+1.2
+log
+@* fixed bug in ThreadLocalStorageManager
+@
+text
+@d6 1
+d8 5
+a12 1
+// Win32 Implementation
+d206 2
+@
+
+
+1.1
+log
+@* added a minimum thread api for cppunit thread-safety implementation
+@
+text
+@d152 1
+a152 1
+   MutexGuard guard( impl_->lock_ );
+d154 1
+a154 1
+   while ( it != impl_->threadCleaners_.end() )
+d156 7
+a162 1
+      impl_->processCleaners( it->second );
+d164 1
+@
+

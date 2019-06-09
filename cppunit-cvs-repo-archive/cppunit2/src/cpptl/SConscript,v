@@ -1,0 +1,52 @@
+head	1.2;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2005.11.07.22.43.07;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.03.06.18.48.24;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@- replaced usage of OpenTest::Properties with Json::Value.
+  Json::Value provides a simpler interface and a standard *simple* serialization
+  format.
+- jsoncpp has been inlined in CppTL to make deploy easier and remove
+  an external dependency.
+@
+text
+@Import( 'env buildLibary' )
+
+buildLibary( env, Split( """
+    json_reader.cpp
+    json_value.cpp
+    json_writer.cpp
+    thread.cpp
+     """ ),
+    'cpptl' )
+@
+
+
+1.1
+log
+@* added a library for cpptl for threading functionnalies.
+@
+text
+@d4 3
+@
+

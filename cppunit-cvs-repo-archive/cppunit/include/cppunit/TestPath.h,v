@@ -1,0 +1,683 @@
+head	1.7;
+access;
+symbols
+	REL_1_12_1:1.7
+	REL_1_11_6:1.7
+	REL_1_11_4:1.7
+	REL_1_11_0:1.7
+	TG_CPPUNIT_NO_STREAM_AFTER:1.7
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.6
+	REL_1_10_2:1.6
+	REL_1_10_0:1.6
+	REL_1_9_14:1.6
+	REL_1_9_12:1.6
+	BRANCH_1_9_12:1.6.0.2
+	TG_BRANCH_1_9_12:1.6
+	TG_BEFORE_HPUX_PLUGIN:1.6
+	TG_BEFORE_SUN4_PORT:1.6
+	REL_1_9_10:1.6
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.7
+date	2004.06.25.10.41.27;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.08.29.19.27.07;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.07.13.10.33.49;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.06.14.11.12.17;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.20.21.51.33;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.12.19.28.47;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@#ifndef CPPUNIT_TESTPATH_H
+#define CPPUNIT_TESTPATH_H
+
+#include <cppunit/Portability.h>
+
+#if CPPUNIT_NEED_DLL_DECL
+#pragma warning( push )
+#pragma warning( disable: 4251 )  // X needs to have dll-interface to be used by clients of class Z
+#endif
+
+#include <cppunit/portability/CppUnitDeque.h>
+#include <string>
+
+CPPUNIT_NS_BEGIN
+
+
+class Test;
+
+#if CPPUNIT_NEED_DLL_DECL
+//  template class CPPUNIT_API std::deque<Test *>;
+#endif
+
+
+/*! \brief A List of Test representing a path to access a Test.
+ * \ingroup ExecutingTest
+ *
+ * The path can be converted to a string and resolved from a string with toString()
+ * and TestPath( Test *root, const std::string &pathAsString ).
+ *
+ * Pointed tests are not owned by the class.
+ *
+ * \see Test::resolvedTestPath()
+ */
+class CPPUNIT_API TestPath
+{
+public:
+  /*! \brief Constructs an invalid path.
+   * 
+   * The path is invalid until a test is added with add().
+   */
+  TestPath();
+
+  /*! \brief Constructs a valid path.
+   *
+   * \param root Test to add.
+   */
+  TestPath( Test *root );
+
+  /*! \brief Constructs a path using a slice of another path.
+   * \param otherPath Path the test are copied from.
+   * \param indexFirst Zero based index of the first test to copy. Adjusted to be in valid
+   *                   range. \a count is adjusted with \a indexFirst.
+   * \param count Number of tests to copy. If < 0 then all test starting from index
+   *              \a indexFirst are copied.
+   */
+  TestPath( const TestPath &otherPath, 
+            int indexFirst, 
+            int count = -1 );
+
+  /*! \brief Resolves a path from a string returned by toString().
+   *
+   * If \a pathAsString is an absolute path (begins with '/'), then the first test name
+   * of the path must be the name of \a searchRoot. Otherwise, \a pathAsString is a 
+   * relative path, and the first test found using Test::findTest() matching the first
+   * test name is used as root. An empty string resolve to a path containing 
+   * \a searchRoot.
+   *
+   * The resolved path is always valid.
+   *
+   * \param searchRoot Test used to resolve the path.
+   * \param pathAsString String that contains the path as a string created by toString().
+   * \exception std::invalid_argument if one of the test names can not be resolved.
+   * \see toString().
+   */
+  TestPath( Test *searchRoot, 
+            const std::string &pathAsString );
+
+  /*! \brief Copy constructor.
+   * \param other Object to copy.
+   */
+  TestPath( const TestPath &other );
+
+  virtual ~TestPath();
+
+  /*! \brief Tests if the path contains at least one test.
+   * \return \c true if the path contains at least one test, otherwise returns \c false.
+   */
+  virtual bool isValid() const;
+
+  /*! \brief Adds a test to the path.
+   * \param test Pointer on the test to add. Must not be \c NULL.
+   */
+  virtual void add( Test *test );
+
+  /*! \brief Adds all the tests of the specified path.
+   * \param path Path that contains the test to add.
+   */
+  virtual void add( const TestPath &path );
+
+  /*! \brief Inserts a test at the specified index.
+   * \param test Pointer on the test to insert. Must not be \c NULL.
+   * \param index Zero based index indicating where the test is inserted.
+   * \exception std::out_of_range is \a index < 0 or \a index > getTestCount().
+   */
+  virtual void insert( Test *test, int index );
+
+  /*! \brief Inserts all the tests at the specified path at a given index.
+   * \param path Path that contains the test to insert.
+   * \param index Zero based index indicating where the tests are inserted.
+   * \exception std::out_of_range is \a index < 0 or \a index > getTestCount(), and
+   *            \a path is valid.
+   */
+  virtual void insert( const TestPath &path, int index );
+
+  /*! \brief Removes all the test from the path.
+   *
+   * The path becomes invalid after this call.
+   */
+  virtual void removeTests();
+
+  /*! \brief Removes the test at the specified index of the path.
+   * \param index Zero based index of the test to remove.
+   * \exception std::out_of_range is \a index < 0 or \a index >= getTestCount().
+   */
+  virtual void removeTest( int index );
+
+  /*! \brief Removes the last test.
+   * \exception std::out_of_range is the path is invalid.
+   * \see isValid().
+   */
+  virtual void up();
+
+  /*! \brief Returns the number of tests in the path.
+   * \return Number of tests in the path.
+   */
+  virtual int getTestCount() const;
+
+  /*! \brief Returns the test of the specified index.
+   * \param index Zero based index of the test to return.
+   * \return Pointer on the test at index \a index. Never \c NULL.
+   * \exception std::out_of_range is \a index < 0 or \a index >= getTestCount().
+   */
+  virtual Test *getTestAt( int index ) const;
+
+  /*! \brief Get the last test of the path.
+   * \return Pointer on the last test (test at the bottom of the hierarchy). Never \c NULL.
+   * \exception std::out_of_range if the path is not valid ( isValid() returns \c false ).
+   */
+  virtual Test *getChildTest() const;
+
+  /*! \brief Returns the path as a string.
+   *
+   * For example, if a path is composed of three tests named "All Tests", "Math" and
+   * "Math::testAdd", toString() will return:
+   *
+   * "All Tests/Math/Math::testAdd".
+   * 
+   * \return A string composed of the test names separated with a '/'. It is a relative
+   *         path.
+   */
+  virtual std::string toString() const;
+
+  /*! \brief Assignment operator.
+   * \param other Object to copy.
+   * \return This object.
+   */
+  TestPath &operator =( const TestPath &other );
+
+protected:
+  /*! \brief Checks that the specified test index is within valid range.
+   * \param index Zero based index to check.
+   * \exception std::out_of_range is \a index < 0 or \a index >= getTestCount().
+   */
+  void checkIndexValid( int index ) const;
+
+  /// A list of test names.
+  typedef CppUnitDeque<std::string> PathTestNames;
+
+  /*! \brief Splits a path string into its test name components.
+   * \param pathAsString Path string created with toString().
+   * \param testNames Test name components are added to that container.
+   * \return \c true if the path is relative (does not begin with '/'), \c false
+   *         if it is absolute (begin with '/').
+   */
+  bool splitPathString( const std::string &pathAsString,
+                        PathTestNames &testNames );
+
+  /*! \brief Finds the actual root of a path string and get the path string name components.
+   * \param searchRoot Test used as root if the path string is absolute, or to search
+   *                   the root test if the path string is relative.
+   * \param pathAsString Path string. May be absolute or relative.
+   * \param testNames Test name components are added to that container.
+   * \return Pointer on the resolved root test. Never \c NULL.
+   * \exception std::invalid_argument if either the root name can not be resolved or if
+   *            pathAsString contains no name components.
+   */
+  Test *findActualRoot( Test *searchRoot,
+                        const std::string &pathAsString,
+                        PathTestNames &testNames );
+
+protected:
+  typedef CppUnitDeque<Test *> Tests;
+  Tests m_tests;
+
+};
+
+
+CPPUNIT_NS_END
+
+#endif // CPPUNIT_TESTPATH_H
+
+@
+
+
+1.6
+log
+@* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/Protector.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestPath.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* include/cppunit/plugin/PlugInManager.h:
+* include/cppunit/plugin/PlugInParameters.h:
+* include/cppunit/TestPlugIn.h:
+* src/cppunit/DefaultProtector.h:
+* src/cppunit/ProtectorChain.h:
+* src/cppunit/ProtectorContext.h:
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestResult.cpp: fixed a dew documentation bugs.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: moved documentation to header.
+@
+text
+@d12 1
+@
+
+
+1.5
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d36 1
+a36 1
+  /*! Constructs an invalid path.
+d42 1
+a42 1
+  /*! Constructs a valid path.
+d48 1
+a48 1
+  /*! Constructs a path using a slice of another path.
+d59 1
+a59 1
+  /*! Resolves a path from a string returned by toString().
+d77 1
+a77 1
+  /*! Copy constructor.
+d84 1
+a84 1
+  /*! Tests if the path contains at least one test.
+d89 1
+a89 1
+  /*! Adds a test to the path.
+d94 1
+a94 1
+  /*! Adds all the tests of the specified path.
+d99 1
+a99 1
+  /*! Inserts a test at the specified index.
+d106 1
+a106 1
+  /*! Inserts all the tests at the specified path at a given index.
+d114 1
+a114 1
+  /*! Removes all the test from the path.
+d120 1
+a120 1
+  /*! Removes the test at the specified index of the path.
+d126 1
+a126 1
+  /*! Removes the last test.
+d132 1
+a132 1
+  /*! Returns the number of tests in the path.
+d137 1
+a137 1
+  /*! Returns the test of the specified index.
+d162 1
+a162 1
+  /*! Assignment operator.
+d169 1
+a169 1
+  /*! Checks that the specified test index is within valid range.
+d178 1
+a178 1
+  /*! Splits a path string into its test name components.
+d187 1
+a187 1
+  /*! Finds the actual root of a path string and get the path string name components.
+@
+
+
+1.4
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d11 1
+a11 1
+#include <deque>
+d176 1
+a176 1
+  typedef std::deque<std::string> PathTestNames;
+d201 1
+a201 1
+  typedef std::deque<Test *> Tests;
+@
+
+
+1.3
+log
+@* src/cppunit/TypeInfoHelper.cpp: added work around for bug #565481.
+  gcc 3.0 RTTI name() returns the type prefixed with a number (the
+  length of the type). The work around strip the number.
+
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp: registry key is now
+  set. Allow to save settings.
+
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp: added layout
+  initialization for resizing.
+
+* src/msvc6/testpluginrunner/TestPlugRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: added TestRunner
+  project files. Somehow I can't get cdxCDynamicDialog to compile
+  as a MFC extension. Included all sources files and resources
+  as a very dirt work around.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h: those classes are no longer
+  exported in the MFC extension. See TestPlugInRunner issue with
+  cdxCDynamicDialog.
+
+* include/cppunit/Message.h:
+* include/cppunit/TestPath.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TestFactoryRegistry.h:
+* include/cppunit/XmlElement.h:
+* include/cppunit/TypeInfoHelper.h: commented out STL template export
+  in DLL. This caused conflicts when instantiting the same template in
+  a user project.
+@
+text
+@d13 2
+a14 1
+namespace CppUnit {
+d207 1
+a207 1
+} // namespace CppUnit
+@
+
+
+1.2
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@d18 1
+a18 1
+  template class CPPUNIT_API std::deque<Test *>;
+@
+
+
+1.1
+log
+@* Makefile.am: added examples/qt to tar ball release.
+
+* TODO: heavily updated.
+
+* contrib/msvc/CppUnit*.wwtpl: changed base class for unit test to TestFixture.
+
+* include/cppunit/Test.h: removed toString() method. Not used by the framework
+  and source of confusions with getName().
+  Added getChildTestCount() and getChildTestAt(), introducing the composite pattern
+  at top level. Added utility methods findTest() and findTestPath().
+
+* src/cppunit/Test.cpp: added. Implementation of new utility methods.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: inherits TestLeaf. Removed toString(), run(void) and
+  defaultResult(). Removed default constructor.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestSuite.cpp: fixed some includes that used "" instead of <>.
+
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: added. Common implementation of Test for composite
+  tests (TestSuite).
+
+* include/cppunit/TestFailure.h:
+* src/cppunit/TestFailure.cpp: removed toString().
+
+* include/cppunit/TestLeaf.h:
+* src/cppunit/TestLeaf.cpp: added. Common implementation of Test for single test
+  (TestCase).
+
+* include/cppunit/TestListener.h: added TimingListener example to documentation.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: added. List of test traversed to access a test in the
+  test hierarchy.
+
+* include/cppunit/TestRunner.h: added. Generic TestRunner.
+
+* src/cppunit/TestRunner.cpp: moved to TextTestRunner.cpp. Added new implementation
+  of includecppunit/TestRunner.h.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: inherits TestComposite and implements new Test
+  interface. Removed toString().
+
+* src/cppunit/TextTestRunner.cpp: moved from TestRunner.cpp. Implementation of
+  include/cppunit/ui/text/TestRunner.h.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* src/cppunit/RepeatedTest.cpp: removed toString().
+
+* include/cppunit/extensions/TestDecorator.h: inherits TestLeaf.
+  Removed toString()
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h: XML outputter now escape node content.
+  Add unit test for that bug (#540944). Added style sheet support. Modified
+  XML structure: failure message as its own element.
+
+* src/msvc/testrunner/TestRunnerModel.h:
+* src/msvc/testrunner/TestRunnerModel.cpp: used Test::findTest() to find a test
+  by name instead of using RTTI. Added toAnsiString() for convertion when
+  compiling as UNICODE.
+
+* src/msvc/testrunner/TreeHierarchyDlg.h:
+* src/msvc/testrunner/TreeHierarchyDlg.cpp: used new composite interface of Test
+  to explorer the test hierarchy instead of RTTI.
+
+* examples/cppunittest/TestPathTest.h:
+* examples/cppunittest/TestPathTest.cpp: added, unit tests for TestPath.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: added test for TestLeaf.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: added test for TestComposite and
+  new Test interface.
+@
+text
+@d76 5
+d161 6
+d201 1
+a201 1
+  Tests _tests;
+@
+

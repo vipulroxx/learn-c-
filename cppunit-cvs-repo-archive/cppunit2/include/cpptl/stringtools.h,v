@@ -1,0 +1,691 @@
+head	1.10;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.10
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.5
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.4
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.10
+date	2006.09.06.19.23.26;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2006.02.01.18.26.16;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.07.02.20.27.35;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.03.05.12.19.51;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2005.02.28.20.45.41;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.02.27.10.13.18;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.02.26.11.51.10;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.02.23.21.38.16;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.11.20.09.15.00;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.11.19.22.57.56;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.10
+log
+@- made atomic counter copyable
+- added implementation of CPPTL_ assertions.
+- fixed wrong assertions in smallmap.h
+- fixed buggy iterator usage in smallmaptest.
+- no longer require a library to use cpptl threads.
+@
+text
+@#ifndef CPPTL_STRINGTOOLS_H_INCLUDED
+# define CPPTL_STRINGTOOLS_H_INCLUDED
+
+# include <cpptl/conststring.h>
+# include <float.h> // toString( double )
+# include <stdio.h> // sprintf
+
+namespace CppTL {
+
+   inline bool isDigit( char c )
+   {
+      return unsigned(c) >= '0'  && unsigned(c) <= '9';
+   }
+
+   inline char digit( unsigned number )
+   {
+      static const char *digits = "0123456789";
+      return digits[number];
+   }
+
+   inline char hexaDigit( unsigned number )
+   {
+      static const char *digit = "0123456789abcdef";
+      return digit[number];
+   }
+
+   template<class IntType>
+   struct SignedPolicy
+   {
+      void makePositive( IntType &value )
+      {
+         isNegative_ = value < 0;
+         if ( isNegative_ )
+            value *= -1;
+      }
+
+      bool needMinusSign() const
+      {
+         return isNegative_;
+      }
+
+      bool isNegative_;
+   };
+
+   template<class IntType>
+   struct UnsignedPolicy
+   {
+      void makePositive( IntType & )
+      {
+      }
+
+      bool needMinusSign() const
+      {
+         return false;
+      }
+   };
+
+   template<class IntType, class SignPolicy>
+   CppTL::ConstString integerToString( IntType v, SignPolicy sign )
+   {
+      char buffer[32];
+      char *current = &buffer[32];
+      *--current = 0;
+      if ( v == 0 )
+         *--current = '0';
+      else
+      {
+         sign.makePositive( v );
+         while ( v != 0 )
+         {
+            *--current = digit( unsigned(v % 10) );
+            v /= 10;
+         }
+         if ( sign.needMinusSign() )
+            *--current = '-';
+      }
+      return current;
+   }
+
+
+   template<class UnsignedIntegerType>
+   CppTL::ConstString 
+   integerToHexaString( UnsignedIntegerType value )
+   {
+      const int bufferLength = sizeof(UnsignedIntegerType) * 2 + 1;
+      char buffer[ bufferLength ];
+      char *current = &buffer[ bufferLength ];
+      char *end = current;
+      *--current = 0;
+      do
+      {
+         *--current += hexaDigit( size_type(value & 15) );
+         value /= 16;
+      }
+      while ( value != 0 );
+
+      return CppTL::ConstString( current, end );
+   }
+
+
+   //template<class IntType>
+   //CppTL::ConstString integerToString( IntType v )
+   //{
+   //   CppTL::ConstString s;
+   //   if ( v == 0 )
+   //      s += '0';
+   //   else
+   //   {
+   //      bool isSigned = v < 0;
+   //      if ( isSigned )
+   //         v *= -1;
+
+   //      while ( v != 0 )
+   //      {
+   //         // Thoses cast are necessary to resolve an ambiguity between insert( char *, unsigned, char ) 
+   //         // and insert( unsigned, unsigned, char) with Sun CC.
+   //         s.insert( (unsigned int)0, (unsigned int)1, digits[v % 10] ); 
+   //         v /= 10;
+   //      }
+
+   //      if ( isSigned )
+   //         s.insert( 0, "-" );
+   //   }
+   //   return s;
+   //}
+
+   inline CppTL::ConstString toString( char c )
+   {
+      return CppTL::ConstString( &c, 1 );
+   }
+
+   inline CppTL::ConstString toString( int v )
+   {
+      return integerToString( v, SignedPolicy<int>() );
+   }
+
+   inline CppTL::ConstString toString( unsigned int v )
+   {
+      return integerToString( v, UnsignedPolicy<unsigned int>() );
+   }
+
+   inline CppTL::ConstString toString( long v )
+   {
+      return integerToString( v, SignedPolicy<long>() );
+   }
+
+   inline CppTL::ConstString toString( unsigned long v )
+   {
+      return integerToString( v, UnsignedPolicy<unsigned long>() );
+   }
+
+   inline CppTL::ConstString toString( short v )
+   {
+      return integerToString( v, SignedPolicy<short>() );
+   }
+
+   inline CppTL::ConstString toString( unsigned short v )
+   {
+      return integerToString( v, UnsignedPolicy<unsigned short>() );
+   }
+
+#ifndef CPPTL_NO_INT64
+
+   inline CppTL::ConstString toString( int64_t v )
+   {
+      return integerToString( v, SignedPolicy<int64_t>() );
+   }
+
+   inline CppTL::ConstString toString( uint64_t v )
+   {
+      return integerToString( v, UnsignedPolicy<uint64_t>() );
+   }
+#endif
+
+   inline CppTL::ConstString toString( float v )
+   {
+#ifdef FLT_DIG
+       const int precision = FLT_DIG;
+#else
+       const int precision = 6;
+#endif  // #ifdef FLT_DIG
+       char buffer[128];
+#ifdef __STDC_SECURE_LIB__ // Use secure version with visual studio 2005 to avoid warning.
+       sprintf_s(buffer, sizeof(buffer), "%.*g", precision, v); 
+#else	
+       sprintf(buffer, "%.*g", precision, v); 
+#endif
+       return buffer;
+   }
+
+   inline CppTL::ConstString toString( double v )
+   {
+#ifdef DBL_DIG
+       const int precision = DBL_DIG;
+#else
+       const int precision = 15;
+#endif  // #ifdef DBL_DIG
+       char buffer[128];
+#ifdef __STDC_SECURE_LIB__ // Use secure version with visual studio 2005 to avoid warning.
+       sprintf_s(buffer, sizeof(buffer), "%.*g", precision, v); 
+#else	
+       sprintf(buffer, "%.*g", precision, v); 
+#endif
+       return buffer;
+   }
+
+   inline CppTL::ConstString toString( long double v )
+   {
+#ifdef DBL_DIG
+       const int precision = DBL_DIG;
+#else
+       const int precision = 15;
+#endif  // #ifdef DBL_DIG
+       char buffer[128];
+#ifdef __STDC_SECURE_LIB__ // Use secure version with visual studio 2005 to avoid warning.
+       sprintf_s(buffer, sizeof(buffer), "%.*g", precision, v); 
+#else	
+       sprintf(buffer, "%.*g", precision, v); 
+#endif
+       return buffer;
+   }
+
+   inline CppTL::ConstString toString( bool v )
+   {
+      return v ? "true" : "false";
+   }
+
+
+   inline CppTL::ConstString toHexaString( unsigned int v )
+   {
+      return integerToHexaString( v );
+   }
+
+
+#ifndef CPPTL_NO_INT64
+   inline CppTL::ConstString toHexaString( uint64_t v )
+   {
+      return integerToHexaString( v );
+   }
+#endif
+
+
+inline void
+escapeControl( char c, CppTL::StringBuffer &escaped, const char *newLineEscape = "\\n" )
+{
+   switch ( c )
+   {
+   case '\n':
+      escaped += newLineEscape;
+      break;
+   case '\t':
+      escaped += CppTL::ConstCharView( "\\t", 2 );
+      break;
+   case '\r':
+      escaped += CppTL::ConstCharView( "\\r", 2 );
+      break;
+   case '\v':
+      escaped += CppTL::ConstCharView( "\\v", 2 );
+      break;
+   default:
+      {
+         char hexa[2];
+         hexa[0] = hexaDigit( (c >> 4) & 15 );
+         hexa[1] = hexaDigit( c & 15 );
+         escaped += CppTL::ConstCharView( "\\x", 2 ) 
+                    + ConstCharView( hexa, hexa + sizeof(hexa) );
+      }
+      break;
+   }
+}
+
+
+inline void
+escape( char c, CppTL::StringBuffer &escaped, const char *newLineEscape = "\\n" )
+{
+   if ( c >=0  &&  c < 32 )
+      escapeControl( c, escaped, newLineEscape );
+   else if ( c == '\\' )
+      escaped += CppTL::ConstCharView( "\\\\", 2 );
+   escaped += CppTL::ConstCharView( &c, 1 );
+}
+
+
+// need to expose some of those utility functions...
+inline void
+escapeRange( const char *first,
+             const char *last, 
+             CppTL::StringBuffer &escaped, 
+             const char *newLineEscape = "\\n" )
+{
+   while ( first != last )
+      escape( *first++, escaped, newLineEscape );
+}
+
+inline void
+escape( const CppTL::ConstString &text, 
+        CppTL::StringBuffer &escaped, 
+        const char *newLineEscape = "\\n" )
+{
+   escapeRange( text.c_str(), text.c_str() + text.length(), escaped );
+}
+
+
+inline CppTL::ConstString 
+quoteStringRange( const char *first,
+                  const char *last,
+                  const char *newLineEscape = "\\n" )
+{
+   CppTL::StringBuffer escaped( size_type((last-first) * 1.2) + 64 );
+   escaped += CppTL::ConstCharView( "\"", 1 );
+   escapeRange(first, last, escaped, newLineEscape );
+   escaped += CppTL::ConstCharView( "\"", 1 );
+   return escaped;
+}
+
+
+inline CppTL::ConstString 
+quoteString( const CppTL::ConstString &text, 
+             const char *newLineEscape = "\\n" )
+{
+   return quoteStringRange( text.c_str(), text.c_str() + text.length() );
+}
+
+
+inline CppTL::ConstString 
+quoteMultiLineStringRange( const char *first, 
+                           const char *last )
+{
+   return quoteStringRange( first, last, "\\n\n" );
+}
+
+
+inline CppTL::ConstString 
+quoteMultiLineString( const CppTL::ConstString &str )
+{
+   return quoteString( str, "\\n\n" );
+}
+
+
+} // namespace CppTL
+
+#endif // CPPTL_STRINGTOOLS_H_INCLUDED
+
+@
+
+
+1.9
+log
+@* worked-around security deprecation warning on VC++ 2005.
+@
+text
+@d285 11
+a295 1
+inline CppTL::ConstString 
+d300 13
+a312 3
+   CppTL::ConstString::const_iterator it = text.begin();
+   while ( it != text.end() )
+      escape( *it++, escaped, newLineEscape );
+d321 9
+a329 5
+   CppTL::StringBuffer escaped( size_type(text.length() * 1.2) + 64 );
+   escaped += CppTL::ConstCharView( "\"", 1 );
+   escape(text, escaped, newLineEscape );
+   escaped += CppTL::ConstCharView( "\"", 1 );
+   return escaped;
+@
+
+
+1.8
+log
+@* Added a simple test runner that does not rely on the open test framework to run cppunit2 tests.
+* added CppTL::ConstCharView to wrapper const char *strings.
+* added CppTL::quoteMultiLineString()
+* string assertion output actual and expected using quoteMultiLineString().
+* added serialize unit test for basic Properties
+* opentest tests now use the LightTestRunner.
+@
+text
+@d183 5
+a187 1
+       sprintf(buffer, "%.*g", precision, v ); 
+d199 5
+a203 1
+       sprintf(buffer, "%.*g", precision, v ); 
+d215 5
+a219 1
+       sprintf(buffer, "%.*g", precision, v ); 
+@
+
+
+1.7
+log
+@* added missing include of stdio.h
+@
+text
+@d231 32
+a262 2
+inline CppTL::ConstString 
+escapeControl( char c )
+d264 5
+a268 9
+  if ( c == '\n' )
+    return "\\n";
+  else if ( c == '\t' )
+    return "\\t";
+  else if ( c == '\r' )
+    return "\\r";
+  else if ( c == '\v' )
+    return "\\v";
+  return "\\x" + toHexaString( unsigned(c) );
+d272 1
+d274 3
+a276 1
+escape( char c )
+d278 4
+a281 5
+  if ( c >=0  &&  c < 32 )
+    return escapeControl( c );
+  else if ( c == '\\' )
+    return "\\\\";
+  return CppTL::ConstString( &c, 1 );
+a284 1
+// need to expose some of those utility functions...
+d286 2
+a287 1
+escape( const CppTL::ConstString &text )
+d290 4
+a293 4
+  CppTL::ConstString::const_iterator it = text.begin();
+  while ( it != text.end() )
+    escaped += escape( *it++ );
+  return escaped;
+d298 1
+a298 1
+quoteString( const CppTL::ConstString &str )
+d300 1
+a300 1
+   return "\"" + escape(str) + "\"";
+@
+
+
+1.6
+log
+@* added isDigit()
+@
+text
+@d6 1
+@
+
+
+1.5
+log
+@* use ConstString instead of std::string
+* moved quoteString() from cpput/assertstring to cpptl/stringtools.h.
+@
+text
+@d9 5
+@
+
+
+1.4
+log
+@* rewrote integerToString() so that it no longer use std::string internal (portability issue with suncc). Also avoid warning with gcc about 'always false condition'.
+@
+text
+@d4 1
+a4 1
+# include <string>
+d15 6
+d53 1
+a53 1
+   std::string integerToString( IntType v, SignPolicy sign )
+d75 20
+d96 1
+a96 1
+   //std::string integerToString( IntType v )
+d98 1
+a98 1
+   //   std::string s;
+d121 1
+a121 1
+   inline std::string toString( char c )
+d123 1
+a123 1
+      return std::string( 1, c );
+d126 1
+a126 1
+   inline std::string toString( int v )
+d131 1
+a131 1
+   inline std::string toString( unsigned int v )
+d136 1
+a136 1
+   inline std::string toString( long v )
+d141 1
+a141 1
+   inline std::string toString( unsigned long v )
+d146 1
+a146 1
+   inline std::string toString( short v )
+d151 1
+a151 1
+   inline std::string toString( unsigned short v )
+d158 1
+a158 1
+   inline std::string toString( int64_t v )
+d163 1
+a163 1
+   inline std::string toString( uint64_t v )
+d169 1
+a169 1
+   inline std::string toString( float v )
+d181 1
+a181 1
+   inline std::string toString( double v )
+d193 1
+a193 1
+   inline std::string toString( long double v )
+d205 1
+a205 1
+   inline std::string toString( bool v )
+d210 60
+@
+
+
+1.3
+log
+@* worked around call ambiguity for std::string::insert()
+@
+text
+@d9 24
+d34 1
+a34 1
+   std::string integerToString( IntType v )
+d36 16
+a51 2
+      static const char *digits = "0123456789";
+      std::string s;
+d53 1
+a53 1
+         s += '0';
+d56 1
+a56 4
+         bool isSigned = v < 0;
+         if ( isSigned )
+            v *= -1;
+
+d59 1
+a59 3
+            // Thoses cast are necessary to resolve an ambiguity between insert( char *, unsigned, char ) 
+            // and insert( unsigned, unsigned, char) with Sun CC.
+            s.insert( (unsigned int)0, (unsigned int)1, digits[v % 10] ); 
+d62 2
+a63 3
+
+         if ( isSigned )
+            s.insert( 0, "-" );
+d65 1
+a65 1
+      return s;
+d68 27
+d102 1
+a102 1
+      return integerToString( v );
+d107 1
+a107 1
+      return integerToString( v );
+d112 1
+a112 1
+      return integerToString( v );
+d117 1
+a117 1
+      return integerToString( v );
+d122 1
+a122 1
+      return integerToString( v );
+d127 1
+a127 1
+      return integerToString( v );
+d134 1
+a134 1
+      return integerToString( v );
+d139 1
+a139 1
+      return integerToString( v );
+d145 1
+a145 1
+#ifdef DBL_DIG
+d149 1
+a149 1
+#endif  // #ifdef DBL_DIG
+@
+
+
+1.2
+log
+@* fixed bug in integerToString()
+@
+text
+@d24 3
+a26 1
+            s.insert( 0, 1, digits[v % 10] );
+@
+
+
+1.1
+log
+@* added toString() to Value & Properties.
+@
+text
+@d24 1
+a24 1
+            s.insert( 0, digits[v % 10], 1 );
+@
+

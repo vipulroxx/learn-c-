@@ -1,0 +1,1028 @@
+head	1.16;
+access;
+symbols
+	REL_1_12_1:1.16
+	REL_1_11_6:1.16
+	REL_1_11_4:1.16
+	REL_1_11_0:1.16
+	TG_CPPUNIT_NO_STREAM_AFTER:1.16
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.16
+	REL_1_10_2:1.16
+	REL_1_10_0:1.16
+	REL_1_9_14:1.16
+	REL_1_9_12:1.16
+	BRANCH_1_9_12:1.16.0.2
+	TG_BRANCH_1_9_12:1.16
+	TG_BEFORE_HPUX_PLUGIN:1.16
+	TG_BEFORE_SUN4_PORT:1.15
+	REL_1_9_10:1.15
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.12
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.12
+	REL_1_9_6:1.12
+	REL_1_9_4:1.12
+	REL_1_9_0:1.11
+	REL_1_8_0:1.11
+	REL_1_7_8:1.10
+	REL_1_7_3:1.7
+	REL_1_7_1:1.7
+	REL_1_6_2:1.6
+	BRANCH_1_6:1.6.0.2
+	REL_1_6_1:1.6
+	REL_1_6_0:1.6
+	REL_1_5_5:1.4;
+locks; strict;
+comment	@ * @;
+
+
+1.16
+date	2002.09.16.18.32.46;	author esche;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2002.07.14.19.48.32;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2002.06.14.11.12.17;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2002.04.17.22.27.28;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2002.03.28.15.47.07;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2002.03.25.22.35.34;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2002.03.25.18.41.39;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2002.03.24.19.39.55;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.10.02.20.43.55;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.09.14.19.27.58;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.05.18.19.32.42;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.05.06.18.19.04;	author bastiaan;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.05.06.16.19.32;	author bastiaan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.05.05.23.34.50;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.16
+log
+@added comparator to set
+@
+text
+@#ifndef CPPUNIT_EXTENSIONS_TESTFACTORYREGISTRY_H
+#define CPPUNIT_EXTENSIONS_TESTFACTORYREGISTRY_H
+
+#include <cppunit/Portability.h>
+
+#if CPPUNIT_NEED_DLL_DECL
+#pragma warning( push )
+#pragma warning( disable: 4251)  // X needs to have dll-interface to be used by clients of class Z
+#endif
+
+#include <cppunit/portability/CppUnitSet.h>
+#include <cppunit/extensions/TestFactory.h>
+#include <string>
+
+CPPUNIT_NS_BEGIN
+
+
+class TestSuite;
+
+#if CPPUNIT_NEED_DLL_DECL
+//  template class CPPUNIT_API std::set<TestFactory *>;
+#endif
+
+
+/*! \brief Registry for TestFactory.
+ * \ingroup CreatingTestSuite
+ *
+ * Notes that the registry \b DON'T assumes lifetime control for any registered tests
+ * anymore.
+ *
+ * The <em>default</em> registry is the registry returned by getRegistry() with the 
+ * default name parameter value.
+ *
+ * To register tests, use the macros:
+ * - CPPUNIT_TEST_SUITE_REGISTRATION(): to add tests in the default registry.
+ * - CPPUNIT_TEST_SUITE_NAMED_REGISTRATION(): to add tests in a named registry.
+ *
+ * Example 1: retreiving a suite that contains all the test registered with
+ * CPPUNIT_TEST_SUITE_REGISTRATION().
+ * \code
+ * CppUnit::TestFactoryRegistry &registry = CppUnit::TestFactoryRegistry::getRegistry();
+ * CppUnit::TestSuite *suite = registry.makeTest();
+ * \endcode
+ *
+ * Example 2: retreiving a suite that contains all the test registered with
+ * \link CPPUNIT_TEST_SUITE_NAMED_REGISTRATION() CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( ..., "Math" )\endlink.
+ * \code
+ * CppUnit::TestFactoryRegistry &mathRegistry = CppUnit::TestFactoryRegistry::getRegistry( "Math" );
+ * CppUnit::TestSuite *mathSuite = mathRegistry.makeTest();
+ * \endcode
+ *
+ * Example 3: creating a test suite hierarchy composed of unnamed registration and
+ * named registration:
+ * - All Tests
+ *   - tests registered with CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( ..., "Graph" )
+ *   - tests registered with CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( ..., "Math" )
+ *   - tests registered with CPPUNIT_TEST_SUITE_REGISTRATION
+ *
+ * \code
+ * CppUnit::TestSuite *rootSuite = new CppUnit::TestSuite( "All tests" );
+ * rootSuite->addTest( CppUnit::TestFactoryRegistry::getRegistry( "Graph" ).makeTest() );
+ * rootSuite->addTest( CppUnit::TestFactoryRegistry::getRegistry( "Math" ).makeTest() );
+ * CppUnit::TestFactoryRegistry::getRegistry().addTestToSuite( rootSuite );
+ * \endcode
+ *
+ * The same result can be obtained with:
+ * \code
+ * CppUnit::TestFactoryRegistry &registry = CppUnit::TestFactoryRegistry::getRegistry();
+ * registry.addRegistry( "Graph" );
+ * registry.addRegistry( "Math" );
+ * CppUnit::TestSuite *suite = registry.makeTest();
+ * \endcode
+ *
+ * Since a TestFactoryRegistry is a TestFactory, the named registries can be 
+ * registered in the unnamed registry, creating the hierarchy links.
+ *
+ * \see TestSuiteFactory, AutoRegisterSuite
+ * \see CPPUNIT_TEST_SUITE_REGISTRATION, CPPUNIT_TEST_SUITE_NAMED_REGISTRATION
+ */
+class CPPUNIT_API TestFactoryRegistry : public TestFactory
+{
+public:
+  /** Constructs the registry with the specified name.
+   * \param name Name of the registry. It is the name of TestSuite returned by
+   *             makeTest().
+   */
+  TestFactoryRegistry( std::string name );
+
+  /// Destructor.
+  virtual ~TestFactoryRegistry();
+
+  /** Returns a new TestSuite that contains the registered test.
+   * \return A new TestSuite which contains all the test added using 
+   * registerFactory(TestFactory *).
+   */
+  virtual Test *makeTest();
+
+  /** Returns a named registry.
+   *
+   * If the \a name is left to its default value, then the registry that is returned is
+   * the one used by CPPUNIT_TEST_SUITE_REGISTRATION(): the 'top' level registry.
+   *
+   * \param name Name of the registry to return.
+   * \return Registry. If the registry does not exist, it is created with the
+   *         specified name.
+   */
+  static TestFactoryRegistry &getRegistry( const std::string &name = "All Tests" );
+
+  /** Adds the registered tests to the specified suite.
+   * \param suite Suite the tests are added to.
+   */
+  void addTestToSuite( TestSuite *suite );
+
+  /** Adds the specified TestFactory to the registry.
+   *
+   * \param factory Factory to register. 
+   */
+  void registerFactory( TestFactory *factory );
+
+  /*! Removes the specified TestFactory from the registry.
+   * 
+   * The specified factory is not destroyed.
+   * \param factory Factory to remove from the registry.
+   * \todo Address case when trying to remove a TestRegistryFactory.
+   */
+  void unregisterFactory( TestFactory *factory );
+
+  /*! Adds a registry to the registry.
+   * 
+   * Convenience method to help create test hierarchy. See TestFactoryRegistry detail
+   * for examples of use. Calling this method is equivalent to:
+   * \code
+   * this->registerFactory( TestFactoryRegistry::getRegistry( name ) );
+   * \endcode
+   *
+   * \param name Name of the registry to add.
+   */
+  void addRegistry( const std::string &name );
+
+  /*! Tests if the registry is valid.
+   *
+   * This method should be used when unregistering test factory on static variable 
+   * destruction to ensure that the registry has not been already destroyed (in 
+   * that case there is no need to unregister the test factory).
+   *
+   * You should not concern yourself with this method unless you are writing a class
+   * like AutoRegisterSuite.
+   *
+   * \return \c true if the specified registry has not been destroyed, 
+   *         otherwise returns \c false.
+   * \see AutoRegisterSuite.
+   */
+  static bool isValid();
+
+  /** Adds the specified TestFactory with a specific name (DEPRECATED).
+   * \param name Name associated to the factory.
+   * \param factory Factory to register. 
+   * \deprecated Use registerFactory( TestFactory *) instead.
+   */
+  void registerFactory( const std::string &name,
+                        TestFactory *factory );
+
+private:
+  TestFactoryRegistry( const TestFactoryRegistry &copy );
+  void operator =( const TestFactoryRegistry &copy );
+
+private:
+  typedef CppUnitSet<TestFactory *, std::less<TestFactory*> > Factories;
+  Factories m_factories;
+
+  std::string m_name;
+};
+
+
+CPPUNIT_NS_END
+
+#if CPPUNIT_NEED_DLL_DECL
+#pragma warning( pop )
+#endif
+
+
+#endif  // CPPUNIT_EXTENSIONS_TESTFACTORYREGISTRY_H
+@
+
+
+1.15
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d168 1
+a168 1
+  typedef CppUnitSet<TestFactory *> Factories;
+@
+
+
+1.14
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d11 1
+a12 1
+#include <set>
+d168 1
+a168 1
+  typedef std::set<TestFactory *> Factories;
+@
+
+
+1.13
+log
+@* src/cppunit/TypeInfoHelper.cpp: added work around for bug #565481.
+  gcc 3.0 RTTI name() returns the type prefixed with a number (the
+  length of the type). The work around strip the number.
+
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp: registry key is now
+  set. Allow to save settings.
+
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp: added layout
+  initialization for resizing.
+
+* src/msvc6/testpluginrunner/TestPlugRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: added TestRunner
+  project files. Somehow I can't get cdxCDynamicDialog to compile
+  as a MFC extension. Included all sources files and resources
+  as a very dirt work around.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h: those classes are no longer
+  exported in the MFC extension. See TestPlugInRunner issue with
+  cdxCDynamicDialog.
+
+* include/cppunit/Message.h:
+* include/cppunit/TestPath.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TestFactoryRegistry.h:
+* include/cppunit/XmlElement.h:
+* include/cppunit/TypeInfoHelper.h: commented out STL template export
+  in DLL. This caused conflicts when instantiting the same template in
+  a user project.
+@
+text
+@d15 2
+a16 1
+namespace CppUnit {
+d175 1
+a175 2
+}  // namespace CppUnit
+
+@
+
+
+1.12
+log
+@* bumped version to 1.9.3
+
+* FAQ: added question about 4786 warning on VC++.
+
+* NEWS: updated.
+
+* contrib/msvc/readme.txt: moved to contrib/readme.txt.
+
+* contrib/xml-xsl/report.xsl: added XML style sheet contributed by
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for
+  startTestRun()/endTestRun().
+
+* examples/simple/*: added. A simple example.
+
+* include/cppunit/BriefTestProgressListener.h:
+* src/cppunit/BriefTestProgressListener.cpp: added. Verbose progess listener
+  that print the test name before running the test.
+
+* include/cppunit/TestListener.h: added startTestRun()/endTestRun().
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: added runTest(), to be called to run
+  a test by test runner.
+
+* src/cppunit/TextTestRunner.cpp:
+* src/cppunit/TestRunner.cpp: updated to use TestResult::runTest().
+
+* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added. Managers for all loaded plug-ins.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: renamed TestPlugInAdapter. All
+  implementations are empty.
+
+* include/cppunit/plugin/TestPlugInSuite.h: removed.
+* src/cppunit/TestPlugInSuite.cpp: removed. Replaced by PlugInManager.
+
+* include/cppunit/plugin/TestPlugIn.h: rewrote the plug-in interface to
+  provide more versatility. updated macros to match new interface.
+
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestFactoryRegistry.cpp: Added unregisterFactory().
+  Added convenience method addRegistry(). Rewrote registry life cycle
+  management. AutoRegisterSuite can now detect that the registry has been
+  destroy and not call to it to unregister its test factory.
+
+* include/cppunit/extensions/AutoRegisterTest.h: on destruction, the registered
+  factory is unregistered from the registry.
+
+* include/cppunit/extensions/HelperMacros.h: added macros
+  CPPUNIT_REGISTRY_ADD_TO_DEFAULT and CPPUNIT_REGISTRY_ADD to help
+  build test suite hierarchy.
+
+* src/cppunit/msvc/DllPlugInTester/*: moved to src/cppunit/DllPlugInTester/.
+
+* src/cppunit/DllPlugInTester/DllPlugInTester.cpp: removed UNICODE stuffs. Use
+  the PlugInManager instead of PlugInTestSuite. Simplified: only one test on
+  command line, but many DLL can be specified. Added configurations to link
+  against cppunit dll, those are now the default configuration (static linking
+  don't make much sense for plug-in).
+@
+text
+@d20 1
+a20 1
+  template class CPPUNIT_API std::set<TestFactory *>;
+@
+
+
+1.11
+log
+@* doc/cookbook.html: removed. Replaced by cookbook.doc.
+
+* doc/cookbook.dox: added, conversion of cookbook.html to Doxygen format.
+
+* doc/other_documentation.dox: added groups definition.
+
+* doc/Makefile.am: replaced cookbook.html by cookbook.dox
+
+* doc/Doxyfile.in: added predefined CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION.
+Replaced cookbook.html by cookbook.dox.
+
+* include/cppunitui/mfc/TestRunner.h: added, extracted from
+include/msvc6/testrunner/TestRunner.h. Moved class TestRunner to namespace
+CppUnit::MfcUi.
+
+* include/msvc6/testrunner/TestRunner.h: deprecated. A simple typedef to
+CppUnit::MfcUi::TestRunner.
+
+* include/textui/TestRuner.h: added, extracted from
+include/cppunit/TextTestRunner.h.
+
+* src/cppunit/TextTestRunner.cpp: renamed TestRunner.cpp. Moved into
+namespace CppUnit::TextUi.
+
+* src/msvc6/testruner/TestRunner.cpp: moved into namespace CppUnit::MfcUi.
+
+* src/cppunit/CompilerOutputter.cpp: removed printing "- " before
+NotEqualException addional message, for consistency between different
+TestRunner (Mfc,Text...)
+
+* include/cppunit/Asserter.h:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/Outputter.h:
+* include/cppunit/SourceLine.h:
+* include/cppunit/TestAssert.h:
+* include/cppunit/TestCaller.h:
+* include/cppunit/TestFailure.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: doc update. organization
+in groups.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.cpp:
+* examples/msvc6/HostApp/HostApp.cpp: updated to use
+CppUnit::MfcUi::TestRunner.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use
+CppUnit::TextUi::TestRunner.
+@
+text
+@d8 1
+a8 1
+#pragma warning( disable: 4251 )  // X needs to have dll-interface to be used by clients of class Z
+d12 1
+a12 1
+#include <map>
+d20 1
+a20 1
+  template class CPPUNIT_API std::map<std::string, TestFactory *>;
+d27 5
+a31 1
+ * Notes that the registry assumes lifetime control for any registered test.
+d34 1
+a34 1
+ * - CPPUNIT_TEST_SUITE_REGISTRATION(): to add tests in the unnamed registry.
+d68 2
+a69 2
+ * registry.registerFactory( CppUnit::TestFactoryRegistry::getRegistry( "Graph" ) );
+ * registry.registerFactory( CppUnit::TestFactoryRegistry::getRegistry( "Math" ) );
+d86 1
+a86 1
+  TestFactoryRegistry( std::string name = "All Tests" );
+a96 7
+  /** Returns unnamed the registry.
+   * TestSuite registered using CPPUNIT_TEST_SUITE_REGISTRATION() are registered 
+   * in this registry.
+   * \return Registry which name is "All Tests".
+   */
+  static TestFactoryRegistry &getRegistry();
+
+d98 4
+a101 2
+   * TestSuite registered using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION() are registered
+   * in the registry of the same name.
+d106 1
+a106 1
+  static TestFactoryRegistry &getRegistry( const std::string &name );
+d113 41
+a161 6
+  /** Adds the specified TestFactory to the registry.
+   *
+   * \param factory Factory to register. 
+   */
+  void registerFactory( TestFactory *factory );
+
+d167 1
+a167 1
+  typedef std::map<std::string, TestFactory *> Factories;
+@
+
+
+1.10
+log
+@* include/cppunit/makefile.am: removed TestRegistry.h
+
+* include/cppunit/TestRegistry.h: removed. Obsolete, replaced by
+TestFactoryRegistry.
+
+* src/cppunit/makefile.am: removed TestRegistry.cpp. Added cppunit_dll.dsp.
+
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/SynchronizedObject.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TextOutputter.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestResult.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/TestFactory.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: minor doc update.
+
+* include/cppunit/TestFixture.h: added DLL export.
+
+* include/cppunit/msvc6/TestPlugInInterface.h: updated doc. Added automatic
+exportation of TestPlugIn publishing function.
+
+* src/cppunit/TestCase.cpp:
+* include/cppunit/TestCase.h: inherits setUp() and tearDown() from
+class TestFixture.
+@
+text
+@d24 2
+a25 1
+/*! \brief Registry for test factory.
+d28 46
+d79 2
+a80 1
+   * \param name Name of the registry.
+d87 3
+a89 2
+  /** Makes a suite containing all the registered test.
+   * \return A new suite containing all the registered test.
+d93 4
+a96 2
+  /** Returns the registry.
+   * \return Registry.
+d101 2
+d104 2
+a105 1
+   * \return Registry. If the registry does not exist, it is created.
+d109 2
+a110 2
+  /** Adds the registered test to the specified suite.
+   * \param suite Suite the test are added to.
+d114 1
+a114 1
+  /** Registers a test factory with the specified name.
+d117 1
+d122 2
+a123 1
+  /** Registers a test factory using its class name.
+@
+
+
+1.9
+log
+@* include/cppunit/config-msvc6.h:
+* include/cppunit/Portability.h
+* include/cppunit/extensions/TestFactoryRegistry.h
+* include/cppunit/TestResult.h
+* include/cppunit/TestResultCollector.h
+* include/cppunit/TestSuite.h
+* include/cppunit/TextTestRunner.h
+* include/cppunit/XmlOutputter.h: removed warning when compiling CppUnit as DLL.
+
+* src/cppunit/DllMain.cpp: added some defines to speed up compilation a bit.
+@
+text
+@d24 1
+a24 1
+/** This class implements a registry for test factory.
+d26 1
+a26 1
+ * Note that the registry assume lifetime control for any registered test.
+@
+
+
+1.8
+log
+@* INSTALL-WIN32.txt: added some info to build cppunit as a DLL.
+
+* include/cppunit/config-msvc6.h: added definition of macro CPPUNIT_API when
+building or linking DLL. Defined CPPUNIT_BUILD_DLL when building, and
+CPPUNIT_DLL when linking.
+
+* include/cppunit/Portability.h: added empty definition of macro CPPUNIT_API
+when not building or using CppUnit as a DLL. When any of those symbol is defined,
+the symbol CPPUNIT_NEED_DLL_DECL is set to 1.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* include/cppunit/extensions/TestDecorator.h:
+* include/cppunit/extensions/TestSetUp.h:
+* include/cppunit/TestCaller.h
+* include/cppunit/extensions/TestFactory.h
+* include/cppunit/extensions/TestFactoryRegistry.h
+* include/cppunit/extensions/TypeInfoHelper.h
+* include/cppunit/Asserter.h
+* include/cppunit/Exception.h
+* include/cppunit/NotEqualException.h
+* include/cppunit/SourceLine.h
+* include/cppunit/SynchronizedObject.h
+* include/cppunit/Test.h
+* include/cppunit/TestAssert.h
+* include/cppunit/TestCase.h
+* include/cppunit/TestFailure.h
+* include/cppunit/TestListener.h
+* include/cppunit/TestResult.h
+* include/cppunit/TestSuite.h
+* include/cppunit/CompilerOutputter.h
+* include/cppunit/Outputter.h
+* include/cppunit/TestResultCollector.h
+* include/cppunit/TestSuccessListener.h
+* include/cppunit/TextOutputter.h
+* include/cppunit/TextTestProgressListener.h
+* include/cppunit/TextTestResult.h
+* include/cppunit/TextTestRunner.h
+* include/cppunit/XmlOutputter.h: added CPPUNIT_API for DLL export.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: reindented
+
+* include/cppunit/extensions/TestSetUp.h:
+* src/cppunit/TestSetUp.cpp: added .cpp. extracted inline method and moved them
+to cpp file.
+@
+text
+@d5 6
+d84 1
+d86 4
+a89 1
+}  // namespace CppUnit
+@
+
+
+1.7
+log
+@* include/cppunit/extensions/TestFactoryRegistry.h
+* src/cppunit/TestFactoryRegistry.cpp : fixed memory leaks that
+occured when a TestFactoryRegistry was registered into another
+TestFactoryRegistry.
+
+* include/cppunit/extensions/AutoRegisterSuite.h : updated doc.
+
+* include/cppunit/extensions/HelperMacros.h : added macro
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION to register a suite into
+a named suite. Updated doc.
+
+* examples/cppunittest/CoreSuite.h:
+* examples/cppunittest/ExtensionSuite.h:
+* examples/cppunittest/HelperSuite.h: added, declaration of suite for
+use with CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/makefile.am : added HelperSuite.h, CoreSuite.h,
+ExtensionSuite.h, CppUnitTestSuite.h and CppUnitTestSuite.cpp.
+
+* examples/cppunittest/CppUnitTestSuite.*: added.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/TestAssertTest.cpp:
+* examples/cppunittest/TestCaseTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestListenerTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/TestSuiteTest.cpp: moved into named suite
+"Core" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/OrthodoxTest.cpp:
+* examples/cppunittest/RepeatedTest.cpp:
+* examples/cppunittest/TestDecoratorTest.cpp:
+* examples/cppunittest/TestSetUpTest.cpp: moved into named suite
+"Extension" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/HelperMacrosTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp: moved into named suite
+"Helper" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/CppUnitTest.dsp :
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp : added
+Makefile.am, HelperSuite.h, CoreSuite.h, ExtensionSuite.h,
+CppUnitTestSuite.h and CppUnitTestSuite.cpp.
+@
+text
+@d11 1
+a11 1
+  class TestSuite;
+d13 60
+a72 55
+  /** This class implements a registry for test factory.
+   *
+   * Note that the registry assume lifetime control for any registered test.
+   */
+  class TestFactoryRegistry : public TestFactory
+  {
+  public:
+    /** Constructs the registry with the specified name.
+     * \param name Name of the registry.
+     */
+    TestFactoryRegistry( std::string name = "All Tests" );
+
+    /// Destructor.
+    virtual ~TestFactoryRegistry();
+
+    /** Makes a suite containing all the registered test.
+     * \return A new suite containing all the registered test.
+     */
+    virtual Test *makeTest();
+
+    /** Returns the registry.
+     * \return Registry.
+     */
+    static TestFactoryRegistry &getRegistry();
+
+    /** Returns a named registry.
+     * \param name Name of the registry to return.
+     * \return Registry. If the registry does not exist, it is created.
+     */
+    static TestFactoryRegistry &getRegistry( const std::string &name );
+
+    /** Adds the registered test to the specified suite.
+     * \param suite Suite the test are added to.
+     */
+    void addTestToSuite( TestSuite *suite );
+
+    /** Registers a test factory with the specified name.
+     * \param name Name associated to the factory.
+     * \param factory Factory to register. 
+     */
+    void registerFactory( const std::string &name,
+                          TestFactory *factory );
+
+    /** Registers a test factory using its class name.
+     * \param factory Factory to register. 
+     */
+    void registerFactory( TestFactory *factory );
+
+  private:
+    TestFactoryRegistry( const TestFactoryRegistry &copy );
+    void operator =( const TestFactoryRegistry &copy );
+
+  private:
+    typedef std::map<std::string, TestFactory *> Factories;
+    Factories m_factories;
+d74 2
+a75 2
+    std::string m_name;
+  };
+@
+
+
+1.6
+log
+@* src/msvc6/testrunner/TestRunner.dsp: fixed release configuration.
+
+* src/msvc6/testrunner/TestRunner.dsw: added DSPlugIn.dsp. TestRunner
+depends on DSPlugIn.
+
+* src/msvc6/testrunner/TestRunner.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/DSPlugIn/*: integrated patch from
+Patrick Berny (PPBerny@@web.de). An add-ins for VC++. Double-cliking
+a failed test in the TestRunner, VC++ will open the source file and
+go to the failure location.
+
+* src/cppunit/Exception.cpp:
+* include/cppunit/Exception.h: compile fix, call to overrided
+operator = of parent class failed. Using typedef to the parent
+class fix that.
+
+* src/cppunit/cppunit.dsp: added TestFixture.h
+
+* src/cppunit/TestFactoryRegistry.cpp: removed <utility> which isn't
+needed any more.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/extensions/TestFactoryRegistry.h: added
+include <Portability.h> before any other includes to remove warning
+with VC++.
+
+* include/cppunit/Portability.h: moved platform specific includes at
+the beginning of the header. fixed CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION
+declaration.
+
+* include/cppunit/config-msvc6.h: removed pragma once (useless, should
+be put in each header to have an effect).
+@
+text
+@a68 2
+    typedef std::map<std::string, TestFactoryRegistry *> NamedRegistries;
+
+@
+
+
+1.5
+log
+@  * Symbol CU_USE_TYPEINFO must be defined instead of USE_TYPEINFO to
+    compile RTTI.
+  * Added back default constructor to TestSuiteBuilder which use RTTI.
+    It is available only if CU_USE_TYPEINFO is defined.
+  * Moved TypeInfoHelper.h from src/cppunit to include/cppunit/extensions.
+  * Macro CU_TEST_SUITE in HelperMacros.h now use TestSuiteBuilder default
+    constructor if CU_USE_TYPEINFO is defined, otherwise it use the
+    type name given to the CU_TEST_SUITE macro.
+  * TestFactoryRegistry::registerFactory(factory) now generate a dummy
+    name based on a serial number instead of using RTTI. The macro
+    CU_TEST_SUITE_REGISTRATION and class AutoRegisterSuite can now
+    when CU_USE_TYPEINFO is not defined.
+  * Added a new Configuration named "Debug Without CU_USE_TYPEINFO" to
+    msvc6 projects. The flag CU_USE_TYPEINFO is not defined in that
+    configuration.
+@
+text
+@d4 2
+a5 4
+#if _MSC_VER > 1000     // VC++
+#pragma warning( disable : 4786 )   // disable warning debug symbol > 255...
+#endif // _MSC_VER > 1000
+
+a7 1
+#include <cppunit/extensions/TestFactory.h>
+@
+
+
+1.4
+log
+@Renamed AbstractTestFactory to TestFactory.
+@
+text
+@a58 1
+#ifdef USE_TYPEINFO
+a62 1
+#endif // USE_TYPEINFO
+@
+
+
+1.3
+log
+@Fixed #include's for cppunit headers.
+@
+text
+@d10 1
+a10 1
+#include <cppunit/extensions/AbstractTestFactory.h>
+d20 1
+a20 1
+  class TestFactoryRegistry : public AbstractTestFactory
+d57 1
+a57 1
+                          AbstractTestFactory *factory );
+d63 1
+a63 1
+    void registerFactory( AbstractTestFactory *factory );
+d71 1
+a71 1
+    typedef std::map<std::string, AbstractTestFactory *> Factories;
+@
+
+
+1.2
+log
+@Merge of CppUnitW 1.2 phase 2.
+@
+text
+@d1 2
+a2 2
+#ifndef CPPUNIT_TESTFACTORYREGISTRY_H
+#define CPPUNIT_TESTFACTORYREGISTRY_H
+d10 1
+a10 1
+#include "cppunit/extensions/AbstractTestFactory.h"
+d84 1
+a84 1
+#endif  // CPPUNIT_TESTFACTORYREGISTRY_H
+@
+
+
+1.1
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@d4 4
+d71 1
+a71 1
+    typedef std::map<std::string, AbstractTestFactory*> Factories;
+d74 1
+a74 1
+    typedef std::map<std::string, TestFactoryRegistry*> NamedRegistries;
+@
+

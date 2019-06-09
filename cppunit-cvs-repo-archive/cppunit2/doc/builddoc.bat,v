@@ -1,0 +1,35 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.1
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.1
+	TG_AFTER_REMOVING_TESTCONTEXT:1.1
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.1
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.1;
+locks; strict;
+comment	@:: @;
+
+
+1.1
+date	2004.11.15.20.41.12;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* added some documentations: features, open test, todo for cppunit 2 and open test. docutils is needed to build the doc.
+@
+text
+@rst2html cppunit2todo.txt cppunit2todo.html
+rst2html index.txt index.html
+rst2html opentest.txt opentest.html
+rst2html opentesttodo.txt opentesttodo.html
+rst2html features.txt features.html
+
+@

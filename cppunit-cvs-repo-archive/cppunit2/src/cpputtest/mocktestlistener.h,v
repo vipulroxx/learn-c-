@@ -1,0 +1,173 @@
+head	1.4;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.3
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.3
+	TG_AFTER_REMOVING_TESTCONTEXT:1.3
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.3
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.3
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.4
+date	2007.08.14.17.30.52;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.08.04.06.43.57;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.08.03.22.36.15;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@   Modified assertion implementation to force evaluation of user
+condition expression first, while preserving delegation to
+function, overloading and optional parameters feature.
+   See CPPUT_BEGIN_ASSERTION_MACRO() documentation in testinfo.h for an example
+to update your custom assertion code.
+
+   New implementation rely on operator evaluation order and operator overloading. The trick is documented in CPPUT_BEGIN_ASSERTION_MACRO().
+@
+text
+@#ifndef CPPUTTEST_MOCKLISTENER_H_INCLUDED
+#define CPPUTTEST_MOCKLISTENER_H_INCLUDED
+
+# include <cpput/testlistener.h>
+
+
+class MockTestListener : public CppUT::TestListener
+{
+public:
+   MockTestListener()
+      : testFailedCount_( 0 )
+      , testSucceededCount_( 0 )
+      , testResultCount_( 0 )
+      , enterTestCount_( 0 )
+      , exitTestCount_( 0 )
+      , enterSuiteCount_( 0 )
+      , exitSuiteCount_( 0 )
+   {
+   }
+
+// overridden from CppUT::TestListener
+
+   void processTestResult( CppUT::TestResult &result,
+                           CppUT::TestContext &context )
+   {
+      ++testResultCount_;
+      if ( result.setFailed() )
+         ++testFailedCount_;
+      else
+         ++testSucceededCount_;
+   }
+
+   void enterTest( CppUT::Test &test, CppUT::TestContext &context )
+   {
+      ++enterTestCount_;
+   }
+
+   void exitTest( CppUT::Test &test, CppUT::TestContext &context )
+   {
+      ++exitTestCount_;
+   }
+
+   void enterSuite( CppUT::AbstractTestSuite &suite, 
+                    CppUT::TestContext &context )
+   {
+      ++enterSuiteCount_;
+   }
+
+   void exitSuite( CppUT::AbstractTestSuite &suite, 
+                   CppUT::TestContext &context )
+   {
+      ++exitSuiteCount_;
+   }
+
+   int testFailedCount_;
+   int testSucceededCount_;
+   int testResultCount_;
+   int enterTestCount_;
+   int exitTestCount_;
+   int enterSuiteCount_;
+   int exitSuiteCount_;
+};
+
+
+#endif // CPPUTTEST_MOCKLISTENER_H_INCLUDED
+@
+
+
+1.3
+log
+@* Replaced TestListener::testFailed() with TestListener::processTestResul(). TestResult can be either success or failure and is mutable: the callback can add structured data to the result.
+* TestContext::protectTestRun() assumes test succeeded if no failing TestResult were dispatched during the test.
+@
+text
+@d27 1
+a27 1
+      if ( result.failed() )
+@
+
+
+1.2
+log
+@* renamed TestFailure to TestResult (can now be a success or a failure)
+* renamed testfailure.h to testresult.h
+* renamed testresult.cpp to testtestrunresult.cpp
+@
+text
+@d12 2
+d21 4
+a24 2
+   void testFailed( const CppUT::TestResult &failure,
+                    CppUT::TestContext &context )
+d26 5
+a30 1
+      ++testFailedCount_;
+d56 2
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d19 1
+a19 1
+   void testFailed( const CppUT::TestFailure &failure,
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

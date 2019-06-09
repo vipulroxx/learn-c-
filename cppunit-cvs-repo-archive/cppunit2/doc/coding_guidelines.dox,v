@@ -1,0 +1,451 @@
+head	1.2;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2007.08.14.17.42.14;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2006.09.07.22.45.50;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@- worked-around scons installation of doxygen without testing its existence.
+@
+text
+@/** \page coding_guidelines Coding Guidelines
+
+<hr>
+\section cg_naming_convention Naming convention
+\subsection cg_definition Definition: Capitalized First Letter convention (camel case)
+This convention is used for most naming, and will be referred to as camel case convention. 
+The name is in mixed case, with the first letter of each word in upper case, 
+and the other in lower case. Acronym (example: DLL = Dynamically Linked Library) 
+are in upper case. Unless stated otherwise, those identifiers should not contain any 
+<tt>'_'</tt>.
+
+This convention has two main variants: first letter of the name in lower case, 
+and first letter of the name in upper case. If the first letter is part of an acronym, 
+then the acronym is in the same case as the first letter.
+
+Example:
+
+<table>
+<tr><td><b>First letter in upper case</b></td><td><b>First letter in lower case</b></td></tr>
+<tr><td><tt>TestCase</tt></td><td><tt>testCase</tt></td></tr>
+<tr><td><tt>DLLLoader</tt></td><td><tt>dllLoader</tt></td></tr>
+</table>
+
+\subsection cg_filename File name
+File name should be in lower case and File name should not contain any ‘_’. File names
+should be named after the feature they provide.
+
+File extensions: 
+<tt>.cpp</tt> for C++ source file
+<tt>.h/.inl</tt> for C++ headers.
+
+Rational: avoid case issues for case sensitive filesystem, corrupting CVS repository
+when attempting to change file name case on buggy client.
+
+Example :
+\code
+testcase.c      // OK
+testcase.h      // OK
+testcase.inl    // OK
+resource.c      // OK
+
+test_case.c     // BAD
+TestCase.c      // BAD
+TestCase.h      // BAD
+TestCase.C      // BAD
+\endcode
+
+\subsection cg_cppidentifiers C++ identifiers
+<DIV class='cg_rule'>
+<b>Rules:</b> no identifier must contain two underscores <tt>'__'</tt> or starts with 
+a single underscore <tt>'_'</tt>.
+Identifiers may only contains the following characters: 
+<tt>a..z, A..Z, 0..9</tt>. The usage of <tt>'$'</tt> is forbidden.
+</DIV>
+
+Rationale: such usage of underscore is reserved by the C++ standard. 
+
+Notes: 
+- C++ compiler usually decorates identifiers using <tt>'__'</tt>, therefore using <tt>'__'</tt> 
+might result in (silent) linking issues.
+- run-time libraries frequently use macros starting with <tt>'_'</tt> for their implementation.
+
+\subsection cg_macro Macro names
+<DIV class='cg_rule'>
+<b>Rules:</b> Macro name must be completely in upper case, with words separated by an underscore ‘_’. 
+Macro name should also be prefixed with a library or application name. 
+This prefix serves as namespace and help avoiding conflicts.
+</DIV>
+
+The following prefix should be used:
+<table>
+<tr><td><b>Library</b></td><td><b>Prefix</b><td></tr>
+<tr><td>CppUnit 2</td><td>CPPUT_<td></tr>
+<tr><td>CppTL (CppUnit Tool Library)</td><td>CPPTL_<td></tr>
+<tr><td>JsonCpp</td><td>JSON_<td></tr>
+<tr><td>OpenTest</td><td>OPENTEST_<td></tr>
+</table>
+
+Rationale: macro substitution occurs at preprocessing time without regards to namespace. 
+Prefixing macro names help makes them unique and avoid clash between libraries. 
+The naming conventions are such that no C++ identifier should have a name similar to 
+a macro name. This conventions is widely adopted across all C++ naming conventions, 
+meaning that it also help avoid conflicts with third-parties.
+
+\subsection cg_class Class names
+<DIV class='cg_rule'>
+<b>Rules:</b> Class name must be in camel case, starting with an upper case letter.
+</DIV>
+
+Rationale: defined by java standard naming convention, and a widely spread C++ convention as well. 
+Identifiers starting with an upper case are used to identify ‘Type’ identifiers 
+(enum, class...)
+
+Example:
+\code
+Test
+TestCase
+ExceptionGuard
+\endcode
+
+\subsection cg_attributes Class attributes
+<DIV class='cg_rule'>
+<b>Rules:</b> attribute names must be in camel case starting with a lower case letter 
+and suffixed with an underscore <tt>'_'</tt>.
+</DIV>
+
+Rationale: defined by java standard naming convention, and a widely spread C++ convention 
+as well. Identifiers starting with a lower case are used to identify ‘value’ identifiers 
+(attribute, variable...)
+
+Example:
+\code
+int size_;
+double timeOut_;
+LightTestRunner runner_;
+\endcode
+
+\subsection cg_memfn Member function names
+<DIV class='cg_rule'>
+<b>Rules:</b> member function names must be in camel case, starting with a lower case. 
+The name should contains a verb and be structured in such a way that 
+it can be read naturally.
+</DIV>
+
+Rationale: This is a widely spread convention in the Java and C++ community. 
+
+Recommendation: when overriding virtual function, specify in which inherited class the virtual function is defined:
+
+Example:
+\code
+void addChild( const std::string &parentSuiteName,
+                const std::string &childSuiteName );
+
+bool removeChild( const std::string &parentSuiteName,
+                    const std::string &childSuiteName );
+
+TestFactoryId add( const std::string &parentSuiteName,
+                    const TestFactory &testFactory );
+
+class OPENTEST_API TestRunnerServer : public RemoteMessageServer
+                                    , private TestRunnerListener
+{
+public:
+   TestRunnerServer( TestRunnerInterface &impl );
+
+   void attachTransport( const MessageTransportPtr &transport );
+
+public: // overridden from RemoteMessageServer
+   void dispatchPendingMessages( const RemoteMessagePtr &message,
+                                 MessageTransport &transport );
+
+public: // overridden from TestRunnerListener
+   virtual void testRunStarted( TestRunId testRunId );
+   virtual void testRunDone( TestRunId testRunId );
+
+   virtual void startTesting( TestPlanId testPlanId );
+   virtual void doneTesting( TestPlanId testPlanId,
+                             const ResultStatus &status );
+private: //
+	...
+};
+\endcode
+
+
+\subsection cg_enum Enumeration type
+<DIV class='cg_rule'>
+<b>Rules:</b> enumeration type name must be in camel case, starting with an upper case.
+</DIV>
+
+Rationale: avoid potential clash with macro.
+
+Example:
+\code
+enum ParameterRequirement
+{
+    noParameter,         
+    optionalParameter,   
+    requiredParameter,   
+    oneOrMoreParameter,  
+    zeroOrMoreParameter  
+};
+\endcode
+
+\subsection cg_localvar Local variables and function parameters
+<DIV class='cg_rule'>
+<b>Rules:</b> local variable and function parameters must be in camel case, 
+starting with a lower case. Name should be ‘intention revealing name’, 
+that is indicating what is the use of the variable/parameter rather than 
+indicating what the variable/parameter is.
+</DIV>
+
+Rationale: avoid ambiguity in declaration between type and variable name.
+
+Example:
+\code
+bool 
+parse( const std::string &document, 
+       Value &root,
+       bool collectComments = true );
+\endcode
+
+<hr>
+\section cg_styleguide Style Guide
+
+The following style should be used when writing code:
+- Indent size: 3 spaces
+- No tabulations, only spaces (code editor must be configured this way)
+- Max line length around 95 characters.
+
+General code layout:
+- space inside braces in function call and condition
+- curly brace should be aligned with keyword initiating the block statement.
+- only one variable declaration per statements.
+- one member initialization per line in constructor, comma aligned with colon in
+  case of multiple member initializations.
+- at least one line (preferably two) to separate free/member function definitions.
+- return type in function definitions should be 
+\code
+// An example of constructor
+TestCase::TestCase( const CppTL::Functor0 &setUp,
+                    const CppTL::Functor0 &run,
+                    const CppTL::Functor0 &tearDown,
+                    const std::string &name )
+   : AbstractTestCase( name )
+   , setUp_( setUp )
+   , run_( run )
+   , tearDown_( tearDown )
+{
+}
+
+// An example of member function definition
+bool
+Reader::readComment()
+{
+   Location commentBegin = current_ - 1;
+   Char c = getNextChar();
+   bool successful = false;
+   if ( c == '*' )
+      successful = readCStyleComment();
+   else if ( c == '/' )
+      successful = readCppStyleComment();
+   if ( !successful )
+      return false;
+
+   if ( collectComments_ )
+   {
+      CommentPlacement placement = commentBefore;
+      if ( lastValueEnd_  &&  !containsNewLine( lastValueEnd_, commentBegin ) )
+      {
+         if ( c != '*'  ||  !containsNewLine( commentBegin, current_ ) )
+            placement = commentAfterOnSameLine;
+      }
+
+      addComment( commentBegin, current_, placement );
+   }
+   return true;
+}
+\endcode
+
+<hr>
+\section cg_guidelines Guidelines
+
+- standard interfaces, but CppTL::ConstString as attribute to ensure thread-safety.
+- use assertions to check precondition (or intermediate condition in complex algorithm)
+
+\subsection cg_gl_headers Headers
+
+<DIV class='cg_rule'>
+<b>Rules:</b> All headers must either include the file <tt>config.</tt> of their library or include
+anything of the library (and therefore include the file <tt>config.</tt> indirectly).
+</DIV>
+
+<DIV class='cg_rule'>
+<b>Rules:</b> All classes and typedef must be exported using the <tt>XYZ_API</tt> macro, 
+where <tt>XYZ</tt> is the library macro prefix (see [\ref cg_macro]).
+</DIV>
+
+<DIV class='cg_rule'>
+<b>Rules:</b> All classes must be forward declared in <tt>forwards.h</tt> header of the library.
+</DIV>
+
+\subsection cg_gl_using_namespace Using namespace directive
+
+<DIV class='cg_rule'>
+<b>Rules:</b> Never use the <tt>using namespace</tt> directive in any headers.
+</DIV>
+
+Recommendation: Avoid the <tt>using namespace</tt> directive in any sources.
+
+Rational: avoid poluting namespaces of sources including that header; enhance
+code readability by making obvious from which library a type/function originate from.
+
+\subsection cg_gl_language_feature C++ language feature restrictions
+
+\subsubsection cg_gl_nocastfn No cast style function template
+
+<DIV class='cg_rule'>
+<b>Rules:</b> All function template template argument must be deduced from
+parameters. Use CppTL::Type to explicitly pass the type as a parameter if needed.
+</DIV>
+
+Rationale: some older compilers only includes function parameters type in the
+function signature used for link, resulting in very strange bug if cast style
+function templtes are used.
+
+
+Example:
+\code
+// usage: get<int>( value);
+template<class ValueType>
+CppTL::Any &get( const CppTL::Any &value );	// BAD
+
+// usage: get(value,CppTL::Type<int>());
+template<class ValueType>
+CppTL::Any &get( const CppTL::Any &value, 
+                 CppTL::Type<ValueType> );	// OK
+\endcode
+
+\subsubsection cg_gl_mtf Template member functions
+
+<DIV class='cg_rule'>
+<b>Rules:</b> Do not use template member functions (e.g. template methods).
+</DIV>
+
+Template member functions should be avoided as they are not well supported by older
+compiler (e.g. VC++ 6.0). Usually, a template free functions can be used instead, taking
+as first parameter an instance of the class type.
+
+Examples:
+\code
+class Any
+{
+   // Limited portability
+   template<class ValueType>	
+   void set( const ValueType &newValue );		// BAD
+};
+
+// Most portable, use class any as first parameter
+template<class ValueType>
+CppTL::Any &set( CppTL::Any &value, const ValueType &newValue );	// OK
+\endcode
+
+\subsection cg_gl_exception_safety Exception safety
+
+We distinguish three levels of exception safety that a (member/free) function may provide:
+- No exception safety guaranty: the function might leak some resources, and leave the application in an undetermined state if an exception is thrown
+- Weak exception safety guaranty: the function will not leak any resources, but leave the application in an undetermined state
+- Strong exception safety guaranty: the function will not leak any resources, and the application will be in the same state as before the function call if an exception is thrown.
+
+<DIV class='cg_rule'>
+<b>Rules:</b> All code should provide at least the weak exception safety guaranty. 
+See [\ref cg_gl_raii] for tips on how to do that easily.
+</DIV>
+
+Strongly recommended reading: “Exceptional C++”, by Herb Sutter. This book contains 
+very detailed examples explaining the some of the techniques exposed below (@@todo). 
+Many of the articles of this book started their life in “Guru of the Week” columns:
+http://www.gotw.ca/gotw/.
+
+
+\subsection cg_gl_exception_spec Exception Specifications
+
+Exception specification is the throw clause that specify the list of exception 
+of function may throw (see example below).
+
+<DIV class='cg_rule'>
+<b>Rules:</b> Do not use throw specification unless required (subclassing std::exception for example).
+</DIV>
+
+Rationale: Compilers don’t deal as the one would expect in face of exception specification. 
+They often generate extra code and may disable inlining. 
+See boost guideline for detailed explanation: 
+http://www.boost.org/more/lib_guide.htm#Exception-specification.
+
+Recommendation: Document exception thrown by functions with comment
+
+Example:
+
+\code
+double getValueAt( int index ) throw(IndexError); // BAD
+
+// / \exception IndexError is raised if the provided index is invalid.
+double getValueAt( int index ); // GOOD
+\endcode
+
+
+\subsection cg_gl_raii Resource Acquisition Is Initialization principle (RAII)
+
+The essence of this principle is simple:
+- acquire the resource in the constructor of a resource holder object
+- release the resource in the destructor of that same object
+
+In the most simple case, resource is memory. A very common usage of this 
+principle is probably for locking/unlocking exclusive lock.
+
+C++ guaranty that the destructor will always be called if the function returns or an
+exception is thrown. 
+
+CppTL::ScopedPtr and CppTL::Mutex::ScopedLockGuard are examples of such objects.
+@@todo
+
+
+*/@
+
+
+1.1
+log
+@- started adding coding guidelines.
+@
+text
+@a262 4
+- config.h included in all headers (may be indirectly)
+- DLL macros
+- Forwards all classes and typedef in forwards.h
+- RAII
+a263 2
+- no member function template (use free function instead)
+- no cast style function template, use CppTL::Type instead (link issue with VC6)
+d266 138
+a403 1
+*/
+@
+

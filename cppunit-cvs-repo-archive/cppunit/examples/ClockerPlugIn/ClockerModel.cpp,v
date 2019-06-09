@@ -1,0 +1,320 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.3
+date	2005.11.06.16.58.20;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.07.14.19.48.31;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.06.14.20.21.00;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* include/cppunit/config/SourcePrefix.h: disable warning #4996
+(sprintf is deprecated) for visual studio 2005.
+
+* include/cppunit/TestAssert.h: use sprintf_s instead of sprintf for
+visual studio 2005.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp
+* examples/DumperPlugIn/DumperPlugIn.cpp: use SourcePrefix.h. Fixed
+wrong macro usage to implement DllMain.
+
+* examples/msvc6/HostApp/ExamplesTestCase.h
+* examples/msvc6/HostApp/ExamplesTestCase.cpp
+* examples/simple/ExamplesTestCase.h
+* examples/simple/ExamplesTestCase.cpp: removed divideByZero test case
+as it cause some crash on some platforms.
+@
+text
+@// //////////////////////////////////////////////////////////////////////////
+// Implementation file ClockerModel.cpp for class ClockerModel
+// (c)Copyright 2000, Baptiste Lepilleur.
+// Created: 2002/06/14
+// //////////////////////////////////////////////////////////////////////////
+#include "ClockerModel.h"
+#include <cppunit/config/SourcePrefix.h>
+
+
+ClockerModel::ClockerModel()
+    : m_testCaseCount( 0 )
+    , m_totalTestCaseTime( 0 )
+{
+}
+
+
+ClockerModel::~ClockerModel()
+{
+}
+
+
+void 
+ClockerModel::setExpectedTestCount( int count )
+{
+  m_tests.reserve( count );
+}
+
+
+void 
+ClockerModel::enterTest( CPPUNIT_NS::Test *test,
+                         bool isSuite )
+{
+  m_currentPath.add( test );
+
+  int testIndex = m_tests.size();
+  if ( !m_testIndexes.empty() )
+    m_tests[ m_testIndexes.top() ].m_childIndexes.push_back( testIndex );
+  m_testIndexes.push( testIndex );
+  m_testToIndexes.insert( TestToIndexes::value_type( test, testIndex ) );
+
+  TestInfo info;
+  info.m_timer.start();
+  info.m_path = m_currentPath;
+  info.m_isSuite = isSuite;
+
+  m_tests.push_back( info );
+
+  if ( !isSuite )
+    ++m_testCaseCount;
+}
+
+
+void 
+ClockerModel::exitTest( CPPUNIT_NS::Test *test,
+                        bool isSuite )
+{
+  m_tests[ m_testIndexes.top() ].m_timer.finish();
+  if ( !isSuite )
+    m_totalTestCaseTime += m_tests.back().m_timer.elapsedTime();
+
+  m_currentPath.up();
+  m_testIndexes.pop();
+}
+
+
+double 
+ClockerModel::totalElapsedTime() const
+{
+  return m_tests[0].m_timer.elapsedTime();
+}
+
+
+double 
+ClockerModel::averageTestCaseTime() const
+{
+  double average = 0;
+  if ( m_testCaseCount > 0 )
+    average = m_totalTestCaseTime / m_testCaseCount;
+  return average;
+}
+
+
+double 
+ClockerModel::testTimeFor( int testIndex ) const
+{
+  return m_tests[ testIndex ].m_timer.elapsedTime();
+}
+
+
+std::string 
+ClockerModel::timeStringFor( double time )
+{
+  char buffer[320];
+  const char *format;
+  if ( time < 1 )
+    format = "%2.3f";
+  else if ( time < 10 )
+    format = "%3.2f";
+  else if (time < 100 )
+    format = "%4.1f";
+  else
+    format = "%6f";
+
+  ::sprintf( buffer, format, time );
+
+  return buffer;
+}
+
+
+bool 
+ClockerModel::isSuite( int testIndex ) const
+{
+  return m_tests[ testIndex ].m_isSuite;
+}
+
+
+const CPPUNIT_NS::TestPath &
+ClockerModel::testPathFor( int testIndex ) const
+{
+  return m_tests[ testIndex ].m_path;
+}
+
+
+int 
+ClockerModel::indexOf( CPPUNIT_NS::Test *test ) const
+{
+  TestToIndexes::const_iterator itFound = m_testToIndexes.find( test );
+  if ( itFound != m_testToIndexes.end() )
+    return itFound->second;
+  return -1;
+}
+
+
+int 
+ClockerModel::childCountFor( int testIndex ) const
+{
+  return m_tests[ testIndex ].m_childIndexes.size();
+}
+
+
+int 
+ClockerModel::childAtFor( int testIndex, 
+                          int chidIndex ) const
+{
+  return m_tests[ testIndex ].m_childIndexes[ chidIndex ];
+}
+@
+
+
+1.2
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d7 1
+@
+
+
+1.1
+log
+@* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added two methods to use the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugIn.h: added two methods to the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugInAdapter.h:
+* src/cppunit/plugin/TestPlugInAdapter.cpp: renamed TestPlugInDefaultImpl.
+  Added empty implementation for Xml outputter hook methods.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/tools/StringTools.cpp: added. Functions to manipulate string
+  (conversion, wrapping...)
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/XmlElement.cpp: renamed addNode() to addElement(). Added
+  methods to walk and modify XmlElement (for hook). Added documentation.
+  Use StringTools.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: added hook calls & management.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: added. Hook to customize XML output.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: call plug-in XmlOutputterHook
+  when writing XML output. Modified so that memory is freed before
+  unloading the test plug-in (caused crash when freeing the XmlDocument).
+
+* examples/ReadMe.txt:
+* examples/ClockerPlugIn/ReadMe.txt: added details about the plug-in
+  (usage, xml content...)
+
+* examples/ClockerPlugIn/ClockerModel.h:
+* examples/ClockerPlugIn/ClockerModel.cpp: extracted from ClockerListener.
+  Represents the test hierarchy and tracked time for each test.
+
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/ClockerListener.cpp: extracted test hierarchy
+  tracking to ClockerModel. Replaced the 'flat' view option with a 'text'
+  option to print the timed test tree to stdout.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp: updated to hook the XML
+  output and use the new classes.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: added. XmlOutputterHook to
+  includes the timed test hierarchy and test timing in the XML output.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added new test cases.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: added tests for
+  XmlOutputterHook.
+@
+text
+@d29 1
+a29 1
+ClockerModel::enterTest( CppUnit::Test *test,
+d53 1
+a53 1
+ClockerModel::exitTest( CppUnit::Test *test,
+d116 1
+a116 1
+const CppUnit::TestPath &
+d124 1
+a124 1
+ClockerModel::indexOf( CppUnit::Test *test ) const
+@
+

@@ -1,0 +1,89 @@
+head	1.2;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2007.08.14.17.30.52;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2006.06.05.12.09.26;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@   Modified assertion implementation to force evaluation of user
+condition expression first, while preserving delegation to
+function, overloading and optional parameters feature.
+   See CPPUT_BEGIN_ASSERTION_MACRO() documentation in testinfo.h for an example
+to update your custom assertion code.
+
+   New implementation rely on operator evaluation order and operator overloading. The trick is documented in CPPUT_BEGIN_ASSERTION_MACRO().
+@
+text
+@#ifndef CPPTLTEST_SMALLMAPTEST_H_INCLUDED
+# define CPPTLTEST_SMALLMAPTEST_H_INCLUDED
+
+# include <cpptl/smallmap.h>
+# include <cpput/testfixture.h>
+
+class SmallMapTest : public CppUT::TestFixture
+{
+   CPPUT_TESTSUITE_BEGIN( SmallMapTest );
+   CPPUT_TEST( testDefaultConstructor );
+   CPPUT_TEST( testOneInsert );
+   CPPUT_TEST( testOrderedInserts );
+   CPPUT_TEST( testUnorderedInserts );
+   CPPUT_TEST( testDuplicateInserts );
+   CPPUT_TEST( testErase );
+   CPPUT_TEST( testInsertWithHint );
+   CPPUT_TESTSUITE_END();
+
+public:
+   typedef CppTL::SmallMap<int,int> SmallMapIntInt;
+   typedef SmallMapIntInt::value_type IntInt;
+
+   static int keyset1[10];
+   static int keyset2[10];
+   static int keyset3[4];
+
+   void testDefaultConstructor();
+   void testOneInsert();
+   void testOrderedInserts();
+   void testUnorderedInserts();
+   void testDuplicateInserts();
+   void testInsertWithHint();
+   void testErase();
+
+private:
+   CppUT::CheckerResult checkEraseRange( int minSeed, int maxSeed, int beginRange, int endRange);
+   CppUT::CheckerResult checkEraseIterator( int minSeed, int maxSeed, int value );
+};
+
+
+#endif // CPPTLTEST_SMALLMAPTEST_H_INCLUDED
+@
+
+
+1.1
+log
+@* added CppTL:SmallMap, a std::map like container that use a sorted vector to hold item.
+@
+text
+@d36 2
+a37 2
+   void checkEraseRange( int minSeed, int maxSeed, int beginRange, int endRange);
+   void checkEraseIterator( int minSeed, int maxSeed, int value );
+@
+

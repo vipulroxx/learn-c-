@@ -1,0 +1,516 @@
+head	1.9;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.9
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.4
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.4
+	TG_AFTER_REMOVING_TESTCONTEXT:1.4
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.4
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.4
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@// @;
+
+
+1.9
+date	2006.09.03.07.15.49;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.11.08.23.25.31;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.09.06.07.31.42;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2005.08.06.22.24.54;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.02.27.16.12.08;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.11.17.08.59.34;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.08.03.22.20.03;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.27.23.37.22;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.9
+log
+@- added support to declare test case association to a given group in test fixture.
+@
+text
+@#include "testfixturetest.h"
+#include "minitestrunner.h"
+#include <set>
+
+namespace {
+
+   class EmptyFixture : public CppUT::TestFixture
+   {
+      CPPUT_TESTSUITE_BEGIN( EmptyFixture );
+      CPPUT_TESTSUITE_END();
+   };
+
+   class TwoTestFixture : public CppUT::TestFixture
+   {
+      CPPUT_TESTSUITE_BEGIN( TwoTestFixture );
+      CPPUT_TEST( testPass );
+      CPPUT_TEST( testFail );
+      CPPUT_TESTSUITE_END();
+   public:
+      void testPass()
+      {
+      }
+
+      void testFail()
+      {
+         CPPUT_ASSERT( false, "forced failure" );
+      }
+   };
+
+   class ExtendTestFixture : public TwoTestFixture
+   {
+      CPPUT_TESTSUITE_EXTEND( ExtendTestFixture, TwoTestFixture );
+      CPPUT_TEST( testFail2 );
+      CPPUT_TESTSUITE_END();
+   public:
+      void testFail2()
+      {
+         CPPUT_ASSERT( false, "forced failure 2" );
+      }
+   };
+
+   class AbstractTestFixture : public CppUT::TestFixture
+   {
+      CPPUT_TESTSUITE_BEGIN( AbstractTestFixture );
+      CPPUT_TEST( testDerived );
+      CPPUT_TEST( testFail );
+      CPPUT_ABSTRACT_TESTSUITE_END();
+   public:
+      virtual void testDerived() = 0;
+
+      void testFail()
+      {
+         CPPUT_ASSERT( false, "forced failure" );
+      }
+   };
+
+   class ConcretTestFixture : public AbstractTestFixture
+   {
+      CPPUT_TESTSUITE_EXTEND( ConcretTestFixture, AbstractTestFixture );
+      CPPUT_TEST( testFail2 );
+      CPPUT_TESTSUITE_END();
+   public:
+      void testDerived()
+      {
+         CPPUT_ASSERT( false, "forced failure 3" );
+      }
+
+      void testFail2()
+      {
+         CPPUT_ASSERT( false, "forced failure 2" );
+      }
+   };
+
+
+   class SharedFixtureTestBase : public CppUT::TestFixture
+   {
+   public:
+      void test1() { test(); }
+      void test2() { test(); }
+      void test3() { test(); }
+
+      static std::set<SharedFixtureTestBase *> instances_;
+
+   private:
+      void test()
+      {
+         instances_.insert( this );
+      }
+   };
+
+   std::set<SharedFixtureTestBase *> SharedFixtureTestBase::instances_;
+
+
+   class NoSharedFixtureTest : public SharedFixtureTestBase
+   {
+   public:
+      CPPUT_TESTSUITE_BEGIN( NoSharedFixtureTest );
+      CPPUT_TEST( test1 );
+      CPPUT_TEST( test2 );
+      CPPUT_TEST( test3 );
+      CPPUT_TESTSUITE_END();
+   };
+
+   class TestFixtureWithSpecific : public CppUT::TestFixture
+   {
+      CPPUT_TESTSUITE_BEGIN( TestFixtureWithSpecific );
+      CPPUT_TEST_WITH_SPECIFICS( testFail,
+                                 ( describe( "Forced test failure" ),
+                                   timeOut( 30.0 ),
+                                   group("testfixture"),
+                                   group("test")
+                                 ) );
+      CPPUT_TESTSUITE_END();
+   public:
+      void testFail()
+      {
+         CPPUT_ASSERT( false, "forced failure" );
+      }
+   };
+
+
+} // anonymous namespace
+
+
+CppUT::TestSuitePtr 
+TestFixtureTest::suite()
+{
+   CppUT::TestSuitePtr suite( CppUT::makeTestSuite( "TestFixtureTest" ) );
+   CppTL::SharedPtr<TestFixtureTest> fixture( new TestFixtureTest() );
+
+   addTest( fixture, &TestFixtureTest::testEmptySuite, 
+            "testEmptySuite", suite );
+   addTest( fixture, &TestFixtureTest::testTwoTestsSuite, 
+            "testTwoTestsSuite", suite );
+   addTest( fixture, &TestFixtureTest::testExtendTestSuite, 
+            "testExtendTestSuite", suite );
+   addTest( fixture, &TestFixtureTest::testExtendAbstractTestSuite, 
+            "testExtendAbstractTestSuite", suite );
+   addTest( fixture, &TestFixtureTest::testDefaultIsNoSharedFixture, 
+            "testDefaultIsNoSharedFixture", suite );
+   addTest( fixture, &TestFixtureTest::testFixtureWithSpecifics,
+            "testFixtureWithSpecifics", suite );
+
+   return suite;
+}
+
+
+void 
+TestFixtureTest::addTest( const CppTL::SharedPtr<TestFixtureTest> &fixture,
+                          void (TestFixtureTest::*testMethod)(), 
+                          const char *testName,
+                          const CppUT::TestSuitePtr &suite )
+{
+   suite->add( CppUT::makeTestCase( CppTL::memfn0( fixture, testMethod ),
+                                    testName ) );
+}
+
+
+void 
+TestFixtureTest::testEmptySuite()
+{
+   CppUT::TestPtr suite = EmptyFixture::suite();
+   MiniTestRunner runner;
+   runner.run( suite );
+   CPPUT_ASSERT_EQUAL( 0, runner.tested_ );
+}
+
+
+void 
+TestFixtureTest::testTwoTestsSuite()
+{
+   CppUT::TestPtr suite = TwoTestFixture::suite();
+   MiniTestRunner runner;
+   runner.run( suite );
+   CPPUT_ASSERT_EQUAL( 2, runner.tested_ );
+   CPPUT_ASSERT_EQUAL( 1, runner.failed_ );
+}
+
+
+void 
+TestFixtureTest::testExtendTestSuite()
+{
+   CppUT::TestPtr suite = ExtendTestFixture::suite();
+   MiniTestRunner runner;
+   runner.run( suite );
+   CPPUT_ASSERT_EQUAL( 3, runner.tested_ );
+   CPPUT_ASSERT_EQUAL( 2, runner.failed_ );
+}
+
+
+void 
+TestFixtureTest::testExtendAbstractTestSuite()
+{
+   CppUT::TestPtr suite = ConcretTestFixture::suite();
+   MiniTestRunner runner;
+   runner.run( suite );
+   CPPUT_ASSERT_EQUAL( 3, runner.tested_ );
+   CPPUT_ASSERT_EQUAL( 3, runner.failed_ );
+}
+
+
+void 
+TestFixtureTest::testDefaultIsNoSharedFixture()
+{
+   CppUT::TestPtr suite = NoSharedFixtureTest::suite();
+   MiniTestRunner runner;
+   SharedFixtureTestBase::instances_.clear();
+   runner.run( suite );
+   CPPUT_ASSERT_EQUAL( 3, runner.tested_ );
+   CPPUT_ASSERT_EQUAL( 0, runner.failed_ );
+   CPPUT_ASSERT_EQUAL( 3, int(SharedFixtureTestBase::instances_.size() ) );
+}
+
+
+void 
+TestFixtureTest::testFixtureWithSpecifics()
+{
+   CppUT::TestPtr suite = TestFixtureWithSpecific::suite();
+   CPPUT_ASSERT_EQUAL( 1, static_cast<CppUT::TestSuite &>( *suite ).testCount() );
+   CppUT::TestPtr test = static_cast<CppUT::TestSuite &>( *suite ).testAt(0);
+   CPPUT_ASSERT_EQUAL( "Forced test failure", test->description() );
+   CPPUT_ASSERT_EQUAL( 30.0, test->timeOut() );
+   CPPUT_ASSERT_EQUAL( 2, test->groupCount() );
+   CPPUT_ASSERT_EQUAL( "testfixture", test->groupAt(0) );
+   CPPUT_ASSERT_EQUAL( "test", test->groupAt(1) );
+
+   MiniTestRunner runner;
+   runner.run( suite );
+   CPPUT_ASSERT_EQUAL( 1, runner.tested_ );
+   CPPUT_ASSERT_EQUAL( 1, runner.failed_ );
+}
+@
+
+
+1.8
+log
+@- fixed static registration macro for Registry
+- static registration macros must no longer be followed by a semi-colon
+  (therefore we get compiler error if registry.h was not included)
+- allow registration macros to work with class implenting suite() or suite( const std::string &).
+@
+text
+@d109 3
+a111 1
+                                   timeOut( 30.0 ) 
+d223 3
+@
+
+
+1.7
+log
+@* fixed compilation without RTTI
+* revised stringize implementation to allow an additional customization point by overloading toString().
+* added test and corrected bug in serialization/packets implementation.
+@
+text
+@a103 12
+
+   class SharedFixtureTest : public SharedFixtureTestBase
+   {
+   public:
+      CPPUT_TESTSUITE_BEGIN( SharedFixtureTest );
+      CPPUT_TESTSUITE_SHARE_FIXTURE();
+      CPPUT_TEST( test1 );
+      CPPUT_TEST( test2 );
+      CPPUT_TEST( test3 );
+      CPPUT_TESTSUITE_END();
+   };
+
+a138 2
+   addTest( fixture, &TestFixtureTest::testSharedFixture,
+            "testSharedFixture", suite );
+a213 13
+TestFixtureTest::testSharedFixture()
+{
+   CppUT::TestPtr suite = SharedFixtureTest::suite();
+   MiniTestRunner runner;
+   SharedFixtureTestBase::instances_.clear();
+   runner.run( suite );
+   CPPUT_ASSERT_EQUAL( 3, runner.tested_ );
+   CPPUT_ASSERT_EQUAL( 0, runner.failed_ );
+   CPPUT_ASSERT_EQUAL( 1, int(SharedFixtureTestBase::instances_.size() ) );
+}
+
+
+void 
+@
+
+
+1.6
+log
+@Added possibility to add test to a fixture and set its description and time-out (and other specifics).
+@
+text
+@d244 2
+a245 2
+   CPPUT_ASSERT_EQUAL( 1, dynamic_cast<CppUT::TestSuite &>( *suite ).testCount() );
+   CppUT::TestPtr test = dynamic_cast<CppUT::TestSuite &>( *suite ).testAt(0);
+@
+
+
+1.5
+log
+@* ported the TestFixture tests back to the new framework architecture.
+@
+text
+@d116 15
+d153 2
+d238 16
+@
+
+
+1.4
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@d2 1
+d149 1
+a149 1
+   suite->add( CppUT::makeTestCase( CppUT::makeMemFn0( fixture, testMethod ),
+d158 3
+a160 5
+   CppUT::TestContext context;
+   CppUT::TestRunResult result;
+   context.add( result );
+   suite->run( context );
+   CPPUT_ASSERT_EQUAL( 0, result.testCount() );
+d168 4
+a171 6
+   CppUT::TestContext context;
+   CppUT::TestRunResult result;
+   context.add( result );
+   suite->run( context );
+   CPPUT_ASSERT_EQUAL( 2, result.testCount() );
+   CPPUT_ASSERT_EQUAL( 1, result.failureCount() );
+d179 4
+a182 6
+   CppUT::TestContext context;
+   CppUT::TestRunResult result;
+   context.add( result );
+   suite->run( context );
+   CPPUT_ASSERT_EQUAL( 3, result.testCount() );
+   CPPUT_ASSERT_EQUAL( 2, result.failureCount() );
+d190 4
+a193 6
+   CppUT::TestContext context;
+   CppUT::TestRunResult result;
+   context.add( result );
+   suite->run( context );
+   CPPUT_ASSERT_EQUAL( 3, result.testCount() );
+   CPPUT_ASSERT_EQUAL( 3, result.failureCount() );
+d201 1
+a201 3
+   CppUT::TestContext context;
+   CppUT::TestRunResult result;
+   context.add( result );
+d203 3
+a205 3
+   suite->run( context );
+   CPPUT_ASSERT_EQUAL( 3, result.testCount() );
+   CPPUT_ASSERT_EQUAL( 0, result.failureCount() );
+d214 1
+a214 3
+   CppUT::TestContext context;
+   CppUT::TestRunResult result;
+   context.add( result );
+d216 3
+a218 3
+   suite->run( context );
+   CPPUT_ASSERT_EQUAL( 3, result.testCount() );
+   CPPUT_ASSERT_EQUAL( 0, result.failureCount() );
+@
+
+
+1.3
+log
+@* renamed Result to TestRunResult (and cpput/result.h to cpput/testrunresult.h)
+@
+text
+@d123 1
+a123 1
+   CppUT::SmartPtr<TestFixtureTest> fixture( new TestFixtureTest() );
+d143 1
+a143 1
+TestFixtureTest::addTest( const CppUT::SmartPtr<TestFixtureTest> &fixture,
+@
+
+
+1.2
+log
+@* SmartPtr now subclass boost::shared_ptr to make templated function
+  overloading easier.
+* Added our own smart pointer implementation
+* Added AtomicCounter as implementation detail.
+  Can use boost::detail::atomic_counter.
+@
+text
+@d158 1
+a158 1
+   CppUT::Result result;
+d170 1
+a170 1
+   CppUT::Result result;
+d183 1
+a183 1
+   CppUT::Result result;
+d196 1
+a196 1
+   CppUT::Result result;
+d209 1
+a209 1
+   CppUT::Result result;
+d224 1
+a224 1
+   CppUT::Result result;
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d123 1
+a123 1
+   boost::shared_ptr<TestFixtureTest> fixture( new TestFixtureTest() );
+d143 1
+a143 1
+TestFixtureTest::addTest( const boost::shared_ptr<TestFixtureTest> &fixture,
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

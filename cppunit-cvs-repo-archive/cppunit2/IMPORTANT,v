@@ -1,0 +1,35 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.1
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.1
+	TG_AFTER_REMOVING_TESTCONTEXT:1.1
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.1
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2004.01.27.21.13.42;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* added .cvsignore files and a bit of documentation.
+@
+text
+@This version of cppunit is experimental. Many parts of the api are likely to change.
+
+DO NOT USE THIS FOR PRODUCTION.
+
+
+Baptiste Lepilleur <blep@@users.sourceforge.net>
+@

@@ -1,0 +1,1028 @@
+head	1.13;
+access;
+symbols
+	REL_1_12_1:1.13
+	REL_1_11_6:1.13
+	REL_1_11_4:1.13
+	REL_1_11_0:1.13
+	TG_CPPUNIT_NO_STREAM_AFTER:1.13
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.11
+	REL_1_10_2:1.11
+	REL_1_10_0:1.11
+	REL_1_9_14:1.11
+	REL_1_9_12:1.11
+	BRANCH_1_9_12:1.11.0.2
+	TG_BRANCH_1_9_12:1.11
+	TG_BEFORE_HPUX_PLUGIN:1.11
+	TG_BEFORE_SUN4_PORT:1.11
+	REL_1_9_10:1.11
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.10
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.9
+	REL_1_9_6:1.9
+	REL_1_9_4:1.9
+	REL_1_9_0:1.9
+	REL_1_8_0:1.9
+	REL_1_7_8:1.9
+	REL_1_7_3:1.9
+	REL_1_7_1:1.8
+	REL_1_6_2:1.6
+	BRANCH_1_6:1.6.0.2
+	REL_1_6_1:1.6
+	REL_1_6_0:1.6
+	REL_1_5_5:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.13
+date	2004.06.25.11.11.45;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2004.06.25.10.41.28;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2002.06.13.18.17.42;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2002.02.28.10.57.20;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2001.10.05.22.27.14;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.10.03.21.16.12;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.08.07.15.48.10;	author smr99;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.07.07.19.12.41;	author smr99;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.06.12.06.59.26;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.05.29.04.14.06;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.05.19.11.29.11;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.28.18.23.32;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.13
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@#include <cppunit/Exception.h>
+#include <cppunit/Test.h>
+#include <cppunit/TestFailure.h>
+#include <cppunit/TextTestResult.h>
+#include <cppunit/TextOutputter.h>
+#include <cppunit/portability/Stream.h>
+
+
+CPPUNIT_NS_BEGIN
+
+
+TextTestResult::TextTestResult()
+{
+  addListener( this );
+}
+
+
+void 
+TextTestResult::addFailure( const TestFailure &failure )
+{
+  TestResultCollector::addFailure( failure );
+  stdCOut() << ( failure.isError() ? "E" : "F" );
+}
+
+
+void 
+TextTestResult::startTest( Test *test )
+{
+  TestResultCollector::startTest (test);
+  stdCOut() << ".";
+}
+
+
+void 
+TextTestResult::print( OStream &stream ) 
+{
+  TextOutputter outputter( this, stream );
+  outputter.write();
+}
+
+
+OStream &
+operator <<( OStream &stream, 
+             TextTestResult &result )
+{ 
+  result.print (stream); return stream; 
+}
+
+
+CPPUNIT_NS_END
+@
+
+
+1.12
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@d6 1
+a6 1
+#include <cppunit/Portability/Stream.h>
+@
+
+
+1.11
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d6 1
+a6 1
+#include <iostream>
+d22 1
+a22 1
+  std::cerr << ( failure.isError() ? "E" : "F" );
+d30 1
+a30 1
+  std::cerr << ".";
+d35 1
+a35 1
+TextTestResult::print( std::ostream& stream ) 
+d42 2
+a43 2
+std::ostream &
+operator <<( std::ostream &stream, 
+@
+
+
+1.10
+log
+@* include/cppunit/NotEqualException.h:
+* src/cppunit/NotEqualException.cpp: removed.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: removed 'type' related stuffs.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: delegate printing to TextOutputter.
+
+* examples/simple/ExampleTestCase.h:
+* examples/simple/ExampleTestCase.cpp: reindented.
+
+* src/qttestrunner/build:
+* src/qttestrunner/qttestrunner.pro:
+* src/qttestrunner/TestBrowserDlgImpl.h:
+* src/qttestrunner/TestRunnerModel.h: applied Thomas Neidhart's patch,
+  'Some minor fixes to compile QTTestrunner under Linux.'.
+@
+text
+@d9 1
+a9 1
+namespace CppUnit {
+d50 1
+a50 1
+} // namespace CppUnit
+@
+
+
+1.9
+log
+@* NEW: updated and restructured.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp:
+updated against TestResultChange. Changed TestResult to TestResultCollector.
+
+* include/cppunit/extensions/HelperMacros.h: minor documentation fix.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all Outputter.
+
+* include/cppunit/Portability.h: made the fix on OStringStream suggested by
+Bob Summerwill to remove level 4 warning with VC++.
+
+* include/cppunit/TestAssert.h: added macro CPPUNIT_ASSERT_EQUAL_MESSAGE.
+
+* src/cppunit/TestFailure.cpp:
+* include/cppunit/TestFailure.h: added method clone() to duplicate a failure. Made
+all method virtual.
+
+* include/cppunit/TestListener.h: changed signature of addFailure() to
+addFailure( const TestFailure &failure ). Failure is now only a temporary object.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all outputter. Used
+by TextTestRunner.
+
+* include/cppunit/SynchronizedObject.h:
+* src/cppunit/SynchronizedObject.cpp: added. Class extracted from TestResult.
+Base class for objects that can be accessed from different threads.
+
+* include/cppunit/TestResult.h: TestFailure.h is no longer included.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: extracted all methods related to keeping track
+of the result to the new TestResultCollector class which is a TestListener.
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: added. TestListener which kept track
+of the result of the test run. All failure/error, and tests are tracked.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: added. TestListener extracted from
+TestResult. Is responsible for wasSucessful().
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: reindented.
+
+* include/cppunit/TextOutputter.h:
+* src/cppunit/TextOutputter.cpp: added. Copied from the deprecated
+TextTestResult and modified to act as an Ouputter.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: Copied from the deprecated
+TextTestResult and modified to print the dot while the test are running.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: updated against TestResult change.
+No compatiblity break. Deprecated.
+
+* include/cppunit/TextTestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to work with the new TestResult.
+Use TextTestProgressListener and TextOutputter instead of TextTestResult.
+Any outputter with interface Outputter can be used to print the test result
+(CompilerOutputter, XmlOutputter, TextOutputter...)
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against TestResultChange.
+Changed TestResult to TestResultCollector.
+
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/TestRunnerDlg.cpp: fixed the 'fullrowselect' feature of the list view.
+The dialog is a TestListener itself, it no longer use the GUITestResult class.
+
+* src/msvc6/TestRunner.rc: moved the "autorun test button" in such a way that it
+did not overlap the progress bar anymore.
+
+* src/msvc6/MfcSynchronizationObject.h: added. Generic SynchronizedObject
+lock for MFC.
+
+* src/msvc6/GUITestResult.h :
+* src/msvc6/GUITestResult.cpp : removed.
+
+* src/qttestrunner/TestRunnerModel.h:
+* src/qttestrunner/TestRunnerModel.cpp: changed addFailure() signature to reflect
+change on TestListener.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use the new Outputter
+abstraction and TextTestRunner facilities.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.cpp: removed. Replaced by MockTestCase.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.h:
+
+* examples/cppunittest/HelperMacrosTest.h:
+* examples/cppunittest/HelperMacrosTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/MockTestListener.h:
+* examples/cppunittest/MockTestListener.cpp: the class now behave like a mock
+object.
+
+* examples/cppunittest/MockTestCase.h:
+* examples/cppunittest/MockTestCase.cpp: added. Mock TestCase object.
+
+* examples/cppunittest/OrthodoxTest.h:
+* examples/cppunittest/OrthodoxTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/SynchronizedTestResult.h: Updated against TestResult
+change.
+
+* examples/cppunittest/TestCallerTest.h:
+* examples/cppunittest/TestCallerTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: Updated against TestResult change.
+Use MockTestListener and MockTestCase instead of FailingTestCase and TestResult.
+
+* examples/cppunittest/TestDecoratorTest.h:
+* examples/cppunittest/TestDecoratorTest.cpp: Updated against TestResult change.
+Use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/TestListenerTest.h:
+* examples/cppunittest/TestListenerTest.cpp: removed. Those unit tests have been
+rewrote and moved to TestResultTest.
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: Updated to test the new interface.
+Tests from TestListenerTest have been moved here.
+
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp: added. Tests for the class
+that been extracted from TestResult.
+
+* examples/cppunittest/TestSetUpTest.h:
+* examples/cppunittest/TestSetUpTest.cpp: renamed SetUp inner class to MockSetUp.
+Changed interface to be more akin to a Mock object.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: Updated against TestResult change,
+and rewrote to use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: Updated against TestResult change.
+Added some utility methods to make the update easier.
+@
+text
+@a1 1
+#include <cppunit/NotEqualException.h>
+d5 1
+a34 92
+TextTestResult::printFailures( std::ostream &stream )
+{
+  TestFailures::const_iterator itFailure = failures().begin();
+  int failureNumber = 1;
+  while ( itFailure != failures().end() ) 
+  {
+    stream  <<  std::endl;
+    printFailure( *itFailure++, failureNumber++, stream );
+  }
+}
+
+
+void 
+TextTestResult::printFailure( TestFailure *failure,
+                              int failureNumber,
+                              std::ostream &stream )
+{
+  printFailureListMark( failureNumber, stream );
+  stream << ' ';
+  printFailureTestName( failure, stream );
+  stream << ' ';
+  printFailureType( failure, stream );
+  stream << ' ';
+  printFailureLocation( failure->sourceLine(), stream );
+  stream << std::endl;
+  printFailureDetail( failure->thrownException(), stream );
+  stream << std::endl;
+}
+
+
+void 
+TextTestResult::printFailureListMark( int failureNumber,
+                                      std::ostream &stream )
+{
+  stream << failureNumber << ")";
+}
+
+
+void 
+TextTestResult::printFailureTestName( TestFailure *failure,
+                                      std::ostream &stream )
+{
+  stream << "test: " << failure->failedTest()->getName();
+}
+
+
+void 
+TextTestResult::printFailureType( TestFailure *failure,
+                                  std::ostream &stream )
+{
+  stream << "("
+         << (failure->isError() ? "E" : "F")
+         << ")";
+}
+
+
+void 
+TextTestResult::printFailureLocation( SourceLine sourceLine,
+                                      std::ostream &stream )
+{
+  if ( !sourceLine.isValid() )
+    return;
+
+  stream << "line: " << sourceLine.lineNumber()
+         << ' ' << sourceLine.fileName();
+}
+
+
+void 
+TextTestResult::printFailureDetail( Exception *thrownException,
+                                    std::ostream &stream )
+{
+  if ( thrownException->isInstanceOf( NotEqualException::type() ) )
+  {
+    NotEqualException *e = (NotEqualException*)thrownException;
+    stream << "expected: " << e->expectedValue() << std::endl
+           << "but was:  " << e->actualValue();
+    if ( !e->additionalMessage().empty() )
+    {
+      stream  << std::endl;
+      stream  <<  "additional message:"  <<  std::endl
+              <<  e->additionalMessage();
+    }
+  }
+  else
+  {
+    stream << " \"" << thrownException->what() << "\"";
+  }
+}
+
+
+void 
+d37 2
+a38 37
+  printHeader( stream );
+  stream << std::endl;
+  printFailures( stream );
+}
+
+
+void 
+TextTestResult::printHeader( std::ostream &stream )
+{
+  if (wasSuccessful ())
+    stream << std::endl << "OK (" << runTests () << " tests)" 
+           << std::endl;
+  else
+  {
+    stream << std::endl;
+    printFailureWarning( stream );
+    printStatistics( stream );
+  }
+}
+
+
+void 
+TextTestResult::printFailureWarning( std::ostream &stream )
+{
+  stream  << "!!!FAILURES!!!" << std::endl;
+}
+
+
+void 
+TextTestResult::printStatistics( std::ostream &stream )
+{
+  stream  << "Test Results:" << std::endl;
+
+  stream  <<  "Run:  "  <<  runTests()
+          <<  "   Failures: "  <<  testFailures()
+          <<  "   Errors: "  <<  testErrors()
+          <<  std::endl;
+@
+
+
+1.8
+log
+@* include/cppunit/Asserter.h :
+* src/cppunit/Asserter.cpp : added. Helper to create assertion macros.
+
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* include/cppunit/Makefile.am : added Asserter.h and Asserter.cpp.
+
+* include/cppunit/Exception.h :
+* src/cppunit/Exception.cpp : added constructor that take a
+SourceLine argument. Deprecated static constant and old constructor.
+Fixed some constness issues.
+
+* examples/cppunittest/ExceptionTest.cpp : Refactored.
+
+* NEWS : partially updated (need to be more detailed)
+
+* include/cppunit/NotEqualException.h :
+* src/cppunit/NotEqualException.cpp : added constructor that take a
+SourceLine argument. Deprecated old constructor. Added a third element
+to compose message.
+
+* examples/cppunittest/NotEqualExceptionTest.cpp : moved to "Core"
+suite. Added test for SourceLine() and additionalMessage().
+Refactored.
+
+* include/cppunit/SourceLine.h :
+* src/cppunit/SourceLine.cpp : added. Result of applying
+IntroduceParameterObject refactoring on filename & line number...
+
+* include/cppunit/TestAssert.h :
+* src/cppunit/TestAssert.cpp : deprecated old assert functions.
+added functions assertEquals() and assertDoubleEquals() which use
+SourceLine.
+
+* src/cppunit/TestCase.cpp : Modified for SourceLine.
+
+* include/cppunit/TestFailure.h :
+* src/cppunit/TestFailure.cpp : added failedTestName(), and
+sourceLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp : modified to use SourceLine.
+
+* include/cppunit/TextTestResult.h :
+* src/cppunit/TextTestResult.cpp : corrected include order and
+switched to angled brackets. Refactored. Don't print failure location
+if not available. Not equal failure dump additional message if
+available.
+
+* src/cppunit/TextTestRunner.cpp : run() now returns a boolean to
+indicate if the run was sucessful.
+
+* src/cppunit/XmlTestResultOutputter.cpp : replaced itoa() with
+OStringStream. Refactored.
+
+* examples/cppunittest/XmlUniformiser.h :
+* examples/cppunittest/XmlUniformiser.cpp :
+CPPUNITTEST_ASSERT_XML_EQUAL capture failure location. Refactored
+checkXmlEqual().
+
+* examples/cppunittest/XmlUniformiserTest.h :
+* examples/cppunittest/XmlUniformiserTest.cpp : added test for
+CPPUNITTEST_ASSERT_XML_EQUAL.
+
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/XmlTestResultOutputter.cpp : updated to use SourceLine.
+@
+text
+@d4 1
+d12 1
+a12 3
+void 
+TextTestResult::addError( Test *test, 
+                          Exception *e )
+d14 1
+a14 2
+  TestResult::addError( test, e );
+  std::cerr << "E";
+d19 1
+a19 2
+TextTestResult::addFailure( Test *test, 
+                            Exception *e )
+d21 2
+a22 2
+  TestResult::addFailure (test, e);
+  std::cerr << "F";
+d29 1
+a29 1
+  TestResult::startTest (test);
+@
+
+
+1.7
+log
+@* include/cppunit/TestFailure.cpp :
+* include/cppunit/TestFailure.h : fixed some constness issues. Added
+argument to indicate the type of failure to constructor. Added
+isError().
+
+* include/cppunit/TestListener.h : removed addError(). addFailure()
+now take a TestFailure as argument.
+
+* include/cppunit/TestResult.h :
+* include/cppunit/TestResult.cpp : removed errors(). Refactored. Fixed
+some constness issues. Added typedef TestFailures for vector returned
+by failures(). failures() returns a const reference on the list of
+failure. added testFailuresTotal(). Constructor can take an optional
+synchronization object.
+
+* include/cppunit/TextTestResult.h :
+* include/cppunit/TextTestResult.cpp : removed printErrors().
+Refactored. Updated to suit new TestResult, errors and failures are
+reported in the same list.
+
+* examples/cppunittest/TestFailureTest.cpp :
+* examples/cppunittest/TestFailureTest.h : modified to use the new
+TestFailure constructor. Added one test.
+
+* examples/cppunittest/TestListenerTest.cpp: removed addError().
+Refactored to suit new TestListener.
+
+* examples/cppunittest/TestResultTest.h :
+* examples/cppunittest/TestResultTest.cpp : modified to suit the
+new TestResult.
+@
+text
+@d1 4
+d6 1
+a6 4
+#include "cppunit/TextTestResult.h"
+#include "cppunit/Exception.h"
+#include "cppunit/NotEqualException.h"
+#include "cppunit/Test.h"
+d43 2
+d46 1
+d61 1
+a61 1
+  printFailureLocation( failure->thrownException(), stream );
+d95 1
+a95 1
+TextTestResult::printFailureLocation( Exception *thrownException,
+d98 5
+a102 2
+  stream << "line: " << thrownException->lineNumber()
+         << ' ' << thrownException->fileName();
+d115 6
+d145 24
+a168 7
+    stream << std::endl
+           << "!!!FAILURES!!!" << std::endl
+           << "Test Results:" << std::endl
+           << "Run:  "  << runTests()
+           << "   Failures: "  << testFailures()
+           << "   Errors: "  << testErrors()
+           << std::endl;
+@
+
+
+1.6
+log
+@Fixes to allow building with SGI MIPSpro 7.30 compiler.
+The testsuite file examples/cppunittest/SubclassedTestCase.cpp
+causes the compiler to dump core, so that and HelperMacrosTest
+were not tested.  The rest of the test suite passes.
+@
+text
+@a8 5
+std::ostream& 
+operator<< (std::ostream& stream, TextTestResult& result)
+{ 
+  result.print (stream); return stream; 
+}
+d11 2
+a12 1
+TextTestResult::addError (Test *test, Exception *e)
+d14 2
+a15 2
+    TestResult::addError (test, e);
+    std::cerr << "E";
+d18 1
+d20 2
+a21 1
+TextTestResult::addFailure (Test *test, Exception *e)
+d23 2
+a24 2
+    TestResult::addFailure (test, e);
+    std::cerr << "F";
+d27 1
+d29 1
+a29 1
+TextTestResult::startTest (Test *test)
+d37 1
+a37 1
+TextTestResult::printErrors (std::ostream& stream)
+d39 5
+a43 2
+    if ( testErrors() == 0 )
+	return;
+a44 4
+    if (testErrors () == 1)
+	stream << "There was 1 error: " << std::endl;
+    else
+	stream << "There were " << testErrors () << " errors: " << std::endl;
+d46 16
+a61 1
+    int i = 1;
+a62 3
+    for (std::vector<TestFailure *>::iterator it = errors ().begin (); it != errors ().end (); ++it) {
+	TestFailure* failure = *it;
+	Exception* e = failure->thrownException ();
+d64 5
+a68 10
+	stream << i 
+	       << ")"
+	       << " test: " << failure->failedTest()->getName();
+	if ( e ) 
+	    stream << " line: " << e->lineNumber()
+		   << ' ' << e->fileName();
+	stream << " \"" << failure->thrownException()->what() << "\""
+	       << std::endl;
+	i++;
+    }
+d73 2
+a74 1
+TextTestResult::printFailures (std::ostream& stream) 
+d76 2
+a77 2
+    if ( testFailures() == 0 )
+	return;
+a78 4
+    if (testFailures () == 1)
+	stream << "There was 1 failure: " << std::endl;
+    else
+	stream << "There were " << testFailures () << " failures: " << std::endl;
+d80 8
+a87 1
+    int i = 1;
+a88 3
+    for (std::vector<TestFailure *>::iterator it = failures ().begin (); it != failures ().end (); ++it) {
+	TestFailure* failure = *it;
+	Exception* e = failure->thrownException();
+d90 7
+a96 6
+	stream << i 
+	       << ")"
+	       << " test: " << failure->failedTest()->getName();
+	if ( e ) 
+	    stream << " line: " << e->lineNumber()
+		   << ' ' << e->fileName();
+a97 11
+	if ( failure->thrownException()->isInstanceOf( NotEqualException::type() ) )
+        {
+	    NotEqualException *e = (NotEqualException*)failure->thrownException();
+	    stream << std::endl 
+		   << "expected: " << e->expectedValue() << std::endl
+		   << "but was:  " << e->actualValue();
+	} 
+	else 
+        {
+	    stream << " \"" << failure->thrownException ()->what () << "\"";
+	}
+d99 14
+a112 3
+	stream << std::endl;
+	i++;
+    }
+d117 1
+a117 1
+TextTestResult::print (std::ostream& stream) 
+d119 3
+a121 4
+    printHeader (stream);
+    printErrors (stream);
+    printFailures (stream);
+
+d126 1
+a126 1
+TextTestResult::printHeader (std::ostream& stream)
+d128 13
+a140 13
+    if (wasSuccessful ())
+        stream << std::endl << "OK (" << runTests () << " tests)" << std::endl;
+    else
+        stream << std::endl
+             << "!!!FAILURES!!!" << std::endl
+             << "Test Results:" << std::endl
+             << "Run:  "
+             << runTests ()
+             << "   Failures: "
+             << testFailures ()
+             << "   Errors: "
+             << testErrors ()
+             << std::endl;
+d142 5
+d148 1
+@
+
+
+1.5
+log
+@Removed last uses of estring.
+@
+text
+@d10 1
+a10 1
+CppUnit::operator<< (std::ostream& stream, TextTestResult& result)
+@
+
+
+1.4
+log
+@* include/cppunit/NotEqualException.h
+* src/cppunit/NotEqualException.h:
+Fixed constructor and operator = (aren't unit test nice?). Added
+methods expectedValue() and actualValue().
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp:
+Use NotEqualException to report equality failure.
+
+* src/cppunit/TestResult.cpp:
+Report expect/was on different line for assertEquals failure.
+
+* examples/cppunittest/NotEqualExceptionTest.*: added unit tests for
+NotEqualException.
+@
+text
+@a5 1
+#include "estring.h"
+d40 2
+a41 1
+    if (testErrors () != 0) {
+d43 20
+a62 20
+        if (testErrors () == 1)
+            stream << "There was " << testErrors () << " error: " << std::endl;
+        else
+            stream << "There were " << testErrors () << " errors: " << std::endl;
+
+        int i = 1;
+
+        for (std::vector<TestFailure *>::iterator it = errors ().begin (); it != errors ().end (); ++it) {
+            TestFailure             *failure    = *it;
+            Exception        *e          = failure->thrownException ();
+
+            stream << i 
+                   << ") "
+                   << "test: " << failure->failedTest()->getName()  << " "
+                   << "line: " << (e ? estring (e->lineNumber ()) : "") << " "
+                   << (e ? e->fileName () : "") << " "
+                   << "\"" << failure->thrownException ()->what () << "\""
+                   << std::endl;
+            i++;
+        }
+d64 1
+a65 1
+}
+d70 35
+a104 33
+    if (testFailures () != 0) {
+        if (testFailures () == 1)
+            stream << "There was " << testFailures () << " failure: " << std::endl;
+        else
+            stream << "There were " << testFailures () << " failures: " << std::endl;
+
+        int i = 1;
+
+        for (std::vector<TestFailure *>::iterator it = failures ().begin (); it != failures ().end (); ++it) {
+            TestFailure             *failure    = *it;
+            Exception        *e          = failure->thrownException ();
+
+            stream << i 
+                   << ") "
+                   << "test: " << failure->failedTest()->getName()  << " "
+                   << "line: " << (e ? estring (e->lineNumber ()) : "") << " "
+                   << (e ? e->fileName () : "") << " ";
+
+            if ( failure->thrownException()->isInstanceOf( NotEqualException::type() ) )
+            {
+              NotEqualException *e = (NotEqualException*)failure->thrownException();
+              stream << std::endl 
+                     << "expected: " << e->expectedValue() << std::endl
+                     << "but was:  " << e->actualValue();
+            }
+            else
+            {
+              stream << "\"" << failure->thrownException ()->what () << "\"";
+            }
+
+            stream << std::endl;
+            i++;
+        }
+a105 1
+
+@
+
+
+1.3
+log
+@Fix output of TextTestResult
+@
+text
+@d4 1
+d86 15
+a100 3
+                   << (e ? e->fileName () : "") << " "
+                   << "\"" << failure->thrownException ()->what () << "\""
+                   << std::endl;
+@
+
+
+1.2
+log
+@  * Merged Steve M. Robbins patch to replace assertImplementation with assert in hierarchy example.
+  * Added a TextTestRunner to runner tests. It is based on Michael Feather's version, but have been rewriten.
+  * Removed traces that printed the test name in TextTestResult while running.
+  * Added the test name to error and failure report in TextTestResult.
+  * Updated hierarchy example to use TextTestRunner.
+@
+text
+@d19 1
+a19 2
+    std::cerr << "E" << std::endl;
+
+d26 1
+a26 2
+    std::cerr << "F" << std::endl;
+
+a33 1
+
+@
+
+
+1.1
+log
+@Moved files in subdir cppunit to src/cppunit.
+@
+text
+@a33 2
+
+  std::cerr << "Running " << test->getName() << " ";
+d35 1
+a35 1
+  std::cerr << "." << std::endl;
+d58 1
+d86 1
+@
+

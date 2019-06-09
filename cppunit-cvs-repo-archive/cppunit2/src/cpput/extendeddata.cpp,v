@@ -1,0 +1,201 @@
+head	1.2;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.2
+date	2006.09.03.07.15.49;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.08.06.22.24.53;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@- added support to declare test case association to a given group in test fixture.
+@
+text
+@#include <cpput/extendeddata.h>
+#include <cpput/test.h>
+
+namespace CppUT {
+
+// class TestExtendedDataHelper
+// //////////////////////////////////////////////////////////////////
+
+TestExtendedDataHelper::TestExtendedDataHelper( Test &test )
+   : test_( test )
+{
+}
+
+
+TestExtendedDataHelper::~TestExtendedDataHelper()
+{
+}
+
+
+Test &
+TestExtendedDataHelper::operator()( const TestExtendedData &data ) const
+{
+   data.apply( test_ );
+   return test_;
+}
+
+
+// class TestExtendedData
+// //////////////////////////////////////////////////////////////////
+TestExtendedData::~TestExtendedData()
+{
+}
+
+
+TestExtendedDataList 
+TestExtendedData::operator ,( const TestExtendedData &other ) const
+{
+   return TestExtendedDataList( *this, other );
+}
+
+
+// class TestExtendedDataList
+// //////////////////////////////////////////////////////////////////
+
+TestExtendedDataList::TestExtendedDataList( const TestExtendedData &left,
+                                            const TestExtendedData &right )
+   : left_( left )
+   , right_( right )
+{
+}
+
+void 
+TestExtendedDataList::apply( Test &test ) const
+{
+   left_.apply( test );
+   right_.apply( test );
+}
+
+
+// class DescriptionData
+// //////////////////////////////////////////////////////////////////
+
+DescriptionData::DescriptionData( const std::string &description )
+   : description_( description )
+{
+}
+
+
+void 
+DescriptionData::apply( Test &test ) const
+{
+   test.setDescription( description_.c_str() );
+}
+
+
+// class TimeOutData
+// //////////////////////////////////////////////////////////////////
+
+TimeOutData::TimeOutData( double timeOutInSeconds )
+   : timeOutInSeconds_( timeOutInSeconds )
+{
+}
+
+void 
+TimeOutData::apply( Test &test ) const
+{
+   test.setTimeOut( timeOutInSeconds_ );
+}
+
+
+// class DependenciesData
+// //////////////////////////////////////////////////////////////////
+
+DependenciesData::DependenciesData(  const std::string &dependencies  )
+   : dependencies_( dependencies )
+{
+}
+
+void 
+DependenciesData::apply( Test &test ) const
+{
+//   test.setDependenciesFromPackedString( dependencies );
+}
+
+
+// class GroupData
+// //////////////////////////////////////////////////////////////////
+
+GroupData::GroupData( const std::string &groupName )
+   : groupName_( groupName )
+{
+}
+
+void 
+GroupData::apply( Test &test ) const
+{
+   test.addToGroup( groupName_ );
+}
+
+
+// class TestExtendedDataFactory
+// //////////////////////////////////////////////////////////////////
+
+TestExtendedDataFactory::~TestExtendedDataFactory()
+{
+}
+
+
+DescriptionData 
+TestExtendedDataFactory::describe( const std::string &description )
+{
+   return DescriptionData( description );
+}
+
+
+TimeOutData 
+TestExtendedDataFactory::timeOut( double timeOutInSeconds )
+{
+   return TimeOutData( timeOutInSeconds );
+}
+
+DependenciesData 
+TestExtendedDataFactory::depends( const std::string &dependencies )
+{
+   return DependenciesData( dependencies );
+}
+
+GroupData 
+TestExtendedDataFactory::group( const std::string &groupName )
+{
+   return GroupData( groupName );
+}
+
+
+} // namespace CppUT
+@
+
+
+1.1
+log
+@Added possibility to add test to a fixture and set its description and time-out (and other specifics).
+@
+text
+@d6 3
+d28 2
+d42 3
+d60 3
+d76 3
+d91 3
+d106 18
+d148 6
+@
+

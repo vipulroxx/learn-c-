@@ -1,0 +1,604 @@
+head	1.6;
+access;
+symbols
+	REL_1_12_1:1.6
+	REL_1_11_6:1.6
+	REL_1_11_4:1.6
+	REL_1_11_0:1.6
+	TG_CPPUNIT_NO_STREAM_AFTER:1.6
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.4
+	REL_1_10_2:1.4
+	REL_1_10_0:1.4
+	REL_1_9_14:1.4
+	REL_1_9_12:1.4
+	BRANCH_1_9_12:1.4.0.2
+	TG_BRANCH_1_9_12:1.4
+	TG_BEFORE_HPUX_PLUGIN:1.4
+	TG_BEFORE_SUN4_PORT:1.4
+	REL_1_9_10:1.4
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.6
+date	2004.06.25.11.11.21;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.06.25.10.41.26;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.07.14.19.48.31;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.06.14.20.21.00;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.25.19.05.22;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.20.21.51.32;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@// //////////////////////////////////////////////////////////////////////////
+// Implementation file ClockerListener.cpp for class ClockerListener
+// (c)Copyright 2000, Baptiste Lepilleur.
+// Created: 2002/04/19
+// //////////////////////////////////////////////////////////////////////////
+#include <cppunit/Test.h>
+#include <cppunit/portability/Stream.h>
+#include "ClockerListener.h"
+#include "ClockerModel.h"
+#include <stdio.h>
+
+
+ClockerListener::ClockerListener( ClockerModel *model,
+                                  bool text )
+    : m_model( model )
+    , m_text( text )
+{
+}
+
+
+ClockerListener::~ClockerListener()
+{
+}
+
+
+void 
+ClockerListener::startTestRun( CPPUNIT_NS::Test *test, 
+                               CPPUNIT_NS::TestResult *eventManager )
+{
+  m_model->setExpectedTestCount( test->countTestCases() *2 );
+}
+
+
+void 
+ClockerListener::endTestRun( CPPUNIT_NS::Test *test, 
+                             CPPUNIT_NS::TestResult *eventManager )
+{
+  if ( m_text )
+    printStatistics();
+}
+
+
+void 
+ClockerListener::startTest( CPPUNIT_NS::Test *test )
+{
+  m_model->enterTest( test, false );
+}
+
+
+void 
+ClockerListener::endTest( CPPUNIT_NS::Test *test )
+{
+  m_model->exitTest( test, false );
+}
+
+
+void 
+ClockerListener::startSuite( CPPUNIT_NS::Test *suite )
+{
+  m_model->enterTest( suite, true );
+}
+
+
+void 
+ClockerListener::endSuite( CPPUNIT_NS::Test *suite )
+{
+  m_model->exitTest( suite, true );
+}
+
+
+void 
+ClockerListener::printStatistics() const
+{
+  printTest( 0, "" );
+  CPPUNIT_NS::stdCOut()  <<  "\n";
+  CPPUNIT_NS::stdCOut()  <<  "Total elapsed time: ";
+  printTime( m_model->totalElapsedTime() );
+  CPPUNIT_NS::stdCOut()  <<  ", average test case time: ";
+  printTime( m_model->averageTestCaseTime() );
+}
+
+
+void 
+ClockerListener::printTest( int testIndex,
+                            const std::string &indentString ) const
+{
+  std::string indent = indentString;
+  const int indentLength = 3;
+
+  printTestIndent( indentString, indentLength );
+  printTime( m_model->testTimeFor( testIndex ) );
+
+  CPPUNIT_NS::stdCOut()  <<  m_model->testPathFor( testIndex ).getChildTest()->getName();
+  CPPUNIT_NS::stdCOut()  <<  "\n";
+
+  if ( m_model->childCountFor( testIndex ) == 0 )
+    indent+= std::string( indentLength, ' ' );
+  else
+    indent+= "|" + std::string( indentLength -1, ' ' );
+
+  for ( int index =0; index < m_model->childCountFor( testIndex ); ++index )
+    printTest( m_model->childAtFor( testIndex, index ), indent );
+}
+
+
+void 
+ClockerListener::printTestIndent( const std::string &indent,
+                                  const int indentLength ) const
+{
+  if ( indent.empty() )
+    return;
+
+  CPPUNIT_NS::stdCOut() << "   ";
+  CPPUNIT_NS::stdCOut() << indent.substr( 0, indent.length() - indentLength ) ;
+  CPPUNIT_NS::stdCOut() << "+"  <<  std::string( indentLength -1, '-' );
+}
+
+
+void 
+ClockerListener::printTime( double time ) const
+{
+  CPPUNIT_NS::stdCOut() <<  '('  <<  ClockerModel::timeStringFor( time )  <<  "s) ";
+}
+@
+
+
+1.5
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@d7 1
+a7 1
+#include <cppunit/Portability/Stream.h>
+@
+
+
+1.4
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d7 1
+a7 1
+#include <iostream>
+d75 2
+a76 2
+  std::cout  <<  std::endl;
+  std::cout  <<  "Total elapsed time: ";
+d78 1
+a78 1
+  std::cout  <<  ", average test case time: ";
+d93 2
+a94 2
+  std::cout  <<  m_model->testPathFor( testIndex ).getChildTest()->getName();
+  std::cout  <<  std::endl;
+d113 3
+a115 3
+  std::cout << "   ";
+  std::cout << indent.substr( 0, indent.length() - indentLength ) ;
+  std::cout << "+"  <<  std::string( indentLength -1, '-' );
+d122 1
+a122 1
+  std::cout <<  '('  <<  ClockerModel::timeStringFor( time )  <<  "s) ";
+@
+
+
+1.3
+log
+@* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added two methods to use the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugIn.h: added two methods to the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugInAdapter.h:
+* src/cppunit/plugin/TestPlugInAdapter.cpp: renamed TestPlugInDefaultImpl.
+  Added empty implementation for Xml outputter hook methods.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/tools/StringTools.cpp: added. Functions to manipulate string
+  (conversion, wrapping...)
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/XmlElement.cpp: renamed addNode() to addElement(). Added
+  methods to walk and modify XmlElement (for hook). Added documentation.
+  Use StringTools.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: added hook calls & management.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: added. Hook to customize XML output.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: call plug-in XmlOutputterHook
+  when writing XML output. Modified so that memory is freed before
+  unloading the test plug-in (caused crash when freeing the XmlDocument).
+
+* examples/ReadMe.txt:
+* examples/ClockerPlugIn/ReadMe.txt: added details about the plug-in
+  (usage, xml content...)
+
+* examples/ClockerPlugIn/ClockerModel.h:
+* examples/ClockerPlugIn/ClockerModel.cpp: extracted from ClockerListener.
+  Represents the test hierarchy and tracked time for each test.
+
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/ClockerListener.cpp: extracted test hierarchy
+  tracking to ClockerModel. Replaced the 'flat' view option with a 'text'
+  option to print the timed test tree to stdout.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp: updated to hook the XML
+  output and use the new classes.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: added. XmlOutputterHook to
+  includes the timed test hierarchy and test timing in the XML output.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added new test cases.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: added tests for
+  XmlOutputterHook.
+@
+text
+@d27 2
+a28 2
+ClockerListener::startTestRun( CppUnit::Test *test, 
+                               CppUnit::TestResult *eventManager )
+d35 2
+a36 2
+ClockerListener::endTestRun( CppUnit::Test *test, 
+                             CppUnit::TestResult *eventManager )
+d44 1
+a44 1
+ClockerListener::startTest( CppUnit::Test *test )
+d51 1
+a51 1
+ClockerListener::endTest( CppUnit::Test *test )
+d58 1
+a58 1
+ClockerListener::startSuite( CppUnit::Test *suite )
+d65 1
+a65 1
+ClockerListener::endSuite( CppUnit::Test *suite )
+@
+
+
+1.2
+log
+@* src/cppunit/XmlOutputter.cpp: bugfix, use ISO-8859-1 encoding if an
+  empty string is given.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp:
+* src/DllPlugInTester/DllPlugInTester.cpp: added option -w to wait for
+  the user to press a key before exiting (Philippe Lavoie patch,
+  with change).
+@
+text
+@d9 1
+d13 4
+a16 4
+ClockerListener::ClockerListener( bool flatten )
+    : m_flatten( flatten )
+    , m_testCount( 0 )
+    , m_totalTestCaseTime( 0 )
+d30 1
+a30 1
+  m_tests.reserve( test->countTestCases() *2 );
+d35 2
+a36 1
+ClockerListener::startTest( CppUnit::Test *test )
+d38 2
+a39 2
+  enterTest( test, false );
+  ++m_testCount;
+d44 1
+a44 1
+ClockerListener::endTest( CppUnit::Test *test )
+d46 1
+a46 1
+  exitTest( test, false );
+d51 1
+a51 1
+ClockerListener::startSuite( CppUnit::Test *suite )
+d53 1
+a53 1
+  enterTest( suite, true );
+d58 1
+a58 1
+ClockerListener::endSuite( CppUnit::Test *suite )
+d60 1
+a60 1
+  exitTest( suite, true );
+d65 1
+a65 30
+ClockerListener::endTestRun( CppUnit::Test *test, 
+                            CppUnit::TestResult *eventManager )
+{
+  printStatistics();
+}
+
+
+void 
+ClockerListener::enterTest( CppUnit::Test *test,
+                            bool isSuite )
+{
+  m_currentPath.add( test );
+
+  int testIndex = m_tests.size();
+  if ( !m_testIndexes.empty() )
+    m_tests[ m_testIndexes.top() ].m_childIndexes.push_back( testIndex );
+  m_testIndexes.push( testIndex );
+
+  TestInfo info;
+  info.m_timer.start();
+  info.m_path = m_currentPath;
+  info.m_isSuite = isSuite;
+
+  m_tests.push_back( info );
+}
+
+
+void 
+ClockerListener::exitTest( CppUnit::Test *test,
+                           bool isSuite )
+d67 1
+a67 6
+  m_tests[ m_testIndexes.top() ].m_timer.finish();
+  if ( !isSuite )
+    m_totalTestCaseTime += m_tests.back().m_timer.elapsedTime();
+
+  m_currentPath.up();
+  m_testIndexes.pop();
+d74 1
+a74 1
+  printTest( m_tests[0], "" );
+d77 1
+a77 1
+  printTestTime( m_tests[0].m_timer.elapsedTime() );
+d79 1
+a79 4
+  double average = 0;
+  if ( m_testCount > 0 )
+    average = m_totalTestCaseTime / m_testCount;
+  printTestTime( average );
+d84 1
+a84 1
+ClockerListener::printTest( const TestInfo &info,
+d90 2
+a91 9
+  if ( !m_flatten )
+    printTestIndent( indentString, indentLength );
+
+  printTestTime( info.m_timer.elapsedTime() );
+
+  if ( m_flatten )
+    printFlattenedTestName( info );
+  else
+    printTestName( info );
+d93 1
+d96 1
+a96 1
+  if ( info.m_childIndexes.empty() )
+d101 2
+a102 2
+  for ( int index =0; index < info.m_childIndexes.size(); ++index )
+    printTest( m_tests[ info.m_childIndexes[ index ] ], indent );
+d120 1
+a120 30
+ClockerListener::printTestTime( double elapsedSeconds ) const
+{
+  char buffer[320];
+  const char *format;
+  if ( elapsedSeconds < 1 )
+    format = "(%2.3fs) ";
+  else if ( elapsedSeconds < 10 )
+    format = "(%3.2fs) ";
+  else if (elapsedSeconds < 100 )
+    format = "(%4.1fs) ";
+  else
+    format = "(%5fs) ";
+
+  ::sprintf( buffer, format, elapsedSeconds );
+
+  std::cout << buffer;
+}
+
+
+void 
+ClockerListener::printFlattenedTestName( const TestInfo &info ) const
+{
+  std::cout  <<  info.m_path.toString();
+  if ( info.m_isSuite )
+    std::cout  <<  "/";
+}
+
+
+void 
+ClockerListener::printTestName( const TestInfo &info ) const
+d122 1
+a122 1
+  std::cout  <<  info.m_path.getChildTest()->getName();
+@
+
+
+1.1
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@d95 2
+a96 1
+  m_totalTestCaseTime += m_tests.back().m_timer.elapsedTime();
+@
+

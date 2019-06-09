@@ -1,0 +1,580 @@
+head	1.5;
+access;
+symbols
+	REL_1_12_1:1.5
+	REL_1_11_6:1.5
+	REL_1_11_4:1.5
+	REL_1_11_0:1.5
+	TG_CPPUNIT_NO_STREAM_AFTER:1.5
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.4
+	REL_1_10_2:1.4
+	REL_1_10_0:1.4
+	REL_1_9_14:1.4
+	REL_1_9_12:1.4
+	BRANCH_1_9_12:1.4.0.2
+	TG_BRANCH_1_9_12:1.4
+	TG_BEFORE_HPUX_PLUGIN:1.4
+	REL_1_9_0:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.5
+date	2004.06.25.10.41.28;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.04.15.15.33.10;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.14.10.08.37;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.13.15.38.21;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.13.15.12.54;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@#include <cppunit/TestPath.h>
+#include <cppunit/TestResult.h>
+#include <cppunit/TestResultCollector.h>
+#include <cppunit/TestRunner.h>
+#include <cppunit/TextTestProgressListener.h>
+#include <cppunit/CompilerOutputter.h>
+#include <tchar.h>
+#include <cppunit/plugin/TestPlugIn.h>
+#include <cppunit/plugin/TestPlugInSuite.h>
+#include <cppunit/plugin/DynamicLibraryManagerException.h>
+#include <cppunit/extensions/TestDecorator.h>
+
+
+#ifndef _UNICODE
+#define TCERR CPPUNIT_NS::stdCOut()
+#else
+#define TCERR std::wcerr
+#endif
+
+class NotOwningTestRunner : public CppUnit::TestRunner
+{
+public:
+  typedef CppUnit::TestRunner SuperClass;   // work around VC++ bug
+
+  void addTest( CppUnit::Test *test )
+  {
+    SuperClass::addTest( new CppUnit::TestDecorator( test ) );
+  }
+};
+
+
+/*! Converts a ansi string to a TCHAR string.
+ */
+std::basic_string<TCHAR>
+toVariableString( const char *text )
+{
+#ifdef _UNICODE
+  int textLength = ::strlen( text );
+
+  wchar_t *unicodeString = new wchar_t[ textLength + 1 ];
+	
+  ::MultiByteToWideChar( CP_THREAD_ACP, MB_PRECOMPOSED, 
+                         text, textLength,
+		                     unicodeString, textLength + 1 );
+
+	std::wstring str( unicodeString );
+  delete[] unicodeString;
+  return str;
+#else
+  return text;
+#endif
+}
+
+
+/*! Converts a TCHAR string to an ANSI string.
+ */
+std::string 
+toAnsiString( const TCHAR *text )
+{
+#ifdef _UNICODE
+  int bufferLength = ::WideCharToMultiByte( CP_THREAD_ACP, 0, 
+                                            text, text.GetLength(),
+                                            NULL, 0, NULL, NULL ) +1;
+  char *ansiString = new char[bufferLength];
+  ::WideCharToMultiByte( CP_THREAD_ACP, 0, 
+                         text, text.GetLength(),
+                         ansiString, bufferLength, 
+                                            NULL,
+                                            NULL );
+
+  std::string str( ansiString, bufferLength-1 );
+  delete[] ansiString;
+
+  return str;
+#else
+  return std::string( text );
+#endif
+}
+
+
+/*! Runs the specified tests located in the root suite.
+ * \param root Root suite that contains all the test of the DLL.
+ * \param testPaths Array of string that contains the test paths of all the test to run.
+ * \param numberOfPath Number of test paths in \a testPaths. If 0 then \a root suite
+ *                     is run.
+ * \return \c true if the run succeed, \c false if a test failed or if a test
+ *         path was not resolved.
+ */
+bool 
+runDllTest( CppUnit::Test *root,
+            TCHAR *testPaths[],
+            int numberOfPath )
+{
+  CppUnit::TestResult controller;
+  CppUnit::TestResultCollector result;
+  controller.addListener( &result );        
+  CppUnit::TextTestProgressListener progress;
+  controller.addListener( &progress );      
+
+  NotOwningTestRunner runner;
+  if ( numberOfPath == 0 )
+    runner.addTest( root );
+  else
+  {
+    for ( int index =0; index < numberOfPath; ++index )
+    {
+      const TCHAR *testPath = testPaths[index];
+      try
+      {
+        runner.addTest( root->resolveTestPath( testPath).getChildTest() );
+      }
+      catch ( std::invalid_argument & )
+      {
+        TCERR  <<  _T("Failed to resolve test path: ")  <<  testPath  <<  "\n";
+        return false;
+      }
+    }
+  }
+
+  runner.run( controller );
+
+  stdCOut() << "\n";
+
+  CppUnit::CompilerOutputter outputter( &result, stdCOut() );
+  outputter.write();
+
+  return result.wasSuccessful();
+}
+
+
+/*! Main
+ * 
+ * Usage: 
+ *
+ * DllPlugInTester.exe dll-filename [testpath1] [testpath2]...
+ *
+ * <em>dll-filename</em> must be the name of the DLL. If the DLL use some other DLL, they
+ * should be in the path or in the same directory as the DLL. The DLL must export
+ * a function named "GetTestPlugInInterface" with the signature
+ * GetTestPlugInInterfaceFunction. Both are defined in:
+ * \code
+ * #include <msvc6/testrunner/TestPlugInInterface.h>
+ * \endcode.
+ *
+ * See examples/msvc6/TestPlugIn for an example of post-build testing.
+ *
+ * If no test path is specified, they all the test of the suite returned by the DLL
+ * are run.
+ *
+ * You can specify as much test path as you which. Only the test specified by the
+ * test paths will be run. Test paths are resolved using Test::resolveTestPath() on
+ * the suite returned by the DLL.
+ * 
+ * If all test succeed and no error happen then the application exit with code 0.
+ * If any error occurs (failed to load dll, failed to resolve test paths) or a 
+ * test fail, the application exit with code 1.
+ */
+int 
+_tmain( int argc, 
+        TCHAR* argv[], 
+        TCHAR* envp[] )
+{
+  const int successReturnCode = 0;
+  const int failureReturnCode = 1;
+
+  // check command line
+  const TCHAR *applicationName = argv[0];
+  if ( argc < 2 )
+  {
+    TCERR  <<  _T("Usage:\n")
+           <<  applicationName 
+           <<  " dll-filename [test-path] [test-path]...\n";
+    return failureReturnCode;
+  }
+
+  // open the dll
+  const TCHAR *dllFileName = argv[1];
+
+  bool wasSuccessful = false;
+  try
+  {
+    CppUnit::TestPlugInSuite suite( dllFileName );
+    wasSuccessful = runDllTest( &suite, argv+2, argc-2 );
+  }
+  catch ( CppUnit::DynamicLibraryManagerException &e )
+  {
+    TCERR  << "Failed to load test plug-in:\n"
+           << toVariableString( e.what() )  << "\n";
+  }
+
+  return wasSuccessful ? successReturnCode : failureReturnCode;
+}
+
+
+@
+
+
+1.4
+log
+@* NEWS: updated.
+
+* configure.in: added include/cppunit/config/Makefile and
+  include/cppunit/plugin/Makefile to the list of target.
+
+* doc/CppUnit-win.dox: enabled generation of HTML Help documentation.
+
+* include/cppunit/config/Makefile.am:
+* include/cppunit/plugin/Makefile.am: added.
+
+* include/cppunit/config-bcb5.h:
+* include/cppunit/config-msvc6.h:
+* include/cppunit/config-mac.h: moved to include/cppunit/config/.
+
+* include/cppunit/Portability.h: updated config files location. Added macros
+  CPPUNIT_STRINGIZE and CPPUNIT_JOIN (implementation adapted from boost.org).
+  Added macro CPPUNIT_MAKE_UNIQUE_NAME.
+
+* include/cppunit/Test.h: modified methods order.
+
+* include/cppunit/extensions/HelperMacros.h: renamed macro
+  __CPPUNIT_MAKE_UNIQUE_NAME to CPPUNIT_MAKE_UNIQUE_NAME and moved its
+  definition to include/cppunit/Portability.h.
+
+* include/cppunit/extensions/TestDecorator.h: Inherits Test instead of TestLeaf.
+
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* src/cppunit/DynamicLibraryManager.cpp: added. DLL manager (load & lookup
+  symbol).
+
+* src/cppunit/BeOsDynamicLibraryManager.cpp:
+* src/cppunit/UnixDynamicLibraryManager.cpp:
+* src/cppunit/Win32DynamicLibraryManager.cpp: added. Implementation of
+  platform dependent methods of DynamicLibraryManager.
+
+* include/cppunit/plugin/DynamicLibraryManagerException.h:
+* src/cppunit/DynamicLibraryManagerException.cpp: added. Exception thrown
+  by DynamicLibraryManager.
+
+* include/cppunit/plugin/TestPlugIn.h: added. CppUnitTestPlugIn interface
+  definition. Helper macros to implements plug-in.
+
+* include/cppunit/plugin/TestPlugInSuite.h:
+* src/cppunit/plugin/TestPlugInSuite.cpp: added. A suite to wrap a test
+  plug-in.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: added. A default implementation
+  of the test plug-in interface.
+
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp: updated to use the
+  new TestPlugIn.
+
+* examples/cppunittest/TestResultCollectorTest.cpp: fixed typo.
+@
+text
+@d15 1
+a15 1
+#define TCERR std::cerr
+d114 1
+a114 1
+        TCERR  <<  _T("Failed to resolve test path: ")  <<  testPath  <<  std::endl;
+d122 1
+a122 1
+  std::cerr << std::endl;
+d124 1
+a124 1
+  CppUnit::CompilerOutputter outputter( &result, std::cerr );
+d170 1
+a170 1
+    TCERR  <<  _T("Usage: ")  <<  std::endl
+d172 1
+a172 2
+           <<  " dll-filename [test-path] [test-path]..."
+           <<  std::endl;
+d187 2
+a188 2
+    TCERR  << "Failed to load test plug-in:"  <<  std::endl
+           << toVariableString( e.what() )  << std::endl;
+@
+
+
+1.3
+log
+@* NEWS: updated.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: renamed TestSuccessListener
+
+* doc/cookbook.dox:
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* src/cppunit/CompilerOutputter.cpp: fixed 'success' typo (was misspelled
+'sucess').
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: updated (renaming of
+  TestSucessListener).
+
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp: Changed SucessfulTests tag to
+SucessfulTests.
+@
+text
+@d8 4
+a11 2
+#include <msvc6/testrunner/TestPlugInInterface.h>
+#include <stdexcept>
+a13 6
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+d20 11
+d100 1
+a100 1
+  CppUnit::TestRunner runner;
+d110 1
+a110 1
+        runner.addTest( root->resolveTestPath( toAnsiString( testPath ) ).getChildTest() );
+d125 1
+a125 1
+  outputter.write();                      
+a178 6
+  HINSTANCE dllHandle = ::LoadLibrary( dllFileName );
+  if ( dllHandle == NULL )
+  {
+    TCERR  <<  "Failed to load dll: "  <<  dllFileName  <<  std::endl;
+    return failureReturnCode;
+  } 
+a179 4
+  // get the plug in function in the dll
+  const TCHAR *plugFunctionName = _T("GetTestPlugInInterface");
+  GetTestPlugInInterfaceFunction plug = (GetTestPlugInInterfaceFunction)
+      ::GetProcAddress( dllHandle, plugFunctionName );
+d183 2
+a184 11
+    if ( plug != NULL )
+    {
+      TestPlugInInterface *theInterface = (*plug)();
+      wasSuccessful = runDllTest( theInterface->makeTest(), argv+2, argc-2 );
+    }
+    else
+    {
+      TCERR  <<  _T("Failed to find exported function named '")
+             <<  plugFunctionName  <<  _T("'")
+             <<  std::endl;
+    }
+d186 1
+a186 1
+  catch ( std::exception &e )
+d188 2
+a189 5
+    TCERR  <<  _T( "Unexpected exception when running test. You should report this"
+                   " and the context which produced the exception:" )  
+           << std::endl
+           << toVariableString( e.what() )
+           << std::endl;
+a190 2
+
+  ::FreeLibrary( dllHandle );
+@
+
+
+1.2
+log
+@* NEWS: updated
+
+* doc/other_documentation.dox: addded new module for test plug-in.
+
+* include/msvc6/DSPlugin/TestRunnerDSPlugin.h:
+* include/msvc6/DSPlugin/TestRunnerDSPlugin_i.c: added. Those file are
+  generated by project src/msvc/DSPlugin. They are provided to allow
+  compilation of TestRunner without compiling DSPlugIn which does not
+  build on VC++ 7.
+
+* examples/examples.dsw: removed DSPlugIn for workspace (fail to build
+  with VC++ 7). Added DllPlugInTester.dsp to workspace.
+
+* examples/msvc6/TestPlugIn/TestPlugIn.dsp: added post-build unit testing
+  using the new DllPlugInTester.
+
+* examples/msvc6/EasyTestPlugIn/*: a new project that
+  demonstrates the use of CPPUNIT_TESTPLUGIN_IMPL to create a test plug-in.
+
+* src/cppunit/cppunit.dsw:
+* src/TestPlugInRunner.dsw:
+* src/TestRunner.dsw: removed. Should use src/CppUnitLibraries.dsw instead.
+
+* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: removed findTestName() method. Replaced
+  by Test::findTest().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp:
+* src/msvc6/DSPlugIn/DSAddIn.h: changed include for add-in. MIDL generates
+  files in sub-directory ToAddToDistribution. Generated file should be
+  copied to include/msvc6/DSPlugin when modified. This remove the dependecy
+  of MfcTestRunner on DSPlugIn.
+
+* src/msvc6/testrunner/ListCtrlFormatter.h:
+* src/msvc6/testrunner/ListCtrlFormatter.cpp: added GetNextColumnIndex().
+
+* src/msvc6/testrunner/src/TestRunnerDlg.h:
+* src/msvc6/testrunner/src/TestRunnerDlg.cpp: set column number in
+  MsDevCallerListCtrl when initializing the list.
+
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.cpp: column indexes for
+  file and line number are no longer static. Added methods to set those
+  indexes. Changed DSPlugIn header name.
+
+* include/msvc6/testrunner/TestPlugInInterface.h: fixed inclusion of
+  windows header for WINAPI. Added macro CPPUNIT_TESTPLUGIN_IMPL to
+  automatically implements a test plug-in.
+
+* src/msvc6/DllPlugInTester/*: added new project. A application to test DLL
+  and report using CompilerOutputter. Target for post-build testing and
+  debugging of DLL.
+@
+text
+@d156 1
+a156 1
+  const int sucessReturnCode = 0;
+d183 1
+a183 1
+  bool wasSucessful = false;
+d189 1
+a189 1
+      wasSucessful = runDllTest( theInterface->makeTest(), argv+2, argc-2 );
+d209 1
+a209 1
+  return wasSucessful ? sucessReturnCode : failureReturnCode;
+@
+
+
+1.1
+log
+@* NEWS: updated
+
+* doc/other_documentation.dox: addded new module for test plug-in.
+
+* include/msvc6/DSPlugin/TestRunnerDSPlugin.h:
+* include/msvc6/DSPlugin/TestRunnerDSPlugin_i.c: added. Those file are
+  generated by project src/msvc/DSPlugin. They are provided to allow
+  compilation of TestRunner without compiling DSPlugIn which does not
+  build on VC++ 7.
+
+* examples/examples.dsw: removed DSPlugIn for workspace (fail to build
+  with VC++ 7). Added DllPlugInTester.dsp to workspace.
+
+* examples/msvc6/TestPlugIn/TestPlugIn.dsp: added post-build unit testing
+  using the new DllPlugInTester.
+
+* examples/msvc6/EasyTestPlugIn/*: a new project that
+  demonstrates the use of CPPUNIT_TESTPLUGIN_IMPL to create a test plug-in.
+
+* src/cppunit/cppunit.dsw:
+* src/TestPlugInRunner.dsw:
+* src/TestRunner.dsw: removed. Should use src/CppUnitLibraries.dsw instead.
+
+* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: removed findTestName() method. Replaced
+  by Test::findTest().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp:
+* src/msvc6/DSPlugIn/DSAddIn.h: changed include for add-in. MIDL generates
+  files in sub-directory ToAddToDistribution. Generated file should be
+  copied to include/msvc6/DSPlugin when modified. This remove the dependecy
+  of MfcTestRunner on DSPlugIn.
+
+* src/msvc6/testrunner/ListCtrlFormatter.h:
+* src/msvc6/testrunner/ListCtrlFormatter.cpp: added GetNextColumnIndex().
+
+* src/msvc6/testrunner/src/TestRunnerDlg.h:
+* src/msvc6/testrunner/src/TestRunnerDlg.cpp: set column number in
+  MsDevCallerListCtrl when initializing the list.
+
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.cpp: column indexes for
+  file and line number are no longer static. Added methods to set those
+  indexes. Changed DSPlugIn header name.
+
+* include/msvc6/testrunner/TestPlugInInterface.h: fixed inclusion of
+  windows header for WINAPI. Added macro CPPUNIT_TESTPLUGIN_IMPL to
+  automatically implements a test plug-in.
+
+* src/msvc6/DllPlugInTester/*: added new project. A application to test DLL
+  and report using CompilerOutputter. Target for post-build testing and
+  debugging of DLL.
+@
+text
+@d9 1
+@
+

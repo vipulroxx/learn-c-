@@ -1,0 +1,145 @@
+head	1.3;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2005.08.06.22.24.53;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.02.27.16.12.07;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.02.27.15.47.38;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@Added possibility to add test to a fixture and set its description and time-out (and other specifics).
+@
+text
+@#ifndef CPPUTTEST_MINITESTRUNNER_H_INCLUDED
+# define CPPUTTEST_MINITESTRUNNER_H_INCLUDED
+
+# include <cpput/testcase.h>
+# include <cpput/testsuite.h>
+
+class MiniTestRunner
+{
+public:
+   MiniTestRunner()
+   {
+      reset();
+   }
+
+   void run( CppUT::TestPtr test )
+   {
+      // This override prevent errors occuring during testing to
+      // count has failure of the test running that testing.
+      CppUT::TestInfo::ScopedContextOverride override;
+      doRun( test );
+   }
+
+   void run( CppUT::AbstractTestCasePtr test )
+   {
+      run( CppTL::staticPointerCast<CppUT::Test>( test ) );
+   }
+
+   void run( CppUT::TestSuitePtr suite )
+   {
+      run( CppTL::staticPointerCast<CppUT::Test>( suite ) );
+   }
+
+   void reset()
+   {
+      suite_ = 0;
+      tested_ = 0;
+      passed_ = 0;
+      failed_ = 0;
+   }
+
+   int suite_;
+   int tested_;
+   int passed_;
+   int failed_;
+
+private:
+   void doRun( CppUT::TestPtr test )
+   {
+      if ( test->isTestSuite() )
+         doRun( CppTL::staticPointerCast<CppUT::TestSuite>( test ) );
+      else
+         doRun( CppTL::staticPointerCast<CppUT::AbstractTestCase>( test ) );
+   }
+
+   void doRun( CppUT::AbstractTestCasePtr test )
+   {
+      ++tested_;
+      if ( test->runTest() )
+         ++passed_;
+      else
+         ++failed_;
+   }
+
+   void doRun( CppUT::TestSuitePtr suite )
+   {
+      ++suite_;
+      for ( int index =0; index < suite->testCount(); ++index )
+         doRun( suite->testAt( index ) );
+   }
+};
+
+// 0x00688ec0 "`anonymous namespace'::TestFixtureWithSpecific"
+
+#endif // CPPUTTEST_MINITESTRUNNER_H_INCLUDED
+@
+
+
+1.2
+log
+@* ported the TestFixture tests back to the new framework architecture.
+@
+text
+@d72 2
+@
+
+
+1.1
+log
+@* extracted MiniTestRunner from registry test.
+@
+text
+@d17 4
+a20 4
+      if ( test->isTestSuite() )
+         run( CppTL::staticPointerCast<CppUT::TestSuite>( test ) );
+      else
+         run( CppTL::staticPointerCast<CppUT::AbstractTestCase>( test ) );
+d25 1
+a25 5
+      ++tested_;
+      if ( test->runTest() )
+         ++passed_;
+      else
+         ++failed_;
+d30 1
+a30 3
+      ++suite_;
+      for ( int index =0; index < suite->testCount(); ++index )
+         run( suite->testAt( index ) );
+d45 25
+@
+

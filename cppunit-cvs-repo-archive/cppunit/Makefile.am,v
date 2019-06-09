@@ -1,0 +1,1011 @@
+head	1.38;
+access;
+symbols
+	REL_1_12_1:1.38
+	REL_1_11_6:1.36
+	REL_1_11_4:1.35
+	REL_1_11_0:1.35
+	TG_CPPUNIT_NO_STREAM_AFTER:1.35
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.35
+	REL_1_10_2:1.35
+	REL_1_10_0:1.35
+	REL_1_9_14:1.35
+	REL_1_9_12:1.35
+	BRANCH_1_9_12:1.35.0.2
+	TG_BRANCH_1_9_12:1.35
+	TG_BEFORE_HPUX_PLUGIN:1.33
+	TG_BEFORE_SUN4_PORT:1.33
+	REL_1_9_10:1.33
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.28
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.28
+	REL_1_9_6:1.28
+	REL_1_9_4:1.28
+	REL_1_9_0:1.27
+	REL_1_8_0:1.26
+	REL_1_7_8:1.23
+	REL_1_7_3:1.23
+	REL_1_7_1:1.23
+	REL_1_6_2:1.23
+	BRANCH_1_6:1.23.0.2
+	REL_1_6_1:1.23
+	REL_1_6_0:1.21
+	REL_1_5_5:1.11
+	REL_1_5_4:1.4
+	initial:1.1.1.1
+	e-s:1.1.1;
+locks; strict;
+comment	@# @;
+
+
+1.38
+date	2007.01.12.04.51.31;	author smr99;	state Exp;
+branches;
+next	1.37;
+
+1.37
+date	2006.07.28.05.45.21;	author blep;	state Exp;
+branches;
+next	1.36;
+
+1.36
+date	2006.03.04.21.47.05;	author blep;	state Exp;
+branches;
+next	1.35;
+
+1.35
+date	2004.02.18.21.36.41;	author blep;	state Exp;
+branches;
+next	1.34;
+
+1.34
+date	2003.05.07.20.07.10;	author blep;	state Exp;
+branches;
+next	1.33;
+
+1.33
+date	2002.08.30.20.05.14;	author blep;	state Exp;
+branches;
+next	1.32;
+
+1.32
+date	2002.08.30.19.55.06;	author blep;	state Exp;
+branches;
+next	1.31;
+
+1.31
+date	2002.08.30.19.46.22;	author blep;	state Exp;
+branches;
+next	1.30;
+
+1.30
+date	2002.08.30.19.39.31;	author blep;	state Exp;
+branches;
+next	1.29;
+
+1.29
+date	2002.07.14.19.48.23;	author blep;	state Exp;
+branches;
+next	1.28;
+
+1.28
+date	2002.04.18.09.32.16;	author blep;	state Exp;
+branches;
+next	1.27;
+
+1.27
+date	2002.04.12.19.28.44;	author blep;	state Exp;
+branches;
+next	1.26;
+
+1.26
+date	2002.04.10.15.35.19;	author blep;	state Exp;
+branches;
+next	1.25;
+
+1.25
+date	2002.03.28.16.06.32;	author blep;	state Exp;
+branches;
+next	1.24;
+
+1.24
+date	2002.03.27.17.56.34;	author blep;	state Exp;
+branches;
+next	1.23;
+
+1.23
+date	2001.09.30.17.21.56;	author smr99;	state Exp;
+branches;
+next	1.22;
+
+1.22
+date	2001.09.30.07.02.01;	author smr99;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2001.09.24.02.58.52;	author smr99;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2001.09.21.05.15.47;	author smr99;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2001.09.20.04.18.18;	author smr99;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2001.09.19.04.55.45;	author smr99;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2001.09.19.04.26.41;	author smr99;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2001.09.19.04.18.00;	author smr99;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2001.09.17.21.27.14;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2001.08.07.14.25.22;	author smr99;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2001.05.17.20.24.46;	author bastiaan;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2001.05.16.09.07.09;	author bastiaan;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2001.05.06.13.35.58;	author bastiaan;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2001.04.28.23.38.24;	author bastiaan;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2001.04.28.18.23.32;	author bastiaan;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2001.04.28.18.03.58;	author bastiaan;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.04.28.14.27.24;	author bastiaan;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.04.15.12.53.46;	author bastiaan;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.04.14.22.37.30;	author bastiaan;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.04.14.00.19.37;	author bastiaan;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.04.13.22.51.31;	author bastiaan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2000.10.11.19.08.41;	author e-s;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2000.10.05.18.37.27;	author e-s;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2000.10.05.18.37.27;	author e-s;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.38
+log
+@Do not fail dist-hook if $(distdir)/lib exists.
+@
+text
+@AUTOMAKE_OPTIONS = 1.4
+ACLOCAL_AMFLAGS = -I config
+
+SUBDIRS = src include examples doc
+
+pkgconfigdatadir = $(libdir)/pkgconfig
+
+pkgconfigdata_DATA = cppunit.pc
+
+bin_SCRIPTS = cppunit-config
+man_MANS = cppunit-config.1
+
+
+EXTRA_DIST = BUGS INSTALL-unix INSTALL-WIN32.txt CodingGuideLines.txt	\
+	cppunit-config.1				                \
+	cppunit.m4 cppunit.spec.in cppunit.spec	        \
+	$(m4sources)					                \
+	contrib/msvc/CppUnit.WWTpl 			            \
+	contrib/msvc/readme.txt                         \
+	contrib/msvc/AddingUnitTestMethod.dsm           \
+	contrib/bc5/bcc-makefile.zip \
+	contrib/xml-xsl/tests.xml \
+	contrib/xml-xsl/report.xsl \
+	src/CppUnitLibraries.dsw \
+	lib/.keepme
+
+m4sources = \
+	config/ac_create_prefix_config_h.m4		\
+	config/ac_cxx_have_sstream.m4			\
+	config/ac_cxx_have_strstream.m4			\
+	config/ax_cxx_gcc_abi_demangle.m4		\
+	config/ac_cxx_namespaces.m4			\
+	config/ac_cxx_rtti.m4				\
+	config/ac_cxx_string_compare_string_first.m4	\
+	config/bb_enable_doxygen.m4			\
+	config/ac_dll.m4
+
+m4datadir = $(datadir)/aclocal
+m4data_DATA = cppunit.m4
+
+# Not sure what is creating the timestamp file.
+# The so_locations file only happens on IRIX.
+DISTCLEANFILES = config/stamp-h1 so_locations
+
+dist-hook:
+	cp -dpR $(top_srcdir)/src/msvc6 $(distdir)/src
+	cp -dpR $(top_srcdir)/src/qttestrunner $(distdir)/src
+	cp -dpR $(top_srcdir)/include/msvc6 $(distdir)/include 
+	cp -dpR $(top_srcdir)/examples/msvc6 $(distdir)/examples
+	cp -dpR $(top_srcdir)/examples/qt $(distdir)/examples
+	test -d $(distdir)/lib || mkdir $(distdir)/lib
+	find $(distdir) -name CVS | xargs rm -rf
+	perl -pi -e 's/\n/\r\n/g' `find $(distdir) -name '*.ds?'` \
+		$(distdir)/contrib/msvc/*			  \
+		$(distdir)/INSTALL-WIN32.txt
+
+.PHONY: release snapshot rpm docs doc-dist
+
+release:
+	rm -rf .deps */.deps
+	$(MAKE) distcheck
+
+snapshot:
+	$(MAKE) dist distdir=$(PACKAGE)-`date +%Y-%m-%d`
+
+rpm: dist
+	rpm -ta $(PACKAGE)-$(VERSION).tar.gz
+	mv -f /usr/src/redhat/SRPMS/$(PACKAGE)-$(VERSION)-*.rpm .
+	mv -f /usr/src/redhat/RPMS/*/$(PACKAGE)-$(VERSION)-*.rpm .
+	mv -f /usr/src/redhat/RPMS/*/$(PACKAGE)-doc-$(VERSION)-*.rpm .
+
+debian:
+	chmod a+x debian/rules
+	dpkg-buildpackage -rfakeroot -sa -us -uc -tc 
+
+doc-dist:
+	$(MAKE) -C doc doc-dist
+	mv -f doc/$(PACKAGE)-docs-$(VERSION).tar.gz .
+
+
+@
+
+
+1.37
+log
+@* Makefile.am:
+* lib/.keepme: added dummy file to prevent lib/ removal by some
+  unzip clients. Fixed bug #1527877 .
+@
+text
+@d51 1
+a51 1
+	mkdir $(distdir)/lib
+@
+
+
+1.36
+log
+@* cppunit.pc.in:
+* configure.in:
+* Makefile.am: integrated patch from Rober Leight to generate pkg-config.
+@
+text
+@d24 2
+a25 1
+	src/CppUnitLibraries.dsw
+@
+
+
+1.35
+log
+@* configure.in:
+* makefile.am:
+* config/ax_cxx_gcc_abi_demangle.m4:
+* src/cppunit/TypeInfoHelper.cpp: added patch from
+Neil Ferguson <nferguso@@eso.org> to use gcc c++ abi to demangle typeinfo
+name when available.
+@
+text
+@d6 4
+@
+
+
+1.34
+log
+@* Makefile.am
+* configure.in
+* config/ac_dll.m4
+* examples/cppunittest/Makefile.am
+* examples/hierarchy/Makefile.am
+* examples/money/Makefile.am
+* examples/simple/Makefile.am
+* include/cppunit/config/SelectDllLoader.h
+* include/cppunit/plugin/TestPlugIn.h
+* include/cppunit/tools/Algorithm.h
+* src/DllPlugInTester/Makefile.am
+* src/cppunit/Makefile.am
+* src/cppunit/TestDecorator.cpp
+* src/cppunit/ShlDynamicLibraryManager.cpp
+* src/cppunit/UnixDynamicLibraryManager.cpp
+* src/cppunit/Win32DynamicLibraryManager.cpp: applied patch from
+  Abdessattar Sassi <abdesassi@@users.sourceforge.net> to add support
+  for plug-in to hp-ux.
+@
+text
+@d26 1
+@
+
+
+1.33
+log
+@Attempt to fix the makig of lib directory in tar ball
+@
+text
+@d29 2
+a30 1
+	config/bb_enable_doxygen.m4
+@
+
+
+1.32
+log
+@* added automatic creation of lib directory for tar ball
+@
+text
+@d44 1
+@
+
+
+1.31
+log
+@* added automatic creation of lib directory for tar ball
+@
+text
+@a43 1
+	mkdir $(distdir)/lib
+@
+
+
+1.30
+log
+@* added automatic creation of lib directory for tar ball
+@
+text
+@d44 1
+a44 1
+  mkdir $(distdir)/lib
+@
+
+
+1.29
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d44 1
+@
+
+
+1.28
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d10 1
+a10 1
+EXTRA_DIST = BUGS INSTALL-unix INSTALL-WIN32.txt	\
+@
+
+
+1.27
+log
+@* Makefile.am: added examples/qt to tar ball release.
+
+* TODO: heavily updated.
+
+* contrib/msvc/CppUnit*.wwtpl: changed base class for unit test to TestFixture.
+
+* include/cppunit/Test.h: removed toString() method. Not used by the framework
+  and source of confusions with getName().
+  Added getChildTestCount() and getChildTestAt(), introducing the composite pattern
+  at top level. Added utility methods findTest() and findTestPath().
+
+* src/cppunit/Test.cpp: added. Implementation of new utility methods.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: inherits TestLeaf. Removed toString(), run(void) and
+  defaultResult(). Removed default constructor.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestSuite.cpp: fixed some includes that used "" instead of <>.
+
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: added. Common implementation of Test for composite
+  tests (TestSuite).
+
+* include/cppunit/TestFailure.h:
+* src/cppunit/TestFailure.cpp: removed toString().
+
+* include/cppunit/TestLeaf.h:
+* src/cppunit/TestLeaf.cpp: added. Common implementation of Test for single test
+  (TestCase).
+
+* include/cppunit/TestListener.h: added TimingListener example to documentation.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: added. List of test traversed to access a test in the
+  test hierarchy.
+
+* include/cppunit/TestRunner.h: added. Generic TestRunner.
+
+* src/cppunit/TestRunner.cpp: moved to TextTestRunner.cpp. Added new implementation
+  of includecppunit/TestRunner.h.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: inherits TestComposite and implements new Test
+  interface. Removed toString().
+
+* src/cppunit/TextTestRunner.cpp: moved from TestRunner.cpp. Implementation of
+  include/cppunit/ui/text/TestRunner.h.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* src/cppunit/RepeatedTest.cpp: removed toString().
+
+* include/cppunit/extensions/TestDecorator.h: inherits TestLeaf.
+  Removed toString()
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h: XML outputter now escape node content.
+  Add unit test for that bug (#540944). Added style sheet support. Modified
+  XML structure: failure message as its own element.
+
+* src/msvc/testrunner/TestRunnerModel.h:
+* src/msvc/testrunner/TestRunnerModel.cpp: used Test::findTest() to find a test
+  by name instead of using RTTI. Added toAnsiString() for convertion when
+  compiling as UNICODE.
+
+* src/msvc/testrunner/TreeHierarchyDlg.h:
+* src/msvc/testrunner/TreeHierarchyDlg.cpp: used new composite interface of Test
+  to explorer the test hierarchy instead of RTTI.
+
+* examples/cppunittest/TestPathTest.h:
+* examples/cppunittest/TestPathTest.cpp: added, unit tests for TestPath.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: added test for TestLeaf.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: added test for TestComposite and
+  new Test interface.
+@
+text
+@d17 3
+@
+
+
+1.26
+log
+@* Makefile.am: removed directory cppunitui from copy when making the dist.
+
+* include/cppunit/ui: added Makefile.am for dist and install.
+@
+text
+@d40 1
+@
+
+
+1.25
+log
+@no message
+@
+text
+@a38 1
+	cp -dpR $(top_srcdir)/include/cppunitui $(distdir)/include 
+@
+
+
+1.24
+log
+@* makefile.am: added src/CppUnitLibraries.dsw, new contribution, and
+src/qttestrunner.
+
+* TODO: updated (doc).
+
+* contrib/msvc/AddingUnitTestMethod.dsm: added, submitted by
+bloodchen@@hotmail.com.
+
+* constrib/msvc/readme.txt: updated.
+
+* include/cppunit/TestAsserter.h:
+* include/cppunit/SourceLine.h: updated doc.
+
+* include/cppunit/TestCaller.h: reindented. updated doc.
+
+* include/cppunit/extensions/HelperMacros.h: relaxed constraint on fixture.
+Fixture base class may be TestFixture instead of TestCase.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.h: TestCase inherits TestFixture for setUp() and
+tearDown() definition. Moved documentation to TestFixture.
+
+* include/cppunit/TestFixture.h: updated documentation.
+
+* include/cppunit/TestRegistry.h:
+* src/cppunit/TestRegistry.cpp: Removed. Replaced by TestFactoryRegistry.
+
+* include/cppunit/TextTestRunner.h:
+* src/cppunit/TextTestRunner.cpp: made printing progress using a
+TextTestProgressListener optional.
+
+* examples\cppunittest\ExceptionTest.h:
+* examples\cppunittest\HelperMacrosTest.h:
+* examples\cppunittest\HelperMacrosTest.cpp:
+* examples\cppunittest\NotEqualException.h:
+* examples\cppunittest\OrthodoxTest.h:
+* examples\cppunittest\RepeatedTest.h:
+* examples\cppunittest\TestAssertTest.h:
+* examples\cppunittest\TestCallerTest.h:
+* examples\cppunittest\TestDecoratorTest.h:
+* examples\cppunittest\TestFailureTest.h:
+* examples\cppunittest\TestResultCollectorTest.h:
+* examples\cppunittest\TestResultTest.h:
+* examples\cppunittest\TestSetUpTest.h:
+* examples\cppunittest\TestSuiteTest.h:
+* examples\cppunittest\XmlOutputterTest.h:
+* examples\cppunittest\XmlOutputterTest.cpp:
+* examples\cppunittest\XmlUniformizerTest.h:
+* examples\cppunittest\XmlUniformizerTest.cpp: changed base class for fixture
+from TestCase to TestFixture.
+
+* examples\hierarchy\BoardGameTest.h:
+* examples\hierarchy\ChessTest.h:
+* examples\hierarchy\main.cpp: updated to use HelperMacros for correct
+fixture instantiation (the ChessBoard::testReset test case was using
+BoardGame fixture instance instead of ChessBoard).
+@
+text
+@d39 1
+@
+
+
+1.23
+log
+@Distribute contrib/msvc/*.
+Add const qualifier to countTestCases() and toString() of RepeatedTest.
+@
+text
+@d11 1
+a11 1
+	cppunit-config.1				\
+d13 5
+a17 3
+	$(m4sources)					\
+	contrib/msvc/CppUnit.WWTpl 			\
+	contrib/msvc/readme.txt
+d37 1
+@
+
+
+1.22
+log
+@Documentation tweaks.  Add config-mac.h
+@
+text
+@d13 5
+d39 1
+@
+
+
+1.21
+log
+@Final touch-ups for release 1.6.0.
+@
+text
+@d7 1
+d10 2
+a11 1
+EXTRA_DIST = BUGS INSTALL-WIN32.txt			\
+d55 3
+a57 2
+docs:
+	$(MAKE) -C doc
+a58 2
+doc-dist: docs
+	tar -zcf $(PACKAGE)-docs-$(VERSION).tar.gz -C doc/html .
+@
+
+
+1.20
+log
+@Correct rule to change line endings for INSTALL-WIN32.txt.
+@
+text
+@d9 2
+a10 1
+EXTRA_DIST = cppunit.m4 cppunit.spec.in cppunit.spec	\
+d17 1
+a17 2
+	config/bb_enable_doxygen.m4			\
+	INSTALL-WIN32.txt
+@
+
+
+1.19
+log
+@Improved strstream detection to use header <strstream>, if available.
+@
+text
+@d32 1
+a32 1
+		INSTALL-WIN32.txt
+@
+
+
+1.18
+log
+@*** empty log message ***
+@
+text
+@a39 2
+# The 'date -I' may be a GNUism (sorry!).  
+# It means output an ISO-8601 compliant date/time string.
+d41 1
+a41 1
+	$(MAKE) dist distdir=$(PACKAGE)-`date -I`
+@
+
+
+1.17
+log
+@Use iso date for snapshot.
+@
+text
+@d2 1
+@
+
+
+1.16
+log
+@Changes in response to bug reports.
+@
+text
+@d30 2
+a31 1
+	perl -pi -e 's/\n/\r\n/g' `find $(distdir) -name '*.ds?'`
+d39 2
+d42 1
+a42 1
+	$(MAKE) dist distdir=$(PACKAGE)`date +"%y%m%d"`
+@
+
+
+1.15
+log
+@* Makefile.am: Added INSTALL-WIN32.txt to EXTRA_DIST.
+
+* INSTALL-WIN32.txt: added, short documentation for CppUnit and VC++.
+
+* include/cppunit/extensions/HelperMacros.h: bug #448363, removed
+an extraneous ';' at the end of CPPUNIT_TEST_SUITE_END macro.
+
+* examples/cppunittest/TestCallerTest.cpp: bug #448332, fixed
+memory leaks.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp: change to define
+IDD to a dummy value when subclassing the dialog.
+
+* src/cppunit/cppunit.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* examples/cppunitttest/CppUnitTestMain.dsp:
+* examples/hierarchy.dsp:
+* examples/msvc6/TestPlugIn/TestPlugIn.dsp:
+* examples/msvc6/HostApp/HostApp.dsp: all configurations can be compiled.
+
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsw: added dependency to
+cppunit.dsp and TestRunner.dsp.
+@
+text
+@d21 3
+a23 2
+# Not sure what is creating this timestamp file.
+DISTCLEANFILES = config/stamp-h1
+@
+
+
+1.14
+log
+@Build changes.  Distribute all m4 files.
+@
+text
+@d15 2
+a16 1
+	config/bb_enable_doxygen.m4
+@
+
+
+1.13
+log
+@Merged fixes for distcheck target, contributed by Steve M. Robbins  <steve@@nyongwa.montreal.qc.ca>.
+@
+text
+@d1 1
+a1 5
+if DOC
+SUBDIRS = config src include examples doc
+else
+SUBDIRS = config src include examples 
+endif
+d3 1
+a3 1
+DIST_SUBDIRS = config src include examples doc
+a6 1
+AUTOMAKE_OPTIONS = 1.4
+d8 8
+a15 1
+EXTRA_DIST = cppunit.m4 cppunit.spec.in cppunit.spec
+d19 3
+@
+
+
+1.12
+log
+@Added debian packaging support by Christian Leutloff <leutloff@@debian.org>.
+Use 'make debian' to build.
+Since Christians files were for 1.5.4, they problably need to be resynced.
+@
+text
+@d19 3
+a21 3
+	cp -dpR src/msvc6 $(distdir)/src
+	cp -dpR include/msvc6 $(distdir)/include 
+	cp -dpR examples/msvc6 $(distdir)/examples
+@
+
+
+1.11
+log
+@Convert *.ds? files to CRLF endings in dist-hook.
+@
+text
+@d40 4
+@
+
+
+1.10
+log
+@Merged from Baptiste Lepilleurs patch. Missed at first try.
+@
+text
+@d23 1
+@
+
+
+1.9
+log
+@Moved files in subdir cppunit to src/cppunit.
+@
+text
+@d19 2
+@
+
+
+1.8
+log
+@Fixed dist-hook target.
+@
+text
+@d2 1
+a2 1
+SUBDIRS = config cppunit include examples doc
+d4 1
+a4 1
+SUBDIRS = config cppunit include examples 
+d7 1
+a7 1
+DIST_SUBDIRS = config cppunit include examples doc
+@
+
+
+1.7
+log
+@Merged msvc6 specific TestRunner and example adapted from Michael Feathers
+version by Baptiste Lepilleur.
+@
+text
+@d20 1
+a20 1
+	find $(distdir) -name CVS -exec rm -rf {} \;
+@
+
+
+1.6
+log
+@Set CONFIG_AUX_DIR to config and moved corresponding files from . to config.
+@
+text
+@d18 4
+@
+
+
+1.5
+log
+@Moved public header files from cppunit dir to include/cppunit, to separate them from internal header files like estring.h.
+@
+text
+@d2 1
+a2 1
+SUBDIRS = cppunit include examples doc
+d4 1
+a4 1
+SUBDIRS = cppunit include examples 
+d7 1
+a7 1
+DIST_SUBDIRS = cppunit include examples doc
+@
+
+
+1.4
+log
+@Added support for building RPMs using 'make rpm'.
+@
+text
+@d2 1
+a2 1
+SUBDIRS = cppunit examples doc
+d4 1
+a4 1
+SUBDIRS = cppunit examples 
+d7 1
+a7 1
+DIST_SUBDIRS = cppunit examples doc
+@
+
+
+1.3
+log
+@Document generation is now autoconfed. (copied from log4cpp autoconf/automake).
+Added doc subdir to dist.
+Upped version number to 1.5.3.
+@
+text
+@d13 1
+a13 8
+EXTRA_DIST = \
+	cppunit.m4 \
+	AUTHORS \
+	COPYING \
+	ChangeLog \
+	INSTALL \
+	README \
+	TODO 
+d18 1
+a18 1
+.PHONY: release snapshot docs
+d27 6
+d36 2
+@
+
+
+1.2
+log
+@added examples directory to distribution.
+@
+text
+@d1 5
+d7 1
+a7 2
+SUBDIRS = cppunit \
+          examples
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 2
+a3 1
+SUBDIRS = cppunit 
+@
+
+
+1.1.1.1
+log
+@initial check in.
+@
+text
+@@

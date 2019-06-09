@@ -1,0 +1,2971 @@
+head	1.22;
+access;
+symbols
+	REL_1_12_1:1.22
+	REL_1_11_6:1.22
+	REL_1_11_4:1.22
+	REL_1_11_0:1.22
+	TG_CPPUNIT_NO_STREAM_AFTER:1.22
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.22
+	REL_1_10_2:1.22
+	REL_1_10_0:1.21
+	REL_1_9_14:1.21
+	REL_1_9_12:1.21
+	BRANCH_1_9_12:1.21.0.2
+	TG_BRANCH_1_9_12:1.21
+	TG_BEFORE_HPUX_PLUGIN:1.21
+	TG_BEFORE_SUN4_PORT:1.18
+	REL_1_9_10:1.18
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.13
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.13
+	REL_1_9_6:1.10
+	REL_1_9_4:1.10
+	REL_1_9_0:1.10
+	REL_1_8_0:1.9
+	REL_1_7_8:1.9
+	REL_1_7_3:1.8
+	REL_1_7_1:1.6
+	REL_1_6_2:1.4
+	BRANCH_1_6:1.4.0.2
+	REL_1_6_1:1.4
+	REL_1_6_0:1.4
+	REL_1_5_5:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.22
+date	2004.06.18.11.25.35;	author blep;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2003.03.15.11.13.45;	author blep;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2003.03.15.10.24.21;	author blep;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2002.12.02.19.45.53;	author blep;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2002.08.27.21.51.18;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2002.07.03.07.02.49;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2002.06.14.11.12.17;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2002.06.13.23.25.55;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2002.06.13.15.31.01;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2002.06.12.16.44.17;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2002.05.22.17.27.26;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2002.04.13.15.12.54;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2002.03.25.07.15.06;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2002.02.28.10.56.10;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.10.24.20.03.29;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.10.05.22.27.15;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.10.05.08.06.28;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.09.14.19.27.58;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.06.27.21.23.22;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.28.14.27.24;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.22
+log
+@* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugIn.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerModel.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerModel.h: bug #952912,
+  memory leaks when loading/reloading plug-ins.
+@
+text
+@// TestRunnerDlg.cpp : implementation file
+//
+
+#include "stdafx.h"
+#include "mmsystem.h"
+#include "TestRunnerApp.h"
+#include "TestRunnerDlg.h"
+#include "Resource.h"
+#include "ActiveTest.h"
+#include "ProgressBar.h"
+#include "TreeHierarchyDlg.h"
+#include "ListCtrlFormatter.h"
+#include "ListCtrlSetter.h"
+#include "MfcSynchronizationObject.h"
+#include "ResourceLoaders.h"
+#include <cppunit/TestFailure.h>
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+/* Notes:
+ - code duplication between OnOK() and OnQuitApplication()
+ - the threading need to be rewrite, so that GUI update occures in the original
+ thread, not in the thread that is running the tests. This slow down the time
+ needed to run the test much...
+ */
+
+
+/////////////////////////////////////////////////////////////////////////////
+// TestRunnerDlg dialog
+
+const CString TestRunnerDlg::ms_cppunitKey( "CppUnit" );
+
+
+TestRunnerDlg::TestRunnerDlg( TestRunnerModel *model,
+                              int nDialogResourceId,
+                              CWnd* pParent )
+    : cdxCDynamicDialog( nDialogResourceId, pParent )
+{
+  ASSERT(0); // this constructor should not be used because of possible resource problems
+             // => use the constructor with the string parameter
+  init(model);
+}
+
+TestRunnerDlg::TestRunnerDlg( TestRunnerModel *model,
+                              const TCHAR* szDialogResourceId,
+                              CWnd* pParent )
+    : cdxCDynamicDialog( szDialogResourceId == NULL ? 
+                                _T("CPP_UNIT_TEST_RUNNER_IDD_DIALOG_TESTRUNNER")
+                              : szDialogResourceId, 
+                         pParent)
+{
+  init(model);
+}
+
+void
+TestRunnerDlg::init(TestRunnerModel *model)
+{
+  m_model = model;
+
+  //{{AFX_DATA_INIT(TestRunnerDlg)
+    m_bAutorunAtStartup = FALSE;
+  //}}AFX_DATA_INIT
+
+  m_testsProgress     = 0;
+  m_selectedTest      = 0;
+  m_bAutorunAtStartup = true;
+  m_bIsRunning = false;
+  m_activeTest = 0;
+  m_result = 0;
+  m_testObserver = 0;
+
+  ModifyFlags( flSWPCopyBits, 0 );      // anti-flickering option for resizing
+}
+
+void 
+TestRunnerDlg::DoDataExchange(CDataExchange* pDX)
+{
+  cdxCDynamicDialog::DoDataExchange(pDX);
+  //{{AFX_DATA_MAP(TestRunnerDlg)
+    DDX_Control(pDX, IDC_DETAILS, m_details);
+    DDX_Control(pDX, IDC_LIST, m_listCtrl);
+    DDX_Control(pDX, IDOK, m_buttonClose);
+    DDX_Control(pDX, ID_STOP, m_buttonStop);
+    DDX_Control(pDX, ID_RUN, m_buttonRun);
+    DDX_Control(pDX, IDC_BROWSE_TEST, m_buttonBrowse);
+    DDX_Check(pDX, IDC_CHECK_AUTORUN, m_bAutorunAtStartup);
+	//}}AFX_DATA_MAP
+}
+
+
+BEGIN_MESSAGE_MAP(TestRunnerDlg, cdxCDynamicDialog)
+  //{{AFX_MSG_MAP(TestRunnerDlg)
+  ON_BN_CLICKED(ID_RUN, OnRun)
+  ON_BN_CLICKED(ID_STOP, OnStop)
+  ON_BN_CLICKED(IDC_BROWSE_TEST, OnBrowseTest)
+  ON_COMMAND(ID_QUIT_APPLICATION, OnQuitApplication)
+  ON_WM_CLOSE()
+	ON_WM_SIZE()
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST, OnSelectedFailureChange)
+	ON_CBN_SELCHANGE(IDC_COMBO_TEST, OnSelectTestInHistoryCombo)
+	//}}AFX_MSG_MAP
+END_MESSAGE_MAP()
+
+/////////////////////////////////////////////////////////////////////////////
+// TestRunnerDlg message handlers
+
+BOOL 
+TestRunnerDlg::OnInitDialog() 
+{
+  cdxCDynamicDialog::OnInitDialog();
+
+#ifdef CPPUNIT_SUBCLASSING_TESTRUNNERDLG_BUILD
+  m_hAccelerator = ::LoadAccelerators( AfxGetResourceHandle(),
+#else
+  m_hAccelerator = ::LoadAccelerators( g_testRunnerResource,
+#endif
+                                       MAKEINTRESOURCE( IDR_ACCELERATOR_TEST_RUNNER ) );
+// It always fails!!! I don't understand why. Complain about not finding the resource name!
+  ASSERT( m_hAccelerator !=NULL );
+  
+  CComboBox   *comboBox = (CComboBox *)GetDlgItem (IDC_COMBO_TEST);
+
+  ASSERT (comboBox);
+
+  VERIFY( m_errorListBitmap.Create( _T("CPP_UNIT_TEST_RUNNER_IDB_ERROR_TYPE"), 
+                                    16, 1, 
+                                    RGB( 255,0,255 ) ) );
+
+  m_testsProgress = new ProgressBar();
+  m_testsProgress->Create( NULL, NULL, WS_CHILD, CRect(), this, 0 );
+  m_testsProgress->ShowWindow( SW_SHOW );
+  m_testsProgress->MoveWindow( getItemClientRect( IDC_STATIC_PROGRESS_BAR ) );
+
+  initializeLayout();
+  loadSettings();
+  initializeFixedSizeFont();
+  m_details.SetFont( &m_fixedSizeFont );  // Does not work. Need to investigate...
+      
+  m_listCtrl.SetImageList( &m_errorListBitmap, LVSIL_SMALL );
+  m_listCtrl.SetExtendedStyle( m_listCtrl.GetExtendedStyle() | LVS_EX_FULLROWSELECT );
+
+  int total_col_1_4 = m_settings.col_1 + m_settings.col_2 + 
+		      m_settings.col_3 + m_settings.col_4;
+
+  CRect listBounds;
+  m_listCtrl.GetClientRect(&listBounds);
+  int col_5_width = listBounds.Width() - total_col_1_4; // 5th column = rest of listview space
+  ListCtrlFormatter formatter( m_listCtrl );
+  formatter.AddColumn( loadCString(IDS_ERRORLIST_TYPE), m_settings.col_1, LVCFMT_LEFT, 0 );
+  formatter.AddColumn( loadCString(IDS_ERRORLIST_NAME), m_settings.col_2, LVCFMT_LEFT, 1 );
+  formatter.AddColumn( loadCString(IDS_ERRORLIST_FAILED_CONDITION), m_settings.col_3, LVCFMT_LEFT, 2 );
+  m_listCtrl.setLineNumberSubItem( formatter.GetNextColumnIndex() );
+  formatter.AddColumn( loadCString(IDS_ERRORLIST_LINE_NUMBER), m_settings.col_4, LVCFMT_LEFT, 3 );
+  m_listCtrl.setFileNameSubItem( formatter.GetNextColumnIndex() );
+  formatter.AddColumn( loadCString(IDS_ERRORLIST_FILE_NAME), col_5_width, LVCFMT_LEFT, 4 );
+
+  reset ();
+  updateHistoryCombo();
+  UpdateData( FALSE );
+
+  updateListColumnSize();
+
+  m_buttonRun.SetFocus();
+
+  if ( m_bAutorunAtStartup )
+    OnRun();
+  
+  return FALSE;  // return TRUE unless you set the focus to a control
+                 // EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+TestRunnerDlg::~TestRunnerDlg()
+{ 
+  freeState();
+  delete m_testsProgress;
+}
+
+
+void 
+TestRunnerDlg::OnRun() 
+{
+  if ( m_bIsRunning )
+    return;
+
+  m_selectedTest = m_model->selectedTest();
+
+  if ( m_selectedTest == 0 )
+    return;
+
+  freeState(); 
+  reset();
+
+  beRunning();
+
+  int numberOfTests = m_selectedTest->countTestCases();
+
+  m_testsProgress->start( numberOfTests );
+
+  
+  m_result = new CPPUNIT_NS::TestResultCollector( new MfcSynchronizationObject() );
+  m_testObserver = new CPPUNIT_NS::TestResult( new MfcSynchronizationObject() );
+  m_testObserver->addListener( m_result );
+  m_testObserver->addListener( this );
+  m_activeTest = new ActiveTest( m_selectedTest );
+
+  m_testStartTime = timeGetTime();
+
+  m_activeTest->run( m_testObserver );
+
+  m_testEndTime = timeGetTime();
+}
+
+
+void 
+TestRunnerDlg::addListEntry( const CPPUNIT_NS::TestFailure &failure )
+{
+  CListCtrl *listCtrl = (CListCtrl *)GetDlgItem (IDC_LIST);
+  int currentEntry = m_result->testErrors() + 
+                     m_result->testFailures() -1;
+
+  ErrorTypeBitmaps errorType;
+  if ( failure.isError() )
+    errorType = errorTypeError;
+  else
+    errorType = errorTypeFailure;
+
+  ListCtrlSetter setter( *listCtrl );
+  setter.insertLine( currentEntry );
+  setter.addSubItem( failure.isError() ? _T("Error") : _T("Failure"), errorType );
+
+  // Set test name
+  setter.addSubItem( failure.failedTestName().c_str(), errorType );
+
+  // Set the asserted text
+  CString message( failure.thrownException()->message().shortDescription().c_str() );
+  message.Replace( '\n', ' ' );   // should only print the short description there,
+  setter.addSubItem( message );   // and dump the detail on an edit control when clicked.
+
+  // Set the line number
+  if ( failure.sourceLine().isValid() )
+  {
+    CString lineNumber;
+    lineNumber.Format( _T("%ld"), failure.sourceLine().lineNumber() );
+    setter.addSubItem( lineNumber );
+  }
+  else
+    setter.addSubItem( _T("") );
+
+  // Set the file name
+  setter.addSubItem( failure.sourceLine().fileName().c_str() );
+
+  if ( !listCtrl->GetFirstSelectedItemPosition() )
+  {
+    // Select first entry => display details of first entry.
+    listCtrl->SetItemState( currentEntry, LVIS_SELECTED, LVIS_SELECTED );
+    listCtrl->SetFocus();   // Does not work ?!?
+  }
+
+  listCtrl->RedrawItems( currentEntry, currentEntry );
+  listCtrl->UpdateWindow();
+}
+
+
+void 
+TestRunnerDlg::startTest( CPPUNIT_NS::Test *test )
+{
+  CWnd *runningTestCaseLabel = GetDlgItem(IDC_RUNNING_TEST_CASE_LABEL);
+  if ( runningTestCaseLabel )
+    runningTestCaseLabel->SetWindowText( CString( test->getName().c_str() ) );
+}
+
+
+void 
+TestRunnerDlg::addFailure( const CPPUNIT_NS::TestFailure &failure )
+{
+  addListEntry( failure );
+  if ( failure.isError() )
+    m_errors++;
+  else
+    m_failures++;
+
+  updateCountsDisplay();
+}
+
+
+void 
+TestRunnerDlg::endTest( CPPUNIT_NS::Test *test )
+{
+  if ( m_selectedTest == 0 )
+    return;
+
+  m_testsRun++;
+  updateCountsDisplay();
+  m_testsProgress->step( m_failures == 0  &&  m_errors == 0 );
+
+  m_testEndTime = timeGetTime();
+
+  updateCountsDisplay();
+
+  if ( m_testsRun >= m_selectedTest->countTestCases() )
+    beIdle ();
+}
+
+
+void 
+TestRunnerDlg::beRunning()
+{
+  m_bIsRunning = true;
+  m_buttonRun.EnableWindow( FALSE );
+  m_buttonClose.EnableWindow( FALSE );
+  m_buttonBrowse.EnableWindow( FALSE );
+
+//    m_buttonRun.SetButtonStyle( m_buttonRun.GetButtonStyle() & ~BS_DEFPUSHBUTTON );
+//    m_buttonStop.SetButtonStyle( m_buttonStop.GetButtonStyle() | BS_DEFPUSHBUTTON );
+}
+
+
+void 
+TestRunnerDlg::beIdle()
+{
+  m_bIsRunning = false;
+  m_buttonRun.EnableWindow( TRUE );
+  m_buttonBrowse.EnableWindow( TRUE );
+  m_buttonClose.EnableWindow( TRUE );
+
+  m_buttonRun.SetButtonStyle( m_buttonRun.GetButtonStyle() | BS_DEFPUSHBUTTON );
+//    m_buttonStop.SetButtonStyle( m_buttonStop.GetButtonStyle() & ~BS_DEFPUSHBUTTON );
+}
+
+
+void 
+TestRunnerDlg::beRunDisabled()
+{
+  m_bIsRunning = false;
+  m_buttonRun.EnableWindow( FALSE );
+  m_buttonBrowse.EnableWindow( FALSE );
+  m_buttonStop.EnableWindow( FALSE );
+  m_buttonClose.EnableWindow( TRUE );
+
+//    m_buttonRun.SetButtonStyle( m_buttonRun.GetButtonStyle() | BS_DEFPUSHBUTTON );
+//    m_buttonStop.SetButtonStyle( m_buttonStop.GetButtonStyle() & ~BS_DEFPUSHBUTTON );
+}
+
+
+void 
+TestRunnerDlg::freeState()
+{
+  delete m_activeTest;
+  delete m_result;
+  delete m_testObserver;
+  m_activeTest = 0;
+  m_result = 0;
+  m_testObserver = 0;
+}
+
+
+void 
+TestRunnerDlg::reset()
+{
+  m_testsRun = 0;
+  m_errors = 0;
+  m_failures = 0;
+  m_testEndTime = m_testStartTime;
+
+  updateCountsDisplay();
+
+  freeState();
+  CListCtrl *listCtrl = (CListCtrl *)GetDlgItem (IDC_LIST);
+
+  listCtrl->DeleteAllItems();
+  m_testsProgress->reset();
+  displayFailureDetailsFor( -1 );
+}
+
+
+void 
+TestRunnerDlg::updateCountsDisplay()
+{
+  CStatic *statTestsRun = (CStatic *)GetDlgItem( IDC_STATIC_RUNS );
+  CStatic *statErrors = (CStatic *)GetDlgItem( IDC_STATIC_ERRORS );
+  CStatic *statFailures = (CStatic *)GetDlgItem( IDC_STATIC_FAILURES );
+  CEdit *editTime = (CEdit *)GetDlgItem( IDC_EDIT_TIME );
+
+  CString argumentString;
+
+  argumentString.Format( _T("%d"), m_testsRun );
+  statTestsRun->SetWindowText (argumentString);
+
+  argumentString.Format( _T("%d"), m_errors );
+  statErrors->SetWindowText( argumentString );
+
+  argumentString.Format( _T("%d"), m_failures );
+  statFailures->SetWindowText( argumentString );
+
+  argumentString.Format( _T("Execution time: %3.3lf seconds"), 
+                         (m_testEndTime - m_testStartTime) / 1000.0 );
+  editTime->SetWindowText( argumentString );
+}
+
+
+void 
+TestRunnerDlg::OnStop() 
+{
+  if ( m_testObserver )
+    m_testObserver->stop ();
+
+  beIdle ();
+}
+
+
+void 
+TestRunnerDlg::OnOK() 
+{
+  if ( m_testObserver )
+    m_testObserver->stop ();
+
+  UpdateData();
+  saveSettings();
+
+  cdxCDynamicDialog::OnOK ();
+}
+
+
+void 
+TestRunnerDlg::OnSelectTestInHistoryCombo() 
+{
+  unsigned int currentSelection = getHistoryCombo()->GetCurSel ();
+
+  if ( currentSelection >= 0  &&
+       currentSelection < m_model->history().size() )
+  {
+    CPPUNIT_NS::Test *selectedTest = m_model->history()[currentSelection];
+    m_model->selectHistoryTest( selectedTest );
+    updateHistoryCombo();
+    beIdle();
+  }
+  else
+    beRunDisabled();
+}
+
+
+void
+TestRunnerDlg::updateHistoryCombo()
+{
+  getHistoryCombo()->LockWindowUpdate();
+
+  getHistoryCombo()->ResetContent();
+
+  const TestRunnerModel::History &history = m_model->history();
+  for ( TestRunnerModel::History::const_iterator it = history.begin(); 
+        it != history.end(); 
+        ++it )
+  {
+    CPPUNIT_NS::Test *test = *it;
+    getHistoryCombo()->AddString( CString(test->getName().c_str()) );
+  }
+
+  if ( history.size() > 0 )
+  {
+    getHistoryCombo()->SetCurSel( 0 );
+    beIdle();
+  }
+  else
+  {
+    beRunDisabled();
+    m_buttonBrowse.EnableWindow( TRUE );
+	}
+
+  getHistoryCombo()->UnlockWindowUpdate();
+}
+
+
+void 
+TestRunnerDlg::OnBrowseTest() 
+{
+  TreeHierarchyDlg dlg;
+  dlg.setRootTest( m_model->rootTest() );
+  if ( dlg.DoModal() == IDOK )
+  {
+    m_model->selectHistoryTest( dlg.getSelectedTest() );
+    updateHistoryCombo();
+  }
+}
+
+
+BOOL 
+TestRunnerDlg::PreTranslateMessage(MSG* pMsg) 
+{
+  if ( ::TranslateAccelerator( m_hWnd,
+                               m_hAccelerator,
+                               pMsg ) )
+  {
+    return TRUE;
+  }
+  return cdxCDynamicDialog::PreTranslateMessage(pMsg);
+}
+
+
+CComboBox *
+TestRunnerDlg::getHistoryCombo()
+{
+  CComboBox   *comboBox = (CComboBox *)GetDlgItem (IDC_COMBO_TEST);
+  ASSERT (comboBox);
+  return comboBox;
+}
+
+
+void
+TestRunnerDlg::loadSettings()
+{
+  m_model->loadSettings(m_settings);
+  RestoreWindowPosition( TestRunnerModel::settingKey, 
+                         TestRunnerModel::settingMainDialogKey );
+
+
+  m_bAutorunAtStartup = m_settings.autorunOnLaunch;
+}
+
+
+void
+TestRunnerDlg::saveSettings()
+{
+  m_settings.autorunOnLaunch = ( m_bAutorunAtStartup != 0 );
+  StoreWindowPosition( TestRunnerModel::settingKey, 
+                       TestRunnerModel::settingMainDialogKey );
+  
+  m_settings.col_1 = m_listCtrl.GetColumnWidth(0);
+  m_settings.col_2 = m_listCtrl.GetColumnWidth(1);
+  m_settings.col_3 = m_listCtrl.GetColumnWidth(2);
+  m_settings.col_4 = m_listCtrl.GetColumnWidth(3);
+
+  m_model->saveSettings(m_settings);
+}
+
+
+void 
+TestRunnerDlg::OnQuitApplication() 
+{
+  if ( m_testObserver )
+    m_testObserver->stop();
+
+  UpdateData();
+  saveSettings();
+  
+  CWinApp *app = AfxGetApp();
+  ASSERT( app != NULL );
+  app->PostThreadMessage( WM_QUIT, 0, 0 );
+}
+
+
+TestRunnerModel &
+TestRunnerDlg::model()
+{
+  ASSERT( m_model != NULL );
+  return *m_model;
+}
+
+
+void 
+TestRunnerDlg::OnClose() 
+{
+	OnOK();
+}
+
+
+CRect 
+TestRunnerDlg::getItemWindowRect( unsigned int itemId )
+{
+  CWnd * pItem = GetDlgItem( itemId );
+  CRect rect;
+  if ( pItem )
+    pItem->GetWindowRect( &rect );
+  return rect;
+}
+
+
+CRect 
+TestRunnerDlg::getItemClientRect( unsigned int itemId )
+{
+  CRect rect = getItemWindowRect( itemId );
+  if ( !rect.IsRectNull() )
+  {
+    CPoint clientTopLeft = rect.TopLeft();
+    ScreenToClient( &clientTopLeft );
+    rect = CRect( clientTopLeft, rect.Size() );
+  }
+
+  return rect;
+}
+
+
+void 
+TestRunnerDlg::initializeLayout()
+{
+  // see DynamicWindow/doc for documentation
+  const int listGrowthRatio = 30;
+  AddSzXControl( IDC_COMBO_TEST, mdResize );
+  AddSzXControl( IDC_BROWSE_TEST, mdRepos );
+  AddSzXControl( IDC_RUNNING_TEST_CASE_LABEL, mdResize );
+  AddSzXControl( ID_RUN, mdRepos );
+  AddSzXControl( *m_testsProgress, mdResize );
+  AddSzXControl( IDC_CHECK_AUTORUN, mdRepos );
+  AddSzControl( IDC_LIST, 0, 0, 100, listGrowthRatio );
+  AddSzXControl( ID_STOP, mdRepos );
+  AddSzXControl( IDOK, mdRepos );
+  AddSzYControl( IDC_STATIC_DETAILS, listGrowthRatio, listGrowthRatio );
+  AddSzControl( IDC_DETAILS, 0, listGrowthRatio, 100, 100 );
+  AddSzControl( IDC_EDIT_TIME, mdResize, mdRepos );
+}
+
+
+void 
+TestRunnerDlg::OnSize( UINT nType, int cx, int cy ) 
+{
+	cdxCDynamicDialog::OnSize(nType, cx, cy);
+	updateListColumnSize();
+}
+
+
+void 
+TestRunnerDlg::updateListColumnSize()
+{
+  if ( !m_listCtrl.GetSafeHwnd() )
+    return;
+
+  // resize to fit last column
+  CRect listBounds = getItemClientRect( IDC_LIST );
+  
+  int width_1_4 = 0;
+  for (int i = 0; i < 4; ++i)
+    width_1_4 += m_listCtrl.GetColumnWidth( i );
+  
+  // the 4 offset is so no horiz scroll bar will appear
+  m_listCtrl.SetColumnWidth(4, listBounds.Width() - width_1_4 - 4); 
+}
+
+
+void 
+TestRunnerDlg::OnSelectedFailureChange( NMHDR* pNMHDR, 
+                                        LRESULT* pResult )
+{
+	NM_LISTVIEW *pNMListView = (NM_LISTVIEW*)pNMHDR;
+
+  if ( (pNMListView->uNewState & LVIS_SELECTED) != 0 )  // item selected
+    displayFailureDetailsFor( pNMListView->iItem );
+	
+	*pResult = 0;
+}
+
+
+void 
+TestRunnerDlg::displayFailureDetailsFor( unsigned int failureIndex )
+{
+  CString details;
+  if ( m_result  &&  failureIndex < m_result->failures().size() )
+    details = m_result->failures()[ failureIndex ]->thrownException()->what();
+
+  details.Replace( _T("\n"), _T("\r\n") );
+
+  m_details.SetWindowText( details );
+}
+
+
+void 
+TestRunnerDlg::initializeFixedSizeFont()
+{
+  LOGFONT font;
+  GetFont()->GetLogFont( &font );
+  font.lfPitchAndFamily = FIXED_PITCH | //VARIABLE_PITCH
+                          (font.lfPitchAndFamily & ~15);   // font family
+  m_fixedSizeFont.CreateFontIndirect( &font );
+}
+@
+
+
+1.21
+log
+@* src/msvc6/testrunner/TestRunnerDlg.cpp: switched to using unsigned index in loop to
+    avoid signed/unsigned warning in vc7.
+@
+text
+@d72 3
+d356 3
+d372 1
+a372 4
+  m_activeTest = NULL;
+  m_result = NULL;
+  m_testObserver = NULL;
+
+@
+
+
+1.20
+log
+@* include/cppunit/tools/Algorithm.h:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlUniformiser.*:
+* src/cppunit/CompilerOutputter.cpp:
+* src/cppunit/ProtectorChain.cpp:
+* src/cppunit/StringTools.cpp:
+* src/cppunit/TestPath.cpp:
+* src/cppunit/TypeInfoHelper.cpp:
+* src/cppunit/XmlElement.cpp:
+* src/cppunit/XmlOutputter.cpp:
+* src/DllPlugInTester/CommandLineParser.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: switched to using unsigned index in loop to
+  avoid signed/unsigned warning in vc7.
+@
+text
+@d657 1
+a657 1
+  if ( failureIndex < m_result->failures().size() )
+@
+
+
+1.19
+log
+@* include/cppunit/plugin/DynamicLibraryManagerException.h: added constructor
+  to fix compilation issues on recents version of gcc and sun CC (bug #619059)
+
+* include/cppunit/input/XmlInputHelper.h: added.
+
+* include/cppunit/extensions/TestSuiteBuilderContext.h:
+* src/cppunit/TestSuiteBuilderContext.cpp: added addProperty() and
+  getStringProperty(). Added macros CPPUNIT_TEST_SUITE_PROPERTY.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: integrated Tim Threlkeld's
+  bug fix #610162: browse button was disabled if history was empty.
+
+* src/msvc6/testrunner/DynamicWindow/cdxCSizeIconCtrl.cpp: integrated
+  Tim Threlkeld's bug fix #610191: common control were not initialized.
+
+* include/cppunit/extensions/ExceptionTestCaseDecorator.h: bug #603172,
+  missing Message construction.
+
+* src/cppunit/DefaultProtector.cpp: bug #603172. Fixed missing ';'.
+
+* src/cppunit/TestCase.cpp: bug #603671. Removed unguarded typeinfo
+  include.
+
+* examples/cppunittests/*Suite.h: bug #603666. Added missing Portability.h
+  include.
+@
+text
+@d429 1
+a429 1
+  int currentSelection = getHistoryCombo()->GetCurSel ();
+d654 1
+a654 1
+TestRunnerDlg::displayFailureDetailsFor( int failureIndex )
+d657 1
+a657 1
+  if ( failureIndex >= 0  &&  failureIndex < m_result->failures().size() )
+@
+
+
+1.18
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d466 1
+d468 2
+@
+
+
+1.17
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d81 1
+a81 1
+	DDX_Control(pDX, IDC_DETAILS, m_details);
+d86 1
+d313 1
+d325 1
+d338 1
+d671 1
+a671 1
+}@
+
+
+1.16
+log
+@* include/cppunit/XmlOutputter.h: fixed XmlOutputter constructed default
+  value initializatino which caused compilation error with BC5.
+
+* src/cppunit/PlugInManager.cpp: added missing CPPUNIT_NO_TESTPLUGIN guard.
+
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp:
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h: applied Steven Mitter
+  patch to fix bug #530426 (conflict between TestRunner and host application
+  resources). Adapted patch to compile work with Unicode.
+
+* src/msvc6/testrunner/ResourceLoaders.h:
+* src/msvc6/testrunner/ResourceLoaders.cpp:
+* src/msvc6/testrunner/Change-Diary-ResourceBugFix.txt: added, from
+  Steven Mitter's patch. Simplified loadCString() to compile with Unicode.
+
+* src/cppunit/cppunit.dsp:
+* src/cppunit/cppunit_dll.dsp:
+* src/DllPlugInTester/DllPlugInTester.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: all lib, dll and exe are
+  now created in the intermediate directory. A post-build rule is used to
+  copy them to the lib/ directory.
+@
+text
+@d201 2
+a202 2
+  m_result = new CppUnit::TestResultCollector( new MfcSynchronizationObject() );
+  m_testObserver = new CppUnit::TestResult( new MfcSynchronizationObject() );
+d216 1
+a216 1
+TestRunnerDlg::addListEntry( const CppUnit::TestFailure &failure )
+d266 1
+a266 1
+TestRunnerDlg::startTest( CppUnit::Test *test )
+d275 1
+a275 1
+TestRunnerDlg::addFailure( const CppUnit::TestFailure &failure )
+d288 1
+a288 1
+TestRunnerDlg::endTest( CppUnit::Test *test )
+d430 1
+a430 1
+    CppUnit::Test *selectedTest = m_model->history()[currentSelection];
+d452 1
+a452 1
+    CppUnit::Test *test = *it;
+@
+
+
+1.15
+log
+@* src/cppunit/TypeInfoHelper.cpp: added work around for bug #565481.
+  gcc 3.0 RTTI name() returns the type prefixed with a number (the
+  length of the type). The work around strip the number.
+
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp: registry key is now
+  set. Allow to save settings.
+
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp: added layout
+  initialization for resizing.
+
+* src/msvc6/testpluginrunner/TestPlugRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: added TestRunner
+  project files. Somehow I can't get cdxCDynamicDialog to compile
+  as a MFC extension. Included all sources files and resources
+  as a very dirt work around.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h: those classes are no longer
+  exported in the MFC extension. See TestPlugInRunner issue with
+  cdxCDynamicDialog.
+
+* include/cppunit/Message.h:
+* include/cppunit/TestPath.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TestFactoryRegistry.h:
+* include/cppunit/XmlElement.h:
+* include/cppunit/TypeInfoHelper.h: commented out STL template export
+  in DLL. This caused conflicts when instantiting the same template in
+  a user project.
+@
+text
+@d15 1
+d41 13
+a53 2
+    : cdxCDynamicDialog( nDialogResourceId == -1 ? IDD_DIALOG_TESTRUNNER :
+                                                   nDialogResourceId, 
+a54 1
+    , m_model( model )
+d56 8
+a75 1
+
+d125 2
+a126 1
+  VERIFY( m_errorListBitmap.Create( IDB_ERROR_TYPE, 16, 1, 
+d149 3
+a151 3
+  formatter.AddColumn( IDS_ERRORLIST_TYPE, m_settings.col_1, LVCFMT_LEFT, 0 );
+  formatter.AddColumn( IDS_ERRORLIST_NAME, m_settings.col_2, LVCFMT_LEFT, 1 );
+  formatter.AddColumn( IDS_ERRORLIST_FAILED_CONDITION, m_settings.col_3, LVCFMT_LEFT, 2 );
+d153 1
+a153 1
+  formatter.AddColumn( IDS_ERRORLIST_LINE_NUMBER, m_settings.col_4, LVCFMT_LEFT, 3 );
+d155 1
+a155 1
+  formatter.AddColumn( IDS_ERRORLIST_FILE_NAME, col_5_width, LVCFMT_LEFT, 4 );
+@
+
+
+1.14
+log
+@* src/cppunit/CompilerOutputter.cpp: fixed bug #549762 (line wrap).
+
+* src/msvc6/testrunner/DynamicWindow/*: added. Dynamic Window library
+  from Hans Bühler (hans.buehler@@topmail.de) to resize window.
+
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TestRunnerModel.cpp: removed dialog bounds from
+  settings. Added public registry keys for cppunit, main dialog, and
+  browse dialog.
+
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: dialog is now resizable.
+  Window placement is stored and restored.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replaced dialog resizing code
+  by usage of Hans Bühler's Dynamic Window library. Dialog placement
+  is stored/restored by that library. ProgressBar is now a child window.
+  Added edit field to see the details of the failure. List on show
+  the short description of the failure.
+
+* src/msvc6/testrunner/ProgressBar.h:
+* src/msvc6/testrunner/ProgressBar.cpp: is now a CWnd.
+
+* src/msvc6/testrunner/TestRunner.rc: named all static fill ID for resizing.
+  Added an invisble static field for progress bar placement.
+@
+text
+@d94 3
+a96 1
+//    m_hAccelerator = ::LoadAccelerators( AfxGetResourceHandle(),
+d98 1
+d634 1
+a634 1
+  details.Replace( "\n", "\r\n" );
+@
+
+
+1.13
+log
+@* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: added functions that take a Message as a
+  parameter. Existing function have a short description indicating
+  an assertion failure.
+
+* include/cppunit/CompilerOuputter.h:
+* src/cppunit/CompilerOuputter.cpp: removed printNotEqualMessage() and
+  printDefaultMessage(). Updated to use Message.
+
+* include/cppunit/Message.h:
+* src/cppunit/Message.cpp: added. Represents a message associated to an
+  Exception.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: the message associated to the exception is now
+  stored as a Message instead of a string.
+
+* include/cppunit/NotEqualException.cpp: constructs a Message instead of a
+  string.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: updated to use Asserter functions that
+  take a message when pertinent (CPPUNIT_FAIL...).
+
+* include/cppunit/TestCaller.h:
+* src/cppunit/TestCaller.cpp: exception not caught failure has a better
+  short description.
+
+* src/cppunit/TestCase.cpp: better short description when setUp() or
+  tearDown() fail.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replace '\n' in failure message
+  with space.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/NotEqualExceptionTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated to use Exception/Message.
+
+* examples/cppunittest/MessageTest.h:
+* examples/cppunittest/MessageTest.cpp: added. Unit test for Message.
+@
+text
+@d39 5
+a43 8
+                              CWnd* pParent ) :
+    CDialog( nDialogResourceId == -1 ? IDD_DIALOG_TESTRUNNER :
+                                       nDialogResourceId, 
+             pParent),
+    m_model( model ),
+    m_margin( 0 ),
+    m_listViewDelta( 0 ),
+    m_editDelta( 0 )
+d53 2
+d61 1
+a61 1
+  CDialog::DoDataExchange(pDX);
+d63 1
+d69 1
+a69 1
+  //}}AFX_DATA_MAP
+d73 1
+a73 1
+BEGIN_MESSAGE_MAP(TestRunnerDlg, CDialog)
+a76 2
+  ON_CBN_SELCHANGE(IDC_COMBO_TEST, OnSelchangeComboTest)
+  ON_WM_PAINT()
+d80 4
+a83 2
+  ON_WM_SIZE()
+  //}}AFX_MSG_MAP
+d92 1
+a92 1
+  CDialog::OnInitDialog();
+d107 6
+d114 2
+a134 2
+  m_testsProgress = new ProgressBar (this, CRect (50, 85, 50 + 425, 85 + 25));
+
+a135 3
+
+  updateLayoutInfo();
+      
+a136 1
+
+d139 1
+a139 3
+  RECT & r = m_settings.dlgBounds;
+  if ( r.right-r.left > 0  &&  r.bottom-r.top > 0 )
+      MoveWindow( &r );
+d151 1
+a151 1
+TestRunnerDlg::~TestRunnerDlg ()
+d153 1
+a153 1
+  freeState ();
+d214 1
+a214 1
+  CString message( failure.thrownException()->what() );
+d231 6
+a236 6
+/* In place of the missing detail field...
+  std::string dump = "Test: " + test->getName() + "\n";
+  dump += e->what();
+  dump += "\n";
+  ::OutputDebugString( dump.c_str() );
+*/
+d238 2
+a239 2
+  listCtrl->RedrawItems (currentEntry, currentEntry);
+  listCtrl->UpdateWindow ();
+d348 1
+d396 1
+a396 1
+  CDialog::OnOK ();
+d401 1
+a401 1
+TestRunnerDlg::OnSelchangeComboTest() 
+a446 9
+TestRunnerDlg::OnPaint() 
+{
+  CPaintDC dc (this); 
+  
+  m_testsProgress->paint(dc);
+}
+
+
+void 
+d468 1
+a468 1
+  return CDialog::PreTranslateMessage(pMsg);
+d485 3
+d497 2
+a498 1
+  GetWindowRect(&m_settings.dlgBounds);
+d539 2
+a540 2
+void 
+TestRunnerDlg::updateLayoutInfo()
+d542 5
+a546 8
+  // get dialog in screen co-ordinates
+  RECT dlgBounds;
+  GetWindowRect( &dlgBounds );
+
+  // Set general margin according to distance of browse button from the right
+  m_margin = dlgBounds.right - getItemWindowRect(IDC_BROWSE_TEST).right;
+  m_listViewDelta = dlgBounds.bottom - getItemWindowRect( IDC_LIST ).bottom;
+  m_editDelta = dlgBounds.bottom - getItemWindowRect( IDC_EDIT_TIME ).bottom;
+d550 2
+a551 2
+void 
+TestRunnerDlg::OnSize(UINT nType, int cx, int cy) 
+d553 2
+a554 11
+  CDialog::OnSize(nType, cx, cy);
+  
+  // Layout controls according to new size	
+  CRect r;
+  CRect dlgBounds = getDialogBounds();
+  
+  int buttonLeft  = 0;
+  int buttonRight = 0;
+  
+  CWnd * pItem = GetDlgItem(IDC_BROWSE_TEST);
+  if (pItem)
+d556 3
+a558 12
+    pItem->GetWindowRect( &r );
+    // adjust to dialog units
+    r.OffsetRect(-dlgBounds.left, -dlgBounds.top);
+    
+    int buttonWidth = r.Width();
+    buttonLeft  = cx - buttonWidth - m_margin; 
+    buttonRight = buttonLeft + buttonWidth;
+    r.left =  buttonLeft;
+    r.right = buttonRight;
+    
+    pItem->MoveWindow( &r );
+    pItem->Invalidate();
+d561 1
+a561 44
+  updateTopButtonPosition( ID_RUN, buttonLeft, buttonRight );
+  updateTopButtonPosition( IDC_CHECK_AUTORUN, buttonLeft, buttonRight );
+  updateBottomButtonPosition( IDOK, buttonLeft, buttonRight, cy - m_editDelta );
+  updateBottomButtonPosition( ID_STOP, buttonLeft, buttonRight, cy - m_listViewDelta );
+  
+  pItem = GetDlgItem(IDC_COMBO_TEST);
+  if (pItem)
+  {
+    pItem->GetClientRect( &r );
+    pItem->ClientToScreen( &r );
+    
+    // adjust to dialog units
+    r.OffsetRect(-dlgBounds.left, -dlgBounds.top);
+    r.right = buttonLeft - m_margin;
+    
+    pItem->MoveWindow( &r );
+    pItem->Invalidate();
+  }
+
+  updateListPosition( buttonLeft );
+  
+  if (m_testsProgress)
+  {
+    m_testsProgress->setWidth(r.right - r.left);
+  }
+  
+  pItem = GetDlgItem(IDC_EDIT_TIME);
+  if (pItem)
+  {
+    pItem->GetWindowRect( &r );
+    
+    // adjust to dialog units
+    r.OffsetRect(-dlgBounds.left, -dlgBounds.top);
+    
+    r.right =  buttonLeft - m_margin;
+    
+    int height = r.Height();
+    // order matters here ( r.top uses new r.bottom )
+    r.bottom = cy - m_editDelta;
+    r.top = r.bottom - height;
+    
+    pItem->MoveWindow( &r );
+    pItem->Invalidate();
+  }
+d566 1
+a566 3
+TestRunnerDlg::updateTopButtonPosition( unsigned int buttonId,
+                                        int xButtonLeft,
+                                        int xButtonRight )
+d568 14
+a581 16
+  CWnd *pItem = GetDlgItem( buttonId );
+  if ( !pItem )
+    return;
+  
+  CRect r;
+  pItem->GetClientRect( &r );
+  pItem->ClientToScreen( &r );
+  
+  // adjust to dialog units
+  CRect dlgBounds = getDialogBounds();
+  r.OffsetRect( -dlgBounds.left, -dlgBounds.top );
+  r.left = xButtonLeft;
+  r.right = xButtonRight;
+  
+  pItem->MoveWindow( &r );
+  pItem->Invalidate();
+d586 1
+a586 4
+TestRunnerDlg::updateBottomButtonPosition( unsigned int buttonId,
+                                           int xButtonLeft,
+                                           int xButtonRight,
+                                           int yButtonBottom )
+d588 2
+a589 21
+  CWnd *pItem = GetDlgItem( buttonId );
+  if ( !pItem )
+    return;
+  
+  CRect r;
+  pItem->GetClientRect( &r );
+  pItem->ClientToScreen( &r );
+  
+  // adjust to dialog units
+  CRect dlgBounds = getDialogBounds();
+  r.OffsetRect(-dlgBounds.left, -dlgBounds.top);
+  r.left =  xButtonLeft;
+  r.right = xButtonRight;
+  
+  int height = r.Height();
+  // order matters here ( r.top uses new r.bottom )
+  r.bottom = yButtonBottom;
+  r.top = r.bottom - height;
+  
+  pItem->MoveWindow( &r );
+  pItem->Invalidate();
+d594 1
+a594 1
+TestRunnerDlg::updateListPosition( int xButtonLeft )
+d596 1
+a596 2
+  CWnd *pItem = GetDlgItem( IDC_LIST );
+  if ( !pItem )
+d598 1
+a598 9
+  CRect r;
+  pItem->GetWindowRect( &r );
+  
+  // adjust to dialog units
+  CRect dlgBounds = getDialogBounds();
+  r.OffsetRect(-dlgBounds.left, -dlgBounds.top);
+  
+  r.right = xButtonLeft - m_margin;
+  
+d600 1
+a601 2
+  LVCOLUMN lv;
+  lv.mask = LVCF_WIDTH;
+d604 1
+a604 4
+  {
+    m_listCtrl.GetColumn(i, &lv);
+    width_1_4 += lv.cx;
+  }
+d607 1
+a607 7
+  m_listCtrl.SetColumnWidth(4, r.Width() - width_1_4 - 4); 
+  
+  // order matters here ( r.top uses new r.bottom )
+  r.bottom = getDialogBounds().Height() - m_listViewDelta;
+  
+  pItem->MoveWindow( &r );
+  pItem->Invalidate();
+d611 3
+a613 2
+CRect 
+TestRunnerDlg::getItemWindowRect( unsigned int itemId )
+d615 6
+a620 5
+  CWnd * pItem = GetDlgItem( itemId );
+  CRect rect;
+  if ( pItem )
+    pItem->GetWindowRect( &rect );
+  return rect;
+d624 2
+a625 2
+CRect 
+TestRunnerDlg::getDialogBounds()
+d627 7
+a633 4
+  CRect dlgBounds;
+  GetClientRect( &dlgBounds );
+  ClientToScreen( &dlgBounds );
+  return dlgBounds;
+d635 11
+@
+
+
+1.12
+log
+@* install-unix: added some hints extracted from bug #544684 on how to compile
+  for Solaris/Forte C++ compiler.
+
+* TODO: cleaned-up and added new things.
+
+* include/cppunit/extensions/HelperMacros.h: CPPUNIT_TEST_SUITE now declares
+  a class named ThisTestFixtureFactory which is a wrapper for the fixture
+  factory. This removes the need to cast the fixture to the correct type when
+  using the factory. Updated other macros implementation to use this new
+  factory. Modified CPPUNIT_TEST_CUSTOM(S) macros to use this new factory
+  class. Added macro CPPUNIT_TEST_ADD to help create new macros like
+  CPPUNIT_TEST_xxx.
+
+* examples/cppunittest/HelperMacrosTest.h:
+* examples/cppunittest/HelperMacrosTest.cpp: added unit tests for
+  CPPUNIT_TEST_CUSTOM, CPPUNIT_TEST_CUSTOMS and CPPUNIT_TEST_ADD.
+@
+text
+@d214 3
+a216 1
+  setter.addSubItem( failure.thrownException()->what() );
+@
+
+
+1.11
+log
+@* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/Resource.h:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerModel.cpp: integrated patch from
+Marco Welti (Welti@@GretagMacbeth.ch) with a few clean up.
+Display the name of the test being run during above the progress bar. Allow the
+VC++ add-ins to works with TestPlugInRunner (COM init). DLL name can be specified
+on the command line after flag '-testsuite'. Display wait cursor, clear and reload
+history when reloading DLL.
+
+* THANKS: added Marco Welti to the list.
+@
+text
+@d246 1
+a246 1
+    runningTestCaseLabel->SetWindowText( test->getName().c_str() );
+@
+
+
+1.10
+log
+@* NEWS: updated
+
+* doc/other_documentation.dox: addded new module for test plug-in.
+
+* include/msvc6/DSPlugin/TestRunnerDSPlugin.h:
+* include/msvc6/DSPlugin/TestRunnerDSPlugin_i.c: added. Those file are
+  generated by project src/msvc/DSPlugin. They are provided to allow
+  compilation of TestRunner without compiling DSPlugIn which does not
+  build on VC++ 7.
+
+* examples/examples.dsw: removed DSPlugIn for workspace (fail to build
+  with VC++ 7). Added DllPlugInTester.dsp to workspace.
+
+* examples/msvc6/TestPlugIn/TestPlugIn.dsp: added post-build unit testing
+  using the new DllPlugInTester.
+
+* examples/msvc6/EasyTestPlugIn/*: a new project that
+  demonstrates the use of CPPUNIT_TESTPLUGIN_IMPL to create a test plug-in.
+
+* src/cppunit/cppunit.dsw:
+* src/TestPlugInRunner.dsw:
+* src/TestRunner.dsw: removed. Should use src/CppUnitLibraries.dsw instead.
+
+* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: removed findTestName() method. Replaced
+  by Test::findTest().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp:
+* src/msvc6/DSPlugIn/DSAddIn.h: changed include for add-in. MIDL generates
+  files in sub-directory ToAddToDistribution. Generated file should be
+  copied to include/msvc6/DSPlugin when modified. This remove the dependecy
+  of MfcTestRunner on DSPlugIn.
+
+* src/msvc6/testrunner/ListCtrlFormatter.h:
+* src/msvc6/testrunner/ListCtrlFormatter.cpp: added GetNextColumnIndex().
+
+* src/msvc6/testrunner/src/TestRunnerDlg.h:
+* src/msvc6/testrunner/src/TestRunnerDlg.cpp: set column number in
+  MsDevCallerListCtrl when initializing the list.
+
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.cpp: column indexes for
+  file and line number are no longer static. Added methods to set those
+  indexes. Changed DSPlugIn header name.
+
+* include/msvc6/testrunner/TestPlugInInterface.h: fixed inclusion of
+  windows header for WINAPI. Added macro CPPUNIT_TESTPLUGIN_IMPL to
+  automatically implements a test plug-in.
+
+* src/msvc6/DllPlugInTester/*: added new project. A application to test DLL
+  and report using CompilerOutputter. Target for post-build testing and
+  debugging of DLL.
+@
+text
+@d244 3
+@
+
+
+1.9
+log
+@* INSTALL-WIN32.txt: updated for MFC Unicode TestRunner.
+
+* src/msvc6/testrunner/TestRunner.dsp: added Unicode configurations.
+
+* src/msvc6/testrunner/ListCtrlSetter.cpp:
+* src/msvc6/testrunner/ListCtrlSetter.h: replaced usage of std::string by
+CString for easier ansi/unicode switch.
+
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: made changes to compile with
+either ANSI and UNICODE support.
+
+* examples/msvc6/HostApp/HostApp.cpp:
+* examples/msvc6/HostApp/HostApp.h:
+* examples/msvc6/HostApp/HostAppDoc.cpp:
+* examples/msvc6/HostApp/HostAppDoc.h: moved TestRunner execution to
+HostApp::RunUnitTests() and removed the MainFrame application window.
+
+* examples/msvc6/HostApp/HostApp.dsp: added Unicode configurations.
+@
+text
+@a99 1
+  CListCtrl   *listCtrl = (CListCtrl *)GetDlgItem (IDC_LIST);
+a101 1
+  ASSERT (listCtrl);
+a102 1
+  ListCtrlFormatter formatter( *listCtrl );
+d109 2
+a110 2
+  listCtrl->SetImageList( &m_errorListBitmap, LVSIL_SMALL );
+  listCtrl->SetExtendedStyle( listCtrl->GetExtendedStyle() | LVS_EX_FULLROWSELECT );
+d116 1
+a116 1
+  listCtrl->GetClientRect(&listBounds);
+d118 1
+d122 1
+d124 1
+@
+
+
+1.8
+log
+@* NEW: updated and restructured.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp:
+updated against TestResultChange. Changed TestResult to TestResultCollector.
+
+* include/cppunit/extensions/HelperMacros.h: minor documentation fix.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all Outputter.
+
+* include/cppunit/Portability.h: made the fix on OStringStream suggested by
+Bob Summerwill to remove level 4 warning with VC++.
+
+* include/cppunit/TestAssert.h: added macro CPPUNIT_ASSERT_EQUAL_MESSAGE.
+
+* src/cppunit/TestFailure.cpp:
+* include/cppunit/TestFailure.h: added method clone() to duplicate a failure. Made
+all method virtual.
+
+* include/cppunit/TestListener.h: changed signature of addFailure() to
+addFailure( const TestFailure &failure ). Failure is now only a temporary object.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all outputter. Used
+by TextTestRunner.
+
+* include/cppunit/SynchronizedObject.h:
+* src/cppunit/SynchronizedObject.cpp: added. Class extracted from TestResult.
+Base class for objects that can be accessed from different threads.
+
+* include/cppunit/TestResult.h: TestFailure.h is no longer included.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: extracted all methods related to keeping track
+of the result to the new TestResultCollector class which is a TestListener.
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: added. TestListener which kept track
+of the result of the test run. All failure/error, and tests are tracked.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: added. TestListener extracted from
+TestResult. Is responsible for wasSucessful().
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: reindented.
+
+* include/cppunit/TextOutputter.h:
+* src/cppunit/TextOutputter.cpp: added. Copied from the deprecated
+TextTestResult and modified to act as an Ouputter.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: Copied from the deprecated
+TextTestResult and modified to print the dot while the test are running.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: updated against TestResult change.
+No compatiblity break. Deprecated.
+
+* include/cppunit/TextTestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to work with the new TestResult.
+Use TextTestProgressListener and TextOutputter instead of TextTestResult.
+Any outputter with interface Outputter can be used to print the test result
+(CompilerOutputter, XmlOutputter, TextOutputter...)
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against TestResultChange.
+Changed TestResult to TestResultCollector.
+
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/TestRunnerDlg.cpp: fixed the 'fullrowselect' feature of the list view.
+The dialog is a TestListener itself, it no longer use the GUITestResult class.
+
+* src/msvc6/TestRunner.rc: moved the "autorun test button" in such a way that it
+did not overlap the progress bar anymore.
+
+* src/msvc6/MfcSynchronizationObject.h: added. Generic SynchronizedObject
+lock for MFC.
+
+* src/msvc6/GUITestResult.h :
+* src/msvc6/GUITestResult.cpp : removed.
+
+* src/qttestrunner/TestRunnerModel.h:
+* src/qttestrunner/TestRunnerModel.cpp: changed addFailure() signature to reflect
+change on TestListener.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use the new Outputter
+abstraction and TextTestRunner facilities.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.cpp: removed. Replaced by MockTestCase.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.h:
+
+* examples/cppunittest/HelperMacrosTest.h:
+* examples/cppunittest/HelperMacrosTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/MockTestListener.h:
+* examples/cppunittest/MockTestListener.cpp: the class now behave like a mock
+object.
+
+* examples/cppunittest/MockTestCase.h:
+* examples/cppunittest/MockTestCase.cpp: added. Mock TestCase object.
+
+* examples/cppunittest/OrthodoxTest.h:
+* examples/cppunittest/OrthodoxTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/SynchronizedTestResult.h: Updated against TestResult
+change.
+
+* examples/cppunittest/TestCallerTest.h:
+* examples/cppunittest/TestCallerTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: Updated against TestResult change.
+Use MockTestListener and MockTestCase instead of FailingTestCase and TestResult.
+
+* examples/cppunittest/TestDecoratorTest.h:
+* examples/cppunittest/TestDecoratorTest.cpp: Updated against TestResult change.
+Use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/TestListenerTest.h:
+* examples/cppunittest/TestListenerTest.cpp: removed. Those unit tests have been
+rewrote and moved to TestResultTest.
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: Updated to test the new interface.
+Tests from TestListenerTest have been moved here.
+
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp: added. Tests for the class
+that been extracted from TestResult.
+
+* examples/cppunittest/TestSetUpTest.h:
+* examples/cppunittest/TestSetUpTest.cpp: renamed SetUp inner class to MockSetUp.
+Changed interface to be more akin to a Mock object.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: Updated against TestResult change,
+and rewrote to use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: Updated against TestResult change.
+Added some utility methods to make the update easier.
+@
+text
+@d208 1
+a208 1
+  setter.addSubItem( errorType, failure.isError() ? "Error" : "Failure" );
+d211 1
+a211 1
+  setter.addSubItem( errorType, failure.failedTestName() );
+d219 3
+a221 3
+    char tmp[64];
+    sprintf( tmp, "%ld", failure.sourceLine().lineNumber() );
+    setter.addSubItem( tmp );
+d224 1
+a224 1
+    setter.addSubItem( "" );
+d227 1
+a227 1
+  setter.addSubItem( failure.sourceLine().fileName() );
+d349 4
+a352 4
+  CStatic *statTestsRun   = (CStatic *)GetDlgItem (IDC_STATIC_RUNS);
+  CStatic *statErrors     = (CStatic *)GetDlgItem (IDC_STATIC_ERRORS);
+  CStatic *statFailures   = (CStatic *)GetDlgItem (IDC_STATIC_FAILURES);
+  CEdit *editTime         = (CEdit *)GetDlgItem (IDC_EDIT_TIME);
+d356 2
+a357 2
+  argumentString.Format ("%d", m_testsRun);
+  statTestsRun    ->SetWindowText (argumentString);
+d359 2
+a360 2
+  argumentString.Format ("%d", m_errors);
+  statErrors      ->SetWindowText (argumentString);
+d362 2
+a363 2
+  argumentString.Format ("%d", m_failures);
+  statFailures    ->SetWindowText (argumentString);
+d365 3
+a367 2
+  argumentString.Format ("Execution time: %3.3lf seconds", (m_testEndTime - m_testStartTime) / 1000.0);
+  editTime        ->SetWindowText (argumentString);
+d425 1
+a425 1
+    getHistoryCombo()->AddString( test->getName().c_str() );
+@
+
+
+1.7
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+* examples/msvc6/HostApp/HostApp.dsp: use custom file build instead
+of post-build/pre-link step to copy the TestRunner DLL to the
+Release/Debug directory.
+
+* src/msvc6/ProgressBar.cpp:
+* src/msvc6/ProgressBar.h:
+* src/msvc6/TestRunner.rc:
+* src/msvc6/TestRunnerDlg.cpp:
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/testRunner.dsp:
+* src/msvc6/TestRunnerModel.cpp:
+* src/msvc6/TestRunnerModel.h: included Gigi Sayfan (gigi@@morphink.com)
+patch. The dialog can now be resized, and list view columns and dialog
+sizes are saved.
+
+* src/msvc6/ProgressBar.cpp:
+* src/msvc6/ProgressBar.h: Minor refactoring.
+
+* THANKS: added Gigi Sayfan to the list.
+@
+text
+@a9 1
+#include "GUITestResult.h"
+d14 2
+d25 3
+d113 1
+a140 7
+  // somehow doesn't have the desired effect?
+  LONG extendedStyle = GetWindowLong( m_listCtrl.GetSafeHwnd(), 
+                                      GWL_EXSTYLE);;
+  SetWindowLong( m_listCtrl.GetSafeHwnd(), 
+                 GWL_EXSTYLE, 
+                 extendedStyle | LVS_EX_FULLROWSELECT);
+
+d178 5
+a182 1
+  m_result = new GUITestResult( (TestRunnerDlg *)this );
+d187 1
+a187 1
+  m_activeTest->run( m_result );
+d194 1
+a194 4
+TestRunnerDlg::addListEntry( std::string type, 
+                             CppUnit::TestResult *result, 
+                             CppUnit::Test *test, 
+                             CppUnit::Exception *e )
+d197 2
+a198 2
+  int currentEntry = result->testErrors() + 
+                     result->testFailures() -1;
+d201 3
+a203 1
+  if ( type == "Failure" )
+a204 2
+  else
+    errorType = errorTypeError;
+d208 1
+a208 1
+  setter.addSubItem( errorType, type );
+d211 1
+a211 1
+  setter.addSubItem( errorType, test->getName() );
+d214 1
+a214 1
+  setter.addSubItem( e->what() );
+d217 1
+a217 1
+  if (e->sourceLine().isValid() )
+d220 1
+a220 1
+    sprintf( tmp, "%ld", e->sourceLine().lineNumber() );
+d227 1
+a227 1
+  setter.addSubItem( e->sourceLine().fileName() );
+d229 1
+a229 1
+/* In place of the missing detail fiedl...
+d242 1
+a242 1
+TestRunnerDlg::addError (CppUnit::TestResult *result, CppUnit::Test *test, CppUnit::Exception *e)
+a243 4
+  addListEntry ("Error", result, test, e);
+  m_errors++;
+
+  updateCountsDisplay ();
+d248 1
+a248 1
+TestRunnerDlg::addFailure (CppUnit::TestResult *result, CppUnit::Test *test, CppUnit::Exception *e)
+d250 5
+a254 2
+  addListEntry ("Failure", result, test, e);
+  m_failures++;
+d256 1
+a256 1
+  updateCountsDisplay ();
+d261 1
+a261 2
+TestRunnerDlg::endTest( CppUnit::TestResult *result, 
+                        CppUnit::Test *test )
+d321 1
+d328 4
+a331 4
+  m_testsRun      = 0;
+  m_errors        = 0;
+  m_failures      = 0;
+  m_testEndTime   = m_testStartTime;
+d333 1
+a333 1
+  updateCountsDisplay ();
+d335 3
+a337 2
+  m_activeTest    = 0;
+  m_result        = 0;
+d341 2
+a342 2
+  listCtrl->DeleteAllItems ();
+  m_testsProgress->reset ();
+d346 2
+a347 1
+void TestRunnerDlg::updateCountsDisplay ()
+d373 2
+a374 2
+  if (m_result)
+      m_result->stop ();
+d383 2
+a384 2
+  if (m_result)
+    m_result->stop ();
+d510 2
+a511 2
+  if (m_result)
+    m_result->stop ();
+d540 1
+a540 1
+  RECT r;
+a541 2
+
+  // get dialog in screen co-ordinates
+d545 3
+a547 14
+  CWnd * pItem = GetDlgItem(IDC_BROWSE_TEST);
+  pItem->GetWindowRect( &r );
+
+  m_margin = dlgBounds.right - r.right;
+
+  pItem = GetDlgItem(IDC_LIST);
+  pItem->GetWindowRect( &r );
+
+  m_listViewDelta = dlgBounds.bottom - r.bottom;
+
+  pItem = GetDlgItem(IDC_EDIT_TIME);
+  pItem->GetWindowRect( &r );
+
+  m_editDelta = dlgBounds.bottom - r.bottom;
+d558 1
+a558 3
+  CRect dlgBounds;
+  GetClientRect(&dlgBounds);
+  ClientToScreen(&dlgBounds);
+d579 5
+a583 70
+  
+  pItem = GetDlgItem(ID_RUN);
+  if (pItem)
+  {
+    pItem->GetClientRect( &r );
+    pItem->ClientToScreen( &r );
+    
+    // adjust to dialog units
+    r.OffsetRect(-dlgBounds.left, -dlgBounds.top);
+    r.left =  buttonLeft;
+    r.right = buttonRight;
+    
+    pItem->MoveWindow( &r );
+    pItem->Invalidate();
+  }
+  
+  pItem = GetDlgItem(IDC_CHECK_AUTORUN);
+  if (pItem)
+  {
+    pItem->GetClientRect( &r );
+    pItem->ClientToScreen( &r );
+    
+    // adjust to dialog units
+    r.OffsetRect(-dlgBounds.left, -dlgBounds.top);
+    r.left =  buttonLeft;
+    r.right = buttonRight;
+    
+    pItem->MoveWindow( &r );
+    pItem->Invalidate();
+  }
+  
+  pItem = GetDlgItem(IDOK); // Close button
+  if (pItem)
+  {
+    pItem->GetClientRect( &r );
+    pItem->ClientToScreen( &r );
+    
+    // adjust to dialog units
+    r.OffsetRect(-dlgBounds.left, -dlgBounds.top);
+    r.left =  buttonLeft;
+    r.right = buttonRight;
+    
+    int height = r.Height();
+    // order matters here ( r.top uses new r.bottom )
+    r.bottom = cy - m_editDelta;
+    r.top = r.bottom - height;
+    
+    pItem->MoveWindow( &r );
+    pItem->Invalidate();
+  }
+  
+  pItem = GetDlgItem(ID_STOP);
+  if (pItem)
+  {
+    pItem->GetClientRect( &r );
+    pItem->ClientToScreen( &r );
+    
+    // adjust to dialog units
+    r.OffsetRect(-dlgBounds.left, -dlgBounds.top);
+    r.left =  buttonLeft;
+    r.right = buttonRight;
+    
+    int height = r.Height();
+    // order matters here ( r.top uses new r.bottom )
+    r.bottom = cy - m_listViewDelta;
+    r.top = r.bottom - height;
+    
+    pItem->MoveWindow( &r );
+    pItem->Invalidate();
+  }
+d598 2
+a599 31
+  
+  pItem = GetDlgItem(IDC_LIST);
+  if (pItem)
+  {
+    pItem->GetWindowRect( &r );
+    
+    // adjust to dialog units
+    r.OffsetRect(-dlgBounds.left, -dlgBounds.top);
+    
+    r.right =  buttonLeft - m_margin;
+    
+    // resize to fit last column
+    
+    LVCOLUMN lv;
+    lv.mask = LVCF_WIDTH;
+    int width_1_4 = 0;
+    for (int i = 0; i < 4; ++i)
+    {
+      m_listCtrl.GetColumn(i, &lv);
+      width_1_4 += lv.cx;
+    }
+    
+    // the 4 offset is so no horiz scroll bar will appear
+    m_listCtrl.SetColumnWidth(4, r.Width() - width_1_4 - 4); 
+    
+    // order matters here ( r.top uses new r.bottom )
+    r.bottom = cy - m_listViewDelta;
+    
+    pItem->MoveWindow( &r );
+    pItem->Invalidate();
+  }
+d626 111
+@
+
+
+1.6
+log
+@* include/cppunit/Asserter.h :
+* src/cppunit/Asserter.cpp : added. Helper to create assertion macros.
+
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* include/cppunit/Makefile.am : added Asserter.h and Asserter.cpp.
+
+* include/cppunit/Exception.h :
+* src/cppunit/Exception.cpp : added constructor that take a
+SourceLine argument. Deprecated static constant and old constructor.
+Fixed some constness issues.
+
+* examples/cppunittest/ExceptionTest.cpp : Refactored.
+
+* NEWS : partially updated (need to be more detailed)
+
+* include/cppunit/NotEqualException.h :
+* src/cppunit/NotEqualException.cpp : added constructor that take a
+SourceLine argument. Deprecated old constructor. Added a third element
+to compose message.
+
+* examples/cppunittest/NotEqualExceptionTest.cpp : moved to "Core"
+suite. Added test for SourceLine() and additionalMessage().
+Refactored.
+
+* include/cppunit/SourceLine.h :
+* src/cppunit/SourceLine.cpp : added. Result of applying
+IntroduceParameterObject refactoring on filename & line number...
+
+* include/cppunit/TestAssert.h :
+* src/cppunit/TestAssert.cpp : deprecated old assert functions.
+added functions assertEquals() and assertDoubleEquals() which use
+SourceLine.
+
+* src/cppunit/TestCase.cpp : Modified for SourceLine.
+
+* include/cppunit/TestFailure.h :
+* src/cppunit/TestFailure.cpp : added failedTestName(), and
+sourceLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp : modified to use SourceLine.
+
+* include/cppunit/TextTestResult.h :
+* src/cppunit/TextTestResult.cpp : corrected include order and
+switched to angled brackets. Refactored. Don't print failure location
+if not available. Not equal failure dump additional message if
+available.
+
+* src/cppunit/TextTestRunner.cpp : run() now returns a boolean to
+indicate if the run was sucessful.
+
+* src/cppunit/XmlTestResultOutputter.cpp : replaced itoa() with
+OStringStream. Refactored.
+
+* examples/cppunittest/XmlUniformiser.h :
+* examples/cppunittest/XmlUniformiser.cpp :
+CPPUNITTEST_ASSERT_XML_EQUAL capture failure location. Refactored
+checkXmlEqual().
+
+* examples/cppunittest/XmlUniformiserTest.h :
+* examples/cppunittest/XmlUniformiserTest.cpp : added test for
+CPPUNITTEST_ASSERT_XML_EQUAL.
+
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/XmlTestResultOutputter.cpp : updated to use SourceLine.
+@
+text
+@a12 1
+#include "TestRunnerModel.h"
+d22 2
+a23 3
+/* TODO:
+ - rewrite history management. It's quite messy.
+   => don't store test as data, use a vector a most recently used test instead.
+d39 13
+a51 10
+    m_model( model )
+{
+    //{{AFX_DATA_INIT(TestRunnerDlg)
+	m_bAutorunAtStartup = FALSE;
+	//}}AFX_DATA_INIT
+
+    m_testsProgress     = 0;
+    m_selectedTest      = 0;
+    m_bAutorunAtStartup = true;
+    m_bIsRunning = false;
+d55 2
+a56 1
+void TestRunnerDlg::DoDataExchange(CDataExchange* pDX)
+d58 8
+a65 8
+    CDialog::DoDataExchange(pDX);
+    //{{AFX_DATA_MAP(TestRunnerDlg)
+	DDX_Control(pDX, IDC_LIST, m_listCtrl);
+	DDX_Control(pDX, IDOK, m_buttonClose);
+	DDX_Control(pDX, ID_STOP, m_buttonStop);
+	DDX_Control(pDX, ID_RUN, m_buttonRun);
+	DDX_Check(pDX, IDC_CHECK_AUTORUN, m_bAutorunAtStartup);
+	//}}AFX_DATA_MAP
+d75 5
+a79 3
+	ON_BN_CLICKED(IDC_BROWSE_TEST, OnBrowseTest)
+	ON_COMMAND(ID_QUIT_APPLICATION, OnQuitApplication)
+	//}}AFX_MSG_MAP
+d85 2
+a86 1
+BOOL TestRunnerDlg::OnInitDialog() 
+d88 1
+a88 1
+    CDialog::OnInitDialog();
+d91 2
+a92 2
+    m_hAccelerator = ::LoadAccelerators( g_testRunnerResource,
+                                         MAKEINTRESOURCE( IDR_ACCELERATOR_TEST_RUNNER ) );
+d94 8
+a101 4
+    ASSERT( m_hAccelerator !=NULL );
+    
+    CListCtrl   *listCtrl = (CListCtrl *)GetDlgItem (IDC_LIST);
+    CComboBox   *comboBox = (CComboBox *)GetDlgItem (IDC_COMBO_TEST);
+d103 2
+a104 3
+    ASSERT (listCtrl);
+    ASSERT (comboBox);
+    ListCtrlFormatter formatter( *listCtrl );
+d106 3
+a108 2
+    VERIFY( m_errorListBitmap.Create( IDB_ERROR_TYPE, 16, 1, 
+                                      RGB( 255,0,255 ) ) );
+d110 2
+a111 1
+    listCtrl->SetImageList( &m_errorListBitmap, LVSIL_SMALL );
+d113 8
+a120 6
+    int averageCharWidth = listCtrl->GetStringWidth("#");
+    formatter.AddColumn( IDS_ERRORLIST_TYPE, 4*averageCharWidth, LVCFMT_LEFT, 0 );
+    formatter.AddColumn( IDS_ERRORLIST_NAME, 32*averageCharWidth, LVCFMT_LEFT, 1 );
+    formatter.AddColumn( IDS_ERRORLIST_FAILED_CONDITION, 20*averageCharWidth, LVCFMT_LEFT, 2 );
+    formatter.AddColumn( IDS_ERRORLIST_LINE_NUMBER, 5*averageCharWidth, LVCFMT_LEFT, 3 );
+    formatter.AddColumn( IDS_ERRORLIST_FILE_NAME, 10*averageCharWidth, LVCFMT_LEFT, 4 );
+d122 1
+d124 1
+a124 1
+    m_testsProgress = new ProgressBar (this, CRect (50, 85, 50 + 425, 85 + 25));
+d126 3
+a128 1
+    reset ();
+d130 1
+a130 2
+    loadSettings();
+    updateHistoryCombo();
+d132 3
+a134 1
+    UpdateData( FALSE );
+d136 6
+a141 6
+    // somehow doesn't have the desired effect?
+    LONG extendedStyle = GetWindowLong( m_listCtrl.GetSafeHwnd(), 
+                                        GWL_EXSTYLE);;
+    SetWindowLong( m_listCtrl.GetSafeHwnd(), 
+                   GWL_EXSTYLE, 
+                   extendedStyle | LVS_EX_FULLROWSELECT);
+d143 1
+a143 1
+    m_buttonRun.SetFocus();
+d145 5
+a149 5
+    if ( m_bAutorunAtStartup )
+      OnRun();
+    
+    return FALSE;  // return TRUE unless you set the focus to a control
+                   // EXCEPTION: OCX Property Pages should return FALSE
+d152 1
+a154 1
+  saveSettings();
+d159 3
+a161 1
+void TestRunnerDlg::OnRun() 
+d168 2
+a169 2
+  if (m_selectedTest == 0)
+	  return;
+d171 2
+a172 2
+  freeState       (); 
+  reset           ();
+d174 1
+a174 1
+  beRunning       ();
+d176 1
+a176 1
+  int numberOfTests = m_selectedTest->countTestCases ();
+d178 1
+a178 1
+  m_testsProgress->start (numberOfTests);
+d180 2
+a181 2
+  m_result            = new GUITestResult ((TestRunnerDlg *)this);
+  m_activeTest        = new ActiveTest (m_selectedTest);
+d183 1
+a183 1
+  m_testStartTime     = timeGetTime ();
+d185 1
+a185 1
+  m_activeTest->run (m_result);
+d187 1
+a187 1
+  m_testEndTime       = timeGetTime ();
+d197 13
+a209 13
+    CListCtrl *listCtrl = (CListCtrl *)GetDlgItem (IDC_LIST);
+    int currentEntry = result->testErrors() + 
+                       result->testFailures() -1;
+
+    ErrorTypeBitmaps errorType;
+    if ( type == "Failure" )
+      errorType = errorTypeFailure;
+    else
+      errorType = errorTypeError;
+
+    ListCtrlSetter setter( *listCtrl );
+    setter.insertLine( currentEntry );
+    setter.addSubItem( errorType, type );
+d211 2
+a212 2
+    // Set test name
+    setter.addSubItem( errorType, test->getName() );
+d214 2
+a215 2
+    // Set the asserted text
+    setter.addSubItem( e->what() );
+d217 9
+a225 9
+    // Set the line number
+    if (e->sourceLine().isValid() )
+    {
+      char tmp[64];
+      sprintf( tmp, "%ld", e->sourceLine().lineNumber() );
+      setter.addSubItem( tmp );
+    }
+    else
+      setter.addSubItem( "" );
+d227 2
+a228 2
+    // Set the file name
+    setter.addSubItem( e->sourceLine().fileName() );
+d231 4
+a234 4
+    std::string dump = "Test: " + test->getName() + "\n";
+    dump += e->what();
+    dump += "\n";
+    ::OutputDebugString( dump.c_str() );
+d237 2
+a238 3
+    listCtrl->RedrawItems (currentEntry, currentEntry);
+    listCtrl->UpdateWindow ();
+
+d242 2
+a243 2
+
+void TestRunnerDlg::addError (CppUnit::TestResult *result, CppUnit::Test *test, CppUnit::Exception *e)
+d245 2
+a246 2
+    addListEntry ("Error", result, test, e);
+    m_errors++;
+d248 2
+a249 1
+    updateCountsDisplay ();
+a250 1
+}
+d252 2
+a253 1
+void TestRunnerDlg::addFailure (CppUnit::TestResult *result, CppUnit::Test *test, CppUnit::Exception *e)
+d255 2
+a256 4
+    addListEntry ("Failure", result, test, e);
+    m_failures++;
+
+    updateCountsDisplay ();
+d258 1
+d262 3
+a264 1
+void TestRunnerDlg::endTest (CppUnit::TestResult *result, CppUnit::Test *test)
+d266 2
+a267 2
+	if (m_selectedTest == 0)
+		return;
+d269 3
+a271 3
+    m_testsRun++;
+    updateCountsDisplay ();
+    m_testsProgress->step (m_failures == 0 && m_errors == 0);
+d273 1
+a273 1
+    m_testEndTime   = timeGetTime ();
+d275 1
+a275 1
+    updateCountsDisplay ();
+d277 2
+a278 2
+    if (m_testsRun >= m_selectedTest->countTestCases ())
+        beIdle ();
+d282 2
+a283 1
+void TestRunnerDlg::beRunning ()
+d285 3
+a287 3
+    m_bIsRunning = true;
+    m_buttonRun.EnableWindow( FALSE );
+    m_buttonClose.EnableWindow( FALSE );
+d294 2
+a295 1
+void TestRunnerDlg::beIdle ()
+d297 3
+a299 3
+    m_bIsRunning = false;
+    m_buttonRun.EnableWindow( TRUE );
+    m_buttonClose.EnableWindow( TRUE );
+d301 1
+a301 1
+    m_buttonRun.SetButtonStyle( m_buttonRun.GetButtonStyle() | BS_DEFPUSHBUTTON );
+d305 3
+a307 1
+void TestRunnerDlg::beRunDisabled ()
+d309 4
+a312 4
+    m_bIsRunning = false;
+    m_buttonRun.EnableWindow( FALSE );
+    m_buttonStop.EnableWindow( FALSE );
+    m_buttonClose.EnableWindow( TRUE );
+d319 2
+a320 1
+void TestRunnerDlg::freeState ()
+d322 3
+a324 2
+    delete m_activeTest;
+    delete m_result;
+a325 1
+}
+d327 2
+a328 1
+void TestRunnerDlg::reset ()
+d330 4
+a333 6
+    m_testsRun      = 0;
+    m_errors        = 0;
+    m_failures      = 0;
+    m_testEndTime   = m_testStartTime;
+
+    updateCountsDisplay ();
+d335 1
+a335 2
+    m_activeTest    = 0;
+    m_result        = 0;
+d337 2
+a338 1
+    CListCtrl *listCtrl = (CListCtrl *)GetDlgItem (IDC_LIST);
+d340 1
+a340 2
+    listCtrl->DeleteAllItems ();
+    m_testsProgress->reset ();
+d342 2
+d349 4
+a352 4
+    CStatic *statTestsRun   = (CStatic *)GetDlgItem (IDC_STATIC_RUNS);
+    CStatic *statErrors     = (CStatic *)GetDlgItem (IDC_STATIC_ERRORS);
+    CStatic *statFailures   = (CStatic *)GetDlgItem (IDC_STATIC_FAILURES);
+    CEdit *editTime         = (CEdit *)GetDlgItem (IDC_EDIT_TIME);
+d354 1
+a354 1
+    CString argumentString;
+d356 2
+a357 2
+    argumentString.Format ("%d", m_testsRun);
+    statTestsRun    ->SetWindowText (argumentString);
+d359 2
+a360 2
+    argumentString.Format ("%d", m_errors);
+    statErrors      ->SetWindowText (argumentString);
+d362 2
+a363 2
+    argumentString.Format ("%d", m_failures);
+    statFailures    ->SetWindowText (argumentString);
+d365 3
+a367 2
+    argumentString.Format ("Execution time: %3.3lf seconds", (m_testEndTime - m_testStartTime) / 1000.0);
+    editTime        ->SetWindowText (argumentString);
+d370 2
+a371 3
+}
+
+void TestRunnerDlg::OnStop() 
+d373 2
+a374 2
+    if (m_result)
+        m_result->stop ();
+d376 1
+a376 1
+    beIdle ();
+d379 3
+a381 1
+void TestRunnerDlg::OnOK() 
+d383 5
+a387 2
+    if (m_result)
+        m_result->stop ();
+d389 1
+a389 1
+    CDialog::OnOK ();
+d486 1
+a486 1
+  m_model->loadSettings();
+d488 1
+a488 1
+  m_bAutorunAtStartup = m_model->autorunOnLaunch();
+d495 2
+a496 1
+  m_model->setAutorunOnLaunch( m_bAutorunAtStartup != 0 );
+d498 6
+a503 1
+  m_model->saveSettings();
+d510 6
+d528 207
+@
+
+
+1.5
+log
+@* NEWS : updated.
+
+* include/cppunit/Exception.h : added include Portability.h.
+
+* include/cppunit/TestResult.* : changed TestFailures to a deque.
+added tests().
+
+* examples/cppunittest/CppUnitTest.dsp :
+* examples/cppunittest/MakeFile.am :
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp : Added
+XmlTestResultOutputterTest.*, XmlUniformiser.*, XmlUniformiserTest.*,
+UnitTestToolSuite.h, OutputSuite.h.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp : revised project
+folders structure. Added missing NoteEqualExceptionTest.*.
+
+* examples/cppunittest/CppUnitTestSuite.cpp : added 'Output' and
+'UnitTestTool' suites.
+
+* src/cppunit/cppunit.dsp: removed estring.h. Revised project folders
+structure. Removed TestRegistry.*. Added TestSetUp.h,
+XmlTestResultOutputter.*.
+
+* src/cppunit/MakeFile.am: added XmlTestResultOutputter.*.
+
+* src/testrunner/TestRunnerDlg.cpp: removed disabled code.
+@
+text
+@d173 5
+a177 1
+void TestRunnerDlg::addListEntry (std::string type, CppUnit::TestResult *result, CppUnit::Test *test, CppUnit::Exception *e)
+d179 3
+a181 4
+//    char        stage [80];
+//    LV_ITEM     lvi;
+    CListCtrl   *listCtrl       = (CListCtrl *)GetDlgItem (IDC_LIST);
+    int         currentEntry    = result->testErrors () + result->testFailures ()-1;
+d200 1
+a200 3
+    if (e->lineNumber () == CppUnit::Exception::UNKNOWNLINENUMBER)
+      setter.addSubItem( "?" );
+    else
+d203 1
+a203 1
+      sprintf( tmp, "%ld", e->lineNumber() );
+d206 2
+d210 1
+a210 1
+    setter.addSubItem( e->fileName() );
+@
+
+
+1.4
+log
+@* src/msvc6/testrunner/TestRunner.dsp: fixed release configuration.
+
+* src/msvc6/testrunner/TestRunner.dsw: added DSPlugIn.dsp. TestRunner
+depends on DSPlugIn.
+
+* src/msvc6/testrunner/TestRunner.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/DSPlugIn/*: integrated patch from
+Patrick Berny (PPBerny@@web.de). An add-ins for VC++. Double-cliking
+a failed test in the TestRunner, VC++ will open the source file and
+go to the failure location.
+
+* src/cppunit/Exception.cpp:
+* include/cppunit/Exception.h: compile fix, call to overrided
+operator = of parent class failed. Using typedef to the parent
+class fix that.
+
+* src/cppunit/cppunit.dsp: added TestFixture.h
+
+* src/cppunit/TestFactoryRegistry.cpp: removed <utility> which isn't
+needed any more.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/extensions/TestFactoryRegistry.h: added
+include <Portability.h> before any other includes to remove warning
+with VC++.
+
+* include/cppunit/Portability.h: moved platform specific includes at
+the beginning of the header. fixed CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION
+declaration.
+
+* include/cppunit/config-msvc6.h: removed pragma once (useless, should
+be put in each header to have an effect).
+@
+text
+@d209 6
+a214 15
+/*
+    sprintf (stage, "%s", type.c_str ());
+
+    lvi.mask        = LVIF_TEXT;
+    lvi.iItem       = currentEntry;
+    lvi.iSubItem    = 0;
+    lvi.pszText     = stage;
+    lvi.iImage      = 0;
+    lvi.stateMask   = 0;
+    lvi.state       = 0;
+
+    listCtrl->InsertItem (&lvi);
+
+    // Set class string
+    listCtrl->SetItemText (currentEntry, 1, test->getName ().c_str ());
+a215 14
+    // Set the asserted text
+    listCtrl->SetItemText(currentEntry, 2, e->what ());
+
+    // Set the line number
+    if (e->lineNumber () == CppUnit::Exception::UNKNOWNLINENUMBER)
+        sprintf (stage, "<unknown>");
+    else
+        sprintf (stage, "%ld", e->lineNumber ());
+
+    listCtrl->SetItemText(currentEntry, 3, stage);
+
+    // Set the file name
+    listCtrl->SetItemText(currentEntry, 4, e->fileName ().c_str ());
+*/
+@
+
+
+1.3
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+moved dll copy from post-build to custom build setting, so that the
+dll is copied even if the CppUnitTestApp was not modified.
+
+* examples/msvc6/TestPlugIn/: a new example of test plug in.
+
+* src/msvc6/TestRunner/ListCtrlFormatter.*
+* src/msvc6/TestRunner/ListCtrlSetter.*:
+added, helper to manipulate list control.
+
+* src/msvc6/TestRunner/TestRunnerDlg.*: change to make the error list
+more compact. text moved to string resources. icons added for typ
+test tfailure type.
+
+* src/msvc6/TestRunner/MostRecentTests.*: added, classes that will
+replace the current implementation of MRU test which make it hard
+to subclass the dialog.
+
+* src/msvc6/TestRunner/res/errortype.bmp: added, bitmap with error
+types (failure and error).
+
+* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+
+* src/cppunit/cppunit.dsp:
+removed config.h from project
+added Portability.h and config-msvc6.h
+
+* include/cppunit/config-msvc6.h:
+undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+@
+text
+@d58 1
+d119 7
+@
+
+
+1.2
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@d14 2
+a15 1
+
+d36 6
+a41 3
+                              CWnd* pParent )
+    : CDialog(IDD_DIALOG_TESTRUNNER, pParent),
+      m_model( model )
+d67 5
+a71 5
+    //{{AFX_MSG_MAP(TestRunnerDlg)
+    ON_BN_CLICKED(ID_RUN, OnRun)
+    ON_BN_CLICKED(ID_STOP, OnStop)
+    ON_CBN_SELCHANGE(IDC_COMBO_TEST, OnSelchangeComboTest)
+    ON_WM_PAINT()
+d95 13
+a108 5
+    listCtrl->InsertColumn (0,"Type", LVCFMT_LEFT, 2 * listCtrl->GetStringWidth ("Type"), 1);
+    listCtrl->InsertColumn (1,"Name", LVCFMT_LEFT, 20 * listCtrl->GetStringWidth ("#"), 2);
+    listCtrl->InsertColumn (2,"Failed Condition", LVCFMT_LEFT, 1.75 * listCtrl->GetStringWidth ("Failed Condition"), 3);
+    listCtrl->InsertColumn (3,"Line Number", LVCFMT_LEFT, 1.5 * listCtrl->GetStringWidth ("Line Number"), 4);
+    listCtrl->InsertColumn (4,"File Name", LVCFMT_LEFT, 4.0 * listCtrl->GetStringWidth ("File Name"), 5);
+d167 2
+a168 2
+    char        stage [80];
+    LV_ITEM     lvi;
+d170 1
+a170 1
+    int         currentEntry    = result->testErrors () + result->testFailures () -1;
+d172 30
+d230 1
+a230 1
+
+@
+
+
+1.1
+log
+@Merged msvc6 specific TestRunner and example adapted from Michael Feathers
+version by Baptiste Lepilleur.
+@
+text
+@d6 3
+a8 1
+#include <testrunner/TestRunnerDlg.h>
+d12 2
+a13 1
+#include "resource.h"
+d22 5
+d31 2
+d34 4
+a37 2
+TestRunnerDlg::TestRunnerDlg(CWnd* pParent /*=NULL*/)
+    : CDialog(IDD_DIALOG_TESTRUNNER, pParent)
+d40 2
+a41 2
+        // NOTE: the ClassWizard will add member initialization here
+    //}}AFX_DATA_INIT
+a43 1
+    m_tests             = 0;
+d45 2
+d54 5
+a58 2
+        // NOTE: the ClassWizard will add DDX and DDV calls here
+    //}}AFX_DATA_MAP
+d68 3
+a70 1
+    //}}AFX_MSG_MAP
+d79 6
+d98 1
+a98 1
+    int numberOfCases = 0;
+d100 4
+a103 6
+    for (std::vector<CppUnit::Test *>::iterator it = m_tests->begin (); it != m_tests->end (); ++it)
+    {
+        comboBox->AddString ((*it)->toString ().c_str ());
+        m_selectedTest = *it;
+        numberOfCases++;
+    }
+d105 1
+a105 4
+    if (numberOfCases > 0)
+        comboBox->SetCurSel (numberOfCases -1);
+    else
+        beRunDisabled ();
+d107 1
+a107 1
+    m_testsProgress = new ProgressBar (this, CRect (50, 85, 50 + 425, 85 + 25));
+d109 2
+a110 1
+    reset ();
+d112 2
+a113 2
+    return TRUE;  // return TRUE unless you set the focus to a control
+                  // EXCEPTION: OCX Property Pages should return FALSE
+d118 3
+a120 2
+    freeState ();
+    delete m_testsProgress;
+d125 4
+a128 2
+	if (m_selectedTest == 0)
+		return;
+d130 2
+a131 2
+    freeState       (); 
+    reset           ();
+d133 2
+a134 1
+    beRunning       ();
+d136 1
+a136 1
+    int numberOfTests = m_selectedTest->countTestCases ();
+d138 1
+a138 1
+    m_testsProgress->start (numberOfTests);
+d140 1
+a140 2
+    m_result            = new GUITestResult ((TestRunnerDlg *)this);
+    m_activeTest        = new ActiveTest (m_selectedTest);
+d142 2
+a143 1
+    m_testStartTime     = timeGetTime ();
+d145 1
+a145 1
+    m_activeTest->run (m_result);
+d147 1
+a147 1
+    m_testEndTime       = timeGetTime ();
+d149 1
+d173 1
+a173 1
+    listCtrl->SetItemText (currentEntry, 1, test->toString ().c_str ());
+d235 3
+a237 5
+    CButton *runButton = (CButton *)GetDlgItem (ID_RUN);
+    CButton *closeButton = (CButton *)GetDlgItem (IDOK);
+
+    runButton->EnableWindow (FALSE);
+    closeButton->EnableWindow (FALSE);
+d239 2
+d246 3
+a248 5
+    CButton *runButton = (CButton *)GetDlgItem (ID_RUN);
+    CButton *closeButton = (CButton *)GetDlgItem (IDOK);
+
+    runButton->EnableWindow (TRUE);
+    closeButton->EnableWindow (TRUE);
+d250 2
+d256 4
+a259 7
+    CButton *runButton = (CButton *)GetDlgItem (ID_RUN);
+    CButton *closeButton = (CButton *)GetDlgItem (IDOK);
+    CButton *stopButton = (CButton *)GetDlgItem (ID_STOP);
+
+    runButton->EnableWindow (FALSE);
+    stopButton->EnableWindow (FALSE);
+    closeButton->EnableWindow (TRUE);
+d261 2
+a265 2
+
+
+a322 1
+    
+d333 21
+a353 1
+void TestRunnerDlg::OnSelchangeComboTest() 
+d355 23
+a377 1
+    CComboBox   *testsSelection = (CComboBox *)GetDlgItem (IDC_COMBO_TEST);
+a378 1
+    int currentSelection = testsSelection->GetCurSel ();
+d380 48
+a427 4
+    if (currentSelection >= 0 && currentSelection < m_tests->size ())
+    {
+        m_selectedTest = *(m_tests->begin () + currentSelection);
+        beIdle ();
+d429 2
+a430 5
+    }
+    else
+    {
+        m_selectedTest = 0;
+        beRunDisabled ();
+a431 1
+    }
+d433 8
+a440 2
+    freeState ();
+    reset ();
+d442 6
+d450 3
+a452 1
+void TestRunnerDlg::OnPaint() 
+d454 2
+a455 3
+    CPaintDC dc (this); 
+    
+    m_testsProgress->paint (dc);    
+@
+

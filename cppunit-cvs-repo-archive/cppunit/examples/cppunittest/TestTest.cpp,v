@@ -1,0 +1,378 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.3
+date	2002.07.14.19.48.31;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.07.13.10.33.49;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.12.19.28.46;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@#include "CoreSuite.h"
+#include "TestTest.h"
+
+
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( TestTest,
+                                       coreSuiteName() );
+
+
+TestTest::TestTest() : 
+    CPPUNIT_NS::TestFixture()
+{
+}
+
+
+TestTest::~TestTest()
+{
+}
+
+
+void 
+TestTest::setUp()
+{
+  m_suite = new CPPUNIT_NS::TestSuite( "suite" );
+  m_test1 = new MockTestCase( "test1" );
+  m_test2 = new MockTestCase( "test2" );
+  m_suite->addTest( m_test1 );
+  m_suite->addTest( m_test2 );
+  
+  m_path = new CPPUNIT_NS::TestPath();
+}
+
+
+void 
+TestTest::tearDown()
+{
+  delete m_suite;
+  delete m_path;
+}
+
+
+void 
+TestTest::testFindTestPathPointerThis()
+{
+  CPPUNIT_ASSERT( m_test1->findTestPath( m_test1, *m_path ) );
+  CPPUNIT_ASSERT_EQUAL( 1, m_path->getTestCount() );
+  CPPUNIT_ASSERT( m_test1 == m_path->getChildTest() );
+
+  m_path->removeTests();
+
+  CPPUNIT_ASSERT( m_suite->findTestPath( m_suite, *m_path ) );
+  CPPUNIT_ASSERT_EQUAL( 1, m_path->getTestCount() );
+  CPPUNIT_ASSERT( m_suite == m_path->getChildTest() );
+}
+
+
+void 
+TestTest::testFindTestPathPointer()
+{
+  CPPUNIT_ASSERT( m_suite->findTestPath( m_test1, *m_path ) );
+  CPPUNIT_ASSERT_EQUAL( 2, m_path->getTestCount() );
+  CPPUNIT_ASSERT( m_suite == m_path->getTestAt(0) );
+  CPPUNIT_ASSERT( m_test1 == m_path->getTestAt(1) );
+}
+
+
+void 
+TestTest::testFindTestPathPointerFail()
+{
+  MockTestCase test( "test" );
+  CPPUNIT_ASSERT( !m_suite->findTestPath( &test, *m_path ) );
+  CPPUNIT_ASSERT( !m_path->isValid() );
+}
+
+
+void 
+TestTest::testFindTestPathNameThis()
+{
+  CPPUNIT_ASSERT( m_test1->findTestPath( "test1", *m_path ) );
+  CPPUNIT_ASSERT_EQUAL( 1, m_path->getTestCount() );
+  CPPUNIT_ASSERT( m_test1 == m_path->getChildTest() );
+
+  m_path->removeTests();
+
+  CPPUNIT_ASSERT( m_suite->findTestPath( "suite", *m_path ) );
+  CPPUNIT_ASSERT_EQUAL( 1, m_path->getTestCount() );
+  CPPUNIT_ASSERT( m_suite == m_path->getChildTest() );
+}
+
+
+void 
+TestTest::testFindTestPathName()
+{
+  CPPUNIT_ASSERT( m_suite->findTestPath( "test2", *m_path ) );
+  CPPUNIT_ASSERT_EQUAL( 2, m_path->getTestCount() );
+  CPPUNIT_ASSERT( m_suite == m_path->getTestAt(0) );
+  CPPUNIT_ASSERT( m_test2 == m_path->getTestAt(1) );
+}
+
+
+void 
+TestTest::testFindTestPathNameFail()
+{
+  CPPUNIT_ASSERT( !m_suite->findTestPath( "bad-test", *m_path ) );
+  CPPUNIT_ASSERT( !m_path->isValid() );
+}
+
+
+void 
+TestTest::testFindTest()
+{
+  CPPUNIT_ASSERT( m_test1 == m_suite->findTest( "test1" ) );
+}
+
+
+void 
+TestTest::testFindTestThrow()
+{
+  m_suite->findTest( "no-name" );
+}
+
+
+void 
+TestTest::testResolveTestPath()
+{
+  CPPUNIT_NS::TestPath path1 = m_suite->resolveTestPath( "suite");
+  CPPUNIT_ASSERT_EQUAL( 1, path1.getTestCount() );
+  CPPUNIT_ASSERT( m_suite == path1.getTestAt(0) );
+
+  CPPUNIT_NS::TestPath path2 = m_suite->resolveTestPath( "suite/test2");
+  CPPUNIT_ASSERT_EQUAL( 2, path2.getTestCount() );
+  CPPUNIT_ASSERT( m_suite == path2.getTestAt(0) );
+  CPPUNIT_ASSERT( m_test2 == path2.getTestAt(1) );
+}
+@
+
+
+1.2
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d6 1
+a6 1
+                                       CppUnitTest::coreSuiteName() );
+@
+
+
+1.1
+log
+@* Makefile.am: added examples/qt to tar ball release.
+
+* TODO: heavily updated.
+
+* contrib/msvc/CppUnit*.wwtpl: changed base class for unit test to TestFixture.
+
+* include/cppunit/Test.h: removed toString() method. Not used by the framework
+  and source of confusions with getName().
+  Added getChildTestCount() and getChildTestAt(), introducing the composite pattern
+  at top level. Added utility methods findTest() and findTestPath().
+
+* src/cppunit/Test.cpp: added. Implementation of new utility methods.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: inherits TestLeaf. Removed toString(), run(void) and
+  defaultResult(). Removed default constructor.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestSuite.cpp: fixed some includes that used "" instead of <>.
+
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: added. Common implementation of Test for composite
+  tests (TestSuite).
+
+* include/cppunit/TestFailure.h:
+* src/cppunit/TestFailure.cpp: removed toString().
+
+* include/cppunit/TestLeaf.h:
+* src/cppunit/TestLeaf.cpp: added. Common implementation of Test for single test
+  (TestCase).
+
+* include/cppunit/TestListener.h: added TimingListener example to documentation.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: added. List of test traversed to access a test in the
+  test hierarchy.
+
+* include/cppunit/TestRunner.h: added. Generic TestRunner.
+
+* src/cppunit/TestRunner.cpp: moved to TextTestRunner.cpp. Added new implementation
+  of includecppunit/TestRunner.h.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: inherits TestComposite and implements new Test
+  interface. Removed toString().
+
+* src/cppunit/TextTestRunner.cpp: moved from TestRunner.cpp. Implementation of
+  include/cppunit/ui/text/TestRunner.h.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* src/cppunit/RepeatedTest.cpp: removed toString().
+
+* include/cppunit/extensions/TestDecorator.h: inherits TestLeaf.
+  Removed toString()
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h: XML outputter now escape node content.
+  Add unit test for that bug (#540944). Added style sheet support. Modified
+  XML structure: failure message as its own element.
+
+* src/msvc/testrunner/TestRunnerModel.h:
+* src/msvc/testrunner/TestRunnerModel.cpp: used Test::findTest() to find a test
+  by name instead of using RTTI. Added toAnsiString() for convertion when
+  compiling as UNICODE.
+
+* src/msvc/testrunner/TreeHierarchyDlg.h:
+* src/msvc/testrunner/TreeHierarchyDlg.cpp: used new composite interface of Test
+  to explorer the test hierarchy instead of RTTI.
+
+* examples/cppunittest/TestPathTest.h:
+* examples/cppunittest/TestPathTest.cpp: added, unit tests for TestPath.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: added test for TestLeaf.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: added test for TestComposite and
+  new Test interface.
+@
+text
+@d10 1
+a10 1
+    CppUnit::TestFixture()
+d23 1
+a23 1
+  m_suite = new CppUnit::TestSuite( "suite" );
+d29 1
+a29 1
+  m_path = new CppUnit::TestPath();
+d125 1
+a125 1
+  CppUnit::TestPath path1 = m_suite->resolveTestPath( "suite");
+d129 1
+a129 1
+  CppUnit::TestPath path2 = m_suite->resolveTestPath( "suite/test2");
+@
+

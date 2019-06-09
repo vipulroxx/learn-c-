@@ -1,0 +1,1028 @@
+head	1.14;
+access;
+symbols
+	REL_1_12_1:1.14
+	REL_1_11_6:1.14
+	REL_1_11_4:1.14
+	REL_1_11_0:1.14
+	TG_CPPUNIT_NO_STREAM_AFTER:1.14
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.12
+	REL_1_10_2:1.12
+	REL_1_10_0:1.11
+	REL_1_9_14:1.11
+	REL_1_9_12:1.11
+	BRANCH_1_9_12:1.11.0.2
+	TG_BRANCH_1_9_12:1.11
+	TG_BEFORE_HPUX_PLUGIN:1.11
+	TG_BEFORE_SUN4_PORT:1.11
+	REL_1_9_10:1.11
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.8
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.8
+	REL_1_9_6:1.5
+	REL_1_9_4:1.3;
+locks; strict;
+comment	@// @;
+
+
+1.14
+date	2004.06.25.11.11.45;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2004.06.25.10.41.27;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2004.06.18.08.15.29;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2002.08.27.21.51.18;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2002.07.14.19.48.32;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2002.06.14.20.21.00;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2002.05.23.18.38.39;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2002.05.07.21.55.07;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.04.25.19.05.22;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.04.21.10.57.52;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.04.20.21.51.33;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.19.10.54.19;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.18.09.32.18;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.17.22.27.28;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.14
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@#include <cppunit/BriefTestProgressListener.h>
+#include <cppunit/CompilerOutputter.h>
+#include <cppunit/TestPath.h>
+#include <cppunit/TestResult.h>
+#include <cppunit/TestResultCollector.h>
+#include <cppunit/TestRunner.h>
+#include <cppunit/TextOutputter.h>
+#include <cppunit/TextTestProgressListener.h>
+#include <cppunit/XmlOutputter.h>
+#include <cppunit/extensions/TestFactoryRegistry.h>
+#include <cppunit/plugin/DynamicLibraryManagerException.h>
+#include <cppunit/plugin/PlugInParameters.h>
+#include <cppunit/plugin/PlugInManager.h>
+#include <cppunit/plugin/TestPlugIn.h>
+#include <cppunit/portability/Stream.h>
+#include "CommandLineParser.h"
+
+
+/* Notes:
+
+  Memory allocated by test plug-in must be freed before unloading the test plug-in.
+  That is the reason why the XmlOutputter is explicitely destroyed.
+ */
+
+
+/*! Runs the specified tests located in the root suite.
+ * \param parser Command line parser.
+ * \return \c true if the run succeed, \c false if a test failed or if a test
+ *         path was not resolved.
+ */
+bool 
+runTests( const CommandLineParser &parser )
+{
+  bool wasSuccessful = false;
+  CPPUNIT_NS::PlugInManager plugInManager;
+
+  // The following scope is used to explicitely free all memory allocated before
+  // unload the test plug-ins (uppon plugInManager destruction).
+  {
+    CPPUNIT_NS::TestResult controller;
+    CPPUNIT_NS::TestResultCollector result;
+    controller.addListener( &result );        
+
+    // Set up outputters
+    CPPUNIT_NS::OStream *stream = &CPPUNIT_NS::stdCErr();
+    if ( parser.useCoutStream() )
+      stream = &CPPUNIT_NS::stdCOut();
+
+    CPPUNIT_NS::OStream *xmlStream = stream;
+    if ( !parser.getXmlFileName().empty() )
+      xmlStream = new CPPUNIT_NS::OFileStream( parser.getXmlFileName().c_str() );
+
+    CPPUNIT_NS::XmlOutputter xmlOutputter( &result, *xmlStream, parser.getEncoding() );
+    xmlOutputter.setStyleSheet( parser.getXmlStyleSheet() );
+    CPPUNIT_NS::TextOutputter textOutputter( &result, *stream );
+    CPPUNIT_NS::CompilerOutputter compilerOutputter( &result, *stream );
+
+    // Set up test listeners
+    CPPUNIT_NS::BriefTestProgressListener briefListener;
+    CPPUNIT_NS::TextTestProgressListener dotListener;
+    if ( parser.useBriefTestProgress() )
+      controller.addListener( &briefListener );
+    else if ( !parser.noTestProgress() )
+      controller.addListener( &dotListener );
+
+    // Set up plug-ins
+    for ( int index =0; index < parser.getPlugInCount(); ++index )
+    {
+      CommandLinePlugInInfo plugIn = parser.getPlugInAt( index );
+      plugInManager.load( plugIn.m_fileName, plugIn.m_parameters );
+    }
+
+    // Registers plug-in specific TestListener (global setUp/tearDown, custom TestListener...)
+    plugInManager.addListener( &controller );
+
+    // Adds the default registry suite
+    CPPUNIT_NS::TestRunner runner;
+    runner.addTest( CPPUNIT_NS::TestFactoryRegistry::getRegistry().makeTest() );
+
+    // Runs the specified test
+    try
+    {
+      runner.run( controller, parser.getTestPath() );
+      wasSuccessful = result.wasSuccessful();
+    }
+    catch ( std::invalid_argument & )
+    {
+      CPPUNIT_NS::stdCOut()  <<  "Failed to resolve test path: "  
+                             <<  parser.getTestPath() 
+                             <<  "\n";
+    }
+
+    // Removes plug-in specific TestListener (not really needed but...)
+    plugInManager.removeListener( &controller );
+
+    // write using outputters
+    if ( parser.useCompilerOutputter() )
+      compilerOutputter.write();
+
+    if ( parser.useTextOutputter() )
+      textOutputter.write();
+
+    if ( parser.useXmlOutputter() )
+    {
+      plugInManager.addXmlOutputterHooks( &xmlOutputter );
+      xmlOutputter.write();
+      plugInManager.removeXmlOutputterHooks();
+    }
+
+    if ( !parser.getXmlFileName().empty() )
+      delete xmlStream;
+  }
+
+  return wasSuccessful;
+}
+
+
+void
+printShortUsage( const std::string &applicationName )
+{
+   CPPUNIT_NS::stdCOut()  << "Usage:\n"
+             << applicationName  <<  " [-c -b -n -t -o -w] [-x xml-filename]"
+             "[-s stylesheet] [-e encoding] plug-in[=parameters] [plug-in...] [:testPath]\n\n";
+}
+
+
+void
+printUsage( const std::string &applicationName )
+{
+  printShortUsage( applicationName );
+  CPPUNIT_NS::stdCOut()  <<
+"-c --compiler\n"
+"	Use CompilerOutputter\n"
+"-x --xml [filename]\n"
+"	Use XmlOutputter (if filename is omitted, then output to cout or\n"
+"	cerr.\n"
+"-s --xsl stylesheet\n"
+"	XML style sheet for XML Outputter\n"
+"-e --encoding encoding\n"
+"	XML file encoding (UTF8, shift_jis, ISO-8859-1...)\n"
+"-b --brief-progress\n"
+"	Use BriefTestProgressListener (default is TextTestProgressListener)\n"
+"-n --no-progress\n"
+"	Show no test progress (disable default TextTestProgressListener)\n"
+"-t --text\n"
+"	Use TextOutputter\n"
+"-o --cout\n"
+"	Ouputters output to cout instead of the default cerr.\n"
+"-w --wait\n"
+"	Wait for the user to press a return before exit.\n"
+"filename[=\"options\"]\n"
+"	Many filenames can be specified. They are the name of the \n"
+"	test plug-ins to load. Optional plug-ins parameters can be \n"
+"	specified after the filename by adding '='.\n"
+"[:testpath]\n"
+"	Optional. Only one test path can be specified. It must \n"
+"	be prefixed with ':'. See TestPath constructor for syntax.\n"
+"\n"
+"'parameters' (test plug-in or XML filename, test path...) may contains \n"
+"spaces if double quoted. Quote may be escaped with \".\n"
+"\n"
+"Some examples of command lines:\n"
+"\n"
+"DllPlugInTesterd_dll.exe -b -x tests.xml -c simple_plugind.dll CppUnitTestPlugInd.dll\n"
+"\n"
+" Will load 2 tests plug-ins (available in lib/), use the brief test\n"
+"progress, output the result in XML in file tests.xml and also\n"
+"output the result using the compiler outputter.\n"
+"\n"
+"DllPlugInTesterd_dll.exe ClockerPlugInd.dll=\"flat\" -n CppUnitTestPlugInd.dll\n"
+"\n"
+" Will load the 2 test plug-ins, and pass the parameter string \"flat\"\n"
+"to the Clocker plug-in, disable test progress.\n\n";
+
+}
+
+
+/*! Main
+ * 
+ * Usage: 
+ *
+ * DllPlugInTester.exe dll-filename1 [dll-filename2 [dll-filename3 ...]] [:testpath]
+ *
+ * <em>dll-filename</em> must be the name of the DLL. If the DLL use some other DLL, they
+ * should be in the path or in the same directory as the DLL. The DLL must export
+ * a function named "GetTestPlugInInterface" with the signature
+ * GetTestPlugInInterfaceFunction. Both are defined in:
+ * \code
+ * #include <msvc6/testrunner/TestPlugInInterface.h>
+ * \endcode.
+ *
+ * See examples/msvc6/TestPlugIn for an example of post-build testing.
+ *
+ * If no test path is specified, they all the test of the suite returned by the DLL
+ * are run. If a test path is specified, then only the specified test is run. The test
+ * path must be prefixed by ':'.
+ *
+ * Test paths are resolved using Test::resolveTestPath() on the suite returned by
+ * TestFactoryRegistry::getRegistry().makeTest();
+ *
+ * If all test succeed and no error happen then the application exit with code 0.
+ * If any error occurs (failed to load dll, failed to resolve test paths) or a 
+ * test fail, the application exit with code 1. If the application failed to
+ * parse the command line, it exits with code 2.
+ */
+int 
+main( int argc, 
+      const char *argv[] )
+{
+  const int successReturnCode = 0;
+  const int failureReturnCode = 1;
+  const int badCommadLineReturnCode = 2;
+
+  // check command line
+  std::string applicationName( argv[0] );
+  if ( argc < 2 )
+  {
+    printUsage( applicationName );
+    return badCommadLineReturnCode;
+  }
+
+  CommandLineParser parser( argc, argv );
+  try
+  {
+    parser.parse();
+  }
+  catch ( CommandLineParserException &e )
+  {
+    CPPUNIT_NS::stdCOut()  <<  "Error while parsing command line: "  <<  e.what()  
+                           << "\n\n";
+    printShortUsage( applicationName );
+    return badCommadLineReturnCode;
+  }
+
+  bool wasSuccessful = false;
+  try
+  {
+    wasSuccessful = runTests( parser );
+  }
+  catch ( CPPUNIT_NS::DynamicLibraryManagerException &e )
+  {
+    CPPUNIT_NS::stdCOut()  << "Failed to load test plug-in:\n"
+                           << e.what() << "\n";
+  }
+
+#if !defined( CPPUNIT_NO_STREAM )
+  if ( parser.waitBeforeExit() )
+  {
+    CPPUNIT_NS::stdCOut() << "Please press <RETURN> to exit\n";
+    CPPUNIT_NS::stdCOut().flush();
+    std::cin.get();
+  }
+#endif
+
+  return wasSuccessful ? successReturnCode : failureReturnCode;
+}
+
+
+@
+
+
+1.13
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@d15 1
+a15 1
+#include <cppunit/Portability/Stream.h>
+@
+
+
+1.12
+log
+@* src/DllPlugInTester/*.cpp: bug #941625, string literal using char *
+  instead of const char *. Patch contributed by Curt Arnold has been
+  applied.
+@
+text
+@d15 1
+a15 2
+#include <iostream>
+#include <fstream>
+d45 1
+a45 1
+    std::ostream *stream = &std::cerr;
+d47 1
+a47 1
+      stream = &std::cout;
+d49 1
+a49 1
+    std::ostream *xmlStream = stream;
+d51 1
+a51 1
+      xmlStream = new std::ofstream( parser.getXmlFileName().c_str() );
+d88 3
+a90 3
+      std::cerr  <<  "Failed to resolve test path: "  
+                 <<  parser.getTestPath() 
+                 <<  std::endl;
+d121 1
+a121 1
+  std::cout  << "Usage:"  <<  std::endl
+d123 1
+a123 2
+             "[-s stylesheet] [-e encoding] plug-in[=parameters] [plug-in...] [:testPath]"
+             << std::endl  <<  std::endl;
+d131 1
+a131 1
+  std::cout  <<
+d173 1
+a173 2
+"to the Clocker plug-in, disable test progress.\n"
+  << std::endl;
+d229 2
+a230 2
+    std::cerr  <<  "Error while parsing command line: "  <<  e.what()  
+               << std::endl << std::endl;
+d242 2
+a243 2
+    std::cerr  << "Failed to load test plug-in:"  <<  std::endl
+               << e.what() << std::endl;
+d246 1
+d249 2
+a250 1
+    std::cout << "Please press <RETURN> to exit" << std::endl;
+d253 1
+@
+
+
+1.11
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d211 1
+a211 1
+      char *argv[] )
+@
+
+
+1.10
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d12 1
+a12 1
+#include <cppunit/plugin/Parameters.h>
+@
+
+
+1.9
+log
+@* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added two methods to use the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugIn.h: added two methods to the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugInAdapter.h:
+* src/cppunit/plugin/TestPlugInAdapter.cpp: renamed TestPlugInDefaultImpl.
+  Added empty implementation for Xml outputter hook methods.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/tools/StringTools.cpp: added. Functions to manipulate string
+  (conversion, wrapping...)
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/XmlElement.cpp: renamed addNode() to addElement(). Added
+  methods to walk and modify XmlElement (for hook). Added documentation.
+  Use StringTools.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: added hook calls & management.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: added. Hook to customize XML output.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: call plug-in XmlOutputterHook
+  when writing XML output. Modified so that memory is freed before
+  unloading the test plug-in (caused crash when freeing the XmlDocument).
+
+* examples/ReadMe.txt:
+* examples/ClockerPlugIn/ReadMe.txt: added details about the plug-in
+  (usage, xml content...)
+
+* examples/ClockerPlugIn/ClockerModel.h:
+* examples/ClockerPlugIn/ClockerModel.cpp: extracted from ClockerListener.
+  Represents the test hierarchy and tracked time for each test.
+
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/ClockerListener.cpp: extracted test hierarchy
+  tracking to ClockerModel. Replaced the 'flat' view option with a 'text'
+  option to print the timed test tree to stdout.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp: updated to hook the XML
+  output and use the new classes.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: added. XmlOutputterHook to
+  includes the timed test hierarchy and test timing in the XML output.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added new test cases.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: added tests for
+  XmlOutputterHook.
+@
+text
+@d36 1
+a36 1
+  CppUnit::PlugInManager plugInManager;
+d41 2
+a42 2
+    CppUnit::TestResult controller;
+    CppUnit::TestResultCollector result;
+d54 1
+a54 1
+    CppUnit::XmlOutputter xmlOutputter( &result, *xmlStream, parser.getEncoding() );
+d56 2
+a57 2
+    CppUnit::TextOutputter textOutputter( &result, *stream );
+    CppUnit::CompilerOutputter compilerOutputter( &result, *stream );
+d60 2
+a61 2
+    CppUnit::BriefTestProgressListener briefListener;
+    CppUnit::TextTestProgressListener dotListener;
+d78 2
+a79 2
+    CppUnit::TestRunner runner;
+    runner.addTest( CppUnit::TestFactoryRegistry::getRegistry().makeTest() );
+d243 1
+a243 1
+  catch ( CppUnit::DynamicLibraryManagerException &e )
+@
+
+
+1.8
+log
+@* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: extracted class XmlOutputter::Node to
+XmlElement. Extracted xml 'prolog' generation to XmlDocument.
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/tools/XmlElement.cpp: added, extracted from XmlOutputter::Node.
+
+* include/cppunit/tools/XmlDocument.h:
+* src/cppunit/tools/XmlDocument.cpp: added, extracted from XmlOutputter. Handle
+XML document prolog (encoding & style-sheet) and manage the root element.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: bug fix, flag --xsl was ignored.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated for XmlOuputter changes.
+extracted tests for XmlOutputter::Node to XmlElementTest
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added, tests extracted from
+XmlOutputterTest.
+@
+text
+@d20 7
+d35 2
+a36 25
+  CppUnit::TestResult controller;
+  CppUnit::TestResultCollector result;
+  controller.addListener( &result );        
+
+  // Set up outputters
+  std::ostream *stream = &std::cerr;
+  if ( parser.useCoutStream() )
+    stream = &std::cout;
+
+  std::ostream *xmlStream = stream;
+  if ( !parser.getXmlFileName().empty() )
+    xmlStream = new std::ofstream( parser.getXmlFileName().c_str() );
+
+  CppUnit::XmlOutputter xmlOutputter( &result, *xmlStream, parser.getEncoding() );
+  xmlOutputter.setStyleSheet( parser.getXmlStyleSheet() );
+  CppUnit::TextOutputter textOutputter( &result, *stream );
+  CppUnit::CompilerOutputter compilerOutputter( &result, *stream );
+
+  // Set up test listeners
+  CppUnit::BriefTestProgressListener briefListener;
+  CppUnit::TextTestProgressListener dotListener;
+  if ( parser.useBriefTestProgress() )
+    controller.addListener( &briefListener );
+  else if ( !parser.noTestProgress() )
+    controller.addListener( &dotListener );
+d38 2
+a39 3
+  // Set up plug-ins
+  CppUnit::PlugInManager plugInManager;
+  for ( int index =0; index < parser.getPlugInCount(); ++index )
+d41 69
+a109 10
+    CommandLinePlugInInfo plugIn = parser.getPlugInAt( index );
+    plugInManager.load( plugIn.m_fileName, plugIn.m_parameters );
+  }
+
+  // Registers plug-in specific TestListener (global setUp/tearDown, custom TestListener...)
+  plugInManager.addListener( &controller );
+
+  // Adds the default registry suite
+  CppUnit::TestRunner runner;
+  runner.addTest( CppUnit::TestFactoryRegistry::getRegistry().makeTest() );
+d111 2
+a112 6
+  // Runs the specified test
+  bool wasSuccessful = false;
+  try
+  {
+    runner.run( controller, parser.getTestPath() );
+    wasSuccessful = result.wasSuccessful();
+a113 22
+  catch ( std::invalid_argument & )
+  {
+    std::cerr  <<  "Failed to resolve test path: "  
+               <<  parser.getTestPath() 
+               <<  std::endl;
+  }
+
+  // Removes plug-in specific TestListener (not really needed but...)
+  plugInManager.removeListener( &controller );
+
+  // write using outputters
+  if ( parser.useCompilerOutputter() )
+    compilerOutputter.write();
+
+  if ( parser.useTextOutputter() )
+    textOutputter.write();
+
+  if ( parser.useXmlOutputter() )
+    xmlOutputter.write();
+
+  if ( !parser.getXmlFileName().empty() )
+    delete xmlStream;
+@
+
+
+1.7
+log
+@* src/DllPlugInTester/CommandLineParser.cpp: fixed compilation issue.
+
+* src/msvc6/TestRunner/ActiveTest.h:
+* src/msvc6/TestRunner/ActiveTest.cpp: reindented. bugfix: thread handle
+  resource leak (bug #553424).
+@
+text
+@d42 1
+@
+
+
+1.6
+log
+@* src/cppunit/XmlOutputter.cpp: bugfix, use ISO-8859-1 encoding if an
+  empty string is given.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp:
+* src/DllPlugInTester/DllPlugInTester.cpp: added option -w to wait for
+  the user to press a key before exiting (Philippe Lavoie patch,
+  with change).
+@
+text
+@d232 1
+a232 1
+  if ( parser.askBeforeExit() )
+@
+
+
+1.5
+log
+@* src/DllPlugInTester/makefile.am: removed ld.so from LDADD flags.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: rewrote, fixed problem
+  with double quotes in command line...
+
+* src/DllPlugInTester/CommandLineParserTest.h:
+* src/DllPlugInTester/CommandLineParserTest.cpp:
+* src/DllPlugInTester/DllPlugInTesterTest.cpp: added, unit tests for
+  CommandLineParser.
+
+* src/msvc6/TestPlugIn/*: removed.
+@
+text
+@d106 1
+a106 1
+             << applicationName  <<  " [-c -b -n -t -o] [-x xml-filename]"
+d134 2
+d230 6
+@
+
+
+1.4
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@d102 60
+d202 1
+a202 4
+    std::cerr  <<  "Usage: "  <<  std::endl
+           <<  applicationName 
+           <<  " dll-filename1 [dll-filename2 ...] [:test-path]..."
+           <<  std::endl;
+d214 2
+a215 1
+               << std::endl;
+@
+
+
+1.3
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+
+* src/cppunit/TypeInfoHelper.cpp: fixed implementation to be more
+  portable.
+@
+text
+@d7 1
+d9 1
+d16 2
+d21 1
+a21 1
+ * \param parameters List of string representing the command line arguments.
+d26 1
+a26 1
+runTests( CppUnit::Parameters parameters )
+a30 3
+  CppUnit::TextTestProgressListener progress;
+//  CppUnit::BriefTestProgressListener progress;
+  controller.addListener( &progress );      
+d32 22
+a53 1
+  std::string testPath;
+d55 1
+a55 2
+  // Loads plug-ins & get test path.
+  for ( int index =0; index < parameters.size(); ++index )
+d57 2
+a58 5
+    std::string parameter = parameters[index];
+    if ( parameter[0] == ':' )
+      testPath = parameter.substr(1);
+    else
+      plugInManager.load( parameter );
+d69 1
+d72 2
+a73 1
+    runner.run( controller );
+d77 3
+a79 2
+    std::cerr  <<  "Failed to resolve test path: "  <<  testPath  <<  std::endl;
+    return false;
+d85 6
+a90 1
+  std::cerr << std::endl;
+d92 2
+a93 3
+  // Outputs test result
+  CppUnit::CompilerOutputter outputter( &result, std::cerr );
+  outputter.write();
+d95 4
+a98 1
+  return result.wasSuccessful();
+d127 2
+a128 1
+ * test fail, the application exit with code 1.
+d136 1
+d146 13
+a158 1
+    return failureReturnCode;
+d164 1
+a164 4
+    CppUnit::Parameters parameters;
+    for ( int index =1; index < argc; ++index )
+      parameters.push_back( argv[index] );
+    wasSuccessful = runTests( parameters );
+@
+
+
+1.2
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d27 2
+a28 2
+//  CppUnit::TextTestProgressListener progress;
+  CppUnit::BriefTestProgressListener progress;
+@
+
+
+1.1
+log
+@* bumped version to 1.9.3
+
+* FAQ: added question about 4786 warning on VC++.
+
+* NEWS: updated.
+
+* contrib/msvc/readme.txt: moved to contrib/readme.txt.
+
+* contrib/xml-xsl/report.xsl: added XML style sheet contributed by
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for
+  startTestRun()/endTestRun().
+
+* examples/simple/*: added. A simple example.
+
+* include/cppunit/BriefTestProgressListener.h:
+* src/cppunit/BriefTestProgressListener.cpp: added. Verbose progess listener
+  that print the test name before running the test.
+
+* include/cppunit/TestListener.h: added startTestRun()/endTestRun().
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: added runTest(), to be called to run
+  a test by test runner.
+
+* src/cppunit/TextTestRunner.cpp:
+* src/cppunit/TestRunner.cpp: updated to use TestResult::runTest().
+
+* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added. Managers for all loaded plug-ins.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: renamed TestPlugInAdapter. All
+  implementations are empty.
+
+* include/cppunit/plugin/TestPlugInSuite.h: removed.
+* src/cppunit/TestPlugInSuite.cpp: removed. Replaced by PlugInManager.
+
+* include/cppunit/plugin/TestPlugIn.h: rewrote the plug-in interface to
+  provide more versatility. updated macros to match new interface.
+
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestFactoryRegistry.cpp: Added unregisterFactory().
+  Added convenience method addRegistry(). Rewrote registry life cycle
+  management. AutoRegisterSuite can now detect that the registry has been
+  destroy and not call to it to unregister its test factory.
+
+* include/cppunit/extensions/AutoRegisterTest.h: on destruction, the registered
+  factory is unregistered from the registry.
+
+* include/cppunit/extensions/HelperMacros.h: added macros
+  CPPUNIT_REGISTRY_ADD_TO_DEFAULT and CPPUNIT_REGISTRY_ADD to help
+  build test suite hierarchy.
+
+* src/cppunit/msvc/DllPlugInTester/*: moved to src/cppunit/DllPlugInTester/.
+
+* src/cppunit/DllPlugInTester/DllPlugInTester.cpp: removed UNICODE stuffs. Use
+  the PlugInManager instead of PlugInTestSuite. Simplified: only one test on
+  command line, but many DLL can be specified. Added configurations to link
+  against cppunit dll, those are now the default configuration (static linking
+  don't make much sense for plug-in).
+@
+text
+@d1 1
+d27 2
+a28 1
+  CppUnit::TextTestProgressListener progress;
+@
+

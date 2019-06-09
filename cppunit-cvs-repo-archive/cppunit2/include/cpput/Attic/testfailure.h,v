@@ -1,0 +1,203 @@
+head	1.4;
+access;
+symbols
+	arelease:1.1.1.1 avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.4
+date	2004.08.03.22.36.14;	author blep;	state dead;
+branches;
+next	1.3;
+
+1.3
+date	2004.08.03.22.05.14;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.02.01.16.12.51;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.29;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.29;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* renamed TestFailure to TestResult (can now be a success or a failure)
+* renamed testfailure.h to testresult.h
+* renamed testresult.cpp to testtestrunresult.cpp
+@
+text
+@#ifndef CPPUT_TESTFAILURE_H_INCLUDED
+# define CPPUT_TESTFAILURE_H_INCLUDED
+
+# include <cpput/config.h>
+# include <cpput/forwards.h>
+# include <cpput/location.h>
+# include <cpput/message.h>
+
+
+namespace CppUT {
+
+class CPPUT_API TestFailure
+{
+public:
+   TestFailure( Test &test,
+                const Message &message,
+                bool succeeded )
+      : test_( &test )
+      , message_( message )
+      , succeeded_( succeeded )
+   {
+   }
+
+   TestFailure( Test &test,
+                const Message &message,
+                const Location &location,
+                bool succeeded )
+      : test_( &test )
+      , message_( message )
+      , location_( location )
+      , succeeded_( succeeded )
+   {
+   }
+
+   bool succeeded() const
+   {
+      return succeeded_;
+   }
+
+   bool failed() const
+   {
+      return !succeeded();
+   }
+
+   bool isFaultFailure() const
+   {
+      return failureType() == "fault";
+   }
+
+   bool isAssertionFailure() const
+   {
+      return failureType() == "assertion";
+   }
+
+   std::string failureType() const
+   {
+      return get<std::string>( properties().tryGet( "cpput.failure_type", 
+                                                    std::string("") ) );
+   }
+
+   Test &test() const
+   {
+      return *test_;
+   }
+
+   const Properties &properties() const
+   {
+      return message_.properties();
+   }
+
+   const Message &message() const
+   {
+      return message_;
+   }
+
+   const Location &location() const
+   {
+      return location_;
+   }
+
+private:
+   Test *test_;
+   Message message_;
+   Location location_;
+   bool succeeded_;
+};
+
+} // namespace CppUT
+
+
+#endif // CPPUT_TESTFAILURE_H_INCLUDED
+@
+
+
+1.3
+log
+@* test failure type is now parametrized. The framework recognize 'fault' and 'assertion', but the user can define any failure type.
+* properties are now associated to the failure message and can be used to pass any structured data to the test report (such as run time...).
+* TestFailure can now be either a success or a failure (need renaming).
+* Next step is to send a generic TestResult event to listener, and collect TestResult identically for both successful and failing tests.
+@
+text
+@@
+
+
+1.2
+log
+@* added /Za setting to project to force conformance to ANSI C++
+* fixed issues related to ANSI C++ conformance
+* fixed bug in SliceEnumerator copy constructor & added test
+@
+text
+@d16 2
+a17 1
+                const Message &message )
+d20 1
+a20 1
+      , isAssertion_( false )
+d26 2
+a27 1
+                const Location &location )
+d31 25
+a55 1
+      , isAssertion_( true )
+d57 2
+d61 1
+a61 1
+   Test &failedTest() const
+d66 5
+a80 5
+   bool isAssertion() const
+   {
+      return isAssertion_;
+   }
+
+d85 1
+a85 1
+   bool isAssertion_;
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d63 1
+a63 1
+#endif // CPPUT_TESTFAILURE_H_INCLUDED@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

@@ -1,0 +1,176 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@// @;
+
+
+1.2
+date	2004.11.17.09.02.42;	author blep;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.23.37.22;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@#include <cpput/impl/atomiccounter.h>
+
+// Defines a portable implementation of the function
+// AtomicCounter * createAtomicCounter( long initialValue );
+
+
+namespace CppUT { namespace Impl {
+
+#ifndef CPPUT_THREAD_SAFE
+
+   // Implementation of AtomicCounter which is not thread-safe
+   class NotThreadSafeAtomicCounter : public AtomicCounter
+   {
+   public:
+      NotThreadSafeAtomicCounter( long initialValue )
+         : value_( initialValue )
+      {
+      }
+
+   public: // overridden from AtomicCounter
+      long increment()
+      {
+         return ++value_;
+      }
+
+      long decrement()
+      {
+         return value_--;
+      }
+
+      long count() const
+      {
+         return value_;
+      }
+
+   private:
+      long value_;
+   };
+
+   AtomicCounter * CPPUT_API createAtomicCounter( long initialValue )
+   {
+      return new NotThreadSafeAtomicCounter( initialValue );
+   }
+
+#else // #ifndef CPPUT_THREAD_SAFE
+
+# if defined( CPPUT_USE_BOOST_ATOMICCOUNT )
+#  include <boost/detail/atomic_count.hpp>
+
+   // Use boost thread-safe & portable atomic counter
+   class BoostAtomicCounter : public AtomicCounter
+   {
+   public:
+      BoostAtomicCounter( long initialValue )
+         : value_( initialValue )
+      {
+      }
+
+   public: // overridden from AtomicCounter
+      long increment()
+      {
+         return ++count_;
+      }
+
+      long decrement()
+      {
+         return --count_;
+      }
+
+      long count() const
+      {
+         return count_;
+      }
+
+   private:
+      boost::detail::atomic_counter count_;
+   };
+
+   AtomicCounter * CPPUT_API createAtomicCounter( long initialValue )
+   {
+      return new BoostAtomicCounter( initialValue );
+   }
+
+# else // # if defined( CPPUT_USE_BOOST_ATOMICCOUNT )
+// Attempt to provide our own atomic counter
+
+#  if defined(WIN32)
+#   include <windows.h>
+
+   // Use Windows Interlocked API. According the VC++ doc,
+   // the compiler intrinsic (asm) function is called if 
+   // the optimization /Oi is enabled.
+   class Win32AtomicCounter : public AtomicCounter
+   {
+   public:
+      Win32AtomicCounter( long initialValue )
+         : value_( initialValue )
+      {
+      }
+
+   public: // overridden from AtomicCounter
+      long increment()
+      {
+         return InterlockedIncrement( (LONG *)&value_ );
+      }
+
+      long decrement()
+      {
+         return InterlockedDecrement( (LONG *)&value_ );
+      }
+
+      long count() const
+      {
+         return value_;
+      }
+
+   private:
+      LONG volatile value_;
+   };
+
+   AtomicCounter * CPPUT_API createAtomicCounter( long initialValue )
+   {
+      return new Win32AtomicCounter( initialValue );
+   }
+
+#  endif // #  if defined(WIN32)
+
+
+# endif // # if defined( CPPUT_USE_BOOST_ATOMICCOUNT )
+
+#endif // #ifndef CPPUT_THREAD_SAFE
+
+
+} } // namespace CppUT { namespace Impl
+@
+
+
+1.1
+log
+@* SmartPtr now subclass boost::shared_ptr to make templated function
+  overloading easier.
+* Added our own smart pointer implementation
+* Added AtomicCounter as implementation detail.
+  Can use boost::detail::atomic_counter.
+@
+text
+@@
+

@@ -1,0 +1,1335 @@
+head	1.22;
+access;
+symbols
+	REL_1_12_1:1.22
+	REL_1_11_6:1.22
+	REL_1_11_4:1.22
+	REL_1_11_0:1.22
+	TG_CPPUNIT_NO_STREAM_AFTER:1.22
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.22
+	REL_1_10_2:1.22
+	REL_1_10_0:1.22
+	REL_1_9_14:1.22
+	REL_1_9_12:1.22
+	BRANCH_1_9_12:1.22.0.2
+	TG_BRANCH_1_9_12:1.22
+	TG_BEFORE_HPUX_PLUGIN:1.22
+	TG_BEFORE_SUN4_PORT:1.22
+	REL_1_9_10:1.22
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.19
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.19
+	REL_1_9_6:1.18
+	REL_1_9_4:1.18
+	REL_1_9_0:1.18
+	REL_1_8_0:1.18
+	REL_1_7_8:1.15
+	REL_1_7_3:1.14
+	REL_1_7_1:1.14
+	REL_1_6_2:1.14
+	BRANCH_1_6:1.14.0.2
+	REL_1_6_1:1.14
+	REL_1_6_0:1.14
+	REL_1_5_5:1.6;
+locks; strict;
+comment	@ * @;
+
+
+1.22
+date	2002.08.03.15.47.52;	author blep;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2002.07.10.18.50.02;	author blep;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2002.06.13.15.31.01;	author blep;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2002.03.28.15.47.07;	author blep;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2002.03.27.19.04.02;	author blep;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2002.03.27.17.56.44;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2002.03.24.19.39.54;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2001.09.24.02.58.53;	author smr99;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2001.09.23.23.58.09;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2001.09.16.19.27.02;	author smr99;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2001.07.15.18.42.32;	author smr99;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2001.07.15.04.18.06;	author smr99;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2001.07.06.01.31.25;	author smr99;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2001.06.11.21.08.54;	author smr99;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.06.11.20.00.52;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.05.06.20.04.02;	author bastiaan;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.05.06.17.21.31;	author bastiaan;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.05.06.16.19.31;	author bastiaan;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.04.29.14.09.16;	author bastiaan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.04.19.20.39.44;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.14.22.37.31;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.22
+log
+@* include/cppunit/Exception.h:
+* src/cppunit/Exception.h: added setMessage().
+
+* include/cppunit/Protector.h:
+* src/cppunit/Protector.cpp: added class ProtectorGuard. Change the
+  reportXXX() method to support Exception passing and SourceLine.
+
+* include/cppunit/TestCaller.h: removed 'expect exception' features.
+  It is now handled by ExceptionTestCaseDecorator and TestCaller no
+  longer need default template argument support.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/extensions/TestCaller.h: runTest() is now public
+  instead of protected, so that it can be decorated.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.h: added pushProtector() and popProtector()
+  methods. This allow user to specify their own exception trap when
+  running test case.
+
+* include/cppunit/extensions/TestDecorator.h:
+* src/cppunit/TestDecorator.cpp: added. Extracted from TestDecorator.h.
+  The test passed to the constructor is now owned by the decorator.
+
+* include/cppunit/extensions/TestCaseDecorator.h:
+* src/cppunit/TestCaseDecorator.cpp: added. Decorator for TestCase
+  setUp(), tearDown() and runTest().
+
+* include/cppunit/extensions/ExceptionTestCaseDecorator.h: added.
+  TestCaseDecorator to expect that a specific exception is thrown.
+
+* include/cppunit/extensions/HelperMacros.h: updated against TestCaller
+  change.
+
+* src/cppunit/DefaultFunctor.h: fixed bug (did not return underlying
+  test return code).
+
+* src/cppunit/ProtectorChain.cpp: fixed bug in chaing return code.
+
+* src/cppunit/DefaultFunctor.h: fixed bug.
+
+* src/msvc6/testrunner/ActiveTest.h:
+* src/msvc6/testrunner/ActiveTest.cpp: updated against
+  TestCaseDecorator ownership policy change. Moved inline functions
+  to .cpp.
+
+* examples/cppunittest/TestSetUpTest.cpp: updated to use MockTestCase
+  and against the new ownership policy.
+
+* examples/cppunittest/TestDecoratorTest.cpp:
+* examples/cppunittest/RepeatedTestTest.cpp: updated against
+  TestDecorator ownership policy change.
+
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.h:
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.cpp: added. Unit
+  tests for ExceptionTestCaseDecoratorTest.
+@
+text
+@#ifndef CPPUNIT_TESTCALLER_H    // -*- C++ -*-
+#define CPPUNIT_TESTCALLER_H
+
+#include <cppunit/Exception.h>
+#include <cppunit/TestCase.h>
+
+
+#if CPPUNIT_USE_TYPEINFO_NAME
+#  include <cppunit/extensions/TypeInfoHelper.h>
+#endif
+
+
+CPPUNIT_NS_BEGIN
+
+#if 0
+/*! \brief Marker class indicating that no exception is expected by TestCaller.
+ * This class is an implementation detail. You should never use this class directly.
+ */
+class CPPUNIT_API NoExceptionExpected
+{
+private:
+  //! Prevent class instantiation.
+  NoExceptionExpected();
+};
+
+
+/*! \brief (Implementation) Traits used by TestCaller to expect an exception.
+ *
+ * This class is an implementation detail. You should never use this class directly.
+ */
+template<class ExceptionType>
+struct ExpectedExceptionTraits
+{
+  static void expectedException()
+  {
+#if CPPUNIT_USE_TYPEINFO_NAME
+    throw Exception( Message(
+                         "expected exception not thrown",
+                         "Expected exception type: " + 
+                           TypeInfoHelper::getClassName( typeid( ExceptionType ) ) ) );
+#else
+    throw Exception( "expected exception not thrown" );
+#endif
+  }
+};
+
+
+/*! \brief (Implementation) Traits specialization used by TestCaller to 
+ * expect no exception.
+ *
+ * This class is an implementation detail. You should never use this class directly.
+ */
+template<>
+struct ExpectedExceptionTraits<NoExceptionExpected>
+{
+  static void expectedException()
+  {
+  }
+};
+
+
+#endif
+
+//*** FIXME: rework this when class Fixture is implemented. ***//
+
+
+/*! \brief Generate a test case from a fixture method.
+ * \ingroup WritingTestFixture
+ *
+ * A test caller provides access to a test case method 
+ * on a test fixture class.  Test callers are useful when 
+ * you want to run an individual test or add it to a 
+ * suite.
+ * Test Callers invoke only one Test (i.e. test method) on one 
+ * Fixture of a TestFixture.
+ * 
+ * Here is an example:
+ * \code
+ * class MathTest : public CppUnit::TestFixture {
+ *         ...
+ *     public:
+ *         void         setUp();
+ *         void         tearDown();
+ *
+ *         void         testAdd();
+ *         void         testSubtract();
+ * };
+ *
+ * CppUnit::Test *MathTest::suite() {
+ *     CppUnit::TestSuite *suite = new CppUnit::TestSuite;
+ *
+ *     suite->addTest( new CppUnit::TestCaller<MathTest>( "testAdd", testAdd ) );
+ *     return suite;
+ * }
+ * \endcode
+ *
+ * You can use a TestCaller to bind any test method on a TestFixture
+ * class, as long as it accepts void and returns void.
+ * 
+ * \see TestCase
+ */
+
+template <class Fixture>
+class TestCaller : public TestCase
+{ 
+  typedef void (Fixture::*TestMethod)();
+    
+public:
+  /*!
+   * Constructor for TestCaller. This constructor builds a new Fixture
+   * instance owned by the TestCaller.
+   * \param name name of this TestCaller
+   * \param test the method this TestCaller calls in runTest()
+   */
+  TestCaller( std::string name, TestMethod test ) :
+	    TestCase( name ), 
+	    m_ownFixture( true ),
+	    m_fixture( new Fixture() ),
+	    m_test( test )
+  {
+  }
+
+  /*!
+   * Constructor for TestCaller. 
+   * This constructor does not create a new Fixture instance but accepts
+   * an existing one as parameter. The TestCaller will not own the
+   * Fixture object.
+   * \param name name of this TestCaller
+   * \param test the method this TestCaller calls in runTest()
+   * \param fixture the Fixture to invoke the test method on.
+   */
+  TestCaller(std::string name, TestMethod test, Fixture& fixture) :
+	    TestCase( name ), 
+	    m_ownFixture( false ),
+	    m_fixture( &fixture ),
+	    m_test( test )
+  {
+  }
+    
+  /*!
+   * Constructor for TestCaller. 
+   * This constructor does not create a new Fixture instance but accepts
+   * an existing one as parameter. The TestCaller will own the
+   * Fixture object and delete it in its destructor.
+   * \param name name of this TestCaller
+   * \param test the method this TestCaller calls in runTest()
+   * \param fixture the Fixture to invoke the test method on.
+   */
+  TestCaller(std::string name, TestMethod test, Fixture* fixture) :
+	    TestCase( name ), 
+	    m_ownFixture( true ),
+	    m_fixture( fixture ),
+	    m_test( test )
+  {
+  }
+    
+  ~TestCaller() 
+  {
+    if (m_ownFixture)
+      delete m_fixture;
+  }
+
+  void runTest()
+  { 
+//	  try {
+	    (m_fixture->*m_test)();
+//	  }
+//	  catch ( ExpectedException & ) {
+//	    return;
+//	  }
+
+//  	ExpectedExceptionTraits<ExpectedException>::expectedException();
+  }  
+
+  void setUp()
+  { 
+  	m_fixture->setUp (); 
+  }
+
+  void tearDown()
+  { 
+	  m_fixture->tearDown (); 
+  }
+
+  std::string toString() const
+  { 
+  	return "TestCaller " + getName(); 
+  }
+
+private: 
+  TestCaller( const TestCaller &other ); 
+  TestCaller &operator =( const TestCaller &other );
+
+private:
+  bool m_ownFixture;
+  Fixture *m_fixture;
+  TestMethod m_test;
+};
+
+
+
+CPPUNIT_NS_END
+
+#endif // CPPUNIT_TESTCALLER_H
+@
+
+
+1.21
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d15 1
+a15 1
+
+d62 1
+d103 1
+a103 2
+template <class Fixture,  
+          class ExpectedException = NoExceptionExpected>
+a162 1
+protected:
+d165 1
+a165 1
+	  try {
+d167 4
+a170 4
+	  }
+	  catch ( ExpectedException & ) {
+	    return;
+	  }
+d172 1
+a172 1
+  	ExpectedExceptionTraits<ExpectedException>::expectedException();
+@
+
+
+1.20
+log
+@* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/Orthodox.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h:
+* include/cppunit/TestCaller.h:
+* examples/hierarchy/BoardGameTest.h:
+* examples/hierarchy/ChessTest.h: replaced usage of 'typename' in template
+  declaration with 'class'.
+
+* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to use the generic TestRunner.
+  Removed methods runTestByName() and runTest(). Inherits
+  CppUnit::TestRunner.
+
+* include/cppunit/extensions/TestSuiteBuilder.h: removed templatized method
+  addTestCallerForException(). It is no longer used since release 1.9.8.
+
+* examples/cppunittest/MockTestCase.h
+* examples/cppunittest/MockTestCase.cpp: removed the usage of 'mutable'
+  keyword.
+@
+text
+@d13 2
+a14 1
+namespace CppUnit {
+d203 1
+a203 1
+} // namespace CppUnit
+@
+
+
+1.19
+log
+@* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: added functions that take a Message as a
+  parameter. Existing function have a short description indicating
+  an assertion failure.
+
+* include/cppunit/CompilerOuputter.h:
+* src/cppunit/CompilerOuputter.cpp: removed printNotEqualMessage() and
+  printDefaultMessage(). Updated to use Message.
+
+* include/cppunit/Message.h:
+* src/cppunit/Message.cpp: added. Represents a message associated to an
+  Exception.
+
+* include/cppunit/Exception.h:
+* src/cppunit/Exception.cpp: the message associated to the exception is now
+  stored as a Message instead of a string.
+
+* include/cppunit/NotEqualException.cpp: constructs a Message instead of a
+  string.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: updated to use Asserter functions that
+  take a message when pertinent (CPPUNIT_FAIL...).
+
+* include/cppunit/TestCaller.h:
+* src/cppunit/TestCaller.cpp: exception not caught failure has a better
+  short description.
+
+* src/cppunit/TestCase.cpp: better short description when setUp() or
+  tearDown() fail.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replace '\n' in failure message
+  with space.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/NotEqualExceptionTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated to use Exception/Message.
+
+* examples/cppunittest/MessageTest.h:
+* examples/cppunittest/MessageTest.cpp: added. Unit test for Message.
+@
+text
+@d30 1
+a30 1
+template<typename ExceptionType>
+d101 2
+a102 2
+template <typename Fixture,  
+	  typename ExpectedException = NoExceptionExpected>
+@
+
+
+1.18
+log
+@* doc/cookbook.html: removed. Replaced by cookbook.doc.
+
+* doc/cookbook.dox: added, conversion of cookbook.html to Doxygen format.
+
+* doc/other_documentation.dox: added groups definition.
+
+* doc/Makefile.am: replaced cookbook.html by cookbook.dox
+
+* doc/Doxyfile.in: added predefined CPPUNIT_HAVE_CPP_SOURCE_ANNOTATION.
+Replaced cookbook.html by cookbook.dox.
+
+* include/cppunitui/mfc/TestRunner.h: added, extracted from
+include/msvc6/testrunner/TestRunner.h. Moved class TestRunner to namespace
+CppUnit::MfcUi.
+
+* include/msvc6/testrunner/TestRunner.h: deprecated. A simple typedef to
+CppUnit::MfcUi::TestRunner.
+
+* include/textui/TestRuner.h: added, extracted from
+include/cppunit/TextTestRunner.h.
+
+* src/cppunit/TextTestRunner.cpp: renamed TestRunner.cpp. Moved into
+namespace CppUnit::TextUi.
+
+* src/msvc6/testruner/TestRunner.cpp: moved into namespace CppUnit::MfcUi.
+
+* src/cppunit/CompilerOutputter.cpp: removed printing "- " before
+NotEqualException addional message, for consistency between different
+TestRunner (Mfc,Text...)
+
+* include/cppunit/Asserter.h:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/Outputter.h:
+* include/cppunit/SourceLine.h:
+* include/cppunit/TestAssert.h:
+* include/cppunit/TestCaller.h:
+* include/cppunit/TestFailure.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/AutoRegisterSuite.h:
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: doc update. organization
+in groups.
+
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.cpp:
+* examples/msvc6/HostApp/HostApp.cpp: updated to use
+CppUnit::MfcUi::TestRunner.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use
+CppUnit::TextUi::TestRunner.
+@
+text
+@d36 4
+a39 3
+	  std::string message( "Expected exception of type " );
+	  message += TypeInfoHelper::getClassName( typeid( ExceptionType ) );
+	  message += ", but got none";
+d41 1
+a41 1
+    std::string message( "Expected exception but got none" );
+a42 1
+	  throw Exception( message );
+@
+
+
+1.17
+log
+@* include/msvc/testrunner/TestRunner.h: updated doc. reindented.
+
+* include/cppunit/Asserter.h:
+* include/cppunit/Asserter.cpp:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/SynchronizedObject.h:
+* include/cppunit/extensions/TestCaller.h: doc update.
+@
+text
+@d15 3
+a17 1
+//! \internal
+d21 2
+a22 2
+    // Nobody must be able to construct an exception of this type.
+    NoExceptionExpected();
+d26 4
+a29 1
+//! \internal
+d47 5
+d66 1
+@
+
+
+1.16
+log
+@* makefile.am: added src/CppUnitLibraries.dsw, new contribution, and
+src/qttestrunner.
+
+* TODO: updated (doc).
+
+* contrib/msvc/AddingUnitTestMethod.dsm: added, submitted by
+bloodchen@@hotmail.com.
+
+* constrib/msvc/readme.txt: updated.
+
+* include/cppunit/TestAsserter.h:
+* include/cppunit/SourceLine.h: updated doc.
+
+* include/cppunit/TestCaller.h: reindented. updated doc.
+
+* include/cppunit/extensions/HelperMacros.h: relaxed constraint on fixture.
+Fixture base class may be TestFixture instead of TestCase.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.h: TestCase inherits TestFixture for setUp() and
+tearDown() definition. Moved documentation to TestFixture.
+
+* include/cppunit/TestFixture.h: updated documentation.
+
+* include/cppunit/TestRegistry.h:
+* src/cppunit/TestRegistry.cpp: Removed. Replaced by TestFactoryRegistry.
+
+* include/cppunit/TextTestRunner.h:
+* src/cppunit/TextTestRunner.cpp: made printing progress using a
+TextTestProgressListener optional.
+
+* examples\cppunittest\ExceptionTest.h:
+* examples\cppunittest\HelperMacrosTest.h:
+* examples\cppunittest\HelperMacrosTest.cpp:
+* examples\cppunittest\NotEqualException.h:
+* examples\cppunittest\OrthodoxTest.h:
+* examples\cppunittest\RepeatedTest.h:
+* examples\cppunittest\TestAssertTest.h:
+* examples\cppunittest\TestCallerTest.h:
+* examples\cppunittest\TestDecoratorTest.h:
+* examples\cppunittest\TestFailureTest.h:
+* examples\cppunittest\TestResultCollectorTest.h:
+* examples\cppunittest\TestResultTest.h:
+* examples\cppunittest\TestSetUpTest.h:
+* examples\cppunittest\TestSuiteTest.h:
+* examples\cppunittest\XmlOutputterTest.h:
+* examples\cppunittest\XmlOutputterTest.cpp:
+* examples\cppunittest\XmlUniformizerTest.h:
+* examples\cppunittest\XmlUniformizerTest.cpp: changed base class for fixture
+from TestCase to TestFixture.
+
+* examples\hierarchy\BoardGameTest.h:
+* examples\hierarchy\ChessTest.h:
+* examples\hierarchy\main.cpp: updated to use HelperMacros for correct
+fixture instantiation (the ChessBoard::testReset test case was using
+BoardGame fixture instance instead of ChessBoard).
+@
+text
+@d15 1
+d24 1
+@
+
+
+1.15
+log
+@* INSTALL-WIN32.txt: added some info to build cppunit as a DLL.
+
+* include/cppunit/config-msvc6.h: added definition of macro CPPUNIT_API when
+building or linking DLL. Defined CPPUNIT_BUILD_DLL when building, and
+CPPUNIT_DLL when linking.
+
+* include/cppunit/Portability.h: added empty definition of macro CPPUNIT_API
+when not building or using CppUnit as a DLL. When any of those symbol is defined,
+the symbol CPPUNIT_NEED_DLL_DECL is set to 1.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* include/cppunit/extensions/TestDecorator.h:
+* include/cppunit/extensions/TestSetUp.h:
+* include/cppunit/TestCaller.h
+* include/cppunit/extensions/TestFactory.h
+* include/cppunit/extensions/TestFactoryRegistry.h
+* include/cppunit/extensions/TypeInfoHelper.h
+* include/cppunit/Asserter.h
+* include/cppunit/Exception.h
+* include/cppunit/NotEqualException.h
+* include/cppunit/SourceLine.h
+* include/cppunit/SynchronizedObject.h
+* include/cppunit/Test.h
+* include/cppunit/TestAssert.h
+* include/cppunit/TestCase.h
+* include/cppunit/TestFailure.h
+* include/cppunit/TestListener.h
+* include/cppunit/TestResult.h
+* include/cppunit/TestSuite.h
+* include/cppunit/CompilerOutputter.h
+* include/cppunit/Outputter.h
+* include/cppunit/TestResultCollector.h
+* include/cppunit/TestSuccessListener.h
+* include/cppunit/TextOutputter.h
+* include/cppunit/TextTestProgressListener.h
+* include/cppunit/TextTestResult.h
+* include/cppunit/TextTestRunner.h
+* include/cppunit/XmlOutputter.h: added CPPUNIT_API for DLL export.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: reindented
+
+* include/cppunit/extensions/TestSetUp.h:
+* src/cppunit/TestSetUp.cpp: added .cpp. extracted inline method and moved them
+to cpp file.
+@
+text
+@d26 2
+a27 2
+    static void expectedException()
+    {
+d29 3
+a31 3
+	std::string message( "Expected exception of type " );
+	message += TypeInfoHelper::getClassName( typeid( ExceptionType ) );
+	message += ", but got none";
+d33 1
+a33 1
+	std::string message( "Expected exception but got none" );
+d35 2
+a36 2
+	throw Exception( message );
+    }
+d43 3
+a45 3
+    static void expectedException()
+    {
+    }
+d56 1
+a56 1
+ * on a test case class.  Test callers are useful when 
+d60 1
+a60 1
+ * Fixture of a TestCase.
+d64 1
+a64 1
+ * class MathTest : public CppUnit::TestCase {
+d67 2
+a68 2
+ *         void         setUp ();
+ *         void         tearDown ();
+d70 2
+a71 2
+ *         void         testAdd ();
+ *         void         testSubtract ();
+d74 1
+a74 1
+ * CppUnit::Test *MathTest::suite () {
+d77 1
+a77 1
+ *     suite->addTest (new CppUnit::TestCaller<MathTest> ("testAdd", testAdd));
+d82 1
+a82 1
+ * You can use a TestCaller to bind any test method on a TestCase
+d92 1
+a92 1
+    typedef void (Fixture::*TestMethod)();
+d95 30
+a124 28
+    /**
+     * Constructor for TestCaller. This constructor builds a new Fixture
+     * instance owned by the TestCaller.
+     * \param name name of this TestCaller
+     * \param test the method this TestCaller calls in runTest()
+     **/
+    TestCaller (std::string name, TestMethod test) :
+	TestCase (name), 
+	m_ownFixture(true),
+	m_fixture (new Fixture ()),
+	m_test (test)
+    {}
+
+    /**
+     * Constructor for TestCaller. 
+     * This constructor does not create a new Fixture instance but accepts
+     * an existing one as parameter. The TestCaller will not own the
+     * Fixture object.
+     * \param name name of this TestCaller
+     * \param test the method this TestCaller calls in runTest()
+     * \param fixture the Fixture to invoke the test method on.
+     **/
+    TestCaller(std::string name, TestMethod test, Fixture& fixture) :
+	TestCase (name), 
+	m_ownFixture(false),
+	m_fixture (&fixture),
+	m_test (test)
+    {}
+d126 16
+a141 15
+    /**
+     * Constructor for TestCaller. 
+     * This constructor does not create a new Fixture instance but accepts
+     * an existing one as parameter. The TestCaller will own the
+     * Fixture object and delete it in its destructor.
+     * \param name name of this TestCaller
+     * \param test the method this TestCaller calls in runTest()
+     * \param fixture the Fixture to invoke the test method on.
+     **/
+    TestCaller(std::string name, TestMethod test, Fixture* fixture) :
+	TestCase (name), 
+	m_ownFixture(true),
+	m_fixture (fixture),
+	m_test (test)
+    {}
+d143 5
+a147 8
+    ~TestCaller() {
+	if (m_ownFixture) {
+	    if (m_fixture) {
+		delete m_fixture;
+		m_fixture = NULL;
+	    }
+	}
+    }
+d150 3
+a152 3
+    void runTest () 
+    { 
+	try {
+d154 2
+a155 2
+	}
+	catch ( ExpectedException & ) {
+d157 1
+a157 1
+	}
+d159 2
+a160 2
+	ExpectedExceptionTraits<ExpectedException>::expectedException();
+    }  
+d162 14
+a175 14
+    void setUp ()
+    { 
+	m_fixture->setUp (); 
+    }
+
+    void tearDown ()
+    { 
+	m_fixture->tearDown (); 
+    }
+
+    std::string toString () const
+    { 
+	return "TestCaller " + getName(); 
+    }
+d178 2
+a179 2
+    TestCaller (const TestCaller& other); 
+    TestCaller& operator= (const TestCaller& other); 
+d182 3
+a184 4
+    bool       m_ownFixture;
+    Fixture*   m_fixture;
+    TestMethod m_test;
+
+@
+
+
+1.14
+log
+@Final touch-ups for release 1.6.0.
+@
+text
+@d15 1
+a15 1
+class NoExceptionExpected
+@
+
+
+1.13
+log
+@* include/cppunit/TestAssert.h : changed header order to remove warning on VC++
+
+* include/cppunit/TestCaller.h : bugfix: threw 'new Exception'
+instead of 'Exception'.
+@
+text
+@d49 4
+a54 1
+ * \b FIXME: rework this when class Fixture is implemented.
+@
+
+
+1.12
+log
+@Revert TestFixture-related changes from 2001-07-15.
+@
+text
+@d35 1
+a35 1
+	throw new Exception( message );
+@
+
+
+1.11
+log
+@TextFixture introduced.  First steps at using it.
+@
+text
+@a5 1
+#include <cppunit/TestFixture.h>
+@
+
+
+1.10
+log
+@Added documentation.
+@
+text
+@d4 1
+d6 2
+a7 1
+#include <cppunit/Exception.h>
+@
+
+
+1.9
+log
+@Change from CPPUNIT_USE_TYPEINFO to CPPUNIT_USE_TYPEINFO_NAME
+@
+text
+@d1 1
+a1 1
+#ifndef CPPUNIT_TESTCALLER_H
+d11 1
+d14 3
+a16 3
+  class NoExceptionExpected
+  {
+  private:
+d19 1
+a19 1
+  };
+d22 3
+a24 3
+  template<typename ExceptionType>
+  struct ExpectedExceptionTraits
+  {
+d28 3
+a30 3
+      std::string message( "Expected exception of type " );
+      message += TypeInfoHelper::getClassName( typeid( ExceptionType ) );
+      message += ", but got none";
+d32 1
+a32 1
+      std::string message( "Expected exception but got none" );
+d34 1
+a34 1
+      throw new Exception( message );
+d36 2
+a37 1
+  };
+d39 3
+a41 3
+  template<>
+  struct ExpectedExceptionTraits<NoExceptionExpected>
+  {
+d45 122
+a166 1
+  };
+d168 1
+a168 37
+  /** Provides access to a test case method.
+   * A test caller provides access to a test case method 
+   * on a test case class.  Test callers are useful when 
+   * you want to run an individual test or add it to a 
+   * suite.
+   * Test Callers invoke only one Test (i.e. test method) on one 
+   * Fixture of a TestCase.
+   * 
+   * Here is an example:
+   * \code
+   * class MathTest : public CppUnit::TestCase {
+   *         ...
+   *     public:
+   *         void         setUp ();
+   *         void         tearDown ();
+   *
+   *         void         testAdd ();
+   *         void         testSubtract ();
+   * };
+   *
+   * CppUnit::Test *MathTest::suite () {
+   *     CppUnit::TestSuite *suite = new CppUnit::TestSuite;
+   *
+   *     suite->addTest (new CppUnit::TestCaller<MathTest> ("testAdd", testAdd));
+   *     return suite;
+   * }
+   * \endcode
+   *
+   * You can use a TestCaller to bind any test method on a TestCase
+   * class, as long as it accepts void and returns void.
+   * 
+   * \see TestCase
+   */
+
+  template <typename Fixture,  
+            typename ExpectedException = NoExceptionExpected>
+    class TestCaller : public TestCase
+d170 14
+a183 95
+        typedef void (Fixture::*TestMethod)();
+    
+      public:
+        /**
+         * Constructor for TestCaller. This constructor builds a new Fixture
+         * instance owned by the TestCaller.
+         * \param name name of this TestCaller
+         * \param test the method this TestCaller calls in runTest()
+         **/
+        TestCaller (std::string name, TestMethod test) :
+          TestCase (name), 
+          m_ownFixture(true),
+          m_fixture (new Fixture ()),
+          m_test (test)
+        {}
+
+        /**
+         * Constructor for TestCaller. 
+         * This constructor does not create a new Fixture instance but accepts
+         * an existing one as parameter. The TestCaller will not own the
+         * Fixture object.
+         * \param name name of this TestCaller
+         * \param test the method this TestCaller calls in runTest()
+         * \param fixture the Fixture to invoke the test method on.
+         **/
+        TestCaller(std::string name, TestMethod test, Fixture& fixture) :
+          TestCase (name), 
+          m_ownFixture(false),
+          m_fixture (&fixture),
+          m_test (test)
+        {}
+
+        /**
+         * Constructor for TestCaller. 
+         * This constructor does not create a new Fixture instance but accepts
+         * an existing one as parameter. The TestCaller will own the
+         * Fixture object and delete it in its destructor.
+         * \param name name of this TestCaller
+         * \param test the method this TestCaller calls in runTest()
+         * \param fixture the Fixture to invoke the test method on.
+         **/
+         TestCaller(std::string name, TestMethod test, Fixture* fixture) :
+          TestCase (name), 
+          m_ownFixture(true),
+          m_fixture (fixture),
+          m_test (test)
+        {}
+
+        ~TestCaller() {
+            if (m_ownFixture) {
+                if (m_fixture) {
+                    delete m_fixture;
+                    m_fixture = NULL;
+                }
+            }
+        }
+
+      protected:
+        void runTest () 
+        { 
+          try
+          {
+            (m_fixture->*m_test)();
+          }
+          catch ( ExpectedException & )
+          {
+            return;
+          }
+
+          ExpectedExceptionTraits<ExpectedException>::expectedException();
+        }  
+
+        void setUp ()
+        { 
+          m_fixture->setUp (); 
+        }
+
+        void tearDown ()
+        { 
+          m_fixture->tearDown (); 
+        }
+
+        std::string toString () const
+        { 
+          return "TestCaller " + getName(); 
+        }
+
+      private: 
+        TestCaller (const TestCaller& other); 
+        TestCaller& operator= (const TestCaller& other); 
+
+      private:
+        bool       m_ownFixture;
+        Fixture*   m_fixture;
+        TestMethod m_test;
+a184 1
+    };
+@
+
+
+1.8
+log
+@bug fix
+@
+text
+@d7 1
+a7 1
+#if CPPUNIT_USE_TYPEINFO
+d9 1
+a9 1
+#endif  // CPPUNIT_USE_TYPEINFO
+d26 1
+a26 1
+#if CPPUNIT_USE_TYPEINFO
+d32 1
+a32 1
+#endif  // CPPUNIT_USE_TYPEINFO
+@
+
+
+1.7
+log
+@* include/cppunit/Exception.h: now inherit from std::exception instead
+of ::exception. Added clone(), type(), and isInstanceOf()
+methods for subclassing support. Changed UNKNOWNLINENUMBER type to long
+for consistence with lineNumber().
+
+* include/cppunit/NotEqualException.h: addded, exception to be used
+with assertEquals().
+
+* include/cppunit/TestAssert.h: changed TestAssert into a namespace
+instead of a class. This remove the need of template member methods
+and does not cause compiler internal error on VC++.
+Macro CPPUNIT_ASSERT_MESSAGE has been added to fail test with
+a specified message.
+
+* include/cppunit/TestCaller.h: added "Expected exception" support.
+Based on Tim Jansen patch (#403745), but use a traits instead of RTTI
+to distingh between "No expected exception" and "Excepted exception".
+Exception type name is reported using RTTI if CPPUNIT_USE_TYPEINFO is
+defined.
+@
+text
+@d17 1
+a17 1
+    NoExpectedException();
+@
+
+
+1.6
+log
+@Added constructors to TestCaller which accept an already constucted Fixture.
+@
+text
+@d5 5
+d13 32
+d79 2
+a80 1
+  template <typename Fixture> 
+d83 1
+a83 1
+        typedef void             (Fixture::*TestMethod)();
+d143 10
+a152 1
+          (m_fixture->*m_test)(); 
+@
+
+
+1.5
+log
+@Removed unnecessary #include's of TestSuiteBuilder.h
+Removed RTTI dependent stuff from TestSuite and TestSuiteBuilder.
+@
+text
+@a3 1
+#include <memory>
+a37 1
+   * TestCallers are automatically registered in the TestRegistry.
+d48 6
+d56 2
+a57 1
+          m_fixture (new Fixture ()), 
+d61 41
+d105 1
+a105 1
+          (m_fixture.get ()->*m_test)(); 
+d110 1
+a110 1
+          m_fixture.get ()->setUp (); 
+d115 1
+a115 1
+          m_fixture.get ()->tearDown (); 
+d128 3
+a130 2
+        std::auto_ptr<Fixture>   m_fixture;
+        TestMethod               m_test;
+a132 11
+
+  /** Returns a TestCaller for the specified method.
+   * \param name Name for the TestCaller.
+   * \param testMethod Method called by the TestCaller.
+   * \return TestCaller for the specified method.      
+   */
+  template<typename Fixture>
+    Test *makeTestCaller( std::string name, void (Fixture::*testMethod)() )
+    {
+      return new TestCaller<Fixture>( name, testMethod );
+    }
+@
+
+
+1.4
+log
+@Fixed #include's for cppunit headers.
+@
+text
+@d44 1
+a44 1
+  template <class Fixture> 
+d92 1
+a92 1
+  template<class Fixture>
+@
+
+
+1.3
+log
+@Merged Baptiste Lepilleurs CppUnitW 1.2.
+Some differences:
+TypeInfo stuff (in TestSuite) compiled in only if USE_TYPEINFO is set.
+TestSuite.getTests now returns a const ref instead of taking a ref as param.
+Removed auto_ptr stuff from TestFactoryRegistry: auto_ptr cannot be used in
+containers.
+@
+text
+@a3 4
+#ifndef CPPUNIT_TESTCASE_H
+#include "TestCase.h"
+#endif
+
+d5 1
+@
+
+
+1.2
+log
+@Added MSVC++ workspace and project files.
+@
+text
+@d90 11
+@
+
+
+1.1
+log
+@Moved public header files from cppunit dir to include/cppunit, to separate them from internal header files like estring.h.
+@
+text
+@d8 1
+a8 1
+#include <stl.h>
+@
+

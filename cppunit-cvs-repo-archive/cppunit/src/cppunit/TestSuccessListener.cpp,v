@@ -1,0 +1,165 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.3
+date	2008.02.21.03.10.06;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.14.10.08.37;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@Changes to suppress warnings of gcc -Wall -W -ansi, mainly from patch [1898225].
+@
+text
+@#include <cppunit/TestSuccessListener.h>
+
+
+CPPUNIT_NS_BEGIN
+
+
+TestSuccessListener::TestSuccessListener( SynchronizationObject *syncObject )
+    : SynchronizedObject( syncObject )
+    , m_success( true )
+{
+}
+
+
+TestSuccessListener::~TestSuccessListener()
+{
+}
+
+
+void 
+TestSuccessListener::reset()
+{
+  ExclusiveZone zone( m_syncObject );
+  m_success = true;
+}
+
+
+void 
+TestSuccessListener::addFailure( const TestFailure & )
+{
+  ExclusiveZone zone( m_syncObject );
+  m_success = false;
+}
+
+
+bool 
+TestSuccessListener::wasSuccessful() const
+{
+  ExclusiveZone zone( m_syncObject );
+  return m_success;
+}
+
+
+CPPUNIT_NS_END
+
+@
+
+
+1.2
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d28 1
+a28 1
+TestSuccessListener::addFailure( const TestFailure &failure )
+@
+
+
+1.1
+log
+@* NEWS: updated.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: renamed TestSuccessListener
+
+* doc/cookbook.dox:
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* src/cppunit/CompilerOutputter.cpp: fixed 'success' typo (was misspelled
+'sucess').
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: updated (renaming of
+  TestSucessListener).
+
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp: Changed SucessfulTests tag to
+SucessfulTests.
+@
+text
+@d4 1
+a4 3
+
+namespace CppUnit
+{
+d43 1
+a43 1
+} //  namespace CppUnit
+@
+

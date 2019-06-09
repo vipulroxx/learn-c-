@@ -1,0 +1,626 @@
+head	1.13;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.12;
+locks; strict;
+comment	@// @;
+
+
+1.13
+date	2008.06.26.16.27.19;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2005.11.11.20.54.15;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2005.11.09.22.42.31;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2005.11.08.20.25.49;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.11.07.22.43.08;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.08.11.07.18.24;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.08.10.21.34.29;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2005.08.10.07.45.23;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.08.09.08.05.32;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.08.08.22.10.21;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.08.07.08.42.15;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.07.04.08.11.26;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.07.02.20.27.36;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.13
+log
+@* Number of failed assertions and number of assertions made (non-aborting & aborting) is now displayed as each test run. This give a good idea when a test fail and has a large number of checking assertions how many of them are failing...
+@
+text
+@#include <cpput/lighttestrunner.h>
+#include <cpput/testcase.h>
+#include <cpput/testsuite.h>
+#include <cpptl/sharedptr.h>
+#include <cpptl/stringtools.h>
+#include <stdio.h>
+
+namespace CppUT {
+
+LightTestRunner::LightTestRunner()
+   : testRun_( 0 )
+   , testFailed_( 0 )
+   , testSkipped_( 0 )
+   , ignoredFailureCount_( 0 )
+{
+}
+
+
+LightTestRunner::~LightTestRunner()
+{
+}
+
+
+void 
+LightTestRunner::addTest( const TestPtr &test )
+{
+   tests_.push_back( test );
+}
+
+
+bool 
+LightTestRunner::runAllTests()
+{
+   TestInfo::threadInstance().setTestResultUpdater( *this );
+   for ( Tests::iterator it = tests_.begin(); it != tests_.end(); ++it )
+      runTest( *it );
+   if ( testFailed_ > 0 )
+   {
+      fprintf( stdout, "Failure report:\n%s", report_.c_str() );
+      fflush( stdout );
+      fprintf( stdout, "%d/%d tests passed, %d tests failed", 
+              testRun_ - testFailed_,
+              testRun_,
+              testFailed_ );
+   }
+   else
+   {
+      fprintf( stdout, "All %d tests passed", testRun_ );
+      fflush( stdout );
+   }
+
+   if ( ignoredFailureCount_ > 0 )
+      fprintf( stdout, ", %d ignored failures", ignoredFailureCount_ );
+   fprintf( stdout, ".\n", ignoredFailureCount_ );
+   fflush( stdout );
+
+   return testFailed_ == 0;
+}
+
+
+void 
+LightTestRunner::runTest( const TestPtr &test )
+{
+   testPath_.push_back( test->name() );
+   if ( test->isTestCase() )
+      runTestCase( CppTL::staticPointerCast<AbstractTestCase>( test ) );
+   else
+      runTestSuite( CppTL::staticPointerCast<TestSuite>( test ) );
+   testPath_.pop_back();
+}
+
+
+void 
+LightTestRunner::runTestSuite( const TestSuitePtr &suite )
+{
+   for ( int index =0; index < suite->testCount(); ++index )
+      runTest( suite->testAt( index ) );
+}
+
+
+void 
+LightTestRunner::runTestCase( const AbstractTestCasePtr &testCase )
+{
+   fprintf( stdout, "Testing %s : ", getTestPath().c_str() );
+   fflush( stdout );
+   assertions_.clear();
+   logs_.clear();
+   results_.clear();
+   ++testRun_;
+   testCase->runTest();
+   
+   TestStatus &testStatus = TestInfo::threadInstance().testStatus();
+
+   std::string status;
+   switch ( testStatus.status() )
+   {
+   case TestStatus::passed: 
+      status = "OK"; 
+      break;
+   case TestStatus::skipped: 
+      status = "SKIP"; 
+      ++testSkipped_;
+      break;
+   case TestStatus::failed: 
+      status = "FAIL"; 
+      ++testFailed_;
+      break;
+   default: status = "?"; break;
+   }
+
+   int assertionCount = testStatus.assertionCount();
+   status += " (";
+   unsigned int failedAssertionCount = testStatus.failedAssertionCount();
+   if ( failedAssertionCount > 0 )
+   {
+      std::string count = CppTL::toString( failedAssertionCount ).c_str();
+      status += count + (failedAssertionCount > 1 ? " assertions failed/" 
+                                                    : " assertion failed/");
+   }
+
+   status += CppTL::toString( assertionCount ).c_str();
+   status += (assertionCount > 1 ? " assertions" : " assertion" );
+
+   if ( testStatus.ignoredFailureCount() > 0 )
+   {
+      std::string count = CppTL::toString( testStatus.ignoredFailureCount() ).c_str();
+      status += ", " + count + " ignored failures";
+   }
+   status += ")";
+
+   fprintf( stdout, "%s\n", status.c_str() );
+   fflush( stdout );
+   if ( !assertions_.empty() )
+   {
+
+      CppTL::ConstString resultType = assertions_.back().kind() == Assertion::fault ? "fault" 
+                                                                                    : "assertion";
+      report_ += "-> " + getTestPath() + " : " + resultType + "\n";
+      //Assertions::const_iterator it = assertions_.begin();
+      //for ( ; it != assertions_.end(); ++it )
+      //   reportFailure( *it );
+      ResultElements::const_iterator it = results_.begin();
+      for ( ; it != results_.end(); ++it )
+      {
+         const ResultElement &result = *it;
+         if ( result.isLog_ )
+            reportLog( logs_[result.index_] );
+         else
+            reportFailure( assertions_[ result.index_ ] );
+      }
+      report_ += "\n";
+   }
+}
+
+void 
+LightTestRunner::addResultLog( const Json::Value &log )
+{
+   ResultElement element;
+   element.isLog_ = true;
+   element.index_ = int(logs_.size());
+   results_.push_back( element );
+   logs_.push_back( log );
+}
+
+
+void 
+LightTestRunner::addResultAssertion( const Assertion &assertion )
+{
+   ResultElement element;
+   element.isLog_ = false;
+   element.index_ = int(assertions_.size());
+   results_.push_back( element );
+   assertions_.push_back( assertion );
+}
+
+
+CppTL::ConstString
+LightTestRunner::getTestPath() const
+{
+   CppTL::StringBuffer buffer;
+   for ( TestPath::const_iterator it = testPath_.begin(); it != testPath_.end(); ++it )
+      buffer += "/" + *it;
+   return buffer;
+}
+
+
+void 
+LightTestRunner::reportFailure( const Assertion &failure )
+{ // @@todo duplicated in Assertion::toString().
+   if ( failure.location().isValid() )
+   {
+      report_ += failure.location().file_;
+      report_ += "(" + CppTL::toString( failure.location().line_ ) + ") : ";
+   }
+   else
+      report_ += "unknwon failure location : ";
+
+   CppTL::ConstString failureType = failure.kind() == Assertion::fault ? "fault" 
+                                                                       : "assertion";
+   if ( failure.isIgnoredFailure() )
+   {
+      failureType = "*ignored* " + failureType;
+      ++ignoredFailureCount_;
+   }
+   report_ += "[failure type: " + failureType + "]\n";
+   if ( !failure.messages().empty() )
+      report_ += "Messages:\n" + failure.messages().toString();
+   if ( !failure.testDataType().empty() )
+   {
+      const Json::Value &testData = failure.testData();
+      report_ += "Test data type: " + failure.testDataType() + "\n";
+      report_ += testData.toStyledString() + "\n";
+   }
+   report_ += "\n";
+}
+
+
+void 
+LightTestRunner::reportLog( const Json::Value &log )
+{
+   report_ += "Log:\n";
+   if ( log.isConvertibleTo( Json::stringValue ) )
+      report_ += log.asString();
+   else
+      report_ += log.toStyledString();
+   if ( report_[ report_.length() -1 ] != '\n' )
+      report_ += "\n\n";
+}
+
+
+
+} // namespace CppUT
+@
+
+
+1.12
+log
+@- added unit tests for TestInfo
+- fixed bug in CPPUT_IGNORE_FAILURE and exception guard.
+- added 'isIgnoredFailure' to Assertion.
+- lighttestrunner now print ignored failure and skipped tests.
+@
+text
+@d111 13
+d127 1
+a127 1
+      status += " (" + count + " ignored failures)";
+d129 1
+@
+
+
+1.11
+log
+@- flush stdout during test progress.
+@
+text
+@d13 2
+d41 1
+a41 1
+      fprintf( stdout, "%d/%d tests passed, %d tests failed.", 
+a44 1
+      fflush( stdout );
+d48 1
+a48 1
+      fprintf( stdout, "All %d tests passed.\n", testRun_ );
+d51 6
+d90 26
+a115 1
+   bool succeeded = testCase->runTest();
+d117 1
+a117 1
+   fprintf( stdout, "%s\n", succeeded ? "OK" : "FAIL" );
+d119 1
+a119 1
+   if ( !succeeded )
+a120 1
+      ++testFailed_;
+d186 5
+@
+
+
+1.10
+log
+@* replaced include/opentest/properties.h with include/json/value.h
+* replaced all occurrences of OpenTest::Value and OpenTest::Properties with Json::Value.
+@
+text
+@d37 3
+a39 2
+      printf( "Failure report:\n%s", report_.c_str() );
+      printf( "%d/%d tests passed, %d tests failed.", 
+d43 1
+d47 2
+a48 1
+      printf( "All %d tests passed.", testRun_ );
+d77 2
+a78 1
+   printf( "Testing %s : ", getTestPath().c_str() );
+d85 2
+a86 1
+   printf( "%s\n", succeeded ? "OK" : "FAIL" );
+@
+
+
+1.9
+log
+@- replaced usage of OpenTest::Properties with Json::Value.
+  Json::Value provides a simpler interface and a standard *simple* serialization
+  format.
+- jsoncpp has been inlined in CppTL to make deploy easier and remove
+  an external dependency.
+@
+text
+@d106 1
+a106 1
+LightTestRunner::addResultLog( const OpenTest::Value &log )
+d155 1
+a155 1
+      const OpenTest::Properties &testData = failure.testData();
+d164 1
+a164 1
+LightTestRunner::reportLog( const OpenTest::Value &log )
+@
+
+
+1.8
+log
+@* Added log support in test result output
+* Removed unsued method in TestResultUpdater
+* Added CppUT::log demo example.
+@
+text
+@d157 1
+a157 1
+      report_ += testData.toString() + "\n";
+d167 1
+a167 1
+   if ( log.isConvertibleTo( OpenTest::Value::vtString ) )
+d170 1
+a170 1
+      report_ += log.toString();
+@
+
+
+1.7
+log
+@* Replaced function in namespace TestInfo by exposing the TestInfoData class and renaming it TestInfo. TestInfo in now an exposed per thread singleton.
+* startNewTest() is now called from TestCase::runTest() instead of being the test runner responsability. There still a few call to this method in cpput bootstrap test (which use assertion without run a test case).
+@
+text
+@d76 2
+d89 12
+a100 3
+      Assertions::const_iterator it = assertions_.begin();
+      for ( ; it != assertions_.end(); ++it )
+         reportFailure( *it );
+d108 5
+a112 2
+   // discard log for the time being. Need to incorporate them
+   // into a single list with assertions.
+d119 4
+a126 6
+void 
+LightTestRunner::setTestStatus( const TestStatus &status )
+{
+}
+
+
+d163 13
+@
+
+
+1.6
+log
+@* Enhanced failure report output
+@
+text
+@d32 1
+a32 1
+   TestInfo::setTestResultUpdater( *this );
+a75 1
+   TestInfo::startNewTest();
+@
+
+
+1.5
+log
+@Fixed bug: result report was not print.
+@
+text
+@d37 1
+a37 1
+      printf( "Failure report:\n%s\n", report_.c_str() );
+a128 1
+   report_ += "* ";
+d148 1
+@
+
+
+1.4
+log
+@Rewrote failure reporting during test. It now provides more structure while still providing some flexibility.
+@
+text
+@d37 1
+a37 1
+      printf( "Failure report:\n", report_.c_str() );
+@
+
+
+1.3
+log
+@- Added test run summary at the end of test run
+- cpputtest now use LightTestRunner instead of OpenTest.
+@
+text
+@d37 1
+a37 1
+      printf( "Failure report:\n", report_ );
+a73 1
+   result_.clear();
+d75 1
+d85 2
+a86 3
+      printf( "Result tree: %s\n", result_.toString().c_str() );
+
+      CppTL::ConstString resultType = TestInfo::faultCount() ? "fault" : "assertion";
+d88 3
+a90 14
+
+      OpenTest::PropertiesAccessor info = result_.accessor();
+      OpenTest::Properties::ValueEnum enumFaults = info["result/faults"].listValues();
+      while ( enumFaults.hasNext() )
+      {
+         OpenTest::Value fault = enumFaults.next(); 
+         reportFailure( fault.asProperties(), false );
+      }
+      OpenTest::Properties::ValueEnum enumAssertions = info["result/assertions"].listValues();
+      while ( enumAssertions.hasNext() )
+      {
+         OpenTest::Value assertion = enumAssertions.next();
+         reportFailure( assertion.asProperties(), true );
+      }
+a94 1
+
+d96 1
+a96 1
+LightTestRunner::mergeInResult( const OpenTest::Properties &result )
+d98 2
+a99 1
+   result_.mergeReplacingExisting( result );
+d104 1
+a104 2
+LightTestRunner::mergeInResult( const OpenTest::PropertyPath &path,
+                                const OpenTest::Value &value )
+d106 1
+a106 1
+   result_[path] = value;
+d111 1
+a111 2
+LightTestRunner::appendToResult( const OpenTest::PropertyPath &path,
+                                 const OpenTest::Value &value )
+a112 1
+   result_[path].append( value );
+d127 4
+a130 4
+LightTestRunner::reportFailure( const OpenTest::Properties &failure, 
+                            bool isAssertion )
+{
+   if ( failure.has( "location")  &&  failure.has("location/file") )
+d132 2
+a133 3
+      report_ += failure["location/file"].asString() + "("
+                 + CppTL::toString( failure["location/line"].asInt() ) 
+                 + ") : ";
+d138 2
+a139 3
+   CppTL::ConstString failureType = failure.getValue( "failure_type",
+                                               isAssertion ? "assertion" 
+                                                           : "fault" ).asString();
+d141 8
+a148 12
+   OpenTest::Properties::ValueEnum enumMessages = failure.accessor()["messages"].listValues();
+   if ( enumMessages.hasNext() )
+      report_ += "Messages:\n";
+   while ( enumMessages.hasNext() )
+      report_ += enumMessages.next().asString() + "\n";
+
+   OpenTest::Properties::ValueEnum enumLogs = failure.accessor()["logs"].listValues();
+   if ( enumLogs.hasNext() )
+      report_ += "Log:\n";
+   while ( enumLogs.hasNext() )
+      report_ += enumLogs.next().asString() + "\n";
+   report_ += "Specifics:\n" + failure.toString() + "\n";
+@
+
+
+1.2
+log
+@* fixed bug in lighttestrunner: called AbstractTestCase::run instead of runTest().
+* fixed usage of incomplete SharedPtr in TestRunner.
+@
+text
+@d35 12
+a46 1
+   printf( "Failure report:\n", report_ );
+@
+
+
+1.1
+log
+@* Added a simple test runner that does not rely on the open test framework to run cppunit2 tests.
+* added CppTL::ConstCharView to wrapper const char *strings.
+* added CppTL::quoteMultiLineString()
+* string assertion output actual and expected using quoteMultiLineString().
+* added serialize unit test for basic Properties
+* opentest tests now use the LightTestRunner.
+@
+text
+@d66 2
+a67 1
+   testCase->run();
+a68 4
+   ++testRun_;
+   OpenTest::PropertiesAccessor status = result_.accessor()["result"]["status"];
+   bool succeeded = status.getValue( "success", false ).asBool();
+   CppTL::ConstString statusInfo;
+d74 1
+a74 3
+      CppTL::ConstString resultType = status.getValue( "type", "" ).asString();
+      if ( !resultType.empty() )
+         statusInfo += " (" + resultType + ")";
+d76 2
+a77 1
+      report_ += "-> " + getTestPath() + statusInfo + "\n";
+d106 1
+a106 1
+                            const OpenTest::Value &value )
+d114 1
+a114 1
+                             const OpenTest::Value &value )
+@
+

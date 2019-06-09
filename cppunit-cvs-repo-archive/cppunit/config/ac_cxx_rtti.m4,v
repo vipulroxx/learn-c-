@@ -1,0 +1,85 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.4
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2001.06.02.22.29.52;	author smr99;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Change to templatized TestAssert::assertEquals() and the new CPPUNIT_ASSERT* macros
+@
+text
+@dnl @@synopsis AC_CXX_RTTI
+dnl
+dnl If the compiler supports Run-Time Type Identification (typeinfo
+dnl header and typeid keyword), define HAVE_RTTI.
+dnl
+dnl @@version $Id: ac_cxx_rtti.m4,v 1.2 2000/07/19 13:03:28 simons Exp $
+dnl @@author Luc Maisonobe
+dnl
+AC_DEFUN([AC_CXX_RTTI],
+[AC_CACHE_CHECK(whether the compiler supports Run-Time Type Identification,
+ac_cv_cxx_rtti,
+[AC_LANG_SAVE
+ AC_LANG_CPLUSPLUS
+ AC_TRY_COMPILE([#include <typeinfo>
+class Base { public :
+             Base () {}
+             virtual int f () { return 0; }
+           };
+class Derived : public Base { public :
+                              Derived () {}
+                              virtual int f () { return 1; }
+                            };
+],[Derived d;
+Base *ptr = &d;
+return typeid (*ptr) == typeid (Derived);
+],
+ ac_cv_cxx_rtti=yes, ac_cv_cxx_rtti=no)
+ AC_LANG_RESTORE
+])
+if test "$ac_cv_cxx_rtti" = yes; then
+  AC_DEFINE(HAVE_RTTI,1,
+            [define if the compiler supports Run-Time Type Identification])
+fi
+])
+@

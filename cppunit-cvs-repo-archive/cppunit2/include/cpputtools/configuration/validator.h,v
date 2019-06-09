@@ -1,0 +1,368 @@
+head	1.6;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.6
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.6
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.6
+	TG_AFTER_REMOVING_TESTCONTEXT:1.4
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.4
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.4;
+locks; strict;
+comment	@ * @;
+
+
+1.6
+date	2005.02.26.11.44.16;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.02.23.22.49.39;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.06.23.20.00.52;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.06.23.18.44.39;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.15.00.45.52;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.06.14.23.31.25;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@* removed extra ';' at global declaration level (fails to compile on sun)
+@
+text
+@#ifndef CPPUTTOOLS_CONFIGURATION_VALIDATOR_H_INCUDED
+# define CPPUTTOOLS_CONFIGURATION_VALIDATOR_H_INCUDED
+
+# include "errors.h"
+# include <cpputtools/value.h>  // <cpputtools/forwards.h>
+
+namespace CppUTTools { namespace CommandLineOptions {
+
+
+class Validator : public ReferenceCountedPolicy
+{
+public:
+   virtual ~Validator() {}
+
+   virtual Value validate( const Parameters &parameters ) const = 0;
+};
+
+
+template<class OptionType>
+class StringStreamValidator : public Validator
+{
+public: // overridden from Validator
+   Value validate( const Parameters &parameters ) const;
+};
+
+template<class OptionType>
+ValidatorPtr defaultValidator();
+
+template<class OptionType>
+class EnumerationValidator : public Validator
+{
+public:
+   void add( const String &text, 
+             const OptionType &value,
+             const String &help = "" );
+
+   std::deque<String> inputs() const;
+
+   String inputHelp( const String &text ) const;
+
+   ValidatorPtr clone() const;
+
+public: // overridden from Validator
+   Value validate( const Parameters &parameters ) const;
+
+private:
+   struct ValueData
+   {
+      OptionType value_;
+      String help_;
+   };
+
+   typedef std::map<String,ValueData> Values;
+   Values values_;
+   std::deque<String> inputs_;
+};
+
+
+
+
+template<class Functor>
+ValidatorPtr makeValidator( Functor functor );
+
+template<class OptionType>
+std::string validatorAdditionalMessage();
+
+#undef COMMANDLINEOPTIONS_VALIDATOR_MESSAGE
+#define COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( OptionType, message )  \
+   template<>                                                        \
+   inline std::string validatorAdditionalMessage<OptionType>()       \
+   {                                                                 \
+      return message;                                                \
+   }
+
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( int, "is not an integer." )
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( unsigned int, "is not an integer." )
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( short, "is not an integer." )
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( unsigned short, "is not an integer." )
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( long, "is not an integer." )
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( unsigned long, "is not an integer." )
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( float, "is not a real number." )
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( double, "is not a real number." )
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( long double, "is not a real number." )
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( char, "is not a character." )
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( std::string, "is not a string." )
+//COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( wchar_t, "is not a character." )
+
+
+// Template StringStreamValidator
+// //////////////////////////////////////////////////////////////////
+
+template<class OptionType>
+Value
+StringStreamValidator<OptionType>::validate( const Parameters &parameters ) const
+{
+   IStringStream is( parameters.at(0) );
+   OptionType optionValue;
+   is >> optionValue;
+   is >> std::ws;
+   if ( !is.eof() )  // input not completly consumed
+   {
+      std::ostringstream os;
+      os  <<  "parameter '" << parameters.at(0) << "', ";
+      os  <<  validatorAdditionalMessage<OptionType>();
+      throw ValidatorError( ValidatorError::badParameterValue, os.str() );
+   }
+   return value( optionValue );
+}
+
+
+template<class OptionType>
+ValidatorPtr 
+defaultValidator()
+{
+   return ValidatorPtr( new StringStreamValidator<OptionType>() );
+}
+
+
+// Template EnumerationValidator
+// //////////////////////////////////////////////////////////////////
+
+
+template<class OptionType>
+ValidatorPtr
+EnumerationValidator<OptionType>::clone() const
+{
+   return ValidatorPtr( new EnumerationValidator<OptionType>( *this ) );
+}
+
+
+template<class OptionType>
+void
+EnumerationValidator<OptionType>::add( const String &text, 
+                                       const OptionType &value,
+                                       const String &help )
+{
+   ValueData data;
+   data.value_ = value;
+   data.help_ = help;
+   values_.insert( Values::value_type( text, data ) );
+   inputs_.push_back( text );
+}
+
+
+template<class OptionType>
+std::deque<String> 
+EnumerationValidator<OptionType>::inputs() const
+{
+   return inputs_;
+}
+
+
+template<class OptionType>
+String 
+EnumerationValidator<OptionType>::inputHelp( const String &text ) const
+{
+   CPPTL_TYPENAME Values::const_iterator it = values_.find( text );
+   if ( it == values_.end() )
+      return "";
+   return it->second.help_;
+}
+
+
+template<class OptionType>
+Value
+EnumerationValidator<OptionType>::validate( const Parameters &parameters ) const
+{
+   String text = parameters.at(0);
+   CPPTL_TYPENAME Values::const_iterator it = values_.find( text );
+   if ( it == values_.end() )
+      throw ValidatorError( ValidatorError::badParameterValue, "value must be..." );
+   return value( it->second.value_ );
+}
+
+// Function makeValidator
+// //////////////////////////////////////////////////////////////////
+
+template<class Functor>
+class ValidatorImpl : public Validator
+{
+public:
+   ValidatorImpl( Functor functor )
+      : functor_( functor )
+   {
+   }
+
+   // overridden from Validator
+   Value validate( const Parameters &parameters ) const
+   {
+      return functor_( parameters );
+   }
+
+private:
+   Functor functor_;
+};
+
+template<class Functor>
+ValidatorPtr validator( Functor functor )
+{
+   return ValidatorPtr( new ValidatorImpl<Functor>( functor ) );
+}
+
+
+} } // namespace CommandLineOptions
+
+#endif // CPPUTTOOLS_CONFIGURATION_VALIDATOR_H_INCUDED
+@
+
+
+1.5
+log
+@* added missing typename
+@
+text
+@d75 12
+a86 12
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( int, "is not an integer." );
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( unsigned int, "is not an integer." );
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( short, "is not an integer." );
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( unsigned short, "is not an integer." );
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( long, "is not an integer." );
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( unsigned long, "is not an integer." );
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( float, "is not a real number." );
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( double, "is not a real number." );
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( long double, "is not a real number." );
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( char, "is not a character." );
+COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( std::string, "is not a string." );
+//COMMANDLINEOPTIONS_VALIDATOR_MESSAGE( wchar_t, "is not a character." );
+@
+
+
+1.4
+log
+@* fixed compilation issues
+@
+text
+@d157 1
+a157 1
+   Values::const_iterator it = values_.find( text );
+d169 1
+a169 1
+   Values::const_iterator it = values_.find( text );
+@
+
+
+1.3
+log
+@* replaced storage binding in OptionHandler by a ValueBinder
+@
+text
+@d26 2
+a27 1
+
+a32 2
+   virtual Validator *clone() const;
+
+d41 2
+d59 2
+d62 1
+a62 1
+Validator *makeValidator( Functor functor );
+d85 1
+d111 8
+d124 1
+a124 1
+Validator *
+d127 1
+a127 1
+   return new EnumerationValidator<OptionType>( *this );
+d198 1
+a198 1
+Validator *validator( Functor functor )
+d200 1
+a200 1
+   return new ValidatorImpl<Functor>( functor );
+@
+
+
+1.2
+log
+@* fixed compilation issue related to changing OptionValue into the new Value library
+@
+text
+@d10 1
+a10 1
+class Validator
+@
+
+
+1.1
+log
+@* adding cpputtools library, command line options among other thing (for test runners). In progress.
+@
+text
+@d5 1
+d15 1
+a15 1
+   virtual OptionValue *validate( const Parameters &parameters ) const = 0;
+d23 1
+a23 1
+   OptionValue *validate( const Parameters &parameters ) const;
+d43 1
+a43 1
+   OptionValue *validate( const Parameters &parameters ) const;
+d89 1
+a89 1
+OptionValue *
+d153 1
+a153 1
+OptionValue *
+d176 1
+a176 1
+   OptionValue *validate( const Parameters &parameters ) const
+@
+

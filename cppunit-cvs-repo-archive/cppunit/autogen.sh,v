@@ -1,0 +1,191 @@
+head	1.5;
+access;
+symbols
+	REL_1_12_1:1.5
+	REL_1_11_6:1.4
+	REL_1_11_4:1.4
+	REL_1_11_0:1.4
+	TG_CPPUNIT_NO_STREAM_AFTER:1.4
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.4
+	REL_1_10_2:1.4
+	REL_1_10_0:1.4
+	REL_1_9_14:1.4
+	REL_1_9_12:1.4
+	BRANCH_1_9_12:1.4.0.4
+	TG_BRANCH_1_9_12:1.4
+	TG_BEFORE_HPUX_PLUGIN:1.4
+	TG_BEFORE_SUN4_PORT:1.4
+	REL_1_9_10:1.4
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.4
+	REL_1_9_6:1.4
+	REL_1_9_4:1.4
+	REL_1_9_0:1.4
+	REL_1_8_0:1.4
+	REL_1_7_8:1.4
+	REL_1_7_3:1.4
+	REL_1_7_1:1.4
+	REL_1_6_2:1.4
+	BRANCH_1_6:1.4.0.2
+	REL_1_6_1:1.4
+	REL_1_6_0:1.4
+	REL_1_5_5:1.1.1.1
+	REL_1_5_4:1.1.1.1
+	initial:1.1.1.1
+	e-s:1.1.1;
+locks; strict;
+comment	@# @;
+
+
+1.5
+date	2006.06.29.18.45.37;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.06.20.14.17.37;	author smr99;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.06.02.23.26.36;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.05.23.15.43.03;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2000.10.05.18.37.27;	author e-s;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2000.10.05.18.37.27;	author e-s;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* autogen.sh: applied patch #1449380 to allow running autogen
+ on Mac OS X.
+@
+text
+@#!/bin/sh
+
+set -e
+
+ACLOCAL_FLAGS="-I config"
+
+aclocal $ACLOCAL_FLAGS  || \
+    aclocal $ACLOCAL_FLAGS -I /usr/local/share/aclocal
+
+for l in libtoolize glibtoolize;
+do
+ ($l --version) < /dev/null > /dev/null 2>&1 && {
+ LIBTOOLIZE=$l
+ break
+ }
+done
+
+$LIBTOOLIZE --force
+autoheader
+automake --add-missing
+autoconf
+@
+
+
+1.4
+log
+@Add README.CVS; improve autogen.sh
+@
+text
+@d9 10
+a18 1
+libtoolize --force 
+@
+
+
+1.3
+log
+@Determine string::compare() weirdness automatically.
+@
+text
+@d3 1
+a3 1
+DIE=0
+d5 1
+a5 5
+(autoconf --version) < /dev/null > /dev/null 2>&1 || {
+  echo
+  echo "**Error**: You must have \`autoconf' installed ."
+  DIE=1
+}
+d7 2
+a8 24
+(automake --version) < /dev/null > /dev/null 2>&1 || {
+  echo
+  echo "**Error**: You must have \`automake' installed."
+  DIE=1
+  NO_AUTOMAKE=yes
+}
+
+(aclocal --version) < /dev/null > /dev/null 2>&1 || {
+  echo
+  echo "**Error**: Missing \`aclocal'."
+  DIE=1
+}
+
+(libtool --version) < /dev/null > /dev/null 2>&1 || {
+  echo
+  echo "**Error**: You must have \`libtool' installed."
+  DIE=1
+}
+
+
+if [ -d /usr/local/share/aclocal ]; then
+  ACLOCAL_FLAGS="-I /usr/local/share/aclocal $ACLOCAL_FLAGS"
+fi
+aclocal -I config $ACLOCAL_FLAGS 
+@
+
+
+1.2
+log
+@Added options to automake and libtoolize to recreate generated files.
+@
+text
+@d34 1
+a34 1
+aclocal $ACLOCAL_FLAGS 
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d35 1
+a35 1
+libtoolize --force --copy
+d37 1
+a37 1
+automake
+@
+
+
+1.1.1.1
+log
+@initial check in.
+@
+text
+@@

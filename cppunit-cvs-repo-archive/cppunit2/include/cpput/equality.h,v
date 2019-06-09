@@ -1,0 +1,238 @@
+head	1.6;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.6
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.3
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.3
+	TG_AFTER_REMOVING_TESTCONTEXT:1.3
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.3
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.3
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.6
+date	2005.11.13.10.12.01;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.11.11.23.23.48;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.03.10.08.23.45;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.11.17.08.59.05;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.02.01.10.22.02;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.25;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.25;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@- renamed include/cpput/assert.h to include/cpput/assertcommon.h. This avoid clash with include <assert.h> in doxygen documentation
+- most Impl namespaces are now hidden from documentation using \cond and \endcond.
+@
+text
+@#ifndef CPPUT_EQUALITY_H_INCLUDED
+# define CPPUT_EQUALITY_H_INCLUDED
+
+# include <cpptl/sharedptr.h>
+
+# ifndef CPPUT_NO_DEFAULT_EQUALITY
+
+#  ifdef CPPUT_BOOST_FRIENDLY
+namespace boost {
+   template<class T> class shared_ptr;
+} // namespace boost
+#  endif // CPPUT_BOOST_FRIENDLY
+
+
+namespace CppUT {
+
+   /*! \ingroup group_assertions_support
+    */
+   template<class AType, class BType>
+   struct EqualityTraits
+   {
+      static bool equals( const AType &a, const BType &b )
+      {
+         return a == b;
+      }
+   };
+
+
+   /*! \ingroup group_assertions_support
+    */
+   struct NoSpecificEqualityTest
+   {
+   };
+
+
+   /*! \ingroup group_assertions_support
+    */
+   inline NoSpecificEqualityTest isEqual( ... )
+   {
+      return NoSpecificEqualityTest();
+   };
+
+
+   /// \cond implementation_detail
+   namespace Impl {
+      template<typename AType, typename BType>
+      bool testIsEqual( const AType &, const BType &, bool isEqual )
+      {
+         return isEqual;
+      }
+
+      template<typename AType, typename BType>
+      bool testIsEqual( const AType &a, const BType &b, NoSpecificEqualityTest )
+      {
+         return EqualityTraits<AType,BType>::equals( a, b );
+      }
+
+   } // namespace Impl
+   /// \endcond implementation_detail
+
+   /*! \ingroup group_assertions_support
+    * @@todo change implementation to match stringize.
+    * @@todo delegate to compareTest() => <0, == 0, > 0. Would allow comparison assertions.
+    */
+   template<typename AType, typename BType>
+   bool equalityTest( const AType &a, const BType &b )
+   {
+      return Impl::testIsEqual( a, b, isEqual( &a, &b ) );
+   }
+  
+
+# endif // CPPUT_NO_DEFAULT_STRINGIZE
+
+
+} // namespace CppUT
+
+#endif // CPPUT_EQUALITY_H_INCLUDED
+@
+
+
+1.5
+log
+@Rough documentation: placed most function/class/macro in group.
+@
+text
+@d44 1
+d59 1
+@
+
+
+1.4
+log
+@* added mecanism similar to stringize to allow overload of equality testing.
+@
+text
+@d17 2
+d29 2
+d36 2
+d59 4
+d68 1
+a68 24
+   
+#  ifdef CPPUT_HAS_TEMPLATE_PARTIAL_SPECIALIZATION
+   template<typename AType, typename BType>
+   bool equalityTest( const AType *a, const BType *b )
+   {
+      return a == b  ||  ( a  &&  b  &&  equalityTest( *a, *b ) );
+   }
+
+   template<typename AType, typename BType>
+   bool equalityTest( const CppTL::SharedPtr<AType> &a, const CppTL::SharedPtr<BType> &b )
+   {
+      return a.get() == b.get()  ||  ( a.get()  &&  b.get()  &&  equalityTest( *a, *b ) );
+   }
+
+#   ifdef CPPUT_BOOST_FRIENDLY
+
+   template<typename AType, typename BType>
+   bool equalityTest( const boost::shared_ptr<AType> &a, const boost::shared_ptr<BType> &b )
+   {
+      return a.get() == b.get()  ||  ( a.get()  &&  b.get()  &&  equalityTest( *a, *b ) );
+   }
+#   endif // CPPUT_BOOST_FRIENDLY
+
+#  endif // CPPUT_HAS_TEMPLATE_PARTIAL_SPECIALIZATION
+@
+
+
+1.3
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@d27 26
+d56 1
+a56 1
+      return EqualityTraits<AType,BType>::equals( a, b );
+d58 1
+a58 1
+
+@
+
+
+1.2
+log
+@* smart-pointer clean up
+@
+text
+@d4 1
+a4 1
+# include <cpput/smartptr.h>
+d41 1
+a41 1
+   bool equalityTest( const SmartPtr<AType> &a, const SmartPtr<BType> &b )
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d4 1
+a4 1
+# include <cpput/config.h>
+d40 6
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

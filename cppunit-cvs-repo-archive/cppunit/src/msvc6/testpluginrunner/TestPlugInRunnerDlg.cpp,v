@@ -1,0 +1,519 @@
+head	1.5;
+access;
+symbols
+	REL_1_12_1:1.5
+	REL_1_11_6:1.5
+	REL_1_11_4:1.5
+	REL_1_11_0:1.5
+	TG_CPPUNIT_NO_STREAM_AFTER:1.5
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.5
+	REL_1_10_2:1.5
+	REL_1_10_0:1.5
+	REL_1_9_14:1.5
+	REL_1_9_12:1.5
+	BRANCH_1_9_12:1.5.0.2
+	TG_BRANCH_1_9_12:1.5
+	TG_BEFORE_HPUX_PLUGIN:1.5
+	TG_BEFORE_SUN4_PORT:1.5
+	REL_1_9_10:1.5
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.2
+	REL_1_9_4:1.2
+	REL_1_9_0:1.2
+	REL_1_8_0:1.2
+	REL_1_7_8:1.2
+	REL_1_7_3:1.2
+	REL_1_7_1:1.2
+	REL_1_6_2:1.2
+	BRANCH_1_6:1.2.0.2
+	REL_1_6_1:1.2
+	REL_1_6_0:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.5
+date	2002.07.03.07.02.49;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.06.14.11.12.17;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.05.22.17.27.26;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.09.17.21.27.15;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.27.21.23.22;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* include/cppunit/XmlOutputter.h: fixed XmlOutputter constructed default
+  value initializatino which caused compilation error with BC5.
+
+* src/cppunit/PlugInManager.cpp: added missing CPPUNIT_NO_TESTPLUGIN guard.
+
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp:
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h: applied Steven Mitter
+  patch to fix bug #530426 (conflict between TestRunner and host application
+  resources). Adapted patch to compile work with Unicode.
+
+* src/msvc6/testrunner/ResourceLoaders.h:
+* src/msvc6/testrunner/ResourceLoaders.cpp:
+* src/msvc6/testrunner/Change-Diary-ResourceBugFix.txt: added, from
+  Steven Mitter's patch. Simplified loadCString() to compile with Unicode.
+
+* src/cppunit/cppunit.dsp:
+* src/cppunit/cppunit_dll.dsp:
+* src/DllPlugInTester/DllPlugInTester.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: all lib, dll and exe are
+  now created in the intermediate directory. A post-build rule is used to
+  copy them to the lib/ directory.
+@
+text
+@// TestPlugInRunnerDlg.cpp : implementation file
+//
+
+#include "stdafx.h"
+#include "TestPlugInRunnerDlg.h"
+#include "TestPlugIn.h"
+#include "TestPlugInException.h"
+#include <algorithm>
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+// TestPlugInRunnerDlg dialog
+
+TestPlugInRunnerDlg::TestPlugInRunnerDlg( TestPlugInRunnerModel *model,
+                                          CWnd* pParent ) 
+    : TestRunnerDlg( model, "CPP_UNIT_TEST_RUNNER_PLUG_IN_IDD_TEST_PLUG_IN_RUNNER", pParent )
+{
+  //{{AFX_DATA_INIT(TestPlugInRunnerDlg)
+	  // NOTE: the ClassWizard will add member initialization here
+  //}}AFX_DATA_INIT
+  // Note that LoadIcon does not require a subsequent DestroyIcon in Win32
+  m_hIcon = AfxGetApp()->LoadIcon("CPP_UNIT_TEST_RUNNER_PLUG_IN_IDR_TEST_PLUGIN_RUNNER");
+}
+
+
+void 
+TestPlugInRunnerDlg::DoDataExchange( CDataExchange* pDX )
+{
+  TestRunnerDlg::DoDataExchange(pDX);
+  //{{AFX_DATA_MAP(TestPlugInRunnerDlg)
+	  // NOTE: the ClassWizard will add DDX and DDV calls here
+  //}}AFX_DATA_MAP
+}
+
+BEGIN_MESSAGE_MAP(TestPlugInRunnerDlg, TestRunnerDlg)
+  //{{AFX_MSG_MAP(TestPlugInRunnerDlg)
+  ON_WM_PAINT()
+  ON_WM_QUERYDRAGICON()
+  ON_BN_CLICKED(IDC_CHOOSE_DLL, OnChooseDll)
+  ON_BN_CLICKED(IDC_RELOAD_DLL, OnReloadDll)
+  //}}AFX_MSG_MAP
+END_MESSAGE_MAP()
+
+/////////////////////////////////////////////////////////////////////////////
+// TestPlugInRunnerDlg message handlers
+
+BOOL TestPlugInRunnerDlg::OnInitDialog()
+{
+  TestRunnerDlg::OnInitDialog();
+
+  // Set the icon for this dialog.  The framework does this automatically
+  //  when the application's main window is not a dialog
+  SetIcon(m_hIcon, TRUE);			// Set big icon
+  SetIcon(m_hIcon, FALSE);		// Set small icon
+
+  // TODO: Add extra initialization here
+  loadPluginIfNesseccary();
+
+  return TRUE;  // return TRUE  unless you set the focus to a control
+}
+
+// If you add a minimize button to your dialog, you will need the code below
+//  to draw the icon.  For MFC applications using the document/view model,
+//  this is automatically done for you by the framework.
+
+void TestPlugInRunnerDlg::OnPaint() 
+{
+  if (IsIconic())
+  {
+    CPaintDC dc(this); // device context for painting
+
+    SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
+
+    // Center icon in client rectangle
+    int cxIcon = GetSystemMetrics(SM_CXICON);
+    int cyIcon = GetSystemMetrics(SM_CYICON);
+    CRect rect;
+    GetClientRect(&rect);
+    int x = (rect.Width() - cxIcon + 1) / 2;
+    int y = (rect.Height() - cyIcon + 1) / 2;
+
+    // Draw the icon
+    dc.DrawIcon(x, y, m_hIcon);
+  }
+  else
+  {
+    TestRunnerDlg::OnPaint();
+  }
+}
+
+
+// The system calls this to obtain the cursor to display while the user drags
+//  the minimized window.
+HCURSOR TestPlugInRunnerDlg::OnQueryDragIcon()
+{
+  return (HCURSOR) m_hIcon;
+}
+
+
+TestPlugInRunnerModel &
+TestPlugInRunnerDlg::plugInModel()
+{
+  return *static_cast<TestPlugInRunnerModel*>( m_model );
+}
+
+
+void 
+TestPlugInRunnerDlg::OnChooseDll() 
+{
+  CFileDialog dlg( TRUE, "*.dll", "", 0, 
+                   "Test Plug-in (*.dll)|*.dll|All Files (*.*)|*.*||",
+                   this );
+  if ( dlg.DoModal() != IDOK )
+    return;
+
+  try
+  {
+    loadDll(std::string(dlg.GetPathName()));
+  }
+  catch ( TestPlugInException &e )
+  {
+    AfxMessageBox( e.what() );
+  }
+}
+
+
+void 
+TestPlugInRunnerDlg::OnReloadDll() 
+{
+  reset();
+  plugInModel().reloadPlugIn();
+}
+
+
+std::list<std::string> 
+TestPlugInRunnerDlg::getCommandLineArguments()
+{
+  int argc;
+  LPWSTR *argv = ::CommandLineToArgvW( ::GetCommandLineW(), &argc );
+
+  std::list<std::string> arguments;
+  for( int index = 0; index < argc; index++ ) 
+    arguments.push_back( std::string( CString( argv[index] ) ) );
+
+  ::GlobalFree( argv );
+
+  return arguments;
+} 
+
+
+void 
+TestPlugInRunnerDlg::loadPluginIfNesseccary()
+{
+  std::list<std::string> argv = getCommandLineArguments();
+  std::list<std::string>::iterator iter = std::find( argv.begin(), 
+                                                     argv.end(), 
+                                                     std::string( "-testsuite" ) );
+
+  if ( iter == argv.end() ) 
+    return;
+
+  try 
+  {
+    loadDll( *++iter );
+  } 
+  catch( std::exception &e ) 
+  {
+    AfxMessageBox( e.what() );
+  }
+}
+
+
+void 
+TestPlugInRunnerDlg::loadDll( std::string path )
+{
+  TestPlugIn *plugIn = new TestPlugIn( path );
+  plugInModel().setPlugIn( plugIn );
+
+  m_model->selectHistoryTest( plugInModel().rootTest() );
+  updateHistoryCombo();
+}
+
+
+void 
+TestPlugInRunnerDlg::initializeLayout()
+{
+  TestRunnerDlg::initializeLayout();
+
+  AddSzXControl( IDC_CHOOSE_DLL, mdRepos );
+  AddSzXControl( IDC_RELOAD_DLL, mdRepos );
+
+}
+@
+
+
+1.4
+log
+@* src/cppunit/TypeInfoHelper.cpp: added work around for bug #565481.
+  gcc 3.0 RTTI name() returns the type prefixed with a number (the
+  length of the type). The work around strip the number.
+
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp: registry key is now
+  set. Allow to save settings.
+
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp: added layout
+  initialization for resizing.
+
+* src/msvc6/testpluginrunner/TestPlugRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: added TestRunner
+  project files. Somehow I can't get cdxCDynamicDialog to compile
+  as a MFC extension. Included all sources files and resources
+  as a very dirt work around.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h: those classes are no longer
+  exported in the MFC extension. See TestPlugInRunner issue with
+  cdxCDynamicDialog.
+
+* include/cppunit/Message.h:
+* include/cppunit/TestPath.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestResultCollector.h:
+* include/cppunit/TestSuite.h:
+* include/cppunit/TestFactoryRegistry.h:
+* include/cppunit/XmlElement.h:
+* include/cppunit/TypeInfoHelper.h: commented out STL template export
+  in DLL. This caused conflicts when instantiting the same template in
+  a user project.
+@
+text
+@d21 1
+a21 1
+    : TestRunnerDlg( model, IDD_TEST_PLUG_IN_RUNNER, pParent )
+d27 1
+a27 1
+  m_hIcon = AfxGetApp()->LoadIcon(IDR_TEST_PLUGIN_RUNNER);
+@
+
+
+1.3
+log
+@* src/msvc6/testrunner/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/Resource.h:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerModel.cpp: integrated patch from
+Marco Welti (Welti@@GretagMacbeth.ch) with a few clean up.
+Display the name of the test being run during above the progress bar. Allow the
+VC++ add-ins to works with TestPlugInRunner (COM init). DLL name can be specified
+on the command line after flag '-testsuite'. Display wait cursor, clear and reload
+history when reloading DLL.
+
+* THANKS: added Marco Welti to the list.
+@
+text
+@d187 11
+@
+
+
+1.2
+log
+@* Makefile.am: Added INSTALL-WIN32.txt to EXTRA_DIST.
+
+* INSTALL-WIN32.txt: added, short documentation for CppUnit and VC++.
+
+* include/cppunit/extensions/HelperMacros.h: bug #448363, removed
+an extraneous ';' at the end of CPPUNIT_TEST_SUITE_END macro.
+
+* examples/cppunittest/TestCallerTest.cpp: bug #448332, fixed
+memory leaks.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp: change to define
+IDD to a dummy value when subclassing the dialog.
+
+* src/cppunit/cppunit.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* examples/cppunitttest/CppUnitTestMain.dsp:
+* examples/hierarchy.dsp:
+* examples/msvc6/TestPlugIn/TestPlugIn.dsp:
+* examples/msvc6/HostApp/HostApp.dsp: all configurations can be compiled.
+
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsw: added dependency to
+cppunit.dsp and TestRunner.dsp.
+@
+text
+@d8 1
+d20 2
+a21 2
+                                          CWnd* pParent ) :
+	  TestRunnerDlg( model, IDD_TEST_PLUG_IN_RUNNER, pParent )
+d23 15
+a37 13
+	//{{AFX_DATA_INIT(TestPlugInRunnerDlg)
+		// NOTE: the ClassWizard will add member initialization here
+	//}}AFX_DATA_INIT
+	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
+	m_hIcon = AfxGetApp()->LoadIcon(IDR_TEST_PLUGIN_RUNNER);
+}
+
+void TestPlugInRunnerDlg::DoDataExchange(CDataExchange* pDX)
+{
+	TestRunnerDlg::DoDataExchange(pDX);
+	//{{AFX_DATA_MAP(TestPlugInRunnerDlg)
+		// NOTE: the ClassWizard will add DDX and DDV calls here
+	//}}AFX_DATA_MAP
+d41 6
+a46 6
+	//{{AFX_MSG_MAP(TestPlugInRunnerDlg)
+	ON_WM_PAINT()
+	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_CHOOSE_DLL, OnChooseDll)
+	ON_BN_CLICKED(IDC_RELOAD_DLL, OnReloadDll)
+	//}}AFX_MSG_MAP
+d54 1
+a54 1
+	TestRunnerDlg::OnInitDialog();
+d56 9
+a64 8
+	// Set the icon for this dialog.  The framework does this automatically
+	//  when the application's main window is not a dialog
+	SetIcon(m_hIcon, TRUE);			// Set big icon
+	SetIcon(m_hIcon, FALSE);		// Set small icon
+	
+	// TODO: Add extra initialization here
+	
+	return TRUE;  // return TRUE  unless you set the focus to a control
+d73 21
+a93 21
+	if (IsIconic())
+	{
+		CPaintDC dc(this); // device context for painting
+
+		SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
+
+		// Center icon in client rectangle
+		int cxIcon = GetSystemMetrics(SM_CXICON);
+		int cyIcon = GetSystemMetrics(SM_CYICON);
+		CRect rect;
+		GetClientRect(&rect);
+		int x = (rect.Width() - cxIcon + 1) / 2;
+		int y = (rect.Height() - cyIcon + 1) / 2;
+
+		// Draw the icon
+		dc.DrawIcon(x, y, m_hIcon);
+	}
+	else
+	{
+		TestRunnerDlg::OnPaint();
+	}
+d96 1
+d101 1
+a101 1
+	return (HCURSOR) m_hIcon;
+d123 1
+a123 3
+    TestPlugIn *plugIn = new TestPlugIn( std::string( dlg.GetPathName() ) );
+    plugInModel().setPlugIn( plugIn );
+    updateHistoryCombo();
+d135 1
+d137 49
+@
+
+
+1.1
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+moved dll copy from post-build to custom build setting, so that the
+dll is copied even if the CppUnitTestApp was not modified.
+
+* examples/msvc6/TestPlugIn/: a new example of test plug in.
+
+* src/msvc6/TestRunner/ListCtrlFormatter.*
+* src/msvc6/TestRunner/ListCtrlSetter.*:
+added, helper to manipulate list control.
+
+* src/msvc6/TestRunner/TestRunnerDlg.*: change to make the error list
+more compact. text moved to string resources. icons added for typ
+test tfailure type.
+
+* src/msvc6/TestRunner/MostRecentTests.*: added, classes that will
+replace the current implementation of MRU test which make it hard
+to subclass the dialog.
+
+* src/msvc6/TestRunner/res/errortype.bmp: added, bitmap with error
+types (failure and error).
+
+* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+
+* src/cppunit/cppunit.dsp:
+removed config.h from project
+added Portability.h and config-msvc6.h
+
+* include/cppunit/config-msvc6.h:
+undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+@
+text
+@a4 1
+#include "resource.h"
+@
+

@@ -1,0 +1,242 @@
+head	1.3;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.3
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.3
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2005.02.23.22.48.56;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.23.18.44.38;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.06.14.23.31.25;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* added no throw destructor to subclass of std::exception
+@
+text
+@#ifndef CPPUTTOOLS_CONFIGURATION_ERRORS_H_INCUDED
+# define CPPUTTOOLS_CONFIGURATION_ERRORS_H_INCUDED
+
+# include "forwards.h"
+# include <sstream>
+# include <stdexcept>
+
+namespace CppUTTools { namespace CommandLineOptions {
+
+class OptionError : public std::runtime_error
+{
+public:
+   OptionError( const std::string &message )
+      : std::runtime_error( message )
+   {
+   }
+};
+
+class ValidatorError : public std::runtime_error
+{
+public:
+   typedef std::runtime_error SuperClass;
+
+   enum Cause
+   {
+      missingParameter = 1,
+      badParameterValue,
+      undefinedValidator
+   };
+
+   ValidatorError( Cause cause, 
+                   const std::string &message )
+      : std::runtime_error( message )
+      , cause_( cause )
+   {
+   }
+
+   ~ValidatorError() throw()
+   {
+   }
+
+   void setOptionName( const String &name )
+   {
+      name_ = name;
+   }
+
+   String optionName() const
+   {
+      return name_;
+   }
+
+   Cause cause() const
+   {
+      return cause_;
+   }
+
+   const char *what() const throw()
+   {
+      std::ostringstream os;
+      os << "In option '";
+      if ( name_[0] != '-' )
+         os << "--";
+      os <<  name_ << "':"  << SuperClass::what();
+      message_ = os.str();
+      return message_.c_str();
+   }
+
+private:
+   std::string name_;
+   mutable std::string message_;
+   Cause cause_;
+};
+
+
+class OptionsDescriptionError : public std::runtime_error
+{
+public:
+   OptionsDescriptionError( const std::string &message )
+      : std::runtime_error( message )
+   {
+   }
+
+};
+
+
+class BadCastOptionError : public OptionError
+{
+public:
+   BadCastOptionError( const std::string &message )
+      : OptionError( message )
+   {
+   }
+};
+
+
+class CommandLineParseError : public std::runtime_error
+{
+public:
+   enum Cause {
+      invalidOptionName = 1,
+      syntaxError
+   };
+
+   CommandLineParseError( Cause cause,
+                          const String &optionName );
+
+   ~CommandLineParseError() throw();
+
+   Cause cause() const;
+
+   String optionName() const;
+
+   const char *what() const throw();
+
+private:
+   String optionName_;
+   Cause cause_;
+   mutable std::string message_;
+};
+
+
+// class CommandLineParseError
+// //////////////////////////////////////////////////////////////////
+
+inline
+CommandLineParseError::CommandLineParseError( Cause cause,
+                                              const String &optionName )
+   : cause_( cause )
+   , optionName_( optionName )
+   , std::runtime_error( "CommandLineParseError" )
+{
+}
+
+
+inline CommandLineParseError::~CommandLineParseError() throw()
+{
+}
+
+
+inline CommandLineParseError::Cause 
+CommandLineParseError::cause() const
+{
+   return cause_;
+}
+
+
+inline String 
+CommandLineParseError::optionName() const
+{
+   return optionName_;
+}
+
+
+inline const char *
+CommandLineParseError::what() const throw()
+{
+   if ( message_.empty() )
+   {
+      std::ostringstream os;
+      switch ( cause_ )
+      {
+      case invalidOptionName:
+         os  <<  "Invalid option name: ";
+         break;
+      case syntaxError:
+         os  <<  "Syntax error: ";
+         break;
+      }
+
+      if ( !optionName_.empty() )
+         os << optionName_;
+      message_ = os.str();
+   }
+   return message_.c_str();
+}
+
+
+} } // namespace CommandLineOptions
+
+#endif // CPPUTTOOLS_CONFIGURATION_ERRORS_H_INCUDED
+@
+
+
+1.2
+log
+@* replaced storage binding in OptionHandler by a ValueBinder
+@
+text
+@d38 4
+d107 2
+d135 5
+@
+
+
+1.1
+log
+@* adding cpputtools library, command line options among other thing (for test runners). In progress.
+@
+text
+@d27 2
+a28 1
+      badParameterValue
+@
+

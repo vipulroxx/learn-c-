@@ -1,0 +1,65 @@
+head	1.2;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2005.11.13.10.17.57;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.08.08.22.07.58;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@- renamed include/cpput/assert.h to include/cpput/assertion.h
+@
+text
+@#ifndef CPPUT_EXAMPLES_EXAMPLECOMMON_H_INCLUDED
+# define CPPUT_EXAMPLES_EXAMPLECOMMON_H_INCLUDED
+
+#include <cpput/testsuite.h>
+#include <cpput/lighttestrunner.h>
+//#include <cpput/testrunner.h>    // cppunit2 testrunner for opentest
+#include <cpput/assertcommon.h>
+
+inline int runExampleTests( int argc, 
+                            const char *argv[], 
+                            CppUT::Test *test )
+{
+//   CppUT::TestRunner runner;
+//   runner.setRootSuite( allSuite.get() );
+//   OpenTest::TextTestDriver driver( runner );
+//   bool sucessful = driver.run();
+   CppUT::LightTestRunner runner;
+   runner.addTest( test );
+   bool sucessful = runner.runAllTests();
+   return sucessful ? 0 : 1;
+}
+
+
+#endif // CPPUT_EXAMPLES_EXAMPLECOMMON_H_INCLUDED
+@
+
+
+1.1
+log
+@* Centralized test running logic in examples/common/examplecommon.h
+@
+text
+@d7 1
+a7 1
+#include <cpput/assert.h>
+@
+

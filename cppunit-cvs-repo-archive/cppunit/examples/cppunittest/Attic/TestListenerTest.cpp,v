@@ -1,0 +1,498 @@
+head	1.4;
+access;
+symbols
+	REL_1_7_1:1.3
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.4
+date	2002.02.28.10.49.20;	author blep;	state dead;
+branches;
+next	1.3;
+
+1.3
+date	2001.10.03.21.16.12;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.10.02.20.43.55;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.11.19.56.23;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* NEW: updated and restructured.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp:
+updated against TestResultChange. Changed TestResult to TestResultCollector.
+
+* include/cppunit/extensions/HelperMacros.h: minor documentation fix.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all Outputter.
+
+* include/cppunit/Portability.h: made the fix on OStringStream suggested by
+Bob Summerwill to remove level 4 warning with VC++.
+
+* include/cppunit/TestAssert.h: added macro CPPUNIT_ASSERT_EQUAL_MESSAGE.
+
+* src/cppunit/TestFailure.cpp:
+* include/cppunit/TestFailure.h: added method clone() to duplicate a failure. Made
+all method virtual.
+
+* include/cppunit/TestListener.h: changed signature of addFailure() to
+addFailure( const TestFailure &failure ). Failure is now only a temporary object.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all outputter. Used
+by TextTestRunner.
+
+* include/cppunit/SynchronizedObject.h:
+* src/cppunit/SynchronizedObject.cpp: added. Class extracted from TestResult.
+Base class for objects that can be accessed from different threads.
+
+* include/cppunit/TestResult.h: TestFailure.h is no longer included.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: extracted all methods related to keeping track
+of the result to the new TestResultCollector class which is a TestListener.
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: added. TestListener which kept track
+of the result of the test run. All failure/error, and tests are tracked.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: added. TestListener extracted from
+TestResult. Is responsible for wasSucessful().
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: reindented.
+
+* include/cppunit/TextOutputter.h:
+* src/cppunit/TextOutputter.cpp: added. Copied from the deprecated
+TextTestResult and modified to act as an Ouputter.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: Copied from the deprecated
+TextTestResult and modified to print the dot while the test are running.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: updated against TestResult change.
+No compatiblity break. Deprecated.
+
+* include/cppunit/TextTestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to work with the new TestResult.
+Use TextTestProgressListener and TextOutputter instead of TextTestResult.
+Any outputter with interface Outputter can be used to print the test result
+(CompilerOutputter, XmlOutputter, TextOutputter...)
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against TestResultChange.
+Changed TestResult to TestResultCollector.
+
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/TestRunnerDlg.cpp: fixed the 'fullrowselect' feature of the list view.
+The dialog is a TestListener itself, it no longer use the GUITestResult class.
+
+* src/msvc6/TestRunner.rc: moved the "autorun test button" in such a way that it
+did not overlap the progress bar anymore.
+
+* src/msvc6/MfcSynchronizationObject.h: added. Generic SynchronizedObject
+lock for MFC.
+
+* src/msvc6/GUITestResult.h :
+* src/msvc6/GUITestResult.cpp : removed.
+
+* src/qttestrunner/TestRunnerModel.h:
+* src/qttestrunner/TestRunnerModel.cpp: changed addFailure() signature to reflect
+change on TestListener.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use the new Outputter
+abstraction and TextTestRunner facilities.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.cpp: removed. Replaced by MockTestCase.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.h:
+
+* examples/cppunittest/HelperMacrosTest.h:
+* examples/cppunittest/HelperMacrosTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/MockTestListener.h:
+* examples/cppunittest/MockTestListener.cpp: the class now behave like a mock
+object.
+
+* examples/cppunittest/MockTestCase.h:
+* examples/cppunittest/MockTestCase.cpp: added. Mock TestCase object.
+
+* examples/cppunittest/OrthodoxTest.h:
+* examples/cppunittest/OrthodoxTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/SynchronizedTestResult.h: Updated against TestResult
+change.
+
+* examples/cppunittest/TestCallerTest.h:
+* examples/cppunittest/TestCallerTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: Updated against TestResult change.
+Use MockTestListener and MockTestCase instead of FailingTestCase and TestResult.
+
+* examples/cppunittest/TestDecoratorTest.h:
+* examples/cppunittest/TestDecoratorTest.cpp: Updated against TestResult change.
+Use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/TestListenerTest.h:
+* examples/cppunittest/TestListenerTest.cpp: removed. Those unit tests have been
+rewrote and moved to TestResultTest.
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: Updated to test the new interface.
+Tests from TestListenerTest have been moved here.
+
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp: added. Tests for the class
+that been extracted from TestResult.
+
+* examples/cppunittest/TestSetUpTest.h:
+* examples/cppunittest/TestSetUpTest.cpp: renamed SetUp inner class to MockSetUp.
+Changed interface to be more akin to a Mock object.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: Updated against TestResult change,
+and rewrote to use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: Updated against TestResult change.
+Added some utility methods to make the update easier.
+@
+text
+@#include "CoreSuite.h"
+#include "MockTestListener.h"
+#include "TestListenerTest.h"
+#include <cppunit/extensions/TestSuiteBuilder.h>
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestResult.h>
+
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( TestListenerTest,
+                                       CppUnitTest::coreSuiteName() );
+
+
+TestListenerTest::TestListenerTest() : 
+    CppUnit::TestCase()
+{
+}
+
+
+TestListenerTest::~TestListenerTest()
+{
+}
+
+
+CppUnit::TestSuite *
+TestListenerTest::suite()
+{
+  CppUnit::TestSuiteBuilder<TestListenerTest> suite("TestListenerTest");
+
+  suite.addTestCaller( "testNoListener", &TestListenerTest::testNoListener );
+  suite.addTestCaller( "testAddErrorListener", 
+                       &TestListenerTest::testAddErrorListener );
+  suite.addTestCaller( "testAddFailureListener", 
+                       &TestListenerTest::testAddFailureListener );
+  suite.addTestCaller( "testStartTestListener", 
+                       &TestListenerTest::testStartTestListener );
+  suite.addTestCaller( "testEndTestListener", 
+                       &TestListenerTest::testEndTestListener );
+  suite.addTestCaller( "testRemoveFrontListener", 
+                       &TestListenerTest::testRemoveFrontListener );
+  suite.addTestCaller( "testRemoveLastListener", 
+                       &TestListenerTest::testRemoveLastListener );
+
+  return suite.takeSuite();
+}
+
+
+void 
+TestListenerTest::setUp()
+{
+  m_listenerTest = NULL;
+  m_listenerError = NULL;
+  m_dummyTest = new CppUnit::TestCase( "DummyTest" );
+  m_dummyError = NULL;
+  m_listenerCallbackType = undefined;
+  m_result = new CppUnit::TestResult();
+  m_result->addListener( this );
+}
+
+
+void 
+TestListenerTest::tearDown()
+{
+  m_result->removeListener( this );
+  delete m_result;
+  delete m_dummyTest;
+}
+
+
+void 
+TestListenerTest::addFailure( CppUnit::TestFailure *failure )
+{
+  m_listenerTest = failure->failedTest();
+  m_listenerError = failure->thrownException();
+  m_listenerCallbackType = failure->isError() ? onAddError : 
+                                                onAddFailure;
+}
+
+
+void 
+TestListenerTest::startTest( CppUnit::Test *test )
+{
+  m_listenerTest = test;
+  m_listenerCallbackType = onStartTest;
+}
+
+
+void 
+TestListenerTest::endTest( CppUnit::Test *test )
+{
+  m_listenerTest = test;
+  m_listenerCallbackType = onEndTest;
+}
+
+
+void 
+TestListenerTest::testAddErrorListener()
+{
+  m_result->addError( m_dummyTest, makeDummyError() );
+  CPPUNIT_ASSERT( m_listenerCallbackType == onAddError );
+  CPPUNIT_ASSERT( m_listenerTest == m_dummyTest );
+  CPPUNIT_ASSERT( m_listenerError == m_dummyError );
+}
+
+
+void 
+TestListenerTest::testAddFailureListener()
+{
+  m_result->addFailure( m_dummyTest, makeDummyError() );
+  CPPUNIT_ASSERT( m_listenerCallbackType == onAddFailure );
+  CPPUNIT_ASSERT( m_listenerTest == m_dummyTest );
+  CPPUNIT_ASSERT( m_listenerError == m_dummyError );
+}
+
+
+void 
+TestListenerTest::testStartTestListener()
+{
+  m_result->startTest( m_dummyTest );
+  CPPUNIT_ASSERT( m_listenerCallbackType == onStartTest );
+  CPPUNIT_ASSERT( m_listenerTest == m_dummyTest );
+}
+
+
+void 
+TestListenerTest::testEndTestListener()
+{
+  m_result->endTest( m_dummyTest );
+  CPPUNIT_ASSERT( m_listenerCallbackType == onEndTest );
+  CPPUNIT_ASSERT( m_listenerTest == m_dummyTest );
+}
+
+
+CppUnit::Exception *
+TestListenerTest::makeDummyError()
+{
+  m_dummyError = new CppUnit::Exception( "dummy exception" );
+  return m_dummyError;
+}
+
+
+void 
+TestListenerTest::testNoListener()
+{
+  CppUnit::TestResult result;
+  result.addError( m_dummyTest, makeDummyError() );
+  result.addFailure( m_dummyTest, makeDummyError() );
+  result.startTest( m_dummyTest );
+  result.endTest( m_dummyTest );
+}
+
+
+void 
+TestListenerTest::testTwoListener()
+{
+  MockTestListener listener;
+  m_result->addListener( &listener );
+  m_result->startTest( m_dummyTest );
+  CPPUNIT_ASSERT( m_listenerCallbackType == onStartTest );
+  CPPUNIT_ASSERT( listener.wasCalled() );
+}
+
+
+void 
+TestListenerTest::testRemoveFrontListener()
+{
+  MockTestListener listener;
+  m_result->addListener( &listener );
+  m_result->removeListener( &listener );
+  m_result->startTest( m_dummyTest );
+  CPPUNIT_ASSERT( m_listenerCallbackType == onStartTest );
+  CPPUNIT_ASSERT( !listener.wasCalled() );
+}
+
+
+void 
+TestListenerTest::testRemoveLastListener()
+{
+  MockTestListener listener;
+  m_result->addListener( &listener );
+
+  m_result->removeListener( this );
+  m_result->startTest( m_dummyTest );
+  CPPUNIT_ASSERT( m_listenerCallbackType == undefined );
+  CPPUNIT_ASSERT( listener.wasCalled() );
+}
+@
+
+
+1.3
+log
+@* include/cppunit/TestFailure.cpp :
+* include/cppunit/TestFailure.h : fixed some constness issues. Added
+argument to indicate the type of failure to constructor. Added
+isError().
+
+* include/cppunit/TestListener.h : removed addError(). addFailure()
+now take a TestFailure as argument.
+
+* include/cppunit/TestResult.h :
+* include/cppunit/TestResult.cpp : removed errors(). Refactored. Fixed
+some constness issues. Added typedef TestFailures for vector returned
+by failures(). failures() returns a const reference on the list of
+failure. added testFailuresTotal(). Constructor can take an optional
+synchronization object.
+
+* include/cppunit/TextTestResult.h :
+* include/cppunit/TextTestResult.cpp : removed printErrors().
+Refactored. Updated to suit new TestResult, errors and failures are
+reported in the same list.
+
+* examples/cppunittest/TestFailureTest.cpp :
+* examples/cppunittest/TestFailureTest.h : modified to use the new
+TestFailure constructor. Added one test.
+
+* examples/cppunittest/TestListenerTest.cpp: removed addError().
+Refactored to suit new TestListener.
+
+* examples/cppunittest/TestResultTest.h :
+* examples/cppunittest/TestResultTest.cpp : modified to suit the
+new TestResult.
+@
+text
+@@
+
+
+1.2
+log
+@* include/cppunit/extensions/TestFactoryRegistry.h
+* src/cppunit/TestFactoryRegistry.cpp : fixed memory leaks that
+occured when a TestFactoryRegistry was registered into another
+TestFactoryRegistry.
+
+* include/cppunit/extensions/AutoRegisterSuite.h : updated doc.
+
+* include/cppunit/extensions/HelperMacros.h : added macro
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION to register a suite into
+a named suite. Updated doc.
+
+* examples/cppunittest/CoreSuite.h:
+* examples/cppunittest/ExtensionSuite.h:
+* examples/cppunittest/HelperSuite.h: added, declaration of suite for
+use with CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/makefile.am : added HelperSuite.h, CoreSuite.h,
+ExtensionSuite.h, CppUnitTestSuite.h and CppUnitTestSuite.cpp.
+
+* examples/cppunittest/CppUnitTestSuite.*: added.
+
+* examples/cppunittest/ExceptionTest.cpp:
+* examples/cppunittest/TestAssertTest.cpp:
+* examples/cppunittest/TestCaseTest.cpp:
+* examples/cppunittest/TestFailureTest.cpp:
+* examples/cppunittest/TestListenerTest.cpp:
+* examples/cppunittest/TestResultTest.cpp:
+* examples/cppunittest/TestSuiteTest.cpp: moved into named suite
+"Core" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/OrthodoxTest.cpp:
+* examples/cppunittest/RepeatedTest.cpp:
+* examples/cppunittest/TestDecoratorTest.cpp:
+* examples/cppunittest/TestSetUpTest.cpp: moved into named suite
+"Extension" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/HelperMacrosTest.cpp:
+* examples/cppunittest/TestCallerTest.cpp: moved into named suite
+"Helper" using CPPUNIT_TEST_SUITE_NAMED_REGISTRATION.
+
+* examples/cppunittest/CppUnitTest.dsp :
+* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp : added
+Makefile.am, HelperSuite.h, CoreSuite.h, ExtensionSuite.h,
+CppUnitTestSuite.h and CppUnitTestSuite.cpp.
+@
+text
+@d69 1
+a69 1
+TestListenerTest::addError( CppUnit::Test *test, CppUnit::Exception *e )
+d71 4
+a74 3
+  m_listenerTest = test;
+  m_listenerError = e;
+  m_listenerCallbackType = onAddError;
+a76 8
+
+void 
+TestListenerTest::addFailure( CppUnit::Test *test, CppUnit::Exception *e )
+{
+  m_listenerTest = test;
+  m_listenerError = e;
+  m_listenerCallbackType = onAddFailure;
+}
+@
+
+
+1.1
+log
+@* examples/cppunittest/TestResultTest.*: renamed TestListenerTest.*
+
+* examples/cppunittest/*: added unit tests for:
+HelperMacros, TestAssert, TestCaller, TestCase, TestFailure,
+TestResult, TestSuite, TestDecoratorTest, TestSetUp, RepeatedTestTest,
+Orthodox, Exception.
+@
+text
+@d1 2
+a6 1
+#include "MockTestListener.h"
+d8 2
+a9 1
+CPPUNIT_TEST_SUITE_REGISTRATION( TestListenerTest );
+@
+

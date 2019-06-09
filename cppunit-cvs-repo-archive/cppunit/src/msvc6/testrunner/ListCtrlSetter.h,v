@@ -1,0 +1,223 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2
+	REL_1_9_4:1.2
+	REL_1_9_0:1.2
+	REL_1_8_0:1.2
+	REL_1_7_8:1.2
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2002.03.25.07.15.06;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.27.21.23.22;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* INSTALL-WIN32.txt: updated for MFC Unicode TestRunner.
+
+* src/msvc6/testrunner/TestRunner.dsp: added Unicode configurations.
+
+* src/msvc6/testrunner/ListCtrlSetter.cpp:
+* src/msvc6/testrunner/ListCtrlSetter.h: replaced usage of std::string by
+CString for easier ansi/unicode switch.
+
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: made changes to compile with
+either ANSI and UNICODE support.
+
+* examples/msvc6/HostApp/HostApp.cpp:
+* examples/msvc6/HostApp/HostApp.h:
+* examples/msvc6/HostApp/HostAppDoc.cpp:
+* examples/msvc6/HostApp/HostAppDoc.h: moved TestRunner execution to
+HostApp::RunUnitTests() and removed the MainFrame application window.
+
+* examples/msvc6/HostApp/HostApp.dsp: added Unicode configurations.
+@
+text
+@#ifndef LISTCTRLSETTER_H
+#define LISTCTRLSETTER_H
+
+#include <string>
+
+
+/*! \brief Helper to set up the content of a list control.
+ */
+class ListCtrlSetter
+{
+public:
+  /*!
+   * Constructor.
+   * \param list List control to fill.
+   */
+  ListCtrlSetter( CListCtrl &list );
+
+  /*!
+   * Destructor.
+   */
+  virtual ~ListCtrlSetter();
+
+
+  /*! Modifies the specified line.
+   * \param nLineNo number of the line to modify.
+   */
+  void modifyLine( int nLineNo );
+
+  /*! Adds a new line at the end of the list.
+   */
+  void addLine();
+
+  /*! Insert a new line in the list.
+   * \param nLineNo Line number before the new line is insert.
+   */
+  void insertLine( int nLineNo );
+
+
+  void addSubItem( const CString &strText );
+
+  void addSubItem( const CString &strText, void *lParam );
+
+  void addSubItem( const CString &strText, int nImage );
+
+  void addSubItem( const CString &strText, void *lParam, int nImage );
+
+  /*! Gets the number of the line being modified.
+   * \return Number of the line being modified.
+   */
+  int getLineNo() const;
+
+private:
+  /*! Edit a line.
+   * \param nLineNo Number of the line to edit.
+   * \param bInsertLine \c true if the line is inserted, \c false if it is modified.
+   */
+  void editLine( int nLineNo, 
+                 bool bInsertLine );
+
+  /*! Add a sub-item.
+   * \param nMask Mask LV_IF... to set.
+   * \param strText Sub-item Text.
+   * \param nImage Image number.
+   * \param lParam Item data pointer.
+   */
+  void doAddSubItem( UINT nMask, 
+                     CString strText, 
+                     int nImage, 
+                     void *lParam =NULL );
+
+private:
+  /*! List control which content is being set up.
+   */
+  CListCtrl &m_List;
+
+  /*! Current line number (line being edited).
+   */
+  int m_nLineNo;
+
+  /*! Line should be inserted ?
+   */
+  bool m_bInsertLine;
+
+  /*! Next sub-item number.
+   */
+  int m_nNextSubItem;
+};
+
+
+#endif //LISTCTRLSETTER_H
+@
+
+
+1.1
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+moved dll copy from post-build to custom build setting, so that the
+dll is copied even if the CppUnitTestApp was not modified.
+
+* examples/msvc6/TestPlugIn/: a new example of test plug in.
+
+* src/msvc6/TestRunner/ListCtrlFormatter.*
+* src/msvc6/TestRunner/ListCtrlSetter.*:
+added, helper to manipulate list control.
+
+* src/msvc6/TestRunner/TestRunnerDlg.*: change to make the error list
+more compact. text moved to string resources. icons added for typ
+test tfailure type.
+
+* src/msvc6/TestRunner/MostRecentTests.*: added, classes that will
+replace the current implementation of MRU test which make it hard
+to subclass the dialog.
+
+* src/msvc6/TestRunner/res/errortype.bmp: added, bitmap with error
+types (failure and error).
+
+* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+
+* src/cppunit/cppunit.dsp:
+removed config.h from project
+added Portability.h and config-msvc6.h
+
+* include/cppunit/config-msvc6.h:
+undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+@
+text
+@d39 1
+a39 1
+  void addSubItem( const std::string &strText );
+d41 1
+a41 1
+  void addSubItem( const std::string &strText, void *lParam );
+d43 1
+a43 1
+  void addSubItem( int nImage, const std::string &strText );
+d45 1
+a45 1
+  void addSubItem( int nImage, const std::string &strText, void *lParam );
+d67 1
+a67 1
+                     const std::string &strText, 
+@
+

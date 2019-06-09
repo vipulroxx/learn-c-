@@ -1,0 +1,344 @@
+head	1.4;
+access;
+symbols
+	REL_1_12_1:1.4
+	REL_1_11_6:1.4
+	REL_1_11_4:1.4
+	REL_1_11_0:1.4
+	TG_CPPUNIT_NO_STREAM_AFTER:1.4
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.4
+	REL_1_10_2:1.4
+	REL_1_10_0:1.4
+	REL_1_9_14:1.4
+	REL_1_9_12:1.4
+	BRANCH_1_9_12:1.4.0.2
+	TG_BRANCH_1_9_12:1.4
+	TG_BEFORE_HPUX_PLUGIN:1.4
+	TG_BEFORE_SUN4_PORT:1.4
+	REL_1_9_10:1.4
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1
+	REL_1_5_5:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.4
+date	2002.08.03.15.47.52;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.05.07.21.55.07;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.28.14.27.24;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* include/cppunit/Exception.h:
+* src/cppunit/Exception.h: added setMessage().
+
+* include/cppunit/Protector.h:
+* src/cppunit/Protector.cpp: added class ProtectorGuard. Change the
+  reportXXX() method to support Exception passing and SourceLine.
+
+* include/cppunit/TestCaller.h: removed 'expect exception' features.
+  It is now handled by ExceptionTestCaseDecorator and TestCaller no
+  longer need default template argument support.
+
+* include/cppunit/TestCase.h:
+* include/cppunit/extensions/TestCaller.h: runTest() is now public
+  instead of protected, so that it can be decorated.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.h: added pushProtector() and popProtector()
+  methods. This allow user to specify their own exception trap when
+  running test case.
+
+* include/cppunit/extensions/TestDecorator.h:
+* src/cppunit/TestDecorator.cpp: added. Extracted from TestDecorator.h.
+  The test passed to the constructor is now owned by the decorator.
+
+* include/cppunit/extensions/TestCaseDecorator.h:
+* src/cppunit/TestCaseDecorator.cpp: added. Decorator for TestCase
+  setUp(), tearDown() and runTest().
+
+* include/cppunit/extensions/ExceptionTestCaseDecorator.h: added.
+  TestCaseDecorator to expect that a specific exception is thrown.
+
+* include/cppunit/extensions/HelperMacros.h: updated against TestCaller
+  change.
+
+* src/cppunit/DefaultFunctor.h: fixed bug (did not return underlying
+  test return code).
+
+* src/cppunit/ProtectorChain.cpp: fixed bug in chaing return code.
+
+* src/cppunit/DefaultFunctor.h: fixed bug.
+
+* src/msvc6/testrunner/ActiveTest.h:
+* src/msvc6/testrunner/ActiveTest.cpp: updated against
+  TestCaseDecorator ownership policy change. Moved inline functions
+  to .cpp.
+
+* examples/cppunittest/TestSetUpTest.cpp: updated to use MockTestCase
+  and against the new ownership policy.
+
+* examples/cppunittest/TestDecoratorTest.cpp:
+* examples/cppunittest/RepeatedTestTest.cpp: updated against
+  TestDecorator ownership policy change.
+
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.h:
+* examples/cppunittest/ExceptionTestCaseDecoratorTest.cpp: added. Unit
+  tests for ExceptionTestCaseDecoratorTest.
+@
+text
+@#ifndef CPPUNIT_ACTIVETEST_H
+#define CPPUNIT_ACTIVETEST_H
+
+#include <afxmt.h>
+
+#ifndef CPPUNIT_TESTDECORATOR_H
+#include <cppunit/extensions/TestDecorator.h>
+#endif
+
+
+/* A Microsoft-specific active test
+ *
+ * An active test manages its own
+ * thread of execution.  This one 
+ * is very simple and only sufficient
+ * for the limited use we put it through
+ * in the TestRunner.  It spawns a thread
+ * on run (TestResult *) and signals
+ * completion of the test.
+ *
+ * We assume that only one thread 
+ * will be active at once for each
+ * instance.
+ *
+ */
+
+class ActiveTest : public CPPUNIT_NS::TestDecorator
+{
+public:
+  ActiveTest( CPPUNIT_NS::Test *test );
+  ~ActiveTest();
+
+  void run( CPPUNIT_NS::TestResult *result );
+
+protected:
+  HANDLE m_threadHandle;
+  CEvent m_runCompleted;
+  CPPUNIT_NS::TestResult *m_currentTestResult;
+
+  void run();
+  void setTestResult( CPPUNIT_NS::TestResult *result );
+  static UINT threadFunction( LPVOID thisInstance );
+};
+
+#endif
+
+
+@
+
+
+1.3
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@a44 34
+
+// Construct the active test
+inline 
+ActiveTest::ActiveTest( CPPUNIT_NS::Test *test )
+    : TestDecorator( test )
+    , m_runCompleted() 
+{ 
+  m_currentTestResult = NULL; 
+  m_threadHandle = INVALID_HANDLE_VALUE; 
+}
+
+
+// Pend until the test has completed
+inline 
+ActiveTest::~ActiveTest()
+{ 
+  CSingleLock( &m_runCompleted, TRUE );
+}
+
+
+// Set the test result that we are to run
+inline void 
+ActiveTest::setTestResult( CPPUNIT_NS::TestResult *result )
+{ 
+  m_currentTestResult = result; 
+}
+
+// Run our test result
+inline void 
+ActiveTest::run()
+{ 
+  TestDecorator::run( m_currentTestResult );
+}
+
+@
+
+
+1.2
+log
+@* src/DllPlugInTester/CommandLineParser.cpp: fixed compilation issue.
+
+* src/msvc6/TestRunner/ActiveTest.h:
+* src/msvc6/TestRunner/ActiveTest.cpp: reindented. bugfix: thread handle
+  resource leak (bug #553424).
+@
+text
+@d27 1
+a27 1
+class ActiveTest : public CppUnit::TestDecorator
+d30 1
+a30 1
+  ActiveTest( CppUnit::Test *test );
+d33 1
+a33 1
+  void run( CppUnit::TestResult *result );
+d38 1
+a38 1
+  CppUnit::TestResult *m_currentTestResult;
+d41 1
+a41 1
+  void setTestResult( CppUnit::TestResult *result );
+d48 1
+a48 1
+ActiveTest::ActiveTest( CppUnit::Test *test )
+d67 1
+a67 1
+ActiveTest::setTestResult( CppUnit::TestResult *result )
+@
+
+
+1.1
+log
+@Merged msvc6 specific TestRunner and example adapted from Michael Feathers
+version by Baptiste Lepilleur.
+@
+text
+@a0 2
+
+
+d30 2
+a31 2
+                    ActiveTest (CppUnit::Test *test);
+                    ~ActiveTest ();
+d33 1
+a33 1
+    void            run (CppUnit::TestResult *result);
+d36 7
+a42 9
+    HANDLE          m_threadHandle;
+    CEvent          m_runCompleted;
+    CppUnit::TestResult      *m_currentTestResult;
+
+    void            run ();
+    void            setTestResult (CppUnit::TestResult *result);
+    static UINT     threadFunction (LPVOID thisInstance);
+
+
+d47 8
+a54 3
+inline ActiveTest::ActiveTest (CppUnit::Test *test)
+: TestDecorator (test), m_runCompleted () 
+{ m_currentTestResult = NULL; m_threadHandle = INVALID_HANDLE_VALUE; }
+d58 5
+a62 2
+inline ActiveTest::~ActiveTest ()
+{ CSingleLock (&m_runCompleted, TRUE); }
+d66 5
+a70 2
+inline void ActiveTest::setTestResult (CppUnit::TestResult *result)
+{ m_currentTestResult = result; }
+d73 5
+a77 2
+inline void ActiveTest::run ()
+{ TestDecorator::run (m_currentTestResult); }
+@
+

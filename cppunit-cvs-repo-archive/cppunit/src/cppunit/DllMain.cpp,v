@@ -1,0 +1,156 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2
+	REL_1_9_4:1.2
+	REL_1_9_0:1.2
+	REL_1_8_0:1.2
+	REL_1_7_8:1.2;
+locks; strict;
+comment	@// @;
+
+
+1.3
+date	2005.07.05.21.17.40;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.03.25.18.41.39;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.03.24.19.39.55;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@  * include/cppunit/TestResultCollector.h
+  * src/cppunit/TestResultCollector.cpp: fixed memory leak
+    occuring when calling reset().
+
+  * src/cppunit/DllMain.cpp: added work-around for mingw compilation
+    for BLENDFUNCTION macro issue when including windows.h.
+
+  * src/qttestrunner/TestRunnerDlgImpl.cpp: fixed display of multiline
+    messages.
+
+  * include/cppunit/Portability.h: better integration of compiler output
+    for gcc on Mac OS X with Xcode (contributed by Claus Broch).
+@
+text
+@#define WIN32_LEAN_AND_MEAN 
+#define NOGDI
+#define NOUSER
+#define NOKERNEL
+#define NOSOUND
+#define BLENDFUNCTION void    // for mingw & gcc
+
+#include <windows.h>
+
+BOOL APIENTRY 
+DllMain( HANDLE hModule, 
+         DWORD  ul_reason_for_call, 
+         LPVOID lpReserved )
+{
+  return TRUE;
+}
+@
+
+
+1.2
+log
+@* include/cppunit/config-msvc6.h:
+* include/cppunit/Portability.h
+* include/cppunit/extensions/TestFactoryRegistry.h
+* include/cppunit/TestResult.h
+* include/cppunit/TestResultCollector.h
+* include/cppunit/TestSuite.h
+* include/cppunit/TextTestRunner.h
+* include/cppunit/XmlOutputter.h: removed warning when compiling CppUnit as DLL.
+
+* src/cppunit/DllMain.cpp: added some defines to speed up compilation a bit.
+@
+text
+@d6 1
+@
+
+
+1.1
+log
+@* INSTALL-WIN32.txt: added some info to build cppunit as a DLL.
+
+* include/cppunit/config-msvc6.h: added definition of macro CPPUNIT_API when
+building or linking DLL. Defined CPPUNIT_BUILD_DLL when building, and
+CPPUNIT_DLL when linking.
+
+* include/cppunit/Portability.h: added empty definition of macro CPPUNIT_API
+when not building or using CppUnit as a DLL. When any of those symbol is defined,
+the symbol CPPUNIT_NEED_DLL_DECL is set to 1.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* include/cppunit/extensions/TestDecorator.h:
+* include/cppunit/extensions/TestSetUp.h:
+* include/cppunit/TestCaller.h
+* include/cppunit/extensions/TestFactory.h
+* include/cppunit/extensions/TestFactoryRegistry.h
+* include/cppunit/extensions/TypeInfoHelper.h
+* include/cppunit/Asserter.h
+* include/cppunit/Exception.h
+* include/cppunit/NotEqualException.h
+* include/cppunit/SourceLine.h
+* include/cppunit/SynchronizedObject.h
+* include/cppunit/Test.h
+* include/cppunit/TestAssert.h
+* include/cppunit/TestCase.h
+* include/cppunit/TestFailure.h
+* include/cppunit/TestListener.h
+* include/cppunit/TestResult.h
+* include/cppunit/TestSuite.h
+* include/cppunit/CompilerOutputter.h
+* include/cppunit/Outputter.h
+* include/cppunit/TestResultCollector.h
+* include/cppunit/TestSuccessListener.h
+* include/cppunit/TextOutputter.h
+* include/cppunit/TextTestProgressListener.h
+* include/cppunit/TextTestResult.h
+* include/cppunit/TextTestRunner.h
+* include/cppunit/XmlOutputter.h: added CPPUNIT_API for DLL export.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: reindented
+
+* include/cppunit/extensions/TestSetUp.h:
+* src/cppunit/TestSetUp.cpp: added .cpp. extracted inline method and moved them
+to cpp file.
+@
+text
+@d1 6
+a6 1
+#define VC_EXTRALEAN
+@
+

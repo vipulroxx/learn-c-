@@ -1,0 +1,2228 @@
+head	1.87;
+access;
+symbols
+	REL_1_12_1:1.87
+	REL_1_11_6:1.83
+	REL_1_11_4:1.82
+	REL_1_11_0:1.80
+	TG_CPPUNIT_NO_STREAM_AFTER:1.78
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.78
+	REL_1_10_2:1.77
+	REL_1_10_0:1.76
+	REL_1_9_14:1.74
+	REL_1_9_12:1.72
+	BRANCH_1_9_12:1.71.0.2
+	TG_BRANCH_1_9_12:1.71
+	TG_BEFORE_HPUX_PLUGIN:1.69
+	TG_BEFORE_SUN4_PORT:1.69
+	REL_1_9_10:1.68
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.64
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.64
+	REL_1_9_6:1.62
+	REL_1_9_4:1.57
+	REL_1_9_0:1.46
+	REL_1_8_0:1.45
+	REL_1_7_8:1.38
+	REL_1_7_3:1.34
+	REL_1_7_1:1.31
+	REL_1_6_2:1.29.2.1
+	BRANCH_1_6:1.29.0.2
+	REL_1_6_1:1.29
+	REL_1_6_0:1.28
+	REL_1_5_5:1.12
+	REL_1_5_4:1.5
+	initial:1.1.1.1
+	e-s:1.1.1;
+locks; strict;
+comment	@# @;
+
+
+1.87
+date	2008.02.20.06.21.50;	author smr99;	state Exp;
+branches;
+next	1.86;
+
+1.86
+date	2007.01.27.05.33.10;	author smr99;	state Exp;
+branches;
+next	1.85;
+
+1.85
+date	2006.06.29.21.11.30;	author blep;	state Exp;
+branches;
+next	1.84;
+
+1.84
+date	2006.03.05.09.59.40;	author blep;	state Exp;
+branches;
+next	1.83;
+
+1.83
+date	2006.03.04.21.47.05;	author blep;	state Exp;
+branches;
+next	1.82;
+
+1.82
+date	2005.11.07.08.58.37;	author blep;	state Exp;
+branches;
+next	1.81;
+
+1.81
+date	2005.10.14.07.12.57;	author blep;	state Exp;
+branches;
+next	1.80;
+
+1.80
+date	2005.07.15.19.31.08;	author blep;	state Exp;
+branches;
+next	1.79;
+
+1.79
+date	2005.06.14.21.28.46;	author blep;	state Exp;
+branches;
+next	1.78;
+
+1.78
+date	2004.06.19.11.30.32;	author blep;	state Exp;
+branches;
+next	1.77;
+
+1.77
+date	2004.06.18.11.42.20;	author blep;	state Exp;
+branches;
+next	1.76;
+
+1.76
+date	2004.06.15.17.43.06;	author blep;	state Exp;
+branches;
+next	1.75;
+
+1.75
+date	2004.04.09.18.41.41;	author blep;	state Exp;
+branches;
+next	1.74;
+
+1.74
+date	2004.03.13.15.49.41;	author blep;	state Exp;
+branches;
+next	1.73;
+
+1.73
+date	2004.02.20.18.55.09;	author blep;	state Exp;
+branches;
+next	1.72;
+
+1.72
+date	2004.02.19.20.46.18;	author blep;	state Exp;
+branches;
+next	1.71;
+
+1.71
+date	2004.02.18.20.45.44;	author blep;	state Exp;
+branches
+	1.71.2.1;
+next	1.70;
+
+1.70
+date	2003.05.07.20.07.10;	author blep;	state Exp;
+branches;
+next	1.69;
+
+1.69
+date	2002.09.05.07.40.04;	author blep;	state Exp;
+branches;
+next	1.68;
+
+1.68
+date	2002.08.29.20.08.26;	author blep;	state Exp;
+branches;
+next	1.67;
+
+1.67
+date	2002.07.13.11.36.28;	author blep;	state Exp;
+branches;
+next	1.66;
+
+1.66
+date	2002.07.03.07.02.40;	author blep;	state Exp;
+branches;
+next	1.65;
+
+1.65
+date	2002.06.16.17.55.52;	author blep;	state Exp;
+branches;
+next	1.64;
+
+1.64
+date	2002.05.23.18.38.38;	author blep;	state Exp;
+branches;
+next	1.63;
+
+1.63
+date	2002.04.23.10.01.34;	author blep;	state Exp;
+branches;
+next	1.62;
+
+1.62
+date	2002.04.21.12.34.52;	author blep;	state Exp;
+branches;
+next	1.61;
+
+1.61
+date	2002.04.21.12.32.10;	author blep;	state Exp;
+branches;
+next	1.60;
+
+1.60
+date	2002.04.21.10.57.52;	author blep;	state Exp;
+branches;
+next	1.59;
+
+1.59
+date	2002.04.20.22.14.08;	author blep;	state Exp;
+branches;
+next	1.58;
+
+1.58
+date	2002.04.20.21.51.29;	author blep;	state Exp;
+branches;
+next	1.57;
+
+1.57
+date	2002.04.19.14.17.47;	author blep;	state Exp;
+branches;
+next	1.56;
+
+1.56
+date	2002.04.19.10.54.16;	author blep;	state Exp;
+branches;
+next	1.55;
+
+1.55
+date	2002.04.18.10.03.03;	author blep;	state Exp;
+branches;
+next	1.54;
+
+1.54
+date	2002.04.18.09.37.30;	author blep;	state Exp;
+branches;
+next	1.53;
+
+1.53
+date	2002.04.18.09.35.52;	author blep;	state Exp;
+branches;
+next	1.52;
+
+1.52
+date	2002.04.18.09.34.52;	author blep;	state Exp;
+branches;
+next	1.51;
+
+1.51
+date	2002.04.18.09.32.16;	author blep;	state Exp;
+branches;
+next	1.50;
+
+1.50
+date	2002.04.17.22.27.27;	author blep;	state Exp;
+branches;
+next	1.49;
+
+1.49
+date	2002.04.15.16.18.15;	author blep;	state Exp;
+branches;
+next	1.48;
+
+1.48
+date	2002.04.15.15.14.47;	author blep;	state Exp;
+branches;
+next	1.47;
+
+1.47
+date	2002.04.13.16.01.43;	author blep;	state Exp;
+branches;
+next	1.46;
+
+1.46
+date	2002.04.11.11.23.11;	author blep;	state Exp;
+branches;
+next	1.45;
+
+1.45
+date	2002.04.11.10.07.07;	author blep;	state Exp;
+branches;
+next	1.44;
+
+1.44
+date	2002.04.11.09.53.02;	author blep;	state Exp;
+branches;
+next	1.43;
+
+1.43
+date	2002.04.11.04.10.19;	author smr99;	state Exp;
+branches;
+next	1.42;
+
+1.42
+date	2002.04.10.15.35.19;	author blep;	state Exp;
+branches;
+next	1.41;
+
+1.41
+date	2002.03.28.16.21.51;	author blep;	state Exp;
+branches;
+next	1.40;
+
+1.40
+date	2002.03.28.16.02.58;	author blep;	state Exp;
+branches;
+next	1.39;
+
+1.39
+date	2002.03.26.08.48.06;	author blep;	state Exp;
+branches;
+next	1.38;
+
+1.38
+date	2002.03.25.22.35.31;	author blep;	state Exp;
+branches;
+next	1.37;
+
+1.37
+date	2002.03.25.20.49.17;	author blep;	state Exp;
+branches;
+next	1.36;
+
+1.36
+date	2002.03.25.19.05.33;	author blep;	state Exp;
+branches;
+next	1.35;
+
+1.35
+date	2002.03.25.07.15.05;	author blep;	state Exp;
+branches;
+next	1.34;
+
+1.34
+date	2002.03.03.12.07.42;	author blep;	state Exp;
+branches;
+next	1.33;
+
+1.33
+date	2002.03.01.20.19.51;	author blep;	state Exp;
+branches;
+next	1.32;
+
+1.32
+date	2001.10.21.21.21.22;	author smr99;	state Exp;
+branches;
+next	1.31;
+
+1.31
+date	2001.10.21.21.20.25;	author smr99;	state Exp;
+branches;
+next	1.30;
+
+1.30
+date	2001.10.01.03.49.38;	author smr99;	state Exp;
+branches;
+next	1.29;
+
+1.29
+date	2001.09.29.19.42.40;	author smr99;	state Exp;
+branches
+	1.29.2.1;
+next	1.28;
+
+1.28
+date	2001.09.24.02.58.52;	author smr99;	state Exp;
+branches;
+next	1.27;
+
+1.27
+date	2001.09.23.06.09.15;	author smr99;	state Exp;
+branches;
+next	1.26;
+
+1.26
+date	2001.08.07.15.48.09;	author smr99;	state Exp;
+branches;
+next	1.25;
+
+1.25
+date	2001.08.07.14.25.22;	author smr99;	state Exp;
+branches;
+next	1.24;
+
+1.24
+date	2001.07.12.16.49.55;	author smr99;	state Exp;
+branches;
+next	1.23;
+
+1.23
+date	2001.07.07.16.05.47;	author smr99;	state Exp;
+branches;
+next	1.22;
+
+1.22
+date	2001.07.06.21.36.36;	author smr99;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2001.07.06.17.48.28;	author smr99;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2001.07.06.01.31.24;	author smr99;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2001.07.06.00.31.22;	author smr99;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2001.06.17.22.32.15;	author smr99;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2001.06.17.17.02.00;	author bastiaan;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2001.06.17.15.47.04;	author bastiaan;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2001.06.02.23.26.36;	author smr99;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2001.06.02.22.29.52;	author smr99;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2001.06.01.21.21.18;	author bastiaan;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2001.05.09.20.02.15;	author bastiaan;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2001.05.06.13.34.55;	author bastiaan;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2001.04.28.18.23.32;	author bastiaan;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2001.04.22.23.09.57;	author bastiaan;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2001.04.15.13.00.09;	author bastiaan;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.04.15.12.53.46;	author bastiaan;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.04.14.22.37.30;	author bastiaan;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.04.14.16.06.17;	author bastiaan;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.04.14.00.19.37;	author bastiaan;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.04.13.22.51.31;	author bastiaan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2000.10.11.19.25.40;	author e-s;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2000.10.05.18.37.27;	author e-s;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2000.10.05.18.37.27;	author e-s;	state Exp;
+branches;
+next	;
+
+1.29.2.1
+date	2001.10.18.23.08.23;	author smr99;	state Exp;
+branches;
+next	;
+
+1.71.2.1
+date	2004.02.19.08.39.13;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.87
+log
+@Update version to create release 1.12.1.
+@
+text
+@dnl Process this file with autoconf to produce a configure script.
+AC_INIT(Makefile.am)
+
+# autoconf 2.50 or higher to rebuild aclocal.m4, because the
+# AC_CREATE_PREFIX_CONFIG_H macro needs the AS_DIRNAME macro.
+AC_PREREQ(2.50)
+
+# Making releases:
+#   CPPUNIT_MICRO_VERSION += 1;
+#   CPPUNIT_INTERFACE_AGE += 1;
+#   CPPUNIT_BINARY_AGE += 1;
+# if any functions have been added, set CPPUNIT_INTERFACE_AGE to 0.
+# if backwards compatibility has been broken,
+# set CPPUNIT_BINARY_AGE and CPPUNIT_INTERFACE_AGE to 0.
+#
+CPPUNIT_MAJOR_VERSION=1
+CPPUNIT_MINOR_VERSION=12
+CPPUNIT_MICRO_VERSION=1
+CPPUNIT_INTERFACE_AGE=0
+CPPUNIT_BINARY_AGE=0
+CPPUNIT_VERSION=$CPPUNIT_MAJOR_VERSION.$CPPUNIT_MINOR_VERSION.$CPPUNIT_MICRO_VERSION
+AC_SUBST(CPPUNIT_MAJOR_VERSION)
+AC_SUBST(CPPUNIT_MINOR_VERSION)
+AC_SUBST(CPPUNIT_MICRO_VERSION)
+AC_SUBST(CPPUNIT_INTERFACE_AGE)
+AC_SUBST(CPPUNIT_BINARY_AGE)
+AC_SUBST(CPPUNIT_VERSION)
+
+# libtool versioning
+LT_RELEASE=$CPPUNIT_MAJOR_VERSION.$CPPUNIT_MINOR_VERSION
+LT_CURRENT=`expr $CPPUNIT_MICRO_VERSION - $CPPUNIT_INTERFACE_AGE`
+LT_REVISION=$CPPUNIT_INTERFACE_AGE
+LT_AGE=`expr $CPPUNIT_BINARY_AGE - $CPPUNIT_INTERFACE_AGE`
+AC_SUBST(LT_RELEASE)
+AC_SUBST(LT_CURRENT)
+AC_SUBST(LT_REVISION)
+AC_SUBST(LT_AGE)
+
+AC_CONFIG_AUX_DIR(config)
+AM_CONFIG_HEADER(config/config.h)
+AM_INIT_AUTOMAKE(cppunit, $CPPUNIT_VERSION)
+
+# General "with" options
+# ----------------------------------------------------------------------------
+
+dnl Checks for programs.
+
+AC_PROG_MAKE_SET
+AC_PROG_INSTALL
+
+# The libtool macro AC_PROG_LIBTOOL checks for the C preprocessor.
+# Configure gets confused if we try to check for a C preprocessor
+# without first checking for the C compiler
+# (see http://sources.redhat.com/ml/autoconf/2001-07/msg00036.html),
+# so we invoke AC_PROG_CC explicitly.
+AC_PROG_CC
+AC_PROG_CXX
+AC_LANG(C++)
+
+AC_LIBTOOL_WIN32_DLL
+AC_PROG_LIBTOOL
+
+# check for dlopen,dlsym... or shl_load, shl_findsym...
+AC_LTDL_DLLIB
+
+# check for doxygen
+BB_ENABLE_DOXYGEN
+
+
+# Check for headers
+# Note that the fourth argument to AC_CHECK_HEADERS is non-empty to force
+# the configure probe to try compiling "#include <header>".  See autoconf docs.
+# ----------------------------------------------------------------------------
+
+AC_CHECK_HEADERS(cmath,[],[],[/**/])
+
+# Check for compiler characteristics 
+# ----------------------------------------------------------------------------
+
+AC_CXX_RTTI
+AX_CXX_GCC_ABI_DEMANGLE
+AC_CXX_STRING_COMPARE_STRING_FIRST
+
+
+# Check for library functions
+# ----------------------------------------------------------------------------
+AC_CXX_HAVE_SSTREAM
+AC_CXX_HAVE_STRSTREAM
+AX_CXX_HAVE_ISFINITE
+AC_CHECK_FUNCS(finite)
+
+cppunit_val='CPPUNIT_HAVE_RTTI'
+AC_ARG_ENABLE(typeinfo-name,
+[  --disable-typeinfo-name disable use of RTTI for class names],
+[  
+    test x$enableval = 'xno' && cppunit_val='0' 
+])
+
+AC_DEFINE_UNQUOTED(USE_TYPEINFO_NAME,$cppunit_val,
+[Define to 1 to use type_info::name() for class names])
+
+
+# Doesn't work. It's supposed to add "#define CPPUNIT_NO_TESTPLUGIN" if
+# --disable-test-plugin was used on the command line.
+#
+# 
+#
+#AC_ARG_ENABLE(test-plugin,
+#[  --disable-test-plugin disable support for test plug-ins],
+#[  
+#	if test -n "$enable_test_plugin"; then
+#	   enable_test_plugin=${enable_test_plugin_default-yes}
+#	fi
+#	if test "$enable_test_plugin" = no; then
+#echo "test-plug in disabled"
+#	fi
+#])
+#
+#testplugin_val=1
+#AC_DEFINE_UNQUOTED(NO_TESTPLUGIN,$testplugin_val,
+#[defined to disable TestPlugIn])
+
+
+AC_OUTPUT([
+  Makefile 
+  cppunit.pc
+  cppunit.spec
+  cppunit-config
+  src/Makefile
+  src/DllPlugInTester/Makefile
+  src/cppunit/Makefile
+  include/Makefile
+  include/cppunit/Makefile
+  include/cppunit/config/Makefile
+  include/cppunit/extensions/Makefile
+  include/cppunit/plugin/Makefile
+  include/cppunit/portability/Makefile
+  include/cppunit/tools/Makefile
+  include/cppunit/ui/Makefile
+  include/cppunit/ui/mfc/Makefile
+  include/cppunit/ui/qt/Makefile
+  include/cppunit/ui/text/Makefile
+  doc/Makefile
+  doc/Doxyfile
+  examples/Makefile
+  examples/simple/Makefile
+  examples/hierarchy/Makefile
+  examples/cppunittest/Makefile
+  examples/ClockerPlugIn/Makefile
+  examples/DumperPlugIn/Makefile
+  examples/money/Makefile
+],[chmod a+x cppunit-config])
+
+AC_CREATE_PREFIX_CONFIG_H([include/cppunit/config-auto.h], 
+        $PACKAGE, [config/config.h])
+@
+
+
+1.86
+log
+@Check for isfinite() and finite().
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=0
+@
+
+
+1.85
+log
+@- bumped version to 1.12.0
+@
+text
+@d83 4
+d89 2
+@
+
+
+1.84
+log
+@
+release 1.11.6
+@
+text
+@d17 2
+a18 2
+CPPUNIT_MINOR_VERSION=11
+CPPUNIT_MICRO_VERSION=6
+@
+
+
+1.83
+log
+@* cppunit.pc.in:
+* configure.in:
+* Makefile.am: integrated patch from Rober Leight to generate pkg-config.
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=4
+@
+
+
+1.82
+log
+@* release 1.11.4
+@
+text
+@d120 1
+@
+
+
+1.81
+log
+@* bumped version to 1.11.2
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=2
+@
+
+
+1.80
+log
+@release 1.11.0
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=0
+@
+
+
+1.79
+log
+@MinGW, cygwin: enable build of shared library when using libtool. patch #1194394 contributed by Stéphane Fillod.
+@
+text
+@d17 2
+a18 2
+CPPUNIT_MINOR_VERSION=10
+CPPUNIT_MICRO_VERSION=3
+@
+
+
+1.78
+log
+@* release 1.10.2 done
+@
+text
+@d60 1
+@
+
+
+1.77
+log
+@* Release 10.0.2
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=2
+@
+
+
+1.76
+log
+@* reseted interface age stuff
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=0
+@
+
+
+1.75
+log
+@* release 1.10.0
+
+* install-UNIX.txt: added some notes concerning Sun CC 5.5 & AIX.
+@
+text
+@d19 2
+a20 2
+CPPUNIT_INTERFACE_AGE=1
+CPPUNIT_BINARY_AGE=1
+@
+
+
+1.74
+log
+@* release 1.9.14
+@
+text
+@d17 4
+a20 4
+CPPUNIT_MINOR_VERSION=9
+CPPUNIT_MICRO_VERSION=14
+CPPUNIT_INTERFACE_AGE=0
+CPPUNIT_BINARY_AGE=0
+@
+
+
+1.73
+log
+@* configure.in: bumped version number to 1.9.13
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=13
+@
+
+
+1.72
+log
+@* configure.in: bumped version number to 1.9.12
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=12
+@
+
+
+1.71
+log
+@* configure.in:
+* config/ax_cxx_gcc_abi_demangle.m4:
+* src/cppunit/TypeInfoHelper.cpp: added patch from
+Neil Ferguson <nferguso@@eso.org> to use gcc c++ abi to demangle typeinfo
+name when available.
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=11
+@
+
+
+1.71.2.1
+log
+@* configure.in: bumped version number to 1.9.12
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=12
+@
+
+
+1.70
+log
+@* Makefile.am
+* configure.in
+* config/ac_dll.m4
+* examples/cppunittest/Makefile.am
+* examples/hierarchy/Makefile.am
+* examples/money/Makefile.am
+* examples/simple/Makefile.am
+* include/cppunit/config/SelectDllLoader.h
+* include/cppunit/plugin/TestPlugIn.h
+* include/cppunit/tools/Algorithm.h
+* src/DllPlugInTester/Makefile.am
+* src/cppunit/Makefile.am
+* src/cppunit/TestDecorator.cpp
+* src/cppunit/ShlDynamicLibraryManager.cpp
+* src/cppunit/UnixDynamicLibraryManager.cpp
+* src/cppunit/Win32DynamicLibraryManager.cpp: applied patch from
+  Abdessattar Sassi <abdesassi@@users.sourceforge.net> to add support
+  for plug-in to hp-ux.
+@
+text
+@d80 1
+@
+
+
+1.69
+log
+@* bumped version to 1.9.11
+@
+text
+@d62 3
+@
+
+
+1.68
+log
+@* preparing for 1.9.10 release
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=10
+@
+
+
+1.67
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=9
+@
+
+
+1.66
+log
+@* include/cppunit/XmlOutputter.h: fixed XmlOutputter constructed default
+  value initializatino which caused compilation error with BC5.
+
+* src/cppunit/PlugInManager.cpp: added missing CPPUNIT_NO_TESTPLUGIN guard.
+
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp:
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h: applied Steven Mitter
+  patch to fix bug #530426 (conflict between TestRunner and host application
+  resources). Adapted patch to compile work with Unicode.
+
+* src/msvc6/testrunner/ResourceLoaders.h:
+* src/msvc6/testrunner/ResourceLoaders.cpp:
+* src/msvc6/testrunner/Change-Diary-ResourceBugFix.txt: added, from
+  Steven Mitter's patch. Simplified loadCString() to compile with Unicode.
+
+* src/cppunit/cppunit.dsp:
+* src/cppunit/cppunit_dll.dsp:
+* src/DllPlugInTester/DllPlugInTester.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: all lib, dll and exe are
+  now created in the intermediate directory. A post-build rule is used to
+  copy them to the lib/ directory.
+@
+text
+@d125 1
+@
+
+
+1.65
+log
+@* release 1.9.8
+
+* include/cppunit/plugin/TestPlugIn.h: updated documentation.
+
+* include/cppunit/tools/XmlDocument.h: updated documentation.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/StringTools.cpp: added split() and wrap() functions.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp: extracted wrap() and
+  splitMessageIntoLines() to StringTools.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: removed rooNode parameter from
+  beginDocument() and endDocument(). It can be retreive from document.
+  Renamed 'node' occurences to 'element'.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against
+  XmlOutputterHook changes. Renamed 'node' occurences to 'element'.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: updated against
+  XmlOutputterHook changes.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: Renamed 'node' occurences
+  to 'element'.
+
+* examples/cppunittest/XmlOutputterTest.cpp: updated against
+  XmlOutputterHook changes.
+
+* examples/cppunittest/StringToolsTest.h:
+* examples/cppunittest/StringToolsTest.cpp: added. Unit tests for
+  StringTools. Turn out that VC++ dismiss empty lines in tools output,
+  which is the reason why empty lines where not printed in
+  CompilerOutputter.
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=8
+@
+
+
+1.64
+log
+@* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: extracted class XmlOutputter::Node to
+XmlElement. Extracted xml 'prolog' generation to XmlDocument.
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/tools/XmlElement.cpp: added, extracted from XmlOutputter::Node.
+
+* include/cppunit/tools/XmlDocument.h:
+* src/cppunit/tools/XmlDocument.cpp: added, extracted from XmlOutputter. Handle
+XML document prolog (encoding & style-sheet) and manage the root element.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: bug fix, flag --xsl was ignored.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated for XmlOuputter changes.
+extracted tests for XmlOutputter::Node to XmlElementTest
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added, tests extracted from
+XmlOutputterTest.
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=7
+@
+
+
+1.63
+log
+@* bumped version to 1.9.7
+
+* comitted stuffs I forgot to in 1.9.6.
+@
+text
+@d125 1
+@
+
+
+1.62
+log
+@* fixed directory money
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=6
+@
+
+
+1.61
+log
+@* contrib/bc5/bcc-makefile.zip: updated, generic makefile for
+  Borland 5.5, contributed by project cuppa.
+
+* examples/cppunittest/*Suite.h: integrated Jeffrey Morgan's patch,
+  to remove warning with gcc.
+@
+text
+@d137 1
+a137 1
+  examples/Money/Makefile
+@
+
+
+1.60
+log
+@* src/DllPlugInTester/makefile.am: removed ld.so from LDADD flags.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: rewrote, fixed problem
+  with double quotes in command line...
+
+* src/DllPlugInTester/CommandLineParserTest.h:
+* src/DllPlugInTester/CommandLineParserTest.cpp:
+* src/DllPlugInTester/DllPlugInTesterTest.cpp: added, unit tests for
+  CommandLineParser.
+
+* src/msvc6/TestPlugIn/*: removed.
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=5
+@
+
+
+1.59
+log
+@added missing Makefile to AC_OUT
+@
+text
+@d137 1
+@
+
+
+1.58
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@d135 2
+@
+
+
+1.57
+log
+@* release 1.9.4
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=4
+@
+
+
+1.56
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+
+* src/cppunit/TypeInfoHelper.cpp: fixed implementation to be more
+  portable.
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=3
+@
+
+
+1.55
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@a90 10
+AC_ARG_ENABLE(test-plugin,
+[  --disable-test-plugin disable support for test plug-ins],
+[  
+	if test -n "$enable_test_plugin"; then
+	   enable_test_plugin=${enable_test_plugin_default-yes}
+	fi
+	if test "$enable_test_plugin" = no; then
+echo "test-plug in disabled"
+	fi
+])
+d92 19
+a110 4
+
+testplugin_val=1
+AC_DEFINE_UNQUOTED(NO_TESTPLUGIN,$testplugin_val,
+[defined to disable TestPlugIn])
+@
+
+
+1.54
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d98 5
+a105 2
+	fi
+])
+@
+
+
+1.53
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d91 7
+d101 2
+@
+
+
+1.52
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d91 3
+a93 2
+
+AC_DEFINE(NO_TESTPLUGIN,1)
+@
+
+
+1.51
+log
+@* configure.in: added some makefile.am
+
+* contrib/readme.txt: updated.
+
+* contrib/bc5/bc5-makefile.zip: added borland 5.5 makefile. Contributed by
+  project cuppa.
+@
+text
+@d91 2
+a92 10
+AC_ARG_ENABLE(test-plugin,
+[  --disable-test-plugin disable support for test plug-ins],
+[  
+	if test -n "$enable_test_plugin"; then
+	   enable_test_plugin=${enable_test_plugin_default-yes}
+	fi
+	if test "$enable_test_plugin" = no; then
+	   AC_DEFINE(NO_TESTPLUGIN,1)
+	fi
+])
+@
+
+
+1.50
+log
+@* bumped version to 1.9.3
+
+* FAQ: added question about 4786 warning on VC++.
+
+* NEWS: updated.
+
+* contrib/msvc/readme.txt: moved to contrib/readme.txt.
+
+* contrib/xml-xsl/report.xsl: added XML style sheet contributed by
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for
+  startTestRun()/endTestRun().
+
+* examples/simple/*: added. A simple example.
+
+* include/cppunit/BriefTestProgressListener.h:
+* src/cppunit/BriefTestProgressListener.cpp: added. Verbose progess listener
+  that print the test name before running the test.
+
+* include/cppunit/TestListener.h: added startTestRun()/endTestRun().
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: added runTest(), to be called to run
+  a test by test runner.
+
+* src/cppunit/TextTestRunner.cpp:
+* src/cppunit/TestRunner.cpp: updated to use TestResult::runTest().
+
+* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added. Managers for all loaded plug-ins.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: renamed TestPlugInAdapter. All
+  implementations are empty.
+
+* include/cppunit/plugin/TestPlugInSuite.h: removed.
+* src/cppunit/TestPlugInSuite.cpp: removed. Replaced by PlugInManager.
+
+* include/cppunit/plugin/TestPlugIn.h: rewrote the plug-in interface to
+  provide more versatility. updated macros to match new interface.
+
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestFactoryRegistry.cpp: Added unregisterFactory().
+  Added convenience method addRegistry(). Rewrote registry life cycle
+  management. AutoRegisterSuite can now detect that the registry has been
+  destroy and not call to it to unregister its test factory.
+
+* include/cppunit/extensions/AutoRegisterTest.h: on destruction, the registered
+  factory is unregistered from the registry.
+
+* include/cppunit/extensions/HelperMacros.h: added macros
+  CPPUNIT_REGISTRY_ADD_TO_DEFAULT and CPPUNIT_REGISTRY_ADD to help
+  build test suite hierarchy.
+
+* src/cppunit/msvc/DllPlugInTester/*: moved to src/cppunit/DllPlugInTester/.
+
+* src/cppunit/DllPlugInTester/DllPlugInTester.cpp: removed UNICODE stuffs. Use
+  the PlugInManager instead of PlugInTestSuite. Simplified: only one test on
+  command line, but many DLL can be specified. Added configurations to link
+  against cppunit dll, those are now the default configuration (static linking
+  don't make much sense for plug-in).
+@
+text
+@d98 1
+a98 1
+	   AC_DEFINE(NO_TESTPLUGIN)
+d108 1
+d122 1
+@
+
+
+1.49
+log
+@* 1.9.2 release
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=2
+d90 11
+@
+
+
+1.48
+log
+@* NEWS: updated.
+
+* configure.in: added include/cppunit/config/Makefile and
+  include/cppunit/plugin/Makefile to the list of target.
+
+* doc/CppUnit-win.dox: enabled generation of HTML Help documentation.
+
+* include/cppunit/config/Makefile.am:
+* include/cppunit/plugin/Makefile.am: added.
+
+* include/cppunit/config-bcb5.h:
+* include/cppunit/config-msvc6.h:
+* include/cppunit/config-mac.h: moved to include/cppunit/config/.
+
+* include/cppunit/Portability.h: updated config files location. Added macros
+  CPPUNIT_STRINGIZE and CPPUNIT_JOIN (implementation adapted from boost.org).
+  Added macro CPPUNIT_MAKE_UNIQUE_NAME.
+
+* include/cppunit/Test.h: modified methods order.
+
+* include/cppunit/extensions/HelperMacros.h: renamed macro
+  __CPPUNIT_MAKE_UNIQUE_NAME to CPPUNIT_MAKE_UNIQUE_NAME and moved its
+  definition to include/cppunit/Portability.h.
+
+* include/cppunit/extensions/TestDecorator.h: Inherits Test instead of TestLeaf.
+
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* src/cppunit/DynamicLibraryManager.cpp: added. DLL manager (load & lookup
+  symbol).
+
+* src/cppunit/BeOsDynamicLibraryManager.cpp:
+* src/cppunit/UnixDynamicLibraryManager.cpp:
+* src/cppunit/Win32DynamicLibraryManager.cpp: added. Implementation of
+  platform dependent methods of DynamicLibraryManager.
+
+* include/cppunit/plugin/DynamicLibraryManagerException.h:
+* src/cppunit/DynamicLibraryManagerException.cpp: added. Exception thrown
+  by DynamicLibraryManager.
+
+* include/cppunit/plugin/TestPlugIn.h: added. CppUnitTestPlugIn interface
+  definition. Helper macros to implements plug-in.
+
+* include/cppunit/plugin/TestPlugInSuite.h:
+* src/cppunit/plugin/TestPlugInSuite.cpp: added. A suite to wrap a test
+  plug-in.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: added. A default implementation
+  of the test plug-in interface.
+
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp: updated to use the
+  new TestPlugIn.
+
+* examples/cppunittest/TestResultCollectorTest.cpp: fixed typo.
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=1
+@
+
+
+1.47
+log
+@* NEWS: updated
+
+* doc/other_documentation.dox: addded new module for test plug-in.
+
+* include/msvc6/DSPlugin/TestRunnerDSPlugin.h:
+* include/msvc6/DSPlugin/TestRunnerDSPlugin_i.c: added. Those file are
+  generated by project src/msvc/DSPlugin. They are provided to allow
+  compilation of TestRunner without compiling DSPlugIn which does not
+  build on VC++ 7.
+
+* examples/examples.dsw: removed DSPlugIn for workspace (fail to build
+  with VC++ 7). Added DllPlugInTester.dsp to workspace.
+
+* examples/msvc6/TestPlugIn/TestPlugIn.dsp: added post-build unit testing
+  using the new DllPlugInTester.
+
+* examples/msvc6/EasyTestPlugIn/*: a new project that
+  demonstrates the use of CPPUNIT_TESTPLUGIN_IMPL to create a test plug-in.
+
+* src/cppunit/cppunit.dsw:
+* src/TestPlugInRunner.dsw:
+* src/TestRunner.dsw: removed. Should use src/CppUnitLibraries.dsw instead.
+
+* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: removed findTestName() method. Replaced
+  by Test::findTest().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp:
+* src/msvc6/DSPlugIn/DSAddIn.h: changed include for add-in. MIDL generates
+  files in sub-directory ToAddToDistribution. Generated file should be
+  copied to include/msvc6/DSPlugin when modified. This remove the dependecy
+  of MfcTestRunner on DSPlugIn.
+
+* src/msvc6/testrunner/ListCtrlFormatter.h:
+* src/msvc6/testrunner/ListCtrlFormatter.cpp: added GetNextColumnIndex().
+
+* src/msvc6/testrunner/src/TestRunnerDlg.h:
+* src/msvc6/testrunner/src/TestRunnerDlg.cpp: set column number in
+  MsDevCallerListCtrl when initializing the list.
+
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.h:
+* src/msvc6/testrunner/src/MsDevCallerListCtrl.cpp: column indexes for
+  file and line number are no longer static. Added methods to set those
+  indexes. Changed DSPlugIn header name.
+
+* include/msvc6/testrunner/TestPlugInInterface.h: fixed inclusion of
+  windows header for WINAPI. Added macro CPPUNIT_TESTPLUGIN_IMPL to
+  automatically implements a test plug-in.
+
+* src/msvc6/DllPlugInTester/*: added new project. A application to test DLL
+  and report using CompilerOutputter. Target for post-build testing and
+  debugging of DLL.
+@
+text
+@d100 1
+d102 1
+@
+
+
+1.46
+log
+@* configure.in: bumped version to 1.9.0
+
+* NEWS: added version 1.9.0
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=0
+@
+
+
+1.45
+log
+@* doc/FAQ: removed question about the Exception::operator =() problem.
+
+* release 1.8.0
+@
+text
+@d17 1
+a17 1
+CPPUNIT_MINOR_VERSION=8
+@
+
+
+1.44
+log
+@* doc/FAQ: removed question about the Exception::operator =() problem.
+
+* release 1.8.0
+@
+text
+@d20 1
+a20 1
+CPPUNIT_BINARY_AGE=1
+@
+
+
+1.43
+log
+@Fix up header rearrangement.
+@
+text
+@d17 2
+a18 2
+CPPUNIT_MINOR_VERSION=7
+CPPUNIT_MICRO_VERSION=12
+@
+
+
+1.42
+log
+@* Makefile.am: removed directory cppunitui from copy when making the dist.
+
+* include/cppunit/ui: added Makefile.am for dist and install.
+@
+text
+@d101 4
+@
+
+
+1.41
+log
+@* configure.in: bumped version to 1.7.11
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=11
+@
+
+
+1.40
+log
+@no message
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=10
+@
+
+
+1.39
+log
+@* configure.in: bumped version to 1.7.9
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=9
+@
+
+
+1.38
+log
+@* include/cppunit/makefile.am: removed TestRegistry.h
+
+* include/cppunit/TestRegistry.h: removed. Obsolete, replaced by
+TestFactoryRegistry.
+
+* src/cppunit/makefile.am: removed TestRegistry.cpp. Added cppunit_dll.dsp.
+
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/NotEqualException.h:
+* include/cppunit/SynchronizedObject.h:
+* include/cppunit/TestFixture.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestSucessListener.h:
+* include/cppunit/TextOutputter.h:
+* include/cppunit/TextTestProgressListener.h:
+* include/cppunit/TextTestResult.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/extensions/TestFactory.h:
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/extensions/TestSuiteFactory.h: minor doc update.
+
+* include/cppunit/TestFixture.h: added DLL export.
+
+* include/cppunit/msvc6/TestPlugInInterface.h: updated doc. Added automatic
+exportation of TestPlugIn publishing function.
+
+* src/cppunit/TestCase.cpp:
+* include/cppunit/TestCase.h: inherits setUp() and tearDown() from
+class TestFixture.
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=8
+@
+
+
+1.37
+log
+@* configure.in: bumped version to 1.7.7
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=7
+@
+
+
+1.36
+log
+@no message
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=6
+@
+
+
+1.35
+log
+@* INSTALL-WIN32.txt: updated for MFC Unicode TestRunner.
+
+* src/msvc6/testrunner/TestRunner.dsp: added Unicode configurations.
+
+* src/msvc6/testrunner/ListCtrlSetter.cpp:
+* src/msvc6/testrunner/ListCtrlSetter.h: replaced usage of std::string by
+CString for easier ansi/unicode switch.
+
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: made changes to compile with
+either ANSI and UNICODE support.
+
+* examples/msvc6/HostApp/HostApp.cpp:
+* examples/msvc6/HostApp/HostApp.h:
+* examples/msvc6/HostApp/HostAppDoc.cpp:
+* examples/msvc6/HostApp/HostAppDoc.h: moved TestRunner execution to
+HostApp::RunUnitTests() and removed the MainFrame application window.
+
+* examples/msvc6/HostApp/HostApp.dsp: added Unicode configurations.
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=5
+@
+
+
+1.34
+log
+@* configure.in: updated version number to 1.7.4
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=4
+@
+
+
+1.33
+log
+@* inclued/cppunit/XmlOutputter.h:
+* inclued/cppunit/XmlOutputter.cpp: added optional parameter to constructor
+to specify the encoding.
+
+* configure.in: updated version number to 1.7.3
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=3
+@
+
+
+1.32
+log
+@*** empty log message ***
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=2
+@
+
+
+1.31
+log
+@Commit of 1.7.1 release.
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=1
+@
+
+
+1.30
+log
+@Start 1.7 unstable series.
+@
+text
+@d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=0
+d20 1
+a20 1
+CPPUNIT_BINARY_AGE=0
+d67 2
+@
+
+
+1.29
+log
+@Update version to 1.6.1.
+Add notes on SourceForge release process for CppUnit.
+Tweak a few other docs.
+@
+text
+@d17 4
+a20 4
+CPPUNIT_MINOR_VERSION=6
+CPPUNIT_MICRO_VERSION=1
+CPPUNIT_INTERFACE_AGE=1
+CPPUNIT_BINARY_AGE=1
+@
+
+
+1.29.2.1
+log
+@Improved install process on systems that lack "doxygen".
+Reinstated hook to remove config-auto.h from distribution.
+@
+text
+@d18 3
+a20 3
+CPPUNIT_MICRO_VERSION=2
+CPPUNIT_INTERFACE_AGE=2
+CPPUNIT_BINARY_AGE=2
+@
+
+
+1.28
+log
+@Final touch-ups for release 1.6.0.
+@
+text
+@d18 3
+a20 3
+CPPUNIT_MICRO_VERSION=0
+CPPUNIT_INTERFACE_AGE=0
+CPPUNIT_BINARY_AGE=0
+@
+
+
+1.27
+log
+@Polishing for 1.6.0 release.
+@
+text
+@d17 2
+a18 2
+CPPUNIT_MINOR_VERSION=5
+CPPUNIT_MICRO_VERSION=6
+@
+
+
+1.26
+log
+@Fixes to allow building with SGI MIPSpro 7.30 compiler.
+The testsuite file examples/cppunittest/SubclassedTestCase.cpp
+causes the compiler to dump core, so that and HelperMacrosTest
+were not tested.  The rest of the test suite passes.
+@
+text
+@a61 10
+AC_ARG_ENABLE(debug-mode,   
+[  --enable-debug-mode     enable debugging mode],
+  [
+    CFLAGS="-D_DEBUG -g3 -Wall"
+    CXXFLAGS="-D_DEBUG -g3 -Wall"
+  ],[
+    CFLAGS="-O2 "
+    CXXFLAGS="-O2"
+  ]) 
+
+@
+
+
+1.25
+log
+@Build changes.  Distribute all m4 files.
+@
+text
+@d51 1
+a51 1
+# The libtool macro AM_PROG_LIBTOOL checks for the C preprocessor.
+d60 1
+a60 1
+AM_PROG_LIBTOOL
+d74 6
+@
+
+
+1.24
+log
+@Set version to 1.5.6
+@
+text
+@a97 1
+  config/Makefile
+@
+
+
+1.23
+log
+@Use strstream if stringstream unavailable.
+@
+text
+@a7 1
+#
+d18 1
+a18 1
+CPPUNIT_MICRO_VERSION=5
+@
+
+
+1.22
+log
+@Add configure option to disable RTTI for class name.
+@
+text
+@d81 2
+@
+
+
+1.21
+log
+@Build both shared and static libs by default.  Update INSTALL.
+@
+text
+@d82 8
+a89 3
+# TODO: add --disable-typeinfo-name to turn this off at
+# configure time
+AC_DEFINE(USE_TYPEINFO_NAME,[CPPUNIT_HAVE_RTTI],
+@
+
+
+1.20
+log
+@Change from CPPUNIT_USE_TYPEINFO to CPPUNIT_USE_TYPEINFO_NAME
+@
+text
+@d49 3
+a60 1
+AM_DISABLE_STATIC
+a61 2
+AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+@
+
+
+1.19
+log
+@Fix configure and include bugs.
+@
+text
+@d82 4
+a85 6
+if test "$ac_cv_cxx_rtti" = yes; then
+    CPPUNIT_USE_TYPEINFO=1
+else
+    CPPUNIT_USE_TYPEINFO=0
+fi
+AC_SUBST(CPPUNIT_USE_TYPEINFO)
+@
+
+
+1.18
+log
+@Add AC_PREREQ; remove include/cppunit/config.h
+@
+text
+@d49 9
+a61 3
+
+AC_PROG_CXX
+AC_LANG_CPLUSPLUS
+@
+
+
+1.17
+log
+@removed include/cppunit/config.h from AC_OUTPUT
+@
+text
+@d4 4
+@
+
+
+1.16
+log
+@moved config.h from include/ to config/
+added AC_CREATE_PREFIX_CONFIG_H call
+moved doxygen stuff into BB_ENABLE_DOXYGEN macro
+@
+text
+@a88 1
+  include/cppunit/config.h
+@
+
+
+1.15
+log
+@Determine string::compare() weirdness automatically.
+@
+text
+@d37 1
+a37 1
+AM_CONFIG_HEADER(include/config.h)
+a41 5
+AC_ARG_ENABLE(doxygen, [  --enable-doxygen        enable documentation generation with doxygen (auto)])
+AC_ARG_ENABLE(dot, [  --enable-dot            use 'dot' to generate graphs in doxygen (auto)])              
+AC_ARG_ENABLE(html-docs, [  --enable-html-docs      enable HTML generation with doxygen (yes)], [], [ enable_html_docs=yes])              
+AC_ARG_ENABLE(latex-docs, [  --enable-latex-docs     enable LaTeX documentation generation with doxygen (no)], [], [ enable_latex_docs=no])              
+
+d64 1
+a64 29
+# ----------------------------------------------------------------------------
+if test "x$enable_doxygen" = xno; then
+        enable_doc=no
+else 
+        AC_PATH_PROG(DOXYGEN, doxygen, , $PATH)
+        if test x$DOXYGEN = x; then
+                if test "x$enable_doxygen" = xyes; then
+                        AC_MSG_ERROR([could not find doxygen])
+                fi
+                enable_doc=no
+        else
+                enable_doc=yes
+                AC_PATH_PROG(DOT, dot, , $PATH)
+        fi
+fi
+AM_CONDITIONAL(DOC, test x$enable_doc = xyes)
+
+if test x$DOT = x; then
+        if test "x$enable_dot" = xyes; then
+                AC_MSG_ERROR([could not find dot])
+        fi
+        enable_dot=no
+else
+        enable_dot=yes
+fi
+AC_SUBST(enable_dot)
+AC_SUBST(enable_html_docs)
+AC_SUBST(enable_latex_docs)
+
+d97 3
+@
+
+
+1.14
+log
+@Change to templatized TestAssert::assertEquals() and the new CPPUNIT_ASSERT* macros
+@
+text
+@d103 1
+@
+
+
+1.13
+log
+@Added.
+@
+text
+@d99 13
+d121 1
+@
+
+
+1.12
+log
+@Set CPPUNIT_INTERFACE_AGE and CPPUNIT_BINARY_AGE to zero: 1.5.5 is not completely backwards compatible.
+@
+text
+@d113 1
+@
+
+
+1.11
+log
+@Convert *.ds? files to CRLF endings in dist-hook.
+@
+text
+@d16 2
+a17 2
+CPPUNIT_INTERFACE_AGE=1
+CPPUNIT_BINARY_AGE=1
+@
+
+
+1.10
+log
+@Moved files in subdir cppunit to src/cppunit.
+@
+text
+@d15 3
+a17 3
+CPPUNIT_MICRO_VERSION=4
+CPPUNIT_INTERFACE_AGE=0
+CPPUNIT_BINARY_AGE=0
+@
+
+
+1.9
+log
+@Merged extension headers back in from Micheal Feathers version.
+@
+text
+@d104 2
+a105 1
+  cppunit/Makefile
+@
+
+
+1.8
+log
+@Forgot config/Makefile in AC_OUTPUT.
+@
+text
+@d107 1
+@
+
+
+1.7
+log
+@Set CONFIG_AUX_DIR to config and moved corresponding files from . to config.
+@
+text
+@d103 1
+@
+
+
+1.6
+log
+@Moved public header files from cppunit dir to include/cppunit, to separate them from internal header files like estring.h.
+@
+text
+@d36 1
+@
+
+
+1.5
+log
+@Updated ChangeLog and configure.in for 1.5.4.
+@
+text
+@d36 1
+a36 1
+AM_CONFIG_HEADER(config.h)
+d103 2
+@
+
+
+1.4
+log
+@Added support for building RPMs using 'make rpm'.
+@
+text
+@d15 1
+a15 1
+CPPUNIT_MICRO_VERSION=3
+@
+
+
+1.3
+log
+@Document generation is now autoconfed. (copied from log4cpp autoconf/automake).
+Added doc subdir to dist.
+Upped version number to 1.5.3.
+@
+text
+@d99 2
+a101 1
+  Makefile 
+@
+
+
+1.2
+log
+@changed release number.
+@
+text
+@d15 1
+a15 1
+CPPUNIT_MICRO_VERSION=2
+d39 8
+d48 1
+a48 1
+AC_PROG_CXX
+d51 5
+d67 31
+d102 2
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d13 5
+a17 5
+CPPUNIT_MAJOR_VERSION=0
+CPPUNIT_MINOR_VERSION=2
+CPPUNIT_MICRO_VERSION=1
+CPPUNIT_INTERFACE_AGE=1
+CPPUNIT_BINARY_AGE=1
+a37 1
+AM_INIT_AUTOMAKE(doc, $CPPUNIT_VERSION)
+d58 2
+a59 1
+  doc/Makefile
+@
+
+
+1.1.1.1
+log
+@initial check in.
+@
+text
+@@

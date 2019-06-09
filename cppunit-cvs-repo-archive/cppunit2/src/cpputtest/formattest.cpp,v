@@ -1,0 +1,60 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.1
+date	2005.09.06.07.42.54;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* experimental implementation of a type safe sprintf.
+@
+text
+@#include "formattest.h"
+#include <cpput/assert.h>
+#include <cpptl/format.h>
+
+void 
+FormatTest::setUp()
+{
+   double x = 1, y = 1, z = 0;
+   for ( int i = 1; i < 200; ++i ) {
+      z += x + y;
+      y *= 10;
+      z /= 10;
+   }
+}
+
+
+void 
+FormatTest::tearDown()
+{
+}
+
+
+void 
+FormatTest::testLengthNoFormat()
+{
+   CPPUT_ASSERT_EQUAL( 9, CppTL::Formatter( "123456789", CppTL::FormatArgs() ).length() );
+}
+
+
+void 
+FormatTest::testLengthIntFormat()
+{
+   CPPUT_ASSERT_EQUAL( 4+9, 
+                       CppTL::Formatter( "ab%dcd", CppTL::args(123456789) ).length() );
+}
+
+@

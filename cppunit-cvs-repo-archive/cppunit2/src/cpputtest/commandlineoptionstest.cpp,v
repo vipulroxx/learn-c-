@@ -1,0 +1,659 @@
+head	1.6;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.5
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.5
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.4
+	TG_AFTER_REMOVING_TESTCONTEXT:1.4
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.4
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.4;
+locks; strict;
+comment	@// @;
+
+
+1.6
+date	2007.08.14.17.30.52;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.02.27.10.17.06;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.06.23.20.39.28;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.06.23.20.00.50;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.15.00.45.49;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.06.14.23.33.53;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@   Modified assertion implementation to force evaluation of user
+condition expression first, while preserving delegation to
+function, overloading and optional parameters feature.
+   See CPPUT_BEGIN_ASSERTION_MACRO() documentation in testinfo.h for an example
+to update your custom assertion code.
+
+   New implementation rely on operator evaluation order and operator overloading. The trick is documented in CPPUT_BEGIN_ASSERTION_MACRO().
+@
+text
+@#include "commandlineoptionstest.h"
+#include <cpput/assertstring.h>
+//#include <cpputtools/value.h>
+
+using namespace CppUTTools;
+
+
+#define LOCAL_CHECK_PARSE \
+   CPPUT_BEGIN_ASSERTION_MACRO() \
+   checkParse
+
+#define LOCAL_CHECK_PARSE_BAD_OPTION \
+   CPPUT_BEGIN_ASSERTION_MACRO() \
+   checkParseBadOption
+
+void 
+CommandLineOptionsTest::setUp()
+{
+   values_ = 0;
+}
+
+
+void 
+CommandLineOptionsTest::tearDown()
+{
+   delete values_;
+}
+
+
+CppUT::CheckerResult
+CommandLineOptionsTest::checkParse( CommandLineOptions::OptionsDescription &description,
+                                    const char *argv[] )
+{
+   CppUT::CheckerResult result; // What can make the test fails ???
+   delete values_;
+   values_ = new CommandLineOptions::OptionsValues();
+   std::vector<const char *> commandLine;
+   commandLine.push_back( "test_app.exe" );
+   while ( *argv )
+      commandLine.push_back( *argv++ );
+
+   CommandLineOptions::parseCommandLine( commandLine.size(), &commandLine[0], description, *values_ );
+   values_->validate( description );
+   values_->store( description );
+   return result;
+}
+
+
+CppUT::CheckerResult
+CommandLineOptionsTest::checkParseBadOption( CommandLineOptions::OptionsDescription &description,
+                                             const char *argv[],
+                                             const CppTL::ConstString &badOptionName )
+{
+   CppUT::CheckerResult result;
+   try 
+   {
+      result = checkParse( description, argv );
+      result.setFailed();
+      result.message_.add( "Bad option '" + badOptionName + "' not detected" );
+   }
+   catch ( const CommandLineOptions::CommandLineParseError &e )
+   {
+      result.compose( CppUT::checkEquals( CommandLineOptions::CommandLineParseError::invalidOptionName,
+                                          e.cause() ) );
+      result.compose( CppUT::checkEquals( badOptionName, e.optionName() ) );
+   }
+   return result;
+}
+
+
+void 
+CommandLineOptionsTest::testParseShortOption()
+{
+   CommandLineOptions::OptionsDescription options( "test" );
+   options.add( ",f", "" );
+   options.add( ",x", "" );
+   
+   const char *args[] = { "-f", "-x", 0 };
+   LOCAL_CHECK_PARSE( options, args );
+   CPPUT_ASSERT_EXPR( values_->hasOption("-f") );
+   CPPUT_ASSERT_EXPR( values_->hasOption("-x") );
+}
+
+
+void 
+CommandLineOptionsTest::testLongOption()
+{
+   CommandLineOptions::OptionsDescription options( "test" );
+   options.add( "flag", "" );
+   options.add( "exclude", "" );
+   
+   const char *args[] = { "--flag", "--exclude", 0 };
+   LOCAL_CHECK_PARSE( options, args );
+   CPPUT_ASSERT_EXPR( values_->hasOption("flag") );
+   CPPUT_ASSERT_EXPR( values_->hasOption("exclude") );
+}
+
+
+void 
+CommandLineOptionsTest::testErrorOnBadOptionName()
+{
+   CommandLineOptions::OptionsDescription options( "test" );
+   options.add( "time", "" );
+   options.add( "exclude,x", "" );
+   options.add( ",I", "" );
+   options.add( "duration,d", "" );
+   options.add( "fast,f", "" );
+
+   const char *args1[] = { "--time", "--exclude", "-I", "--duration", "--fast", 0 };
+   LOCAL_CHECK_PARSE( options, args1 );
+
+   const char *args1b[] = { "-x", "-I", "-d", "-f", 0 };
+   LOCAL_CHECK_PARSE( options, args1b );
+
+   const char *args2[] = { "-t", "--exclude", 0 };
+   LOCAL_CHECK_PARSE_BAD_OPTION( options, args2, "-t" );
+
+   const char *args3[] = { "--exclude", "--super", 0 };
+   LOCAL_CHECK_PARSE_BAD_OPTION( options, args3, "--super" );
+
+   const char *args4[] = { "--x", "--super", 0 };
+   LOCAL_CHECK_PARSE_BAD_OPTION( options, args4, "--x" );
+
+   // Notes: we might want to allow this
+   const char *args5[] = { "-exclude", "--super", 0 };
+   LOCAL_CHECK_PARSE_BAD_OPTION( options, args5, "-exclude" );
+}
+
+/*
+void 
+CommandLineOptionsTest::testParseOptionParameter()
+{
+   CommandLineOptions::OptionsDescription options( "test" );
+   int time;
+   CppTL::ConstString excluded;
+   double duration;
+   options.add( "time,t", time, "" );
+   options.add( "exclude,x", excluded, "" );
+   options.add( "include,i", "" );
+   options.add( "duration,d", duration, "" );
+   options.add( "fast,f", "" );
+   
+   const char *args[] = { "--time", "1234", 
+                          "--fast",
+                          "--exclude", "arg", 
+                          "--include", "arg2", 
+                          "--duration", "12.34", 
+                          0 };
+   LOCAL_CHECK_PARSE( options, args );
+   CPPUT_ASSERT_EXPR( values_->hasOption("fast") );
+   CPPUT_ASSERT_EXPR( values_->hasOption("time") );
+   CPPUT_ASSERT_EXPR( values_->hasOption("exclude") );
+   CPPUT_ASSERT_EXPR( values_->hasOption("include") );
+   CPPUT_ASSERT_EXPR( values_->hasOption("duration") );
+}
+*/
+
+void 
+CommandLineOptionsTest::testParseShortOptionAdjascentParameter()
+{
+   CommandLineOptions::OptionsDescription options( "test" );
+   options.add( CommandLineOptions::option<std::string>( ",c:", "" ) );
+   options.add( CommandLineOptions::optionDefault<std::string>( ",f", ".config", "" ) );
+ 
+   const char *args[] = { "-cabcdef", 0 };
+   LOCAL_CHECK_PARSE( options, args );
+   CPPUT_ASSERT_EXPR( values_->hasOption("-c") );
+   CPPUT_ASSERTSTR_EQUAL( "abcdef", 
+                          get<std::string>( values_->optionValue("-c") ) );
+   
+   const char *args2[] = { "-f.ini", 0 };
+   LOCAL_CHECK_PARSE( options, args2 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("-f") );
+   CPPUT_ASSERTSTR_EQUAL( ".ini", 
+                          get<std::string>( values_->optionValue("-f") ) );
+   
+   const char *args3[] = { "-f", 0 };
+   LOCAL_CHECK_PARSE( options, args3 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("-f") );
+   CPPUT_ASSERTSTR_EQUAL( ".config", 
+                          get<std::string>( values_->optionValue("-f") ) );
+}
+
+
+void 
+CommandLineOptionsTest::testParseShortOptionNextParameter()
+{
+   CommandLineOptions::OptionsDescription options( "test" );
+   options.add( CommandLineOptions::option<std::string>( ",c:", "" ) );
+   options.add( CommandLineOptions::optionDefault<std::string>(",f", ".config", "" ) );
+   options.add( ",t", "" );
+ 
+   const char *args[] = { "-c", "abcdef", 0 };
+   LOCAL_CHECK_PARSE( options, args );
+   CPPUT_ASSERT_EXPR( values_->hasOption("-c") );
+   CPPUT_ASSERTSTR_EQUAL( "abcdef", 
+                          get<std::string>( values_->optionValue("-c") ) );
+   
+   const char *args2[] = { "-f", ".ini", 0 };
+   LOCAL_CHECK_PARSE( options, args2 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("-f") );
+   CPPUT_ASSERTSTR_EQUAL( ".ini", 
+                          get<std::string>( values_->optionValue("-f") ) );
+   
+   const char *args3[] = { "-f", 0 };
+   LOCAL_CHECK_PARSE( options, args3 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("-f") );
+   CPPUT_ASSERTSTR_EQUAL( ".config", 
+                          get<std::string>( values_->optionValue("-f") ) );
+ 
+   const char *args4[] = { "-c", "abcdef", "-t", 0 };
+   LOCAL_CHECK_PARSE( options, args4 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("-c") );
+   CPPUT_ASSERTSTR_EQUAL( "abcdef", 
+                          get<std::string>( values_->optionValue("-c") ) );
+   
+   const char *args5[] = { "-f", ".ini", "-t", 0 };
+   LOCAL_CHECK_PARSE( options, args5 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("-f") );
+   CPPUT_ASSERTSTR_EQUAL( ".ini", 
+                          get<std::string>( values_->optionValue("-f") ) );
+   
+   const char *args6[] = { "-f", "-t", 0 };
+   LOCAL_CHECK_PARSE( options, args6 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("-f") );
+   CPPUT_ASSERTSTR_EQUAL( ".config", 
+                          get<std::string>( values_->optionValue("-f") ) );
+}
+
+
+void 
+CommandLineOptionsTest::testParserLongOptionAdjascentParameter()
+{
+   CommandLineOptions::OptionsDescription options( "test" );
+   options.add( "column:", "" );
+   options.add( CommandLineOptions::optionDefault<std::string>( "file", ".config", "" ) );
+ 
+   const char *args[] = { "--column=abcdef", 0 };
+   LOCAL_CHECK_PARSE( options, args );
+   CPPUT_ASSERT_EXPR( values_->hasOption("column") );
+   CPPUT_ASSERTSTR_EQUAL( "abcdef", 
+                          get<std::string>( values_->optionValue("column") ) );
+   
+   const char *args2[] = { "--file=.ini", 0 };
+   LOCAL_CHECK_PARSE( options, args2 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("file") );
+   CPPUT_ASSERTSTR_EQUAL( ".ini", 
+                          get<std::string>( values_->optionValue("file") ) );
+   
+   const char *args3[] = { "--file", 0 };
+   LOCAL_CHECK_PARSE( options, args3 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("file") );
+   CPPUT_ASSERTSTR_EQUAL( ".config", 
+                          get<std::string>( values_->optionValue("file") ) );
+}
+
+
+void 
+CommandLineOptionsTest::testParserLongOptionNextParameter()
+{
+   CommandLineOptions::OptionsDescription options( "test" );
+   options.add( "column:", "" );
+   options.add( CommandLineOptions::optionDefault<std::string>( "file", ".config", "" ) );
+   options.add( ",t", "" );
+ 
+   const char *args[] = { "--column", "abcdef", 0 };
+   LOCAL_CHECK_PARSE( options, args );
+   CPPUT_ASSERT_EXPR( values_->hasOption("column") );
+   CPPUT_ASSERTSTR_EQUAL( "abcdef", 
+                          get<std::string>( values_->optionValue("column") ) );
+   
+   const char *args2[] = { "--file", ".ini", 0 };
+   LOCAL_CHECK_PARSE( options, args2 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("file") );
+   CPPUT_ASSERTSTR_EQUAL( ".ini", 
+                          get<std::string>( values_->optionValue("file") ) );
+   
+   const char *args3[] = { "--file", 0 };
+   LOCAL_CHECK_PARSE( options, args3 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("file") );
+   CPPUT_ASSERTSTR_EQUAL( ".config", 
+                          get<std::string>( values_->optionValue("file") ) );
+ 
+   const char *args4[] = { "--column", "abcdef", "-t", 0 };
+   LOCAL_CHECK_PARSE( options, args4 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("column") );
+   CPPUT_ASSERTSTR_EQUAL( "abcdef", 
+                          get<std::string>( values_->optionValue("column") ) );
+   
+   const char *args5[] = { "--file", ".ini", "-t", 0 };
+   LOCAL_CHECK_PARSE( options, args5 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("file") );
+   CPPUT_ASSERTSTR_EQUAL( ".ini", 
+                          get<std::string>( values_->optionValue("file") ) );
+   
+   const char *args6[] = { "--file", "-t", 0 };
+   LOCAL_CHECK_PARSE( options, args6 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("file") );
+   CPPUT_ASSERTSTR_EQUAL( ".config", 
+                          get<std::string>( values_->optionValue("file") ) );
+}
+
+
+void 
+CommandLineOptionsTest::testValuesLookUpAsShortOrLong()
+{
+   CommandLineOptions::OptionsDescription options( "test" );
+   options.add( "column,c:", "" );
+
+   const char *args[] = { "-c8", 0 };
+   LOCAL_CHECK_PARSE( options, args );
+   CPPUT_ASSERT_EXPR( values_->hasOption("-c") );
+   CPPUT_ASSERT_EXPR( values_->hasOption("column") );
+
+   const char *args2[] = { "--column", "8", 0 };
+   LOCAL_CHECK_PARSE( options, args2 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("-c") );
+   CPPUT_ASSERT_EXPR( values_->hasOption("column") );
+}
+
+
+void 
+CommandLineOptionsTest::testStoreParameterValues()
+{
+   CommandLineOptions::OptionsDescription options( "test" );
+   int column = -1;
+   std::string file;
+   options.add( CommandLineOptions::option( "column,c:", column, "" ) );
+   options.add( CommandLineOptions::option( "file", file, ".config", "" ) );
+ 
+   const char *args[] = { "-c8", "--file", "test", 0 };
+   LOCAL_CHECK_PARSE( options, args );
+   CPPUT_ASSERT_EXPR( values_->hasOption("column") );
+   CPPUT_ASSERT_EXPR( values_->hasOption("file") );
+   CPPUT_ASSERTSTR_EQUAL( "test", file );
+   CPPUT_ASSERT_EQUAL( 8, column );
+ 
+   const char *args2[] = { "--file", "-c", "8", 0 };
+   LOCAL_CHECK_PARSE( options, args2 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("column") );
+   CPPUT_ASSERT_EXPR( values_->hasOption("file") );
+   CPPUT_ASSERTSTR_EQUAL( ".config", file );
+   CPPUT_ASSERT_EQUAL( 8, column );
+}
+
+
+void 
+CommandLineOptionsTest::testParseRequiredParameter()
+{
+   CommandLineOptions::OptionsDescription options( "test" );
+   options.add( "column,c:", "" );
+   options.add( "file:", "" );
+ 
+   const char *args[] = { "--file", "--column", "abcdef", 0 };
+   try
+   {
+      checkParse( options, args );
+      CPPUT_FAIL( "Command line parsing should have failed because of missing parameter of --file." );
+   }
+   catch ( const CommandLineOptions::ValidatorError &e )
+   {
+      CPPUT_ASSERT_EXPR( e.cause() == CommandLineOptions::ValidatorError::missingParameter );
+   }
+}
+
+
+static Value
+validateTraceOrTime( const CommandLineOptions::Parameters &parameters )
+{
+   std::string text = parameters.at(0);
+   if ( text != "trace"  &&  text != "time" )
+      throw CommandLineOptions::ValidatorError( CommandLineOptions::ValidatorError::badParameterValue,
+                                                "trace or time expected." );
+   return value( text );
+}
+
+
+void 
+CommandLineOptionsTest::testCustomValidator()
+{
+   CommandLineOptions::OptionsDescription options( "test" );
+   std::string file;
+   options.add( CommandLineOptions::option( "debug,d:", file, "" ).setValidator( 
+      CommandLineOptions::validator( &validateTraceOrTime ) ) );
+
+   const char *args[] = { "-d", "trace", 0 };
+   LOCAL_CHECK_PARSE( options, args );
+   CPPUT_ASSERT_EXPR( values_->hasOption("debug") );
+   CPPUT_ASSERTSTR_EQUAL( "trace", file );
+
+   const char *args2[] = { "-d", "time", 0 };
+   LOCAL_CHECK_PARSE( options, args2 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("debug") );
+   CPPUT_ASSERTSTR_EQUAL( "time", file );
+
+   const char *args3[] = { "-d", "bad", 0 };
+   try
+   {
+      checkParse( options, args3 );
+      CPPUT_FAIL( "Validation should have failed because of bad parameter for -d." );
+   }
+   catch ( const CommandLineOptions::ValidatorError &e )
+   {
+      CPPUT_ASSERTSTR_EQUAL( "debug", e.optionName() );
+      CPPUT_ASSERT_EXPR( e.cause() == CommandLineOptions::ValidatorError::badParameterValue );
+   }
+}
+
+
+void 
+CommandLineOptionsTest::testEnumerationValidator()
+{
+   CommandLineOptions::OptionsDescription options( "test" );
+   LogLevel level;
+   CommandLineOptions::EnumerationValidator<LogLevel> logLevelValidator;
+   logLevelValidator.add( "fatal", fatal, "Log only fatal events." );
+   logLevelValidator.add( "warning", warning, "Log only fatal and warning events." );
+   logLevelValidator.add( "info", info, "Log all events." );
+   options.add( CommandLineOptions::validatedOption(
+                  "level,l", 
+                  level, 
+                  fatal,
+                  "Set log level",
+                  logLevelValidator.clone() ) );
+   
+   const char *args[] = { "-l", "info", 0 };
+   LOCAL_CHECK_PARSE( options, args );
+   CPPUT_ASSERT_EXPR( values_->hasOption("level") );
+   CPPUT_ASSERT_EQUAL( info, level );
+   
+   const char *args2[] = { "-l", 0 };
+   LOCAL_CHECK_PARSE( options, args2 );
+   CPPUT_ASSERT_EXPR( values_->hasOption("level") );
+   CPPUT_ASSERT_EQUAL( fatal, level );
+
+
+}
+@
+
+
+1.5
+log
+@* use CppTL::ConstString instead of std::string for thread-safety
+@
+text
+@d30 1
+a30 1
+void 
+d34 1
+d45 1
+d49 1
+a49 1
+void 
+d54 1
+d57 3
+a59 2
+      checkParse( description, argv );
+      CppUT::fail( "Bad option '" + badOptionName + "' not detected" );
+d63 3
+a65 3
+      CppUT::checkEquals( CommandLineOptions::CommandLineParseError::invalidOptionName,
+                          e.cause() );
+      CppUT::checkEquals( badOptionName, e.optionName() );
+d67 1
+@
+
+
+1.4
+log
+@* fixed bug in test
+@
+text
+@d50 1
+a50 1
+                                             const std::string &badOptionName )
+d130 1
+a130 1
+   std::string excluded;
+@
+
+
+1.3
+log
+@* fixed compilation issues
+@
+text
+@d427 1
+a427 1
+   LOCAL_CHECK_PARSE( options, args );
+@
+
+
+1.2
+log
+@* fixed compilation issue related to changing OptionValue into the new Value library
+@
+text
+@d157 2
+a158 2
+   options.add( ",c:", CommandLineOptions::option<std::string>(), "" );
+   options.add( ",f", CommandLineOptions::optionDefault<std::string>(".config"), "" );
+d184 2
+a185 2
+   options.add( ",c:", CommandLineOptions::option<std::string>(), "" );
+   options.add( ",f", CommandLineOptions::optionDefault<std::string>(".config"), "" );
+d230 2
+a231 2
+   options.add( "column:", CommandLineOptions::option<std::string>(), "" );
+   options.add( "file", CommandLineOptions::optionDefault<std::string>(".config"), "" );
+d257 2
+a258 2
+   options.add( "column:", CommandLineOptions::option<std::string>(), "" );
+   options.add( "file", CommandLineOptions::optionDefault<std::string>(".config"), "" );
+d323 2
+a324 2
+   options.add( "column,c:", column, "" );
+   options.add( "file", CommandLineOptions::option(file,".config"), "" );
+d378 2
+a379 1
+   options.add( "debug,d:", file, CommandLineOptions::validator( &validateTraceOrTime ), "" );
+d414 6
+a419 4
+   options.add( "level,l", 
+                CommandLineOptions::option( level, fatal ), 
+                logLevelValidator.clone(), 
+                "Set log level" );
+@
+
+
+1.1
+log
+@* unit test for command line options library
+@
+text
+@d1 1
+a1 1
+#include "commandlineoptions.h"
+d3 3
+d164 1
+a164 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("-c") ) );
+d170 1
+a170 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("-f") ) );
+d176 1
+a176 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("-f") ) );
+d192 1
+a192 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("-c") ) );
+d198 1
+a198 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("-f") ) );
+d204 1
+a204 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("-f") ) );
+d210 1
+a210 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("-c") ) );
+d216 1
+a216 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("-f") ) );
+d222 1
+a222 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("-f") ) );
+d237 1
+a237 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("column") ) );
+d243 1
+a243 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("file") ) );
+d249 1
+a249 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("file") ) );
+d265 1
+a265 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("column") ) );
+d271 1
+a271 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("file") ) );
+d277 1
+a277 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("file") ) );
+d283 1
+a283 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("column") ) );
+d289 1
+a289 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("file") ) );
+d295 1
+a295 1
+                          CommandLineOptions::get<std::string>( values_->optionValue("file") ) );
+d362 1
+a362 1
+static CommandLineOptions::OptionValue *
+d369 1
+a369 1
+   return CommandLineOptions::value( text );
+@
+

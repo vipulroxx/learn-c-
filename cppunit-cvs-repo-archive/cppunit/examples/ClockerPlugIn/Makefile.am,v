@@ -1,0 +1,232 @@
+head	1.8;
+access;
+symbols
+	REL_1_12_1:1.8
+	REL_1_11_6:1.8
+	REL_1_11_4:1.8
+	REL_1_11_0:1.8
+	TG_CPPUNIT_NO_STREAM_AFTER:1.8
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.8
+	REL_1_10_2:1.8
+	REL_1_10_0:1.8
+	REL_1_9_14:1.8
+	REL_1_9_12:1.8
+	BRANCH_1_9_12:1.8.0.2
+	TG_BRANCH_1_9_12:1.8
+	TG_BEFORE_HPUX_PLUGIN:1.8
+	TG_BEFORE_SUN4_PORT:1.8
+	REL_1_9_10:1.8
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.6
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.6
+	REL_1_9_6:1.6;
+locks; strict;
+comment	@# @;
+
+
+1.8
+date	2002.06.16.19.10.27;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2002.06.16.19.08.01;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.04.20.22.16.10;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.04.20.22.11.50;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.04.20.22.08.00;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.20.22.06.49;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.20.22.03.09;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.20.21.51.32;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.8
+log
+@* added missing files
+@
+text
+@EXTRA_DIST =  WinNtTimer.h WinNtTimer.cpp ClockerPlugIn.dsp \
+	Timer.h ClockerListener.h \
+	Timer.cpp ClockerListener.cpp \
+	ClockerPlugIn.cpp ClockerModel.h \
+  ClockerModel.cpp ReadMe.txt \
+  ClockerXmlHook.h ClockerXmlHook.cpp
+@
+
+
+1.7
+log
+@* added missing files
+@
+text
+@d5 1
+a5 1
+  ClockedModel.cpp ReadMe.txt \
+@
+
+
+1.6
+log
+@fixed makefile
+@
+text
+@d4 3
+a6 1
+	ClockerPlugIn.cpp
+@
+
+
+1.5
+log
+@attempted dummy fix
+@
+text
+@a4 13
+
+INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include
+
+#dummy stuff to make automake happy
+
+bin_PROGRAMS = dummyMain
+
+dummyMain_SOURCES = dummyMain.cpp
+
+dummyMain_LDADD= \
+  $(top_builddir)/src/cppunit/libcppunit.la 
+
+dummyMain_LDFLAGS = -ldl
+@
+
+
+1.4
+log
+@attempted dummy fix
+@
+text
+@d1 4
+a4 1
+EXTRA_DIST =  WinNtTimer.h WinNtTimer.cpp ClockerPlugIn.dsp
+d8 2
+d12 1
+d14 2
+a15 5
+clockerPlugIn_SOURCES= Timer.h ClockerListener.h \
+	Timer.cpp ClockerListener.cpp \
+	ClockerPlugIn.cpp
+
+dummyMain_SOURCES = dummyMain.cpp
+d17 1
+@
+
+
+1.3
+log
+@attempted dummy fix
+@
+text
+@d5 1
+a5 1
+dummyMain_PROGRAMS = dummyMain
+@
+
+
+1.2
+log
+@no message
+@
+text
+@d5 3
+d11 3
+@
+
+
+1.1
+log
+@* THANKS: updated
+
+* src/cppunit/DynamicLibraryManager.cpp: bugfix: did not pass
+  library name to exception.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: changed into value object.
+
+* src/cppunit/BeosDynamicLibraryManager.cpp: integrated patch from
+  Shibu Yoshiki for BeOS ('cuppa' project team).
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: added. Command line
+  parsing.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: full command line support
+  with parameters for plug-ins.
+
+* src/DllPlugInTester/makefile.am:
+* examples/simple/makefile.am:
+* examples/cppunittest/makefile.am: integrated Jeffrey Morgan patch,
+  Unix side should be working again.
+
+* examples/ReadMe.txt: added. Brief description of each example.
+
+* examples/cppunittest/CppUnitTestPlugIn.cpp:
+* examples/cppunittest/CppUnitTestPlugIn.dsp: added. New project to
+  build CppUnit's test suite as a test plug-in.
+
+* examples/cppunittest/CppUnitTestSuite.cpp: updated. Use new
+  helper macros to create the test suite hierarchy.
+
+* examples/simple/simple_plugin.opt: added. Contains debug tab
+  settings.
+
+* examples/ClockerPlugIn/ClockerListener.cpp:
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/Timer.cpp:
+* examples/ClockerPlugIn/Timer.h:
+* examples/ClockerPlugIn/WinNtTimer.cpp:
+* examples/ClockerPlugIn/WinNtTimer.h:
+* examples/ClockerPlugIn/ClockerPlugIn.cpp:
+* examples/ClockerPlugIn/ClockerPlugIn.dsp: added. test listener
+  plug-in that times tests.
+
+* examples/DumperPlugIn/DumperListener.cpp:
+* examples/DumperPlugIn/DumperListener.h:
+* examples/DumperPlugIn/DumperPlugIn.cpp:
+* examples/DumperPlugIn/DumperPlugIn.dsp: added. test listener
+  plug-in that dump the test tree.
+@
+text
+@d1 1
+a1 3
+EXTRA_DIST =  WinNtTimer.h Timer.h ClockerListener.h \
+	Timer.cpp ClockerListener.cpp WinNtTimer.cpp \
+	ClockerPlugIn.cpp ClockerPlugIn.dsp
+d3 5
+@
+

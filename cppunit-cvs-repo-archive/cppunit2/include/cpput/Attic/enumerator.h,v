@@ -1,0 +1,928 @@
+head	1.10;
+access;
+symbols
+	TG_AFTER_REMOVING_TESTCONTEXT:1.9
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.9
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.9
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.10
+date	2005.02.23.08.54.05;	author blep;	state dead;
+branches;
+next	1.9;
+
+1.9
+date	2004.11.17.08.59.05;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2004.10.21.17.23.23;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2004.08.03.22.01.02;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.04.03.14.51.21;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.02.07.22.08.59;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.02.01.16.12.51;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.02.01.10.22.02;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.27.23.37.21;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.25;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.25;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.10
+log
+@* removed include/cpput/enumerator.h which has been replaced by include/cpptl/enumerator.h
+* added explicit type passing to any*() generator functions.
+@
+text
+@#ifndef CPPUT_ENUMERATOR_H_INCLUDED
+# define CPPUT_ENUMERATOR_H_INCLUDED
+
+# include <cpput/config.h>
+# include <cpptl/sharedptr.h>
+# include <deque>
+# include <iterator>
+# include <stdexcept>
+
+namespace CppUT
+{
+
+
+/** A simple type wrapper.
+ *
+ * Common technic to pass a type as a parameter.
+ */
+template<typename WrappedType>
+struct Type
+{
+   typedef WrappedType OriginalType;
+};
+
+
+/// Exception thrown when enumerating beyond the end of the sequence
+class EnumeratorError : public std::out_of_range
+{
+public:
+   EnumeratorError()
+      : std::out_of_range( "Enumerator::getNext() called with no next item" )
+   {
+   }
+
+   ~EnumeratorError() throw()
+   {
+   }
+};
+
+
+/// Interface for Enumerator implementation
+template<typename AEnumeratedType>
+class EnumeratorImpl
+{
+public:
+   typedef AEnumeratedType EnumeratedType;
+   typedef CppTL::SharedPtr<EnumeratorImpl<EnumeratedType> > Ptr;
+
+   virtual EnumeratedType getNext() =0;
+
+   virtual bool hasNext() const =0;
+
+   virtual Ptr clone() const =0;
+
+   virtual unsigned int length() const
+   {
+	   Ptr cloned  = clone();
+	   unsigned int length = 0;
+	   while ( hasNext() )
+		   ++length;
+	   return length;
+   }
+};
+
+/// Empty enumerator implementation
+template<typename EnumeratedType>
+class NullEnumeratorImpl : public EnumeratorImpl<EnumeratedType>
+{
+public:
+   // work-around for AIX
+   typedef CPPUT_DEDUCED_TYPENAME EnumeratorImpl<EnumeratedType>::Ptr Ptr;
+
+public: // overridden from EnumeratorImpl 
+   EnumeratedType getNext()
+   {
+      throw EnumeratorError();
+   }
+
+   bool hasNext() const
+   {
+      return false;
+   }
+
+   Ptr clone() const
+   {
+      // no state, don't need cloning
+      return Ptr( new NullEnumeratorImpl<EnumeratedType>(*this) );
+   }
+
+	unsigned int length() const
+	{
+		return 0;
+	}
+};
+
+/// Generic enumerator
+template<typename EnumeratedType>
+class Enumerator
+{
+public:
+   typedef EnumeratedType Type;
+   typedef CPPUT_DEDUCED_TYPENAME EnumeratorImpl<EnumeratedType>::Ptr ImplPtr; // sunpro CC work-around (type is incomplete error otherwise !?)
+
+   Enumerator()
+      : impl_( new NullEnumeratorImpl<EnumeratedType>() )
+   {
+   }
+
+   Enumerator( const ImplPtr &impl )
+      : impl_( impl )
+   {
+   }
+
+   EnumeratedType next()
+   {
+      return impl_->getNext();
+   }
+
+   bool hasNext() const
+   {
+      return impl_->hasNext();
+   }
+
+   Enumerator clone() const
+   {
+      return Enumerator( impl_->clone() );
+   }
+
+   unsigned int length() const
+   {
+	   return impl_->length();
+   }
+
+   ImplPtr getImpl() const
+   {
+	   return impl_;
+   }
+
+private:
+   ImplPtr impl_;
+};
+
+
+// Adaptors
+// /////////////////////////////////////////////////////////////////////
+
+/// Base class for enumerator adaptor
+template<typename TheEnumeratedType>
+struct EnumAdaptor
+{
+   /// Type returned by the adaptor operator().
+   typedef TheEnumeratedType EnumeratedType;
+};
+
+
+/// Identity enumerator adaptor
+template<typename EnumeratedType>
+struct IdendityEnumAdpator : public EnumAdaptor<EnumeratedType>
+{
+   EnumeratedType operator()( const EnumeratedType &source ) const
+   {
+      return source;
+   }
+};
+
+/// Conversion enumerator adaptor
+template<typename EnumeratedType>
+struct ConversionEnumAdaptor : public EnumAdaptor<EnumeratedType>
+{
+   template<typename SourceType>
+   EnumeratedType operator()( const SourceType &source ) const
+   {
+      return EnumeratedType( source );
+   }
+};
+
+/// Extract first member adaptor (std::pair.first)
+template<typename EnumeratedType>
+struct FirstEnumAdaptor : public EnumAdaptor<EnumeratedType>
+{
+   template<typename SourceType>
+   EnumeratedType operator()( const SourceType &source ) const
+   {
+      return EnumeratedType( source.first );
+   }
+};
+
+
+/// Extract second member adaptor (std::pair.second)
+template<typename EnumeratedType>
+struct SecondEnumAdaptor : public EnumAdaptor<EnumeratedType>
+{
+   template<typename SourceType>
+   EnumeratedType operator()( const SourceType &source ) const
+   {
+      return EnumeratedType( source.second );
+   }
+};
+
+/// Dereference adaptor
+template<typename EnumeratedType>
+struct DerefEnumAdaptor : public EnumAdaptor<EnumeratedType>
+{
+   template<typename SourceType>
+   EnumeratedType operator()( const SourceType &source ) const
+   {
+      return EnumeratedType( *source );
+   }
+};
+
+/// Transform using a specific functor adaptor
+template<typename Functor>
+struct TransformEnumAdaptor : public EnumAdaptor<CPPUT_DEDUCED_TYPENAME Functor::result_type>
+{
+   typedef CPPUT_DEDUCED_TYPENAME Functor::result_type EnumeratedType; // AIX work-around
+
+   TransformEnumAdaptor()
+   {
+   }
+
+   TransformEnumAdaptor( Functor functor )
+      : functor_( functor )
+   {
+   }
+
+   template<typename SourceType>
+   EnumeratedType operator()( const SourceType &source ) const
+   {
+      return functor_( source );
+   }
+
+   Functor functor_;
+};
+
+/// Compose two adaptors into a adaptor
+template<typename OutterAdaptor
+         ,typename InnerFunctor>
+struct ComposeAdaptor : public EnumAdaptor<CPPUT_DEDUCED_TYPENAME OutterAdaptor::EnumeratedType>
+{
+   typedef CPPUT_DEDUCED_TYPENAME OutterAdaptor::EnumeratedType EnumeratedType; // AIX work-around
+
+   ComposeAdaptor()
+   {
+   }
+
+   ComposeAdaptor( OutterAdaptor outter, InnerFunctor inner )
+      : outter_( outter )
+      , inner_( inner )
+   {
+   }
+
+   template<typename SourceType>
+   EnumeratedType operator()( const SourceType &x ) const
+   {
+      return outter_( inner_( x ) );
+   }
+
+   OutterAdaptor outter_;
+   InnerFunctor inner_;
+};
+
+
+// Enumerator implementations
+// /////////////////////////////////////////////////////////////////////
+
+/*
+ * Policy requirement:
+ *
+ * struct MyPolicy {
+ *   typedef ... EnumeratedType;
+ *   MyPolicy( const MyPolicy &other );
+ *   bool hasNext() const;
+ *   EnumeratedType next();
+ *   unsigned int length() const;
+ * };
+ */
+template<class EnumPolicyType>
+class PolicyEnumeratorImpl : public EnumeratorImpl<CPPUT_DEDUCED_TYPENAME EnumPolicyType::EnumeratedType>
+{
+public:
+   typedef PolicyEnumeratorImpl<EnumPolicyType> ThisType;
+   typedef CPPUT_DEDUCED_TYPENAME EnumPolicyType::EnumeratedType EnumeratedType;
+   typedef CPPUT_DEDUCED_TYPENAME EnumeratorImpl<EnumeratedType>::Ptr Ptr; // work-around for AIX
+
+   PolicyEnumeratorImpl( EnumPolicyType policy )
+      : policy_( policy )
+   {
+   }
+
+public: // overridden from EnumeratorImpl 
+   EnumeratedType getNext()
+   {
+      return policy_.next();
+   }
+
+   bool hasNext() const
+   {
+      return policy_.hasNext();
+   }
+
+   Ptr clone() const
+   {
+      return Ptr( new ThisType( *this ) );
+   }
+
+	unsigned int length() const
+	{
+		return policy_.length();
+	}
+
+private:
+   PolicyEnumeratorImpl( const PolicyEnumeratorImpl &other )
+      : policy_( other.policy_ )
+   {
+   }
+
+private:
+   EnumPolicyType policy_;
+};
+
+
+/// Slice proxy enumerator
+template<class EnumeratedType>
+class SliceEnumeratorImpl : public EnumeratorImpl<EnumeratedType>
+{
+public:
+   typedef CPPUT_DEDUCED_TYPENAME EnumeratorImpl<EnumeratedType>::Ptr Ptr; // work-around for AIX
+   typedef SliceEnumeratorImpl<EnumeratedType> ThisType;
+
+	SliceEnumeratorImpl( const Ptr &sourceEnumerator,
+		                 unsigned int startOffset,
+					     unsigned int endOffset )
+		: enumerator_( sourceEnumerator->clone() )
+	{
+		unsigned int length = enumerator_->length();
+		if ( endOffset > length )
+			endOffset = length;
+		if ( length <= startOffset  ||  endOffset <= startOffset )
+			remaining_ = 0;
+		else
+		{
+			remaining_ = endOffset - startOffset;
+			while ( startOffset-- )
+				enumerator_->getNext();
+		}
+	}
+
+public: // overridden from EnumeratorImpl 
+   EnumeratedType getNext()
+   {
+      if ( remaining_ == 0 )
+         throw EnumeratorError();
+
+	  --remaining_;
+	  return enumerator_->getNext();
+   }
+
+   bool hasNext() const
+   {
+      return remaining_  &&  enumerator_->hasNext();
+   }
+
+   Ptr clone() const
+   {
+      return Ptr( new ThisType( *this ) );
+   }
+
+	unsigned int length() const
+	{
+		return remaining_;
+	}
+
+private:
+	SliceEnumeratorImpl( const SliceEnumeratorImpl &other )
+		: enumerator_( other.enumerator_->clone() )
+      , remaining_( other.remaining_ )
+	{
+	}
+
+	Ptr enumerator_;
+	unsigned int remaining_;
+};
+
+/// Copy enumerator
+template<class EnumeratedType>
+class CopyEnumeratorImpl : public EnumeratorImpl<EnumeratedType>
+{
+public:
+   typedef CPPUT_DEDUCED_TYPENAME EnumeratorImpl<EnumeratedType>::Ptr Ptr; // work-around for AIX
+   typedef CopyEnumeratorImpl<EnumeratedType> ThisType;
+
+   CopyEnumeratorImpl( const Ptr &sourceEnumerator )
+   {
+      Ptr enumerator = sourceEnumerator->clone();
+      while ( enumerator->hasNext() )
+         items_.push_back( enumerator->getNext() );
+      current_ = items_.begin();
+   }
+
+public: // overridden from EnumeratorImpl 
+   EnumeratedType getNext()
+   {
+      if ( current_ == items_.end() )
+         throw EnumeratorError();
+      return *current_++;
+   }
+
+   bool hasNext() const
+   {
+      return current_ != items_.end();
+   }
+
+   Ptr clone() const
+   {
+      return Ptr( new ThisType( *this ) );
+   }
+
+   unsigned int length() const
+   {
+      return items_.end() - current_;
+   }
+
+private:
+   CopyEnumeratorImpl( const ThisType &other )
+      : items_( other.current_, other.items_.end() )
+      , current_( items_.begin() )
+   {
+      
+   }
+
+   typedef std::deque<EnumeratedType> Items;
+   Items items_;
+   CPPUT_DEDUCED_TYPENAME Items::const_iterator current_;
+};
+
+
+// Stl iterator based enumerator
+template<typename StlForwardIteratorType
+        ,typename EnumeratedType
+        ,typename AdaptorType >
+class StlEnumeratorImpl : public EnumeratorImpl<EnumeratedType>
+{
+public:
+   typedef CPPUT_DEDUCED_TYPENAME EnumeratorImpl<EnumeratedType>::Ptr Ptr; // work-around for AIX
+
+   typedef StlEnumeratorImpl<StlForwardIteratorType,EnumeratedType,AdaptorType> ThisType;
+
+   StlEnumeratorImpl( StlForwardIteratorType first,
+                      StlForwardIteratorType last )
+       : current_( first )
+       , last_( last )
+   {
+   }
+
+   StlEnumeratorImpl( StlForwardIteratorType first,
+                      StlForwardIteratorType last,
+                      AdaptorType adaptor )
+       : current_( first )
+       , last_( last )
+       , adaptor_( adaptor )
+   {
+   }
+
+public: // overridden from EnumeratorImpl 
+   EnumeratedType getNext()
+   {
+      if ( current_ == last_ )
+         throw EnumeratorError();
+
+      return adaptor_( *current_++ );
+   }
+
+   bool hasNext() const
+   {
+      return current_ != last_;
+   }
+
+   Ptr clone() const
+   {
+      return Ptr( new ThisType( current_, last_, adaptor_ ) );
+   }
+
+	unsigned int length() const
+	{
+		return std::distance( current_, last_ );
+	}
+
+private:
+   StlForwardIteratorType current_;
+   StlForwardIteratorType last_;
+   AdaptorType adaptor_;
+};
+
+
+template<typename StlIteratorType
+        ,typename Adaptor>
+Enumerator<CPPUT_DEDUCED_TYPENAME Adaptor::EnumeratedType>
+enumStlRangeAdapt( StlIteratorType first, StlIteratorType last, Adaptor adaptor )
+{
+   typedef CPPUT_DEDUCED_TYPENAME Adaptor::EnumeratedType EnumeratedType;
+   typedef StlEnumeratorImpl<StlIteratorType,EnumeratedType,Adaptor> EnumImpl;
+   return Enumerator<EnumeratedType>( EnumImpl::Ptr( 
+            new EnumImpl( first, last, adaptor ) ) );
+}
+
+
+template<typename StlContainerType
+        ,typename Adaptor>
+Enumerator<CPPUT_DEDUCED_TYPENAME Adaptor::EnumeratedType>
+enumStlAdapt( const StlContainerType &sequence, Adaptor adaptor )
+{
+   return enumStlRangeAdapt( sequence.begin(), sequence.end(), adaptor );
+}
+
+
+template<typename StlContainerType
+        ,typename EnumeratedType>
+Enumerator<EnumeratedType>
+enumStl( const StlContainerType &sequence, Type<EnumeratedType> )
+{
+   return enumStlAdapt( sequence, ConversionEnumAdaptor<EnumeratedType>() );
+}
+
+
+template<typename StlContainerType>
+Enumerator<CPPUT_DEDUCED_TYPENAME StlContainerType::value_type>
+enumStl( const StlContainerType &sequence )
+{
+   return enumStlAdapt( sequence, 
+                        IdendityEnumAdpator<CPPUT_DEDUCED_TYPENAME StlContainerType::value_type>() );
+}
+
+
+template<typename StlIteratorType>
+Enumerator<CPPUT_DEDUCED_TYPENAME StlIteratorType::value_type>
+enumStlRange( StlIteratorType first, StlIteratorType last )
+{
+   typedef CPPUT_DEDUCED_TYPENAME StlIteratorType::value_type EnumeratedType;
+   return enumStlRangeAdapt( first, last, 
+                             IdendityEnumAdpator<EnumeratedType>() );
+}
+
+
+template<typename StlIteratorType
+        ,typename EnumeratedType>
+Enumerator<EnumeratedType>
+enumStlRange( StlIteratorType first, StlIteratorType last, Type<EnumeratedType> )
+{
+   typedef StlEnumeratorImpl<StlIteratorType,EnumeratedType
+                            ,ConversionEnumAdaptor<EnumeratedType> > EnumImpl;
+   return Enumerator<EnumeratedType>( EnumImpl::Ptr( 
+      new EnumImpl( first, last ) ) );
+}
+
+
+/*
+# if CPPUT_HAS_FUNCTION_TEMPLATE_ORDERING
+
+template<typename EnumeratedType>
+Enumerator<EnumeratedType>
+enumStlRange( const EnumeratedType * first, const EnumeratedType *last )
+{
+   typedef CPPUT_DEDUCED_TYPENAME StlIteratorType::value_type EnumeratedType;
+   return enumStlRangeAdapt( first, last, 
+                             IdendityEnumAdpator<EnumeratedType>() );
+}
+
+template<typename EnumeratedType>
+Enumerator<EnumeratedType>
+enumStlRange( EnumeratedType * first, EnumeratedType *last )
+{
+   typedef CPPUT_DEDUCED_TYPENAME StlIteratorType::value_type EnumeratedType;
+   return enumStlRangeAdapt( first, last, 
+                             IdendityEnumAdpator<EnumeratedType>() );
+}
+
+# endif // CPPUT_HAS_PARTIAL_SPECIALIZATION
+*/
+
+template<typename StlMapType
+        ,typename Adaptor>
+Enumerator<CPPUT_DEDUCED_TYPENAME Adaptor::EnumeratedType>
+enumStlMapKeysAdapt( const StlMapType &map, Adaptor adaptor )
+{
+   typedef CPPUT_DEDUCED_TYPENAME Adaptor::EnumeratedType EnumeratedType;
+   return enumStlAdapt( map, ComposeAdaptor<Adaptor
+                                           ,FirstEnumAdaptor<EnumeratedType> >() );
+}
+
+
+template<typename StlMapType
+        ,typename EnumeratedType>
+Enumerator<CPPUT_DEDUCED_TYPENAME StlMapType::key_type>
+enumStlMapKeys( const StlMapType &map, Type<EnumeratedType> )
+{
+   return enumStlMapKeysAdapt( map, ConversionEnumAdaptor<EnumeratedType>() );
+}
+
+
+template<typename StlIteratorType>
+Enumerator<CPPUT_DEDUCED_TYPENAME StlIteratorType::value_type::first_type>
+enumStlMapKeysRange( StlIteratorType first, StlIteratorType last )
+{
+   typedef CPPUT_DEDUCED_TYPENAME StlIteratorType::value_type::first_type EnumeratedType;
+   return enumStlRangeAdapt( first, last, 
+                             FirstEnumAdaptor<EnumeratedType>() );
+}
+
+
+template<typename StlIteratorType
+        ,typename Adaptor>
+Enumerator<CPPUT_DEDUCED_TYPENAME Adaptor::EnumeratedType>
+enumStlMapKeysRangeAdapt( StlIteratorType first, StlIteratorType last, Adaptor adaptor )
+{
+   typedef CPPUT_DEDUCED_TYPENAME Adaptor::EnumeratedType EnumeratedType;
+   return enumStlRangeAdapt( first, last, 
+                             ComposeAdaptor<Adaptor,FirstEnumAdaptor<EnumeratedType> >() );
+}
+
+
+template<typename StlIteratorType
+        ,typename EnumeratedType>
+Enumerator<EnumeratedType>
+enumStlMapKeysRange( StlIteratorType first, StlIteratorType last, Type<EnumeratedType> )
+{
+   return enumStlMapKeysRangeAdapt( first, last, ConversionEnumAdaptor<EnumeratedType>() );
+}
+
+
+template<typename StlMapType>
+Enumerator<CPPUT_DEDUCED_TYPENAME StlMapType::value_type::second_type>
+enumStlMapValues( const StlMapType &map )
+{
+   typedef CPPUT_DEDUCED_TYPENAME StlMapType::value_type::second_type EnumeratedType;
+   return enumStlAdapt( map, SecondEnumAdaptor<EnumeratedType>() );
+}
+
+
+template<typename StlMapType
+        ,typename EnumeratedType>
+Enumerator<EnumeratedType>
+enumStlMapValues( const StlMapType &map, Type<EnumeratedType> )
+{
+   return enumStlAdapt( map, SecondEnumAdaptor<EnumeratedType>() );
+}
+
+
+template<typename StlMapType
+        ,typename Adaptor>
+Enumerator<CPPUT_DEDUCED_TYPENAME Adaptor::EnumeratedType>
+enumStlMapValuesAdapt( const StlMapType &map, Adaptor adaptor )
+{
+   typedef CPPUT_DEDUCED_TYPENAME Adaptor::EnumeratedType EnumeratedType;
+   return enumStlAdapt( map, ComposeAdaptor<Adaptor,SecondEnumAdaptor>() );
+}
+
+
+template<typename StlIteratorType>
+Enumerator<CPPUT_DEDUCED_TYPENAME StlIteratorType::value_type::second_type>
+enumStlMapValuesRange( StlIteratorType first, StlIteratorType last )
+{
+   typedef CPPUT_DEDUCED_TYPENAME StlIteratorType::value_type::second_type EnumeratedType;
+   return enumStlRangeAdapt( first, last, 
+                             SecondEnumAdaptor<EnumeratedType>() );
+}
+
+
+template<typename StlIteratorType
+        ,typename Adaptor>
+Enumerator<CPPUT_DEDUCED_TYPENAME Adaptor::EnumeratedType>
+enumStlMapValuesRangeAdapt( StlIteratorType first, StlIteratorType last, Adaptor adaptor )
+{
+   typedef CPPUT_DEDUCED_TYPENAME Adaptor::EnumeratedType EnumeratedType;
+   return enumStlRangeAdapt( first, last, 
+                             ComposeAdaptor<Adaptor
+                                           ,SecondEnumAdaptor<EnumeratedType> >() );
+}
+
+
+template<typename StlIteratorType
+        ,typename EnumeratedType>
+Enumerator<EnumeratedType>
+enumStlMapValuesRange( StlIteratorType first, StlIteratorType last, Type<EnumeratedType> )
+{
+   return enumStlMapValuesRangeAdapt( first, last, ConversionEnumAdaptor<EnumeratedType>() );
+}
+
+
+template<class EnumeratorType>
+EnumeratorType
+enumSlice( const EnumeratorType &sourceEnumerator,
+		   unsigned int startOffset,
+		   unsigned int endOffset = -1 )
+{
+	return EnumeratorType( CPPUT_DEDUCED_TYPENAME EnumeratorType::ImplPtr( 
+		new SliceEnumeratorImpl<CPPUT_DEDUCED_TYPENAME EnumeratorType::Type>( 
+				sourceEnumerator.getImpl(), startOffset, endOffset ) ) );
+}
+
+template<class EnumeratorType>
+EnumeratorType
+enumCopy( const EnumeratorType &sourceEnumerator )
+{
+	return EnumeratorType( CPPUT_DEDUCED_TYPENAME EnumeratorType::ImplPtr( 
+		new CopyEnumeratorImpl<CPPUT_DEDUCED_TYPENAME EnumeratorType::Type>( sourceEnumerator.getImpl() ) ) );
+}
+
+template<class EnumPolicyType>
+Enumerator<CPPUT_DEDUCED_TYPENAME EnumPolicyType::EnumeratedType>
+enumPolicy( EnumPolicyType policy )
+{
+   typedef Enumerator<CPPUT_DEDUCED_TYPENAME EnumPolicyType::EnumeratedType> EnumeratorType;
+   return EnumeratorType( EnumeratorType::ImplPtr(
+      new PolicyEnumeratorImpl<EnumPolicyType>( policy ) ) );
+}
+
+template<class EnumeratorType
+        ,class StlSequenceType>
+void append( const EnumeratorType &enumerator,
+             StlSequenceType &sequence )
+{
+   EnumeratorType enumeratorClone = enumerator.clone();
+   while ( enumeratorClone.hasNext() )
+      sequence.push_back( enumeratorClone.next() );
+}
+
+} // namespace CppUT
+
+
+#endif // CPPUT_ENUMERATOR_H_INCLUDED
+@
+
+
+1.9
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@@
+
+
+1.8
+log
+@* moving CppUTTools library to CppTL library & namespace
+* implemented new enumerator library providing both "any" enumerator and specific enumerator avoid virtual function cost
+* fixed NoType declaration
+@
+text
+@d5 1
+a5 1
+# include <cpput/smartptr.h>
+d46 1
+a46 1
+   typedef SmartPtr<EnumeratorImpl<EnumeratedType> > Ptr;
+@
+
+
+1.7
+log
+@* fixed bug in enumStlMapKeys prototype
+@
+text
+@d46 1
+a46 1
+   typedef CPPUT_DEDUCED_TYPENAME SmartPtr<EnumeratorImpl<EnumeratedType> > Ptr;
+@
+
+
+1.6
+log
+@* renamed Enumerator::getNext() to Enumerator::next()
+@
+text
+@d593 1
+a593 1
+enumStlMapKeys( const StlMapType &map, Type<EnumeratedType>() )
+@
+
+
+1.5
+log
+@* added policy based enumerator. Will need clean-up.
+@
+text
+@d113 1
+a113 1
+   EnumeratedType getNext()
+d716 10
+@
+
+
+1.4
+log
+@* added /Za setting to project to force conformance to ANSI C++
+* fixed issues related to ANSI C++ conformance
+* fixed bug in SliceEnumerator copy constructor & added test
+@
+text
+@d41 1
+a41 1
+template<typename EnumeratedType>
+d45 1
+d265 56
+d707 9
+@
+
+
+1.3
+log
+@* smart-pointer clean up
+@
+text
+@d318 1
+d653 1
+a653 1
+#endif // CPPUT_ENUMERATOR_H_INCLUDED@
+
+
+1.2
+log
+@* SmartPtr now subclass boost::shared_ptr to make templated function
+  overloading easier.
+* Added our own smart pointer implementation
+* Added AtomicCounter as implementation detail.
+  Can use boost::detail::atomic_counter.
+@
+text
+@a99 1
+   //   typedef boost::shared_ptr< EnumeratorImpl<EnumeratedType> > ImplPtr;
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d45 1
+a45 1
+   typedef CPPUT_DEDUCED_TYPENAME SmartPtr<EnumeratorImpl<EnumeratedType> >::Ptr Ptr;
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

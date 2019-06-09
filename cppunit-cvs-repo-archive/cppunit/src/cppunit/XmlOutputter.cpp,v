@@ -1,0 +1,1441 @@
+head	1.16;
+access;
+symbols
+	REL_1_12_1:1.16
+	REL_1_11_6:1.16
+	REL_1_11_4:1.16
+	REL_1_11_0:1.16
+	TG_CPPUNIT_NO_STREAM_AFTER:1.15
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.14
+	REL_1_10_2:1.14
+	REL_1_10_0:1.14
+	REL_1_9_14:1.14
+	REL_1_9_12:1.14
+	BRANCH_1_9_12:1.14.0.2
+	TG_BRANCH_1_9_12:1.14
+	TG_BEFORE_HPUX_PLUGIN:1.14
+	TG_BEFORE_SUN4_PORT:1.11
+	REL_1_9_10:1.11
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.8
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.8
+	REL_1_9_6:1.6
+	REL_1_9_4:1.6
+	REL_1_9_0:1.4
+	REL_1_8_0:1.3
+	REL_1_7_8:1.3
+	REL_1_7_3:1.3
+	REL_1_7_1:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.16
+date	2004.09.01.20.17.36;	author blep;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2004.06.25.10.41.28;	author blep;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2003.03.15.08.55.29;	author blep;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2002.12.02.19.55.04;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2002.09.16.18.14.06;	author esche;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2002.07.12.05.59.58;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2002.06.16.17.55.58;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2002.06.14.20.21.00;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2002.05.23.18.38.39;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2002.04.25.19.05.22;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.04.14.10.08.37;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.04.13.18.51.20;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.04.12.19.28.47;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.03.01.20.19.54;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.02.28.10.57.20;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.10.07.19.36.47;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.16
+log
+@* include/cppunit/XmlOutputter.h:
+* include/cppunit/tools/XmlDocument.h
+* src/cppunit/XmlDocument.cpp:
+* src/cppunit/XmlOutputter.cpp: integrated patch #997006 from Akos Maroy.
+  This patch makes the 'standalone' attribute in XML header optional.
+@
+text
+@#include <cppunit/Exception.h>
+#include <cppunit/Test.h>
+#include <cppunit/TestFailure.h>
+#include <cppunit/TestResultCollector.h>
+#include <cppunit/XmlOutputter.h>
+#include <cppunit/XmlOutputterHook.h>
+#include <cppunit/tools/XmlDocument.h>
+#include <cppunit/tools/XmlElement.h>
+#include <stdlib.h>
+#include <algorithm>
+
+
+CPPUNIT_NS_BEGIN
+
+
+XmlOutputter::XmlOutputter( TestResultCollector *result,
+                            OStream &stream,
+                            std::string encoding )
+  : m_result( result )
+  , m_stream( stream )
+  , m_xml( new XmlDocument( encoding ) )
+{
+}
+
+
+XmlOutputter::~XmlOutputter()
+{
+  delete m_xml;
+}
+
+
+void 
+XmlOutputter::addHook( XmlOutputterHook *hook )
+{
+  m_hooks.push_back( hook );
+}
+
+
+void 
+XmlOutputter::removeHook( XmlOutputterHook *hook )
+{
+  m_hooks.erase( std::find( m_hooks.begin(), m_hooks.end(), hook ) );
+}
+
+
+void 
+XmlOutputter::write()
+{
+  setRootNode();
+  m_stream  <<  m_xml->toString();
+}
+
+
+void 
+XmlOutputter::setStyleSheet( const std::string &styleSheet )
+{
+  m_xml->setStyleSheet( styleSheet );
+}
+
+
+void
+XmlOutputter::setStandalone( bool standalone )
+{
+  m_xml->setStandalone( standalone );
+}
+ 
+
+void
+XmlOutputter::setRootNode()
+{
+  XmlElement *rootNode = new XmlElement( "TestRun" );
+  m_xml->setRootElement( rootNode );
+
+  for ( Hooks::iterator it = m_hooks.begin(); it != m_hooks.end(); ++it )
+    (*it)->beginDocument( m_xml );
+
+  FailedTests failedTests;
+  fillFailedTestsMap( failedTests );
+
+  addFailedTests( failedTests, rootNode );
+  addSuccessfulTests( failedTests, rootNode );
+  addStatistics( rootNode );
+
+  for ( Hooks::iterator itEnd = m_hooks.begin(); itEnd != m_hooks.end(); ++itEnd )
+    (*itEnd)->endDocument( m_xml );
+}
+
+
+void 
+XmlOutputter::fillFailedTestsMap( FailedTests &failedTests )
+{
+  const TestResultCollector::TestFailures &failures = m_result->failures();
+  TestResultCollector::TestFailures::const_iterator itFailure = failures.begin();
+  while ( itFailure != failures.end() )
+  {
+    TestFailure *failure = *itFailure++;
+    failedTests.insert( std::pair<Test* const, TestFailure*>(failure->failedTest(), failure ) );
+  }
+}
+
+
+void
+XmlOutputter::addFailedTests( FailedTests &failedTests,
+                              XmlElement *rootNode )
+{
+  XmlElement *testsNode = new XmlElement( "FailedTests" );
+  rootNode->addElement( testsNode );
+
+  const TestResultCollector::Tests &tests = m_result->tests();
+  for ( unsigned int testNumber = 0; testNumber < tests.size(); ++testNumber )
+  {
+    Test *test = tests[testNumber];
+    if ( failedTests.find( test ) != failedTests.end() )
+      addFailedTest( test, failedTests[test], testNumber+1, testsNode );
+  }
+}
+
+
+void
+XmlOutputter::addSuccessfulTests( FailedTests &failedTests,
+                                           XmlElement *rootNode )
+{
+  XmlElement *testsNode = new XmlElement( "SuccessfulTests" );
+  rootNode->addElement( testsNode );
+
+  const TestResultCollector::Tests &tests = m_result->tests();
+  for ( unsigned int testNumber = 0; testNumber < tests.size(); ++testNumber )
+  {
+    Test *test = tests[testNumber];
+    if ( failedTests.find( test ) == failedTests.end() )
+      addSuccessfulTest( test, testNumber+1, testsNode );
+  }
+}
+
+
+void
+XmlOutputter::addStatistics( XmlElement *rootNode )
+{
+  XmlElement *statisticsElement = new XmlElement( "Statistics" );
+  rootNode->addElement( statisticsElement );
+  statisticsElement->addElement( new XmlElement( "Tests", m_result->runTests() ) );
+  statisticsElement->addElement( new XmlElement( "FailuresTotal", 
+                                                 m_result->testFailuresTotal() ) );
+  statisticsElement->addElement( new XmlElement( "Errors", m_result->testErrors() ) );
+  statisticsElement->addElement( new XmlElement( "Failures", m_result->testFailures() ) );
+
+  for ( Hooks::iterator it = m_hooks.begin(); it != m_hooks.end(); ++it )
+    (*it)->statisticsAdded( m_xml, statisticsElement );
+}
+
+
+void
+XmlOutputter::addFailedTest( Test *test,
+                             TestFailure *failure,
+                             int testNumber,
+                             XmlElement *testsNode )
+{
+  Exception *thrownException = failure->thrownException();
+  
+  XmlElement *testElement = new XmlElement( "FailedTest" );
+  testsNode->addElement( testElement );
+  testElement->addAttribute( "id", testNumber );
+  testElement->addElement( new XmlElement( "Name", test->getName() ) );
+  testElement->addElement( new XmlElement( "FailureType", 
+                                           failure->isError() ? "Error" : 
+                                                                "Assertion" ) );
+
+  if ( failure->sourceLine().isValid() )
+    addFailureLocation( failure, testElement );
+
+  testElement->addElement( new XmlElement( "Message", thrownException->what() ) );
+
+  for ( Hooks::iterator it = m_hooks.begin(); it != m_hooks.end(); ++it )
+    (*it)->failTestAdded( m_xml, testElement, test, failure );
+}
+
+
+void
+XmlOutputter::addFailureLocation( TestFailure *failure,
+                                  XmlElement *testElement )
+{
+  XmlElement *locationNode = new XmlElement( "Location" );
+  testElement->addElement( locationNode );
+  SourceLine sourceLine = failure->sourceLine();
+  locationNode->addElement( new XmlElement( "File", sourceLine.fileName() ) );
+  locationNode->addElement( new XmlElement( "Line", sourceLine.lineNumber() ) );
+}
+
+
+void
+XmlOutputter::addSuccessfulTest( Test *test, 
+                                 int testNumber,
+                                 XmlElement *testsNode )
+{
+  XmlElement *testElement = new XmlElement( "Test" );
+  testsNode->addElement( testElement );
+  testElement->addAttribute( "id", testNumber );
+  testElement->addElement( new XmlElement( "Name", test->getName() ) );
+
+  for ( Hooks::iterator it = m_hooks.begin(); it != m_hooks.end(); ++it )
+    (*it)->successfulTestAdded( m_xml, testElement, test );
+}
+
+
+CPPUNIT_NS_END
+@
+
+
+1.15
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@d62 7
+@
+
+
+1.14
+log
+@* src/cppunit/CompilerOutputter.cpp:
+* src/cppunit/ProtectorChain.cpp:
+* src/cppunit/StringTools.cpp:
+* src/cppunit/TestPath.cpp:
+* src/cppunit/TypeInfoHelper.cpp:
+* src/cppunit/XmlElement.cpp:
+* src/cppunit/XmlOutputter.cpp: switched to using unsigned index in loop to
+	avoid signed/unsigned warning in vc7.
+
+* include/cppunit/extension/ExceptionTestCaseDecorator.h: removed dll export
+	on template (caused link error on vc7).
+@
+text
+@d17 1
+a17 1
+                            std::ostream &stream,
+@
+
+
+1.13
+log
+@* src/cppunit/XmlOuputter.cpp: use iterator instead of const_iterator.
+@
+text
+@d103 1
+a103 1
+  for ( int testNumber = 0; testNumber < tests.size(); ++testNumber )
+d120 1
+a120 1
+  for ( int testNumber = 0; testNumber < tests.size(); ++testNumber )
+@
+
+
+1.12
+log
+@const_iterator to iterator and make_pair to pair for sun4 portability
+@
+text
+@d97 1
+a97 1
+                                        XmlElement *rootNode )
+@
+
+
+1.11
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d67 1
+a67 1
+  for ( Hooks::const_iterator it = m_hooks.begin(); it != m_hooks.end(); ++it )
+d77 1
+a77 1
+  for ( Hooks::const_iterator itEnd = m_hooks.begin(); itEnd != m_hooks.end(); ++itEnd )
+d90 1
+a90 1
+    failedTests.insert( std::make_pair(failure->failedTest(), failure ) );
+d140 1
+a140 1
+  for ( Hooks::const_iterator it = m_hooks.begin(); it != m_hooks.end(); ++it )
+d166 1
+a166 1
+  for ( Hooks::const_iterator it = m_hooks.begin(); it != m_hooks.end(); ++it )
+d193 1
+a193 1
+  for ( Hooks::const_iterator it = m_hooks.begin(); it != m_hooks.end(); ++it )
+@
+
+
+1.10
+log
+@* release 1.9.8
+
+* include/cppunit/plugin/TestPlugIn.h: updated documentation.
+
+* include/cppunit/tools/XmlDocument.h: updated documentation.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/StringTools.cpp: added split() and wrap() functions.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp: extracted wrap() and
+  splitMessageIntoLines() to StringTools.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: removed rooNode parameter from
+  beginDocument() and endDocument(). It can be retreive from document.
+  Renamed 'node' occurences to 'element'.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against
+  XmlOutputterHook changes. Renamed 'node' occurences to 'element'.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: updated against
+  XmlOutputterHook changes.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: Renamed 'node' occurences
+  to 'element'.
+
+* examples/cppunittest/XmlOutputterTest.cpp: updated against
+  XmlOutputterHook changes.
+
+* examples/cppunittest/StringToolsTest.h:
+* examples/cppunittest/StringToolsTest.cpp: added. Unit tests for
+  StringTools. Turn out that VC++ dismiss empty lines in tools output,
+  which is the reason why empty lines where not printed in
+  CompilerOutputter.
+@
+text
+@d13 1
+a13 10
+namespace CppUnit
+{
+
+// XmlElement
+// //////////////////////////////////////////////////////////////////
+
+
+
+
+
+a14 2
+// XmlOutputter
+// //////////////////////////////////////////////////////////////////
+d198 1
+a198 1
+}  // namespace CppUnit
+@
+
+
+1.9
+log
+@* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added two methods to use the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugIn.h: added two methods to the plug-in
+  interface for Xml Outputter hooks.
+
+* include/cppunit/plugin/TestPlugInAdapter.h:
+* src/cppunit/plugin/TestPlugInAdapter.cpp: renamed TestPlugInDefaultImpl.
+  Added empty implementation for Xml outputter hook methods.
+
+* include/cppunit/tools/StringTools.h:
+* src/cppunit/tools/StringTools.cpp: added. Functions to manipulate string
+  (conversion, wrapping...)
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/XmlElement.cpp: renamed addNode() to addElement(). Added
+  methods to walk and modify XmlElement (for hook). Added documentation.
+  Use StringTools.
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: added hook calls & management.
+
+* include/cppunit/XmlOutputterHook.h:
+* src/cppunit/XmlOutputterHook.cpp: added. Hook to customize XML output.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: call plug-in XmlOutputterHook
+  when writing XML output. Modified so that memory is freed before
+  unloading the test plug-in (caused crash when freeing the XmlDocument).
+
+* examples/ReadMe.txt:
+* examples/ClockerPlugIn/ReadMe.txt: added details about the plug-in
+  (usage, xml content...)
+
+* examples/ClockerPlugIn/ClockerModel.h:
+* examples/ClockerPlugIn/ClockerModel.cpp: extracted from ClockerListener.
+  Represents the test hierarchy and tracked time for each test.
+
+* examples/ClockerPlugIn/ClockerListener.h:
+* examples/ClockerPlugIn/ClockerListener.cpp: extracted test hierarchy
+  tracking to ClockerModel. Replaced the 'flat' view option with a 'text'
+  option to print the timed test tree to stdout.
+
+* examples/ClockerPlugIn/ClockerPlugIn.cpp: updated to hook the XML
+  output and use the new classes.
+
+* examples/ClockerPlugIn/ClockerXmlHook.h:
+* examples/ClockerPlugIn/ClockerXmlHook.cpp: added. XmlOutputterHook to
+  includes the timed test hierarchy and test timing in the XML output.
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added new test cases.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: added tests for
+  XmlOutputterHook.
+@
+text
+@d60 1
+a60 1
+  m_xml->setRootElement( makeRootNode() );
+d72 2
+a73 2
+XmlElement *
+XmlOutputter::makeRootNode()
+d76 1
+d79 1
+a79 1
+    (*it)->beginDocument( m_xml, rootNode );
+d89 1
+a89 3
+    (*itEnd)->endDocument( m_xml, rootNode );
+
+  return rootNode;
+d143 7
+a149 7
+  XmlElement *statisticsNode = new XmlElement( "Statistics" );
+  rootNode->addElement( statisticsNode );
+  statisticsNode->addElement( new XmlElement( "Tests", m_result->runTests() ) );
+  statisticsNode->addElement( new XmlElement( "FailuresTotal", 
+                                              m_result->testFailuresTotal() ) );
+  statisticsNode->addElement( new XmlElement( "Errors", m_result->testErrors() ) );
+  statisticsNode->addElement( new XmlElement( "Failures", m_result->testFailures() ) );
+d152 1
+a152 1
+    (*it)->statisticsAdded( m_xml, statisticsNode );
+d164 7
+a170 7
+  XmlElement *testNode = new XmlElement( "FailedTest" );
+  testsNode->addElement( testNode );
+  testNode->addAttribute( "id", testNumber );
+  testNode->addElement( new XmlElement( "Name", test->getName() ) );
+  testNode->addElement( new XmlElement( "FailureType", 
+                                        failure->isError() ? "Error" : 
+                                                             "Assertion" ) );
+d173 1
+a173 1
+    addFailureLocation( failure, testNode );
+d175 1
+a175 1
+  testNode->addElement( new XmlElement( "Message", thrownException->what() ) );
+d178 1
+a178 1
+    (*it)->failTestAdded( m_xml, testNode, test, failure );
+d184 1
+a184 1
+                                  XmlElement *testNode )
+d187 1
+a187 1
+  testNode->addElement( locationNode );
+d199 4
+a202 4
+  XmlElement *testNode = new XmlElement( "Test" );
+  testsNode->addElement( testNode );
+  testNode->addAttribute( "id", testNumber );
+  testNode->addElement( new XmlElement( "Name", test->getName() ) );
+d205 1
+a205 1
+    (*it)->successfulTestAdded( m_xml, testNode, test );
+@
+
+
+1.8
+log
+@* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: extracted class XmlOutputter::Node to
+XmlElement. Extracted xml 'prolog' generation to XmlDocument.
+
+* include/cppunit/tools/XmlElement.h:
+* src/cppunit/tools/XmlElement.cpp: added, extracted from XmlOutputter::Node.
+
+* include/cppunit/tools/XmlDocument.h:
+* src/cppunit/tools/XmlDocument.cpp: added, extracted from XmlOutputter. Handle
+XML document prolog (encoding & style-sheet) and manage the root element.
+
+* src/DllPlugInTester/DllPlugInTester.cpp: bug fix, flag --xsl was ignored.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: updated for XmlOuputter changes.
+extracted tests for XmlOutputter::Node to XmlElementTest
+
+* examples/cppunittest/XmlElementTest.h:
+* examples/cppunittest/XmlElementTest.cpp: added, tests extracted from
+XmlOutputterTest.
+@
+text
+@d6 1
+d10 1
+d44 14
+d77 3
+d87 3
+d112 1
+a112 1
+  rootNode->addNode( testsNode );
+d129 1
+a129 1
+  rootNode->addNode( testsNode );
+d145 9
+a153 6
+  rootNode->addNode( statisticsNode );
+  statisticsNode->addNode( new XmlElement( "Tests", m_result->runTests() ) );
+  statisticsNode->addNode( new XmlElement( "FailuresTotal", 
+                                     m_result->testFailuresTotal() ) );
+  statisticsNode->addNode( new XmlElement( "Errors", m_result->testErrors() ) );
+  statisticsNode->addNode( new XmlElement( "Failures", m_result->testFailures() ) );
+d166 1
+a166 1
+  testsNode->addNode( testNode );
+d168 4
+a171 3
+  testNode->addNode( new XmlElement( "Name", test->getName() ) );
+  testNode->addNode( new XmlElement( "FailureType", 
+                               failure->isError() ? "Error" : "Assertion" ) );
+d176 4
+a179 1
+  testNode->addNode( new XmlElement( "Message", thrownException->what() ) );
+d185 1
+a185 1
+                                            XmlElement *testNode )
+d188 1
+a188 1
+  testNode->addNode( locationNode );
+d190 2
+a191 2
+  locationNode->addNode( new XmlElement( "File", sourceLine.fileName() ) );
+  locationNode->addNode( new XmlElement( "Line", sourceLine.lineNumber() ) );
+d197 2
+a198 2
+                                          int testNumber,
+                                          XmlElement *testsNode )
+d201 1
+a201 1
+  testsNode->addNode( testNode );
+d203 4
+a206 1
+  testNode->addNode( new XmlElement( "Name", test->getName() ) );
+@
+
+
+1.7
+log
+@* src/cppunit/XmlOutputter.cpp: bugfix, use ISO-8859-1 encoding if an
+  empty string is given.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp:
+* src/DllPlugInTester/DllPlugInTester.cpp: added option -w to wait for
+  the user to press a key before exiting (Philippe Lavoie patch,
+  with change).
+@
+text
+@d6 2
+a7 1
+#include <map>
+d14 1
+a14 1
+// XmlOutputter::Node
+a17 150
+XmlOutputter::Node::Node( std::string elementName,
+                          std::string content ) :
+    m_name( elementName ),
+    m_content( content )
+{
+}
+
+    
+XmlOutputter::Node::Node( std::string elementName,
+                          int numericContent ) :
+    m_name( elementName )
+{
+  m_content = asString( numericContent );
+}
+
+
+XmlOutputter::Node::~Node()
+{
+  Nodes::iterator itNode = m_nodes.begin();
+  while ( itNode != m_nodes.end() )
+    delete *itNode++;
+}
+
+
+void 
+XmlOutputter::Node::addAttribute( std::string attributeName,
+                                  std::string value  )
+{
+  m_attributes.push_back( Attribute( attributeName, value ) );
+}
+
+
+void 
+XmlOutputter::Node::addAttribute( std::string attributeName,
+                                  int numericValue )
+{
+  addAttribute( attributeName, asString( numericValue ) );
+}
+
+
+void 
+XmlOutputter::Node::addNode( Node *node )
+{
+  m_nodes.push_back( node );
+}
+
+
+std::string 
+XmlOutputter::Node::toString( const std::string &indent ) const
+{
+  std::string element( indent );
+  element += "<";
+  element += m_name;
+  if ( !m_attributes.empty() )
+  {
+    element += " ";
+    element += attributesAsString();
+  }
+  element += ">";
+
+  if ( !m_nodes.empty() )
+  {
+    element += "\n";
+
+    std::string subNodeIndent( indent + "  " );
+    Nodes::const_iterator itNode = m_nodes.begin();
+    while ( itNode != m_nodes.end() )
+    {
+      const Node *node = *itNode++;
+      element += node->toString( subNodeIndent );
+    }
+
+    element += indent;
+  }
+
+  if ( !m_content.empty() )
+  {
+    element += escape( m_content );
+    if ( !m_nodes.empty() )
+    {
+      element += "\n";
+      element += indent;
+    }
+  }
+
+  element += "</";
+  element += m_name;
+  element += ">\n";
+
+  return element;
+}
+
+
+std::string 
+XmlOutputter::Node::attributesAsString() const
+{
+  std::string attributes;
+  Attributes::const_iterator itAttribute = m_attributes.begin();
+  while ( itAttribute != m_attributes.end() )
+  {
+    const Attribute &attribute = *itAttribute++;
+    attributes += attribute.first;
+    attributes += "=\"";
+    attributes += escape( attribute.second );
+    attributes += "\"";
+  }
+  return attributes;
+}
+
+
+std::string 
+XmlOutputter::Node::escape( std::string value ) const
+{
+  std::string escaped;
+  for ( int index =0; index < value.length(); ++index )
+  {
+    char c = value[index ];
+    switch ( c )    // escape all predefined XML entity (safe?)
+    {
+    case '<': 
+      escaped += "&lt;";
+      break;
+    case '>': 
+      escaped += "&gt;";
+      break;
+    case '&': 
+      escaped += "&amp;";
+      break;
+    case '\'': 
+      escaped += "&apos;";
+      break;
+    case '"': 
+      escaped += "&quot;";
+      break;
+    default:
+      escaped += c;
+    }
+  }
+  
+  return escaped;
+}
+
+// should be somewhere else... Future CppUnit::String ?    
+std::string 
+XmlOutputter::Node::asString( int value )
+{
+  OStringStream stream;
+  stream << value;
+  return stream.str();
+}
+d27 4
+a30 4
+                            std::string encoding ) :
+    m_result( result ),
+    m_stream( stream ),
+    m_encoding( encoding == "" ? "ISO-8859-1" : encoding )
+d37 1
+d44 2
+a45 2
+  writeProlog();
+  writeTestsResult();
+d52 1
+a52 26
+  m_styleSheet = styleSheet;
+}
+
+
+void 
+XmlOutputter::writeProlog()
+{
+  m_stream  <<  "<?xml version=\"1.0\" "
+                "encoding='"  <<  m_encoding  << "' standalone='yes' ?>"
+            <<  std::endl;
+
+  if ( !m_styleSheet.empty() )
+  {
+    m_stream << "<?xml-stylesheet type=\"text/xsl\" href=\""
+             << m_styleSheet << "\"?>" 
+             << std::endl;
+  }
+}
+
+
+void 
+XmlOutputter::writeTestsResult()
+{
+  Node *rootNode = makeRootNode();
+  m_stream  <<  rootNode->toString();
+  delete rootNode;
+d56 1
+a56 1
+XmlOutputter::Node *
+d59 1
+a59 1
+  Node *rootNode = new Node( "TestRun" );
+d87 1
+a87 1
+                                        Node *rootNode )
+d89 1
+a89 1
+  Node *testsNode = new Node( "FailedTests" );
+d104 1
+a104 1
+                                           Node *rootNode )
+d106 1
+a106 1
+  Node *testsNode = new Node( "SuccessfulTests" );
+d120 1
+a120 1
+XmlOutputter::addStatistics( Node *rootNode )
+d122 1
+a122 1
+  Node *statisticsNode = new Node( "Statistics" );
+d124 2
+a125 2
+  statisticsNode->addNode( new Node( "Tests", m_result->runTests() ) );
+  statisticsNode->addNode( new Node( "FailuresTotal", 
+d127 2
+a128 2
+  statisticsNode->addNode( new Node( "Errors", m_result->testErrors() ) );
+  statisticsNode->addNode( new Node( "Failures", m_result->testFailures() ) );
+d136 1
+a136 1
+                             Node *testsNode )
+d140 1
+a140 1
+  Node *testNode = new Node( "FailedTest" );
+d143 2
+a144 2
+  testNode->addNode( new Node( "Name", test->getName() ) );
+  testNode->addNode( new Node( "FailureType", 
+d150 1
+a150 1
+  testNode->addNode( new Node( "Message", thrownException->what() ) );
+d156 1
+a156 1
+                                            Node *testNode )
+d158 1
+a158 1
+  Node *locationNode = new Node( "Location" );
+d161 2
+a162 2
+  locationNode->addNode( new Node( "File", sourceLine.fileName() ) );
+  locationNode->addNode( new Node( "Line", sourceLine.lineNumber() ) );
+d169 1
+a169 1
+                                          Node *testsNode )
+d171 1
+a171 1
+  Node *testNode = new Node( "Test" );
+d174 1
+a174 1
+  testNode->addNode( new Node( "Name", test->getName() ) );
+@
+
+
+1.6
+log
+@* NEWS: updated.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: renamed TestSuccessListener
+
+* doc/cookbook.dox:
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp:
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* include/cppunit/CompilerOutputter.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* src/cppunit/CompilerOutputter.cpp: fixed 'success' typo (was misspelled
+'sucess').
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: updated (renaming of
+  TestSucessListener).
+
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp: Changed SucessfulTests tag to
+SucessfulTests.
+@
+text
+@d179 1
+a179 1
+    m_encoding( encoding )
+@
+
+
+1.5
+log
+@* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: Made XML output more human readable. Idented element.
+
+* examples/cppunittest/XmlUniformiser.h:
+* examples/cppunittest/XmlUniformiser.cpp:
+* examples/cppunittest/XmlUniformiserTest.cpp: modified to ignore trailing space
+  at the end of element content.
+@
+text
+@d238 1
+a238 1
+  addSucessfulTests( failedTests, rootNode );
+d276 1
+a276 1
+XmlOutputter::addSucessfulTests( FailedTests &failedTests,
+d279 1
+a279 1
+  Node *testsNode = new Node( "SucessfulTests" );
+d287 1
+a287 1
+      addSucessfulTest( test, testNumber+1, testsNode );
+d340 1
+a340 1
+XmlOutputter::addSucessfulTest( Test *test, 
+@
+
+
+1.4
+log
+@* Makefile.am: added examples/qt to tar ball release.
+
+* TODO: heavily updated.
+
+* contrib/msvc/CppUnit*.wwtpl: changed base class for unit test to TestFixture.
+
+* include/cppunit/Test.h: removed toString() method. Not used by the framework
+  and source of confusions with getName().
+  Added getChildTestCount() and getChildTestAt(), introducing the composite pattern
+  at top level. Added utility methods findTest() and findTestPath().
+
+* src/cppunit/Test.cpp: added. Implementation of new utility methods.
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: inherits TestLeaf. Removed toString(), run(void) and
+  defaultResult(). Removed default constructor.
+
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestSuite.cpp: fixed some includes that used "" instead of <>.
+
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: added. Common implementation of Test for composite
+  tests (TestSuite).
+
+* include/cppunit/TestFailure.h:
+* src/cppunit/TestFailure.cpp: removed toString().
+
+* include/cppunit/TestLeaf.h:
+* src/cppunit/TestLeaf.cpp: added. Common implementation of Test for single test
+  (TestCase).
+
+* include/cppunit/TestListener.h: added TimingListener example to documentation.
+
+* include/cppunit/TestPath.h:
+* src/cppunit/TestPath.cpp: added. List of test traversed to access a test in the
+  test hierarchy.
+
+* include/cppunit/TestRunner.h: added. Generic TestRunner.
+
+* src/cppunit/TestRunner.cpp: moved to TextTestRunner.cpp. Added new implementation
+  of includecppunit/TestRunner.h.
+
+* include/cppunit/TestSuite.h:
+* src/cppunit/TestSuite.cpp: inherits TestComposite and implements new Test
+  interface. Removed toString().
+
+* src/cppunit/TextTestRunner.cpp: moved from TestRunner.cpp. Implementation of
+  include/cppunit/ui/text/TestRunner.h.
+
+* include/cppunit/extensions/RepeatedTest.h:
+* src/cppunit/RepeatedTest.cpp: removed toString().
+
+* include/cppunit/extensions/TestDecorator.h: inherits TestLeaf.
+  Removed toString()
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp:
+* examples/cppunittest/XmlOutputterTest.cpp:
+* examples/cppunittest/XmlOutputterTest.h: XML outputter now escape node content.
+  Add unit test for that bug (#540944). Added style sheet support. Modified
+  XML structure: failure message as its own element.
+
+* src/msvc/testrunner/TestRunnerModel.h:
+* src/msvc/testrunner/TestRunnerModel.cpp: used Test::findTest() to find a test
+  by name instead of using RTTI. Added toAnsiString() for convertion when
+  compiling as UNICODE.
+
+* src/msvc/testrunner/TreeHierarchyDlg.h:
+* src/msvc/testrunner/TreeHierarchyDlg.cpp: used new composite interface of Test
+  to explorer the test hierarchy instead of RTTI.
+
+* examples/cppunittest/TestPathTest.h:
+* examples/cppunittest/TestPathTest.cpp: added, unit tests for TestPath.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: added test for TestLeaf.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: added test for TestComposite and
+  new Test interface.
+@
+text
+@d65 1
+a65 1
+XmlOutputter::Node::toString() const
+d67 2
+a68 1
+  std::string element = "<";
+d70 6
+a75 3
+  element += " ";
+  element += attributesAsString();
+  element += " >\n";
+d77 1
+a77 2
+  Nodes::const_iterator itNode = m_nodes.begin();
+  while ( itNode != m_nodes.end() )
+d79 11
+a89 2
+    const Node *node = *itNode++;
+    element += node->toString();
+d92 9
+a100 1
+  element += escape( m_content );
+@
+
+
+1.3
+log
+@* inclued/cppunit/XmlOutputter.h:
+* inclued/cppunit/XmlOutputter.cpp: added optional parameter to constructor
+to specify the encoding.
+
+* configure.in: updated version number to 1.7.3
+@
+text
+@d80 1
+a80 1
+  element += m_content;
+d178 7
+d190 7
+d287 3
+a289 3
+                                       TestFailure *failure,
+                                       int testNumber,
+                                       Node *testsNode )
+d293 1
+a293 1
+  Node *testNode = new Node( "FailedTest", thrownException->what() );
+d302 2
+@
+
+
+1.2
+log
+@* NEW: updated and restructured.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp:
+updated against TestResultChange. Changed TestResult to TestResultCollector.
+
+* include/cppunit/extensions/HelperMacros.h: minor documentation fix.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all Outputter.
+
+* include/cppunit/Portability.h: made the fix on OStringStream suggested by
+Bob Summerwill to remove level 4 warning with VC++.
+
+* include/cppunit/TestAssert.h: added macro CPPUNIT_ASSERT_EQUAL_MESSAGE.
+
+* src/cppunit/TestFailure.cpp:
+* include/cppunit/TestFailure.h: added method clone() to duplicate a failure. Made
+all method virtual.
+
+* include/cppunit/TestListener.h: changed signature of addFailure() to
+addFailure( const TestFailure &failure ). Failure is now only a temporary object.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all outputter. Used
+by TextTestRunner.
+
+* include/cppunit/SynchronizedObject.h:
+* src/cppunit/SynchronizedObject.cpp: added. Class extracted from TestResult.
+Base class for objects that can be accessed from different threads.
+
+* include/cppunit/TestResult.h: TestFailure.h is no longer included.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: extracted all methods related to keeping track
+of the result to the new TestResultCollector class which is a TestListener.
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: added. TestListener which kept track
+of the result of the test run. All failure/error, and tests are tracked.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: added. TestListener extracted from
+TestResult. Is responsible for wasSucessful().
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: reindented.
+
+* include/cppunit/TextOutputter.h:
+* src/cppunit/TextOutputter.cpp: added. Copied from the deprecated
+TextTestResult and modified to act as an Ouputter.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: Copied from the deprecated
+TextTestResult and modified to print the dot while the test are running.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: updated against TestResult change.
+No compatiblity break. Deprecated.
+
+* include/cppunit/TextTestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to work with the new TestResult.
+Use TextTestProgressListener and TextOutputter instead of TextTestResult.
+Any outputter with interface Outputter can be used to print the test result
+(CompilerOutputter, XmlOutputter, TextOutputter...)
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against TestResultChange.
+Changed TestResult to TestResultCollector.
+
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/TestRunnerDlg.cpp: fixed the 'fullrowselect' feature of the list view.
+The dialog is a TestListener itself, it no longer use the GUITestResult class.
+
+* src/msvc6/TestRunner.rc: moved the "autorun test button" in such a way that it
+did not overlap the progress bar anymore.
+
+* src/msvc6/MfcSynchronizationObject.h: added. Generic SynchronizedObject
+lock for MFC.
+
+* src/msvc6/GUITestResult.h :
+* src/msvc6/GUITestResult.cpp : removed.
+
+* src/qttestrunner/TestRunnerModel.h:
+* src/qttestrunner/TestRunnerModel.cpp: changed addFailure() signature to reflect
+change on TestListener.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use the new Outputter
+abstraction and TextTestRunner facilities.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.cpp: removed. Replaced by MockTestCase.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.h:
+
+* examples/cppunittest/HelperMacrosTest.h:
+* examples/cppunittest/HelperMacrosTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/MockTestListener.h:
+* examples/cppunittest/MockTestListener.cpp: the class now behave like a mock
+object.
+
+* examples/cppunittest/MockTestCase.h:
+* examples/cppunittest/MockTestCase.cpp: added. Mock TestCase object.
+
+* examples/cppunittest/OrthodoxTest.h:
+* examples/cppunittest/OrthodoxTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/SynchronizedTestResult.h: Updated against TestResult
+change.
+
+* examples/cppunittest/TestCallerTest.h:
+* examples/cppunittest/TestCallerTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: Updated against TestResult change.
+Use MockTestListener and MockTestCase instead of FailingTestCase and TestResult.
+
+* examples/cppunittest/TestDecoratorTest.h:
+* examples/cppunittest/TestDecoratorTest.cpp: Updated against TestResult change.
+Use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/TestListenerTest.h:
+* examples/cppunittest/TestListenerTest.cpp: removed. Those unit tests have been
+rewrote and moved to TestResultTest.
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: Updated to test the new interface.
+Tests from TestListenerTest have been moved here.
+
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp: added. Tests for the class
+that been extracted from TestResult.
+
+* examples/cppunittest/TestSetUpTest.h:
+* examples/cppunittest/TestSetUpTest.cpp: renamed SetUp inner class to MockSetUp.
+Changed interface to be more akin to a Mock object.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: Updated against TestResult change,
+and rewrote to use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: Updated against TestResult change.
+Added some utility methods to make the update easier.
+@
+text
+@d18 1
+a18 1
+                                std::string content ) :
+d26 1
+a26 1
+                                    int numericContent ) :
+d43 1
+a43 1
+                                            std::string value  )
+d51 1
+a51 1
+                                            int numericValue )
+d155 2
+a156 1
+                            std::ostream &stream ) :
+d158 2
+a159 1
+    m_stream( stream )
+d181 1
+a181 1
+                "encoding='ISO-8859-1' standalone='yes' ?>"
+@
+
+
+1.1
+log
+@* include/cppunit/CompilerTestResultOutputter.h :
+renamed CompilerOutputter.h
+
+* src/cppunit/CompilerTestResultOutputter.cpp :
+renamed CompilerOutputter.cpp
+
+* include/cppunit/CompilerTestResultOutputter.h :
+* src/cppunit/CompilerTestResultOutputter.cpp : ajust max line length
+for wrapping. Added static factory method defaultOutputter(). Print
+the number of test runs on success.
+
+* include/cppunit/CompilerTestResultOutputter.h : renamed
+CompilerOutputter.h.
+
+* src/cppunit/CompilerTestResultOutputter.cpp : renamed
+CompilerOutputter.cpp.
+
+* examples/cppunittest/CppUnitTestMain.cpp : use factory method
+CompilerTestResultOutputter::defaultOutputter().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp : removed COM registration in
+post-build step. IT is automatically done by VC++ when the add-in is
+added. Caused build to failed if the add-in was used in VC++.
+
+* NEWS : updated.
+
+* src/cppunit/TestAssert.cpp : modified deprecated assert
+implementations to use Asserter.
+
+* examples/cppunittest/XmlTestResultOutputterTest.h :
+renamed XmlOutputterTest.h.
+
+* examples/cppunittest/XmlTestResultOutputterTest.cpp :
+renamed XmlOutputterTest.cpp.
+
+* NEWS :
+* examples/cppunittest/CppUnitTestMain.cpp :
+* examples/cppunittest/CppUnitTestMain.dsp :
+* examples/cppunittest/Makefile.am :
+* examples/cppunittest/XmlTestResultOutputterTest.h :
+* examples/cppunittest/XmlTestResultOutputterTest.cpp :
+* examples/msvc6/CppUniTestApp/CppUnitTestApp.dsp
+* include/cppunit/CompilerOutputter.h :
+* include/cppunit/Makefile.am :
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/CompilerOutputter.cpp :
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* src/cppunit/XmlTestResultOutputter.cpp : change due to renaming
+CompilerTestResultOutputter to CompilerOutputter,
+XmlTestResultOutputter to XmlOuputter, XmlTestResultOutputterTest
+to XmlOutputterTest.
+@
+text
+@d3 2
+a4 1
+#include <cppunit/TestResult.h>
+d154 2
+a155 2
+XmlOutputter::XmlOutputter( TestResult *result,
+                                                std::ostream &stream ) :
+d212 2
+a213 2
+  const TestResult::TestFailures &failures = m_result->failures();
+  TestResult::TestFailures::const_iterator itFailure = failures.begin();
+d229 1
+a229 1
+  const TestResult::Tests &tests = m_result->tests();
+d246 1
+a246 1
+  const TestResult::Tests &tests = m_result->tests();
+@
+

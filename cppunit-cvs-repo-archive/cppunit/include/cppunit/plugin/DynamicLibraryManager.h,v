@@ -1,0 +1,451 @@
+head	1.6;
+access;
+symbols
+	REL_1_12_1:1.6
+	REL_1_11_6:1.6
+	REL_1_11_4:1.6
+	REL_1_11_0:1.6
+	TG_CPPUNIT_NO_STREAM_AFTER:1.6
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.5
+	REL_1_10_2:1.5
+	REL_1_10_0:1.5
+	REL_1_9_14:1.5
+	REL_1_9_12:1.5
+	BRANCH_1_9_12:1.5.0.2
+	TG_BRANCH_1_9_12:1.5
+	TG_BEFORE_HPUX_PLUGIN:1.5
+	TG_BEFORE_SUN4_PORT:1.5
+	REL_1_9_10:1.5
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.2
+	REL_1_9_6:1.2
+	REL_1_9_4:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.6
+date	2004.06.25.10.41.27;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.08.29.19.27.07;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.07.12.05.59.57;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.07.03.07.02.48;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.04.17.22.27.28;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.15.15.27.19;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@* include/cppunit/Portability.h: moved OStringStream alias definition to
+  Portability/Stream.h. User need to define EVC4 to indicate that
+  config-evc4.h should be used. (how to we detect this automatically ?).
+  Notes that this means it might be needed to add #include <string> to some
+  headers since its no longer included by Portability.h.
+
+* include/cppunit/Portability/Stream.h: define alias OStringStream, stdCOut(),
+  and OFileStream. If CPPUNIT_NO_STREAM is defined (evc4 config), then provides
+  our own implementation (based on sprintf and fwrite).
+
+* include/cppunit/config/config-evc4.h: config file for embedded visual c++ 4.
+  Still need to detect for this platform in Portability.h (currently relying on
+  EVC4 being defined...)
+
+* *.[cpp/h]: most source files have been impacted with the following change:
+  #include <iostream> -> #include <cppunit/Portability/Stream.h>
+  std::ostream -> CPPUNIT_NS::OStream
+  std::ofstream -> CPPUNIT_NS::OFileStream
+  std::cout -> CPPUNIT_NS::stdCOut()
+  std::endl -> "\n"
+  Also, code using std::cin as been defined out if CPPUNIT_NO_STREAM was defined.
+  The exact list of impact files can be obtain in CVS using tags:
+  TG_CPPUNIT_NO_STREAM_BEFORE & TG_CPPUNIT_NO_STREAM_AFTER.
+@
+text
+@#ifndef CPPUNIT_PLUGIN_DYNAMICLIBRARYMANAGER_H
+#define CPPUNIT_PLUGIN_DYNAMICLIBRARYMANAGER_H
+
+#include <cppunit/Portability.h>
+#include <string>
+
+#if !defined(CPPUNIT_NO_TESTPLUGIN)
+
+CPPUNIT_NS_BEGIN
+
+
+/*! \brief Manages dynamic libraries.
+ *
+ * The Dynamic Library Manager provides a platform independent way to work with
+ * dynamic library. It load a specific dynamic library, and can returns specific
+ * symbol exported by the dynamic library.
+ *
+ * If an error occurs, a DynamicLibraryManagerException is thrown.
+ *
+ * \internal Implementation of the OS independent methods is in 
+ * DynamicLibraryManager.cpp.
+ *
+ * \internal Porting to a new platform:
+ * - Adds platform detection in config/SelectDllLoader.h. Should define a specific
+ *   macro for that platform of the form: CPPUNIT_HAVE_XYZ_DLL_LOADER, where
+ *   XYZ is the platform.
+ * - Makes a copy of UnixDynamicLibraryManager.cpp and named it after the platform.
+ * - Updated the 'guard' in your file (CPPUNIT_HAVE_XYZ_DLL_LOADER) so that it is
+ *   only processed if the matching platform has been detected.
+ * - Change the implementation of methods doLoadLibrary(), doReleaseLibrary(), 
+ *   doFindSymbol() in your copy. Those methods usually maps directly to OS calls.
+ * - Adds the file to the project.
+ */
+class DynamicLibraryManager
+{
+public:
+  typedef void *Symbol;
+  typedef void *LibraryHandle;
+
+  /*! \brief Loads the specified library.
+   * \param libraryFileName Name of the library to load.
+   * \exception DynamicLibraryManagerException if a failure occurs while loading
+   *            the library (fail to found or load the library).
+   */
+  DynamicLibraryManager( const std::string &libraryFileName );
+
+  /// Releases the loaded library..
+  ~DynamicLibraryManager();
+
+  /*! \brief Returns a pointer on the specified symbol exported by the library.
+   * \param symbol Name of the symbol exported by the library.
+   * \return Pointer on the symbol. Should be casted to the actual type. Never \c NULL.
+   * \exception DynamicLibraryManagerException if the symbol is not found.
+   */
+  Symbol findSymbol( const std::string &symbol );
+
+private:
+  /*! Loads the specified library.
+   * \param libraryName Name of the library to load.
+   * \exception DynamicLibraryManagerException if a failure occurs while loading
+   *            the library (fail to found or load the library).
+   */
+  void loadLibrary( const std::string &libraryName );
+
+  /*! Releases the loaded library.
+   * 
+   * \warning Must NOT throw any exceptions (called from destructor).
+   */
+  void releaseLibrary();
+
+  /*! Loads the specified library.
+   * 
+   * May throw any exceptions (indicates failure).
+   * \param libraryName Name of the library to load.
+   * \return Handle of the loaded library. \c NULL indicates failure.
+   */
+  LibraryHandle doLoadLibrary( const std::string &libraryName );
+
+  /*! Releases the loaded library.
+   *
+   * The handle of the library to free is in \c m_libraryHandle. It is never
+   * \c NULL.
+   * \warning Must NOT throw any exceptions (called from destructor).
+   */
+  void doReleaseLibrary();
+
+  /*! Returns a pointer on the specified symbol exported by the library.
+   * 
+   * May throw any exceptions (indicates failure).
+   * \param symbol Name of the symbol exported by the library.
+   * \return Pointer on the symbol. \c NULL indicates failure.
+   */
+  Symbol doFindSymbol( const std::string &symbol );
+
+  /*! Returns detailed information about doLoadLibrary() failure.
+   *
+   * Called just after a failed call to doLoadLibrary() to get extra
+   * error information.
+   *
+   * \return Detailed information about the failure of the call to
+   *         doLoadLibrary() that just failed.
+   */
+  std::string getLastErrorDetail() const;
+
+  /// Prevents the use of the copy constructor.
+  DynamicLibraryManager( const DynamicLibraryManager &copy );
+
+  /// Prevents the use of the copy operator.
+  void operator =( const DynamicLibraryManager &copy );
+
+private:
+  LibraryHandle m_libraryHandle;
+  std::string m_libraryName;
+};
+
+
+CPPUNIT_NS_END
+
+#endif // !defined(CPPUNIT_NO_TESTPLUGIN)
+
+#endif  // CPPUNIT_PLUGIN_DYNAMICLIBRARYMANAGER_H
+@
+
+
+1.5
+log
+@* include/cppunit/CompilerOutputter.h:
+* include/cppunit/Exception.h:
+* include/cppunit/Protector.h:
+* include/cppunit/TestListener.h:
+* include/cppunit/TestPath.h:
+* include/cppunit/TestResult.h:
+* include/cppunit/TestRunner.h:
+* include/cppunit/XmlOutputter.h:
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* include/cppunit/plugin/PlugInManager.h:
+* include/cppunit/plugin/PlugInParameters.h:
+* include/cppunit/TestPlugIn.h:
+* src/cppunit/DefaultProtector.h:
+* src/cppunit/ProtectorChain.h:
+* src/cppunit/ProtectorContext.h:
+* src/cppunit/TestCase.cpp:
+* src/cppunit/TestResult.cpp: fixed a dew documentation bugs.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: moved documentation to header.
+@
+text
+@d5 1
+@
+
+
+1.4
+log
+@* include/cppunit/config/Portability.h: If the compiler does not support
+  namespace (CPPUNIT_HAVE_NAMESPACES=0), define CPPUNIT_NO_STD_NAMESPACE
+  and CPPUNIT_NO_NAMESPACE. If CPPUNIT_NO_STD_NAMESPACE is defined, then
+  CppUnit assumes that STL are in the global namespace. If
+  CPPUNIT_NO_NAMESPACE is defined, then CppUnit classes are placed in the
+  global namespace instead of the CppUnit namespace.
+
+* include/cppunit/config/config-bcb5.h:
+* include/cppunit/config/config-msvc6.h: added definition of macro
+  CPPUNIT_HAVE_NAMESPACES.
+
+* include/cppunit/tools/StringTools.h: use CPPUNIT_WRAP_COLUMN as default
+  parameter value for wrap().
+
+* include/cppunit/*/*.h:
+* src/cppunit/*.cpp: changed all CppUnit namespace declaration to use
+  macros CPPUNIT_NS_BEGIN and CPPUNIT_NS_END. Also, changed reference
+  to CppUnit namespace (essentially in macros) using CPPUNIT_NS macro.
+@
+text
+@d39 1
+a39 1
+  /*! Loads the specified library.
+d49 1
+a49 1
+  /*! Returns a pointer on the specified symbol exported by the library.
+@
+
+
+1.3
+log
+@* include/cppunit/XmlOutputter.h: fixed XmlOutputter constructed default
+  value initializatino which caused compilation error with BC5.
+
+* src/cppunit/PlugInManager.cpp: added missing CPPUNIT_NO_TESTPLUGIN guard.
+
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testrunner/TestRunner.rc:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp:
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.rc:
+* src/msvc6/testpluginrunner/TestPlugInRunnerApp.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h: applied Steven Mitter
+  patch to fix bug #530426 (conflict between TestRunner and host application
+  resources). Adapted patch to compile work with Unicode.
+
+* src/msvc6/testrunner/ResourceLoaders.h:
+* src/msvc6/testrunner/ResourceLoaders.cpp:
+* src/msvc6/testrunner/Change-Diary-ResourceBugFix.txt: added, from
+  Steven Mitter's patch. Simplified loadCString() to compile with Unicode.
+
+* src/cppunit/cppunit.dsp:
+* src/cppunit/cppunit_dll.dsp:
+* src/DllPlugInTester/DllPlugInTester.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp: all lib, dll and exe are
+  now created in the intermediate directory. A post-build rule is used to
+  copy them to the lib/ directory.
+@
+text
+@d8 1
+a8 2
+namespace CppUnit
+{
+d116 1
+a116 2
+} //  namespace CppUnit
+
+@
+
+
+1.2
+log
+@* bumped version to 1.9.3
+
+* FAQ: added question about 4786 warning on VC++.
+
+* NEWS: updated.
+
+* contrib/msvc/readme.txt: moved to contrib/readme.txt.
+
+* contrib/xml-xsl/report.xsl: added XML style sheet contributed by
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for
+  startTestRun()/endTestRun().
+
+* examples/simple/*: added. A simple example.
+
+* include/cppunit/BriefTestProgressListener.h:
+* src/cppunit/BriefTestProgressListener.cpp: added. Verbose progess listener
+  that print the test name before running the test.
+
+* include/cppunit/TestListener.h: added startTestRun()/endTestRun().
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: added runTest(), to be called to run
+  a test by test runner.
+
+* src/cppunit/TextTestRunner.cpp:
+* src/cppunit/TestRunner.cpp: updated to use TestResult::runTest().
+
+* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added. Managers for all loaded plug-ins.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: renamed TestPlugInAdapter. All
+  implementations are empty.
+
+* include/cppunit/plugin/TestPlugInSuite.h: removed.
+* src/cppunit/TestPlugInSuite.cpp: removed. Replaced by PlugInManager.
+
+* include/cppunit/plugin/TestPlugIn.h: rewrote the plug-in interface to
+  provide more versatility. updated macros to match new interface.
+
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestFactoryRegistry.cpp: Added unregisterFactory().
+  Added convenience method addRegistry(). Rewrote registry life cycle
+  management. AutoRegisterSuite can now detect that the registry has been
+  destroy and not call to it to unregister its test factory.
+
+* include/cppunit/extensions/AutoRegisterTest.h: on destruction, the registered
+  factory is unregistered from the registry.
+
+* include/cppunit/extensions/HelperMacros.h: added macros
+  CPPUNIT_REGISTRY_ADD_TO_DEFAULT and CPPUNIT_REGISTRY_ADD to help
+  build test suite hierarchy.
+
+* src/cppunit/msvc/DllPlugInTester/*: moved to src/cppunit/DllPlugInTester/.
+
+* src/cppunit/DllPlugInTester/DllPlugInTester.cpp: removed UNICODE stuffs. Use
+  the PlugInManager instead of PlugInTestSuite. Simplified: only one test on
+  command line, but many DLL can be specified. Added configurations to link
+  against cppunit dll, those are now the default configuration (static linking
+  don't make much sense for plug-in).
+@
+text
+@d95 10
+@
+
+
+1.1
+log
+@* NEWS: updated.
+
+* configure.in: added include/cppunit/config/Makefile and
+  include/cppunit/plugin/Makefile to the list of target.
+
+* doc/CppUnit-win.dox: enabled generation of HTML Help documentation.
+
+* include/cppunit/config/Makefile.am:
+* include/cppunit/plugin/Makefile.am: added.
+
+* include/cppunit/config-bcb5.h:
+* include/cppunit/config-msvc6.h:
+* include/cppunit/config-mac.h: moved to include/cppunit/config/.
+
+* include/cppunit/Portability.h: updated config files location. Added macros
+  CPPUNIT_STRINGIZE and CPPUNIT_JOIN (implementation adapted from boost.org).
+  Added macro CPPUNIT_MAKE_UNIQUE_NAME.
+
+* include/cppunit/Test.h: modified methods order.
+
+* include/cppunit/extensions/HelperMacros.h: renamed macro
+  __CPPUNIT_MAKE_UNIQUE_NAME to CPPUNIT_MAKE_UNIQUE_NAME and moved its
+  definition to include/cppunit/Portability.h.
+
+* include/cppunit/extensions/TestDecorator.h: Inherits Test instead of TestLeaf.
+
+* include/cppunit/plugin/DynamicLibraryManager.h:
+* src/cppunit/DynamicLibraryManager.cpp: added. DLL manager (load & lookup
+  symbol).
+
+* src/cppunit/BeOsDynamicLibraryManager.cpp:
+* src/cppunit/UnixDynamicLibraryManager.cpp:
+* src/cppunit/Win32DynamicLibraryManager.cpp: added. Implementation of
+  platform dependent methods of DynamicLibraryManager.
+
+* include/cppunit/plugin/DynamicLibraryManagerException.h:
+* src/cppunit/DynamicLibraryManagerException.cpp: added. Exception thrown
+  by DynamicLibraryManager.
+
+* include/cppunit/plugin/TestPlugIn.h: added. CppUnitTestPlugIn interface
+  definition. Helper macros to implements plug-in.
+
+* include/cppunit/plugin/TestPlugInSuite.h:
+* src/cppunit/plugin/TestPlugInSuite.cpp: added. A suite to wrap a test
+  plug-in.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: added. A default implementation
+  of the test plug-in interface.
+
+* src/msvc6/DllPlugInTester/DllPlugInTester.cpp: updated to use the
+  new TestPlugIn.
+
+* examples/cppunittest/TestResultCollectorTest.cpp: fixed typo.
+@
+text
+@a6 2
+#include <string>
+
+@
+

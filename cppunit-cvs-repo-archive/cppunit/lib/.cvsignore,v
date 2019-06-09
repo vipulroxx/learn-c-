@@ -1,0 +1,29 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2005.07.15.19.10.53;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* added empty lib directory required to build cppunit from cvs with msvc.
+@
+text
+@*.dll *.ilk *.exe *.lib *.pdb
+
+@

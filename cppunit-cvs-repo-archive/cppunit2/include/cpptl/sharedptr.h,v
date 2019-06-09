@@ -1,0 +1,378 @@
+head	1.6;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.6
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.3
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.3
+	TG_AFTER_REMOVING_TESTCONTEXT:1.1
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.1
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.6
+date	2005.11.13.10.12.01;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.07.04.08.09.30;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.02.28.20.38.21;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.02.23.22.06.51;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.02.23.21.36.24;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.11.15.08.22.51;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@- renamed include/cpput/assert.h to include/cpput/assertcommon.h. This avoid clash with include <assert.h> in doxygen documentation
+- most Impl namespaces are now hidden from documentation using \cond and \endcond.
+@
+text
+@#ifndef CPPTL_SHAREDPTR_H_INCLUDED
+# define CPPTL_SHAREDPTR_H_INCLUDED
+
+# include <cpptl/forwards.h>
+
+// We use inheritance instead of the typedef in a struct to
+// simulate the template typedef because the typedef in a struct
+// trick does not support type deduction in template functions.
+
+
+// If CPPTL_USE_BOOST_SHARED_PTR is defined, then we use boost::shared_ptr
+// as our smart_pointer, otherwise we use a simple (partial) implementation
+// of our own.
+# ifndef CPPTL_USE_BOOST_SHARED_PTR
+
+#  include <cpptl/atomiccounter.h>
+
+namespace CppTL
+{
+
+   /// \cond implementation_detail
+   namespace Impl {
+
+      struct StaticPointerCastTag {};
+
+      /// Smart-pointer base class to avoid template code bloat
+      class SharedPtrBase
+      {
+      public:
+         long use_count() const
+         {
+            if ( count_ )
+               return count_->count();
+            return 0;
+         }
+
+         bool unique() const
+         {
+            return use_count() == 1;
+         }
+
+         operator bool() const
+         {
+            return p_ != 0;
+         }
+
+         bool operator !() const
+         {
+            return p_ == 0;
+         }
+      protected:
+         SharedPtrBase()
+            : p_( 0 )
+            , count_( 0 )
+         {
+         }
+         explicit SharedPtrBase( void *p )
+            : p_( p )
+            , count_( p ? new AtomicCounter( 1 ) : 0 )
+         {
+         }
+
+         SharedPtrBase( void *p, 
+                       AtomicCounter *count, 
+                       StaticPointerCastTag )
+            : p_( p )
+            , count_( count )
+         {
+            count_->increment();
+         }
+
+         SharedPtrBase( const SharedPtrBase &other )
+            : p_( other.p_ )
+            , count_( other.count_ )
+         {
+            if ( p_ )
+               count_->increment();
+         }
+
+         ~SharedPtrBase()
+         {
+            // subclass destructor should call releaseCount();
+         }
+
+         bool releaseCount()
+         {
+            if ( count_  &&  count_->decrement() == 0 )
+            {
+               delete count_;
+               return true;
+            }
+            return false;
+         }
+
+         void swap( SharedPtrBase &other )
+         {
+            void *tmpP = p_;
+            AtomicCounter *tmpCount = count_;
+            p_ = other.p_;
+            count_ = other.count_;
+            other.p_ = tmpP;
+            other.count_ = tmpCount;
+         }
+
+         void *get() const
+         {
+            return p_;
+         }
+
+         void *deref() const
+         {
+            // assert( p_ != 0 )
+            return p_;
+         }
+
+      //private:     // Friend template function is not well supported
+                     // Private access required by function staticPointerCast<>
+      public:
+         void *p_;
+         AtomicCounter *count_;
+      };
+
+   } // namespace Impl
+   /// \endcond
+      
+   template<class PointeeType>
+   class SharedPtr : public Impl::SharedPtrBase
+   {
+   public:
+      typedef SharedPtr<PointeeType> ThisType; 
+      typedef Impl::SharedPtrBase SuperClass;
+
+      SharedPtr()
+      {
+      }
+
+      explicit SharedPtr( PointeeType *p )
+         : Impl::SharedPtrBase( p )
+      {
+      }
+
+      SharedPtr( PointeeType *p, 
+                 AtomicCounter *count, 
+                Impl::StaticPointerCastTag )
+         : Impl::SharedPtrBase( p, count, Impl::StaticPointerCastTag() )
+      {
+      }
+
+      SharedPtr( const ThisType &other )
+         : Impl::SharedPtrBase( other )
+      {
+      }
+
+      ~SharedPtr()
+      {
+         if ( releaseCount() )
+            checkedDelete( static_cast<PointeeType *>( p_ ) );
+      }
+
+      void reset()
+      {
+         SharedPtr tmp;
+         tmp.swap( *this );
+      }
+
+      void reset( PointeeType *p )
+      {
+         SharedPtr tmp( p );
+         tmp.swap( *this );
+      }
+
+      PointeeType *get() const
+      {
+         return static_cast<PointeeType *>( SharedPtrBase::get() );
+      }
+
+      void swap( SharedPtr &other )
+      {
+         SuperClass::swap( other );
+      }
+
+      ThisType &operator =( const SharedPtr &other )
+      {
+         ThisType tmp( other );
+         swap( tmp );
+         return *this;
+      }
+
+      PointeeType &operator *() const
+      {
+         // assert( p_ != 0 )
+         return *( static_cast<PointeeType *>( p_ ) );
+      }
+
+      PointeeType *operator ->() const
+      {
+         return static_cast<PointeeType *>( SuperClass::deref() );
+      }
+   };
+
+
+   template<class TargetType, class SourceType>
+   SharedPtr<TargetType>
+   staticPointerCast( const SharedPtr<SourceType> &p )
+   {
+      TargetType *target = static_cast<TargetType *>( p.p_ );
+      return SharedPtr<TargetType>( target, p.count_, 
+                                   Impl::StaticPointerCastTag() );
+   }
+
+} // namespace CppTL
+
+# else // ifndef CPPTL_USE_BOOST_SHARED_PTR
+
+#  include <boost/shared_ptr.hpp>
+
+namespace CppTL
+{
+
+   template<class PointeeType>
+   class SharedPtr : public ::boost::shared_ptr<PointeeType>
+   {
+   public:
+      typedef SharedPtr<PointeeType> ThisType; 
+
+      SharedPtr()
+      {
+      }
+
+      explicit SharedPtr( PointeeType *p )
+         : ::boost::shared_ptr( p )
+      {
+      }
+
+      SharedPtr( const ::boost::shared_ptr<PointeeType> &other )
+         : ::boost::shared_ptr( other )
+      {
+      }
+
+      ThisType &operator =( const ::boost::shared_ptr<PointeeType> &other )
+      {
+         return ::boost::shared_ptr<PointeeType>::operator =( other );
+      }
+   };
+
+
+   template<class T, class U> 
+   SharedPtr<T>
+   staticPointerCast( const ::boost::shared_ptr<U> & r)
+   {
+	   return SharedPtr<T>( ::boost::static_pointer_cast<T>( r ) );
+   }
+
+} // namespace CppTL
+
+# endif // ifndef CPPTL_USE_BOOST_SHARED_PTR
+
+
+
+#endif // CPPTL_SHAREDPTR_H_INCLUDED
+
+@
+
+
+1.5
+log
+@* updated forward declarations
+* ScopedPtr and SharedPtr now use checked delete (check if type is complete)
+* added checkedDelete() and checkedArrayDelete() to config.h
+* added ScopedPtr and ScopedArray.
+@
+text
+@d21 1
+d124 1
+@
+
+
+1.4
+log
+@* includes forwards.h instead of config.h
+@
+text
+@d155 1
+a155 1
+            delete static_cast<PointeeType *>( p_ );
+@
+
+
+1.3
+log
+@* fixed destructor (deleting void * instead of pointee)
+@
+text
+@d4 1
+a4 1
+# include <cpptl/config.h>
+@
+
+
+1.2
+log
+@* changed implementation to avoid warning (operator -> returning void on solaris)
+@
+text
+@d155 1
+a155 1
+            delete p_;
+@
+
+
+1.1
+log
+@* moved shared_ptr & atomiccounter from CppUT to cppTL
+* simplified implementation of AtomicCounter using forward declaration on windows instead of using pimpl.
+@
+text
+@d109 1
+a109 1
+         void *operator ->() const
+d195 1
+a195 1
+         return static_cast<PointeeType *>( SuperClass::operator ->() );
+@
+

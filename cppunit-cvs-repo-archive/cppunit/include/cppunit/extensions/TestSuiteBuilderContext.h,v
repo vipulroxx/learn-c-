@@ -1,0 +1,314 @@
+head	1.6;
+access;
+symbols
+	REL_1_12_1:1.6
+	REL_1_11_6:1.6
+	REL_1_11_4:1.6
+	REL_1_11_0:1.6
+	TG_CPPUNIT_NO_STREAM_AFTER:1.6
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.6
+	REL_1_10_2:1.6
+	REL_1_10_0:1.5
+	REL_1_9_14:1.5
+	REL_1_9_12:1.5
+	BRANCH_1_9_12:1.5.0.2
+	TG_BRANCH_1_9_12:1.5
+	TG_BEFORE_HPUX_PLUGIN:1.5
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2;
+locks; strict;
+comment	@ * @;
+
+
+1.6
+date	2004.06.18.07.39.45;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.12.03.20.57.57;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.12.02.19.45.53;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.09.16.18.36.52;	author esche;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.08.29.07.36.50;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.08.28.22.20.52;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@* include/cppunit/extension/TestSuiteBuilderContext.h:
+* src/cppunit/TestSuiteBuilderContext.cpp: fixed bug #921843. This bug
+  was caused by a known STL bug in VC++ 6.
+  See http://www.dinkumware.com/vc_fixes.html <xtree> issue with shared
+  std::map in dll. As a work-around the map has been replaced by a vector.
+@
+text
+@#ifndef CPPUNIT_HELPER_TESTSUITEBUILDERCONTEXT_H
+#define CPPUNIT_HELPER_TESTSUITEBUILDERCONTEXT_H
+
+#include <cppunit/Portability.h>
+#include <cppunit/portability/CppUnitMap.h>
+#include <string>
+
+#if CPPUNIT_NEED_DLL_DECL
+#pragma warning( push )
+#pragma warning( disable: 4251 )  // X needs to have dll-interface to be used by clients of class Z
+#endif
+
+
+CPPUNIT_NS_BEGIN
+
+class TestSuite;
+class TestFixture;
+class TestFixtureFactory;
+class TestNamer;
+
+/*! \brief Context used when creating test suite in HelperMacros.
+ *
+ * Base class for all context used when creating test suite. The
+ * actual context type during test suite creation is TestSuiteBuilderContext.
+ *
+ * \sa CPPUNIT_TEST_SUITE, CPPUNIT_TEST_SUITE_ADD_TEST, 
+ *     CPPUNIT_TEST_SUITE_ADD_CUSTOM_TESTS.
+ */
+class CPPUNIT_API TestSuiteBuilderContextBase
+{
+public:
+  /*! \brief Constructs a new context.
+   *
+   * You should not use this. The context is created in 
+   * CPPUNIT_TEST_SUITE().
+   */
+  TestSuiteBuilderContextBase( TestSuite &suite,
+                               const TestNamer &namer,
+                               TestFixtureFactory &factory );
+
+  virtual ~TestSuiteBuilderContextBase();
+
+  /*! \brief Adds a test to the fixture suite.
+   *
+   * \param test Test to add to the fixture suite. Must not be \c NULL.
+   */
+  void addTest( Test *test );
+
+  /*! \brief Returns the fixture name.
+   * \return Fixture name. It is the name used to name the fixture
+   *         suite.
+   */
+  std::string getFixtureName() const;
+
+  /*! \brief Returns the name of the test for the specified method.
+   *
+   * \param testMethodName Name of the method that implements a test.
+   * \return A string that is the concatenation of the test fixture name 
+   *         (returned by getFixtureName()) and\a testMethodName, 
+   *         separated using '::'. This provides a fairly unique name for a given
+   *         test.
+   */
+  std::string getTestNameFor( const std::string &testMethodName ) const;
+
+  /*! \brief Adds property pair.
+   * \param key   PropertyKey string to add.
+   * \param value PropertyValue string to add.
+   */
+  void addProperty( const std::string &key, 
+                    const std::string &value );
+  
+  /*! \brief Returns property value assigned to param key.
+   * \param key PropertyKey string.
+   */
+  const std::string getStringProperty( const std::string &key ) const;
+
+protected:
+  TestFixture *makeTestFixture() const;
+
+  // Notes: we use a vector here instead of a map to work-around the
+  // shared std::map in dll bug in VC6.
+  // See http://www.dinkumware.com/vc_fixes.html for detail.
+  typedef std::pair<std::string,std::string> Property;
+  typedef CppUnitVector<Property> Properties;
+
+  TestSuite &m_suite;
+  const TestNamer &m_namer;
+  TestFixtureFactory &m_factory;
+
+private:
+  Properties m_properties;
+};
+
+
+/*! \brief Type-sage context used when creating test suite in HelperMacros.
+ * 
+ * \sa TestSuiteBuilderContextBase.
+ */
+template<class Fixture>
+class TestSuiteBuilderContext : public TestSuiteBuilderContextBase
+{
+public:
+  typedef Fixture FixtureType;
+
+  TestSuiteBuilderContext( TestSuiteBuilderContextBase &contextBase )
+      : TestSuiteBuilderContextBase( contextBase )
+  {
+  }
+
+  /*! \brief Returns a new TestFixture instance.
+   * \return A new fixture instance. The fixture instance is returned by
+   *         the TestFixtureFactory passed on construction. The actual type 
+   *         is that of the fixture on which the static method suite() 
+   *         was called.
+   */
+  FixtureType *makeFixture() const
+  {
+    return CPPUNIT_STATIC_CAST( FixtureType *, 
+                                TestSuiteBuilderContextBase::makeTestFixture() );
+  }
+};
+
+
+CPPUNIT_NS_END
+
+#if CPPUNIT_NEED_DLL_DECL
+#pragma warning( pop )
+#endif
+
+#endif // CPPUNIT_HELPER_TESTSUITEBUILDERCONTEXT_H
+
+@
+
+
+1.5
+log
+@* fixed include path
+@
+text
+@d13 1
+d41 2
+d80 5
+a84 1
+  typedef CppUnitMap<std::string,std::string> Properties;
+d89 2
+@
+
+
+1.4
+log
+@* include/cppunit/plugin/DynamicLibraryManagerException.h: added constructor
+  to fix compilation issues on recents version of gcc and sun CC (bug #619059)
+
+* include/cppunit/input/XmlInputHelper.h: added.
+
+* include/cppunit/extensions/TestSuiteBuilderContext.h:
+* src/cppunit/TestSuiteBuilderContext.cpp: added addProperty() and
+  getStringProperty(). Added macros CPPUNIT_TEST_SUITE_PROPERTY.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: integrated Tim Threlkeld's
+  bug fix #610162: browse button was disabled if history was empty.
+
+* src/msvc6/testrunner/DynamicWindow/cdxCSizeIconCtrl.cpp: integrated
+  Tim Threlkeld's bug fix #610191: common control were not initialized.
+
+* include/cppunit/extensions/ExceptionTestCaseDecorator.h: bug #603172,
+  missing Message construction.
+
+* src/cppunit/DefaultProtector.cpp: bug #603172. Fixed missing ';'.
+
+* src/cppunit/TestCase.cpp: bug #603671. Removed unguarded typeinfo
+  include.
+
+* examples/cppunittests/*Suite.h: bug #603666. Added missing Portability.h
+  include.
+@
+text
+@d5 1
+a5 1
+#include <cppunit/Portability/CppUnitMap.h>
+@
+
+
+1.3
+log
+@added newline at end of file (needed for some compilers to work)
+@
+text
+@d5 1
+d8 5
+d62 12
+d77 2
+d82 1
+d116 4
+@
+
+
+1.2
+log
+@* include/cppunit/Asserter.h:
+* include/cppunit/Message.h:
+* include/cppunit/extensions/TestNamer.h:
+* include/cppunit/extensions/TestSuiteBuilder.h:
+* include/cppunit/tools/XmlDocument.h:
+* include/cppunit/tools/XmlElement.h: Fixed a few documentation bug.
+@
+text
+@d96 2
+a97 1
+#endif // CPPUNIT_HELPER_TESTSUITEBUILDERCONTEXT_H@
+
+
+1.1
+log
+@* include/cppunit/Portability.h: added CPPUNIT_STATIC_CAST.
+
+* include/cppunit/extensions/TestFixtureFactory.h: extracted from
+  HelperMacros.h. Added template class ConcretTestFixtureFactory.
+
+* include/cppunit/extensions/TestSuiteBuilderContext.h:
+* src/cppunit/TestSuiteBuilderContext.cpp: added. Context used
+  to add test case to the fixture suite. Prevent future
+  compatibility break for custom test API.
+
+* include/cppunit/extensions/HelperMacros.h: mostly rewritten. No
+  longer use TestSuiteBuilder. Added support for abstract test fixture
+  through macro CPPUNIT_TEST_SUITE_END_ABSTRACT. Made custom test API
+  easier to use.
+
+* examples/cppunittest/HelperMacrosTest.h:
+* examples/cppunittest/HelperMacrosTest.cpp: updated against
+  HelperMacros.h changes.
+@
+text
+@d25 1
+a25 1
+  /*! Constructs a new context.
+d34 1
+a34 1
+  /*! Adds a test to the fixture suite.
+d40 1
+a40 1
+  /*! Returns the fixture name.
+d46 1
+a46 1
+  /*! Returns the name of the test for the specified method.
+@
+

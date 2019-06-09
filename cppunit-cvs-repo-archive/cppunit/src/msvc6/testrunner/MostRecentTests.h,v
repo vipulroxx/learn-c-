@@ -1,0 +1,187 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.27.21.31.07;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@// //////////////////////////////////////////////////////////////////////////
+// Header file MostRecentTests.h for class MostRecentTests
+// (c)Copyright 2000, Baptiste Lepilleur.
+// Created: 2001/06/27
+// //////////////////////////////////////////////////////////////////////////
+#ifndef MOSTRECENTTESTS_H
+#define MOSTRECENTTESTS_H
+
+#include <cppunit/Test.h>
+#include <deque>
+#include <utility>
+
+
+/*! \class MostRecentTests
+ * \brief This class represents a list of the tests most recently run.
+ */
+class MostRecentTests
+{
+public:
+  /*! Constructs a MostRecentTests object.
+   */
+  MostRecentTests();
+
+  /*! Destructor.
+   */
+  virtual ~MostRecentTests();
+
+  void setLastTestRun( CPPUNIT_NS::Test *test );
+  CPPUNIT_NS::Test *lastTestRun() const;
+
+  int getRunCount() const;
+  CPPUNIT_NS::Test *getTestAt( int indexTest ) const;
+  std::string getTestNameAt( int indexTest ) const;
+
+
+private:
+  /// Prevents the use of the copy constructor.
+  MostRecentTests( const MostRecentTests &copy );
+
+  /// Prevents the use of the copy operator.
+  void operator =( const MostRecentTests &copy );
+
+private:
+  typedef std::pair<std::string, CPPUNIT_NS::Test *> TestRun;
+  typedef std::deque<TestRun> TestRuns;
+  TestRuns m_runs;
+};
+
+
+#endif  // MOSTRECENTTESTS_H
+@
+
+
+1.1
+log
+@* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+@
+text
+@d28 2
+a29 2
+  void setLastTestRun( CppUnit::Test *test );
+  CppUnit::Test *lastTestRun() const;
+d32 1
+a32 1
+  CppUnit::Test *getTestAt( int indexTest ) const;
+d44 1
+a44 1
+  typedef std::pair<std::string, CppUnit::Test *> TestRun;
+a47 6
+
+
+
+// Inlines methods for MostRecentTests:
+// ------------------------------------
+
+@
+

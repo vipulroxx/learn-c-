@@ -1,0 +1,429 @@
+head	1.5;
+access;
+symbols
+	REL_1_12_1:1.4
+	REL_1_11_6:1.4
+	REL_1_11_4:1.4
+	REL_1_11_0:1.4
+	TG_CPPUNIT_NO_STREAM_AFTER:1.4
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.4
+	REL_1_10_2:1.4
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.5
+date	2008.02.21.03.10.06;	author smr99;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.06.18.08.15.29;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.08.27.21.51.18;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.07.14.19.48.32;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.21.10.57.52;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@Changes to suppress warnings of gcc -Wall -W -ansi, mainly from patch [1898225].
+@
+text
+@#include "CommandLineParser.h"
+#include "CommandLineParserTest.h"
+
+CPPUNIT_TEST_SUITE_REGISTRATION( CommandLineParserTest );
+
+
+CommandLineParserTest::CommandLineParserTest()
+{
+}
+
+
+CommandLineParserTest::~CommandLineParserTest()
+{
+}
+
+
+void 
+CommandLineParserTest::setUp()
+{
+  _parser = NULL;
+}
+
+
+void 
+CommandLineParserTest::tearDown()
+{
+  delete _parser;
+}
+
+
+void 
+CommandLineParserTest::parse( const char **lines )
+{
+  int count =0;
+  for ( const char **line = lines; *line != NULL; ++line, ++count )
+      ;
+
+  delete _parser;
+  _parser = new CommandLineParser( count, lines );
+  _parser->parse();
+}
+
+
+void 
+CommandLineParserTest::testEmptyCommandLine()
+{
+  static const char *lines[] = { "", NULL };
+  parse( lines );
+
+  std::string none;
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getEncoding() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getTestPath() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getXmlFileName() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getXmlStyleSheet() );
+  CPPUNIT_ASSERT( !_parser->noTestProgress() );
+  CPPUNIT_ASSERT( !_parser->useBriefTestProgress() );
+  CPPUNIT_ASSERT( !_parser->useCompilerOutputter() );
+  CPPUNIT_ASSERT( !_parser->useCoutStream() );
+  CPPUNIT_ASSERT( !_parser->useTextOutputter() );
+  CPPUNIT_ASSERT( !_parser->useXmlOutputter() );
+}
+
+
+void 
+CommandLineParserTest::testFlagCompiler()
+{
+  static const char *lines[] = { "", "-c", NULL };
+  parse( lines );
+
+  std::string none;
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getEncoding() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getTestPath() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getXmlFileName() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getXmlStyleSheet() );
+  CPPUNIT_ASSERT( !_parser->noTestProgress() );
+  CPPUNIT_ASSERT( !_parser->useBriefTestProgress() );
+  CPPUNIT_ASSERT( _parser->useCompilerOutputter() );
+  CPPUNIT_ASSERT( !_parser->useCoutStream() );
+  CPPUNIT_ASSERT( !_parser->useTextOutputter() );
+  CPPUNIT_ASSERT( !_parser->useXmlOutputter() );
+  CPPUNIT_ASSERT_EQUAL( 0, _parser->getPlugInCount() );
+}
+
+
+void 
+CommandLineParserTest::testLongFlagBriefProgress()
+{
+  static const char *lines[] = { "", "--brief-progress", NULL };
+  parse( lines );
+
+  std::string none;
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getEncoding() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getTestPath() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getXmlFileName() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getXmlStyleSheet() );
+  CPPUNIT_ASSERT( !_parser->noTestProgress() );
+  CPPUNIT_ASSERT( _parser->useBriefTestProgress() );
+  CPPUNIT_ASSERT( !_parser->useCompilerOutputter() );
+  CPPUNIT_ASSERT( !_parser->useCoutStream() );
+  CPPUNIT_ASSERT( !_parser->useTextOutputter() );
+  CPPUNIT_ASSERT( !_parser->useXmlOutputter() );
+  CPPUNIT_ASSERT_EQUAL( 0, _parser->getPlugInCount() );
+}
+
+
+void 
+CommandLineParserTest::testFileName()
+{
+  static const char *lines[] = { "", "TestPlugIn.dll", NULL };
+  parse( lines );
+
+  std::string none;
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getEncoding() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getTestPath() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getXmlFileName() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getXmlStyleSheet() );
+  CPPUNIT_ASSERT( !_parser->noTestProgress() );
+  CPPUNIT_ASSERT( !_parser->useBriefTestProgress() );
+  CPPUNIT_ASSERT( !_parser->useCompilerOutputter() );
+  CPPUNIT_ASSERT( !_parser->useCoutStream() );
+  CPPUNIT_ASSERT( !_parser->useTextOutputter() );
+  CPPUNIT_ASSERT( !_parser->useXmlOutputter() );
+
+  CPPUNIT_ASSERT_EQUAL( 1, _parser->getPlugInCount() );
+
+  CommandLinePlugInInfo info( _parser->getPlugInAt( 0 ) );
+  CPPUNIT_ASSERT_EQUAL( std::string("TestPlugIn.dll"), info.m_fileName );
+  CPPUNIT_ASSERT( info.m_parameters.getCommandLine().empty() );
+}
+
+
+void 
+CommandLineParserTest::testTestPath()
+{
+  static const char *lines[] = { "", ":Core", NULL };
+  parse( lines );
+
+  std::string none;
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getEncoding() );
+  CPPUNIT_ASSERT_EQUAL( std::string("Core"), _parser->getTestPath() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getXmlFileName() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getXmlStyleSheet() );
+  CPPUNIT_ASSERT( !_parser->noTestProgress() );
+  CPPUNIT_ASSERT( !_parser->useBriefTestProgress() );
+  CPPUNIT_ASSERT( !_parser->useCompilerOutputter() );
+  CPPUNIT_ASSERT( !_parser->useCoutStream() );
+  CPPUNIT_ASSERT( !_parser->useTextOutputter() );
+  CPPUNIT_ASSERT( !_parser->useXmlOutputter() );
+  CPPUNIT_ASSERT_EQUAL( 0, _parser->getPlugInCount() );
+}
+
+
+void 
+CommandLineParserTest::testParameterWithSpace()
+{
+  static const char *lines[] = { "", "--xml", "Test Results.xml", NULL };
+  parse( lines );
+
+  std::string none;
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getEncoding() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getTestPath() );
+  CPPUNIT_ASSERT_EQUAL( std::string("Test Results.xml"), 
+                        _parser->getXmlFileName() );
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getXmlStyleSheet() );
+  CPPUNIT_ASSERT( !_parser->noTestProgress() );
+  CPPUNIT_ASSERT( !_parser->useBriefTestProgress() );
+  CPPUNIT_ASSERT( !_parser->useCompilerOutputter() );
+  CPPUNIT_ASSERT( !_parser->useCoutStream() );
+  CPPUNIT_ASSERT( !_parser->useTextOutputter() );
+  CPPUNIT_ASSERT( _parser->useXmlOutputter() );
+  CPPUNIT_ASSERT_EQUAL( 0, _parser->getPlugInCount() );
+}
+
+
+void 
+CommandLineParserTest::testMissingStyleSheetParameterThrow()
+{
+  static const char *lines[] = { "", "--xsl", NULL };
+  parse( lines );
+}
+
+
+void 
+CommandLineParserTest::testMissingEncodingParameterThrow()
+{
+  static const char *lines[] = { "", "--encoding", NULL };
+  parse( lines );
+}
+
+
+void 
+CommandLineParserTest::testXmlFileNameIsOptional()
+{
+  static const char *lines[] = { "", "--xml", NULL };
+  parse( lines );
+
+  std::string none;
+  CPPUNIT_ASSERT_EQUAL( none, _parser->getXmlFileName() );
+}
+
+
+void 
+CommandLineParserTest::testPlugInsWithParameters()
+{
+  static const char *lines[] = { "", "TestPlugIn1.dll=login = lain",
+                           "Clocker.dll", NULL };
+  parse( lines );
+
+  CPPUNIT_ASSERT_EQUAL( 2, _parser->getPlugInCount() );
+
+  CommandLinePlugInInfo info1( _parser->getPlugInAt( 0 ) );
+
+  CPPUNIT_ASSERT_EQUAL( std::string("TestPlugIn1.dll"), info1.m_fileName );
+  CPPUNIT_ASSERT_EQUAL( std::string("login = lain"), 
+                        info1.m_parameters.getCommandLine() );
+
+  CommandLinePlugInInfo info2( _parser->getPlugInAt( 1 ) );
+  CPPUNIT_ASSERT_EQUAL( std::string("Clocker.dll"), info2.m_fileName );
+  CPPUNIT_ASSERT( info2.m_parameters.getCommandLine().empty() );
+}
+@
+
+
+1.4
+log
+@* src/DllPlugInTester/*.cpp: bug #941625, string literal using char *
+  instead of const char *. Patch contributed by Curt Arnold has been
+  applied.
+@
+text
+@d35 2
+a36 1
+  for ( const char **line = lines; *line != NULL; ++line, ++count );
+@
+
+
+1.3
+log
+@* CodingGuideLines.txt: updated for OS/390 C++ limitation.
+
+* examples/cppunittests/MockFunctor.h: added. Mock Functor to help
+  testing.
+
+* examples/cppunittests/MockProtector.h: qdded. Mock Protector to help
+  testing.
+
+* examples/cppunittests/TestResultTest.h
+* examples/cppunittests/TestResultTest.cpp: added tests for
+  pushProtector(), popProtector() and protect().
+
+* include/cppunit/TestAssert.h: removed default message value from
+  assertEquals(). Caused compilation error on OS/390.
+
+* include/cppunit/plugin/PlugInParameters.h:
+* src/cppunit/PlugInParameters.cpp: renamed commandLine() to
+  getCommandLine().
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: bug fix, disabled Browse
+  button while running tests.
+@
+text
+@d32 1
+a32 1
+CommandLineParserTest::parse( char **lines )
+d35 1
+a35 1
+  for ( char **line = lines; *line != NULL; ++line, ++count );
+d46 1
+a46 1
+  static char *lines[] = { "", NULL };
+d66 1
+a66 1
+  static char *lines[] = { "", "-c", NULL };
+d87 1
+a87 1
+  static char *lines[] = { "", "--brief-progress", NULL };
+d108 1
+a108 1
+  static char *lines[] = { "", "TestPlugIn.dll", NULL };
+d134 1
+a134 1
+  static char *lines[] = { "", ":Core", NULL };
+d155 1
+a155 1
+  static char *lines[] = { "", "--xml", "Test Results.xml", NULL };
+d177 1
+a177 1
+  static char *lines[] = { "", "--xsl", NULL };
+d185 1
+a185 1
+  static char *lines[] = { "", "--encoding", NULL };
+d193 1
+a193 1
+  static char *lines[] = { "", "--xml", NULL };
+d204 1
+a204 1
+  static char *lines[] = { "", "TestPlugIn1.dll=login = lain",
+@
+
+
+1.2
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d127 1
+a127 1
+  CPPUNIT_ASSERT_EQUAL( 0, int(info.m_parameters.size()) );
+a212 1
+  CPPUNIT_ASSERT_EQUAL( 1, int(info1.m_parameters.size()) );
+d214 1
+a214 1
+                        info1.m_parameters[0] );
+d218 1
+a218 1
+  CPPUNIT_ASSERT_EQUAL( 0, int(info2.m_parameters.size()) );
+@
+
+
+1.1
+log
+@* src/DllPlugInTester/makefile.am: removed ld.so from LDADD flags.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: rewrote, fixed problem
+  with double quotes in command line...
+
+* src/DllPlugInTester/CommandLineParserTest.h:
+* src/DllPlugInTester/CommandLineParserTest.cpp:
+* src/DllPlugInTester/DllPlugInTesterTest.cpp: added, unit tests for
+  CommandLineParser.
+
+* src/msvc6/TestPlugIn/*: removed.
+@
+text
+@d7 1
+a7 2
+CommandLineParserTest::CommandLineParserTest() : 
+    CppUnit::TestCase()
+@
+

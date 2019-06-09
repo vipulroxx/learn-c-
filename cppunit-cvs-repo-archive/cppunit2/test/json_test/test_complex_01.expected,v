@@ -1,0 +1,44 @@
+head	1.1;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2006.03.07.23.02.11;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* added end to end json tests
+@
+text
+@.={}
+.attribute=[]
+.attribute[0]="random"
+.attribute[1]="short"
+.attribute[2]="bold"
+.attribute[3]=12
+.attribute[4]={}
+.attribute[4].height=7
+.attribute[4].width=64
+.count=1234
+.name={}
+.name.aka="T.E.S.T."
+.name.id=123987
+.test={}
+.test.1={}
+.test.1.2={}
+.test.1.2.3={}
+.test.1.2.3.coord=[]
+.test.1.2.3.coord[0]=1
+.test.1.2.3.coord[1]=2
+@

@@ -1,0 +1,163 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.2
+date	2006.02.01.21.10.59;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.12.12.07.40.09;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@examples/qt: integrated Ernst patch from qt examples.
+@
+text
+@#----------------------------------------------------------------------
+# File:    qt_example.pro
+# Purpose: qmake config file for the QtTestRunner example.
+#          The program is built with the QtTestRunner debug staticlib.
+#          Set the CONFIG variable accordingly to build it differently.
+#----------------------------------------------------------------------
+
+TEMPLATE = app
+LANGUAGE = C++
+TARGET   = qt_example
+
+# Get rid of possibly predefined options
+
+CONFIG -= debug
+CONFIG -= release
+
+CONFIG += qt warn_on debug use_static
+
+#CONFIG += qt warn_on release use_static
+#CONFIG += qt warn_on debug use_dll
+#CONFIG += qt warn_on release use_dll
+
+
+CPPUNIT_LIB_DIR = ../../lib   # Location of libraries
+
+
+#----------------------------------------------------------------------
+# MS Windows
+#----------------------------------------------------------------------
+
+win32 {
+    # Suppress program database creation (should better be done
+    # in the qmake spec file)
+    QMAKE_CXXFLAGS_DEBUG += /Z7
+    QMAKE_CXXFLAGS_DEBUG -= -Gm
+    QMAKE_CXXFLAGS_DEBUG -= -Zi
+}
+
+win32 {
+    use_dll {
+        DEFINES += QTTESTRUNNER_DLL
+        debug {
+            OBJECTS_DIR = DebugDLL
+            LIBS += $${CPPUNIT_LIB_DIR}\cppunitd_dll.lib
+            LIBS += $${CPPUNIT_LIB_DIR}\qttestrunnerd_dll.lib
+        }
+        release {
+            OBJECTS_DIR = ReleaseDLL
+            LIBS += $${CPPUNIT_LIB_DIR}\cppunit_dll.lib
+            LIBS += $${CPPUNIT_LIB_DIR}\qttestrunner_dll.lib
+        }
+    }
+    use_static {
+        debug {
+            OBJECTS_DIR = Debug
+            LIBS += $${CPPUNIT_LIB_DIR}\cppunitd.lib
+            LIBS += $${CPPUNIT_LIB_DIR}\qttestrunnerd.lib
+        }
+        release {
+            OBJECTS_DIR = Release
+            LIBS += $${CPPUNIT_LIB_DIR}\cppunit.lib
+            LIBS += $${CPPUNIT_LIB_DIR}\qttestrunner.lib
+        }
+    }
+    DESTDIR = $${OBJECTS_DIR}
+}
+
+#----------------------------------------------------------------------
+# Linux/Unix
+#----------------------------------------------------------------------
+
+unix {
+    debug {
+        OBJECTS_DIR = .obj_debug
+        use_static: LIBS += -L$${CPPUNIT_LIB_DIR} -lqttestrunnerd
+        use_dll:    LIBS += -L$${CPPUNIT_LIB_DIR} -lqttestrunnerd_shared
+        LIBS += -L$${CPPUNIT_LIB_DIR} -lcppunit
+    }
+    release {
+        OBJECTS_DIR = .obj_release
+        use_static: LIBS += -L$${CPPUNIT_LIB_DIR} -lqttestrunner
+        use_dll:    LIBS += -L$${CPPUNIT_LIB_DIR} -lqttestrunner_shared
+        LIBS += -L$${CPPUNIT_LIB_DIR} -lcppunit
+    }
+}
+
+#----------------------------------------------------------------------
+
+HEADERS = \
+        ExampleTestCases.h
+
+SOURCES = \
+        ExampleTestCases.cpp \
+        Main.cpp
+
+INCLUDEPATH += . ../../include
+@
+
+
+1.1
+log
+@* integrated Ernst patch for QtTestRunner and Qt 3.x.
+* upgrade QtTestRunner to Qt 3.x
+* enhanced qmake project files to handle multiple build configuration
+@
+text
+@d17 1
+a17 1
+#CONFIG += qt warn_on debug use_static
+d21 5
+a25 1
+CONFIG += qt warn_on release use_dll
+d32 8
+d44 2
+a45 2
+            LIBS += ..\..\lib\cppunitd_dll.lib
+            LIBS += ..\..\lib\qttestrunnerd_dll.lib
+d49 2
+a50 2
+            LIBS += ..\..\lib\cppunit_dll.lib
+            LIBS += ..\..\lib\qttestrunner_dll.lib
+d56 2
+a57 2
+            LIBS += ..\..\lib\cppunitd.lib
+            LIBS += ..\..\lib\qttestrunnerd.lib
+d61 2
+a62 2
+            LIBS += ..\..\lib\cppunit.lib
+            LIBS += ..\..\lib\qttestrunner.lib
+d73 12
+a84 1
+    message("NOT IMPLEMENTED YET!")
+@
+

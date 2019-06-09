@@ -1,0 +1,168 @@
+head	1.5;
+access;
+symbols
+	REL_1_12_1:1.5
+	REL_1_11_6:1.4
+	REL_1_11_4:1.4
+	REL_1_11_0:1.4
+	TG_CPPUNIT_NO_STREAM_AFTER:1.4
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.4
+	REL_1_10_2:1.4
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.4
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.3
+	REL_1_9_4:1.3
+	REL_1_9_0:1.3
+	REL_1_8_0:1.3
+	REL_1_7_8:1.3
+	REL_1_7_3:1.3
+	REL_1_7_1:1.3
+	REL_1_6_2:1.3
+	BRANCH_1_6:1.3.0.2
+	REL_1_6_1:1.3;
+locks; strict;
+comment	@# @;
+
+
+1.5
+date	2006.03.05.10.11.40;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.06.18.09.27.00;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.10.01.03.45.45;	author smr99;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.10.01.03.06.15;	author smr99;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.09.29.19.42.40;	author smr99;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* updated release procedure
+@
+text
+@		Making a SourceForge Release
+		----------------------------
+
+* create files to distribute and copy them to sourceforge
+
+	Bump up release version in:
+	 - include/cppunit/Portability.h
+	 - configure.in
+	 - doc/makedox.bat
+	 - NEWS
+
+	make distcheck
+	make doc-dist
+	scp cppunit*tar.gz <account>@@cppunit.sourceforge.net:
+
+
+* ftp the files to sourceforge; did this from the sourceforge
+  shell account because my home machine is masqueraded (a.k.a. NATed)
+
+	ftp upload
+	cd incoming
+	mput cppunit*tar.gz 
+
+
+* go through the file release process: select "Admin", then
+  "Edit/Add File Releases"
+  - name of release is version number
+  - make take 30 minutes to show up on downloads page
+
+
+* update web pages; this is done on cppunit.sourceforge.net
+
+	cd /home/groups/c/cp/cppunit
+	mv htdocs htdocs-$(oldversion)
+	mkdir htdocs
+	cd htdocs
+	tar xzf ~/cppunit-docs-$(newversion).tar.gz
+
+
+* tag the CVS sources for release x.y.z
+
+	cvs tag REL_x_y_z
+
+
+* bump the version in configure.in and commit the change
+@
+
+
+1.4
+log
+@* updated release instruction
+@
+text
+@d8 1
+d10 1
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d6 4
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d22 1
+@
+
+
+1.1
+log
+@Update version to 1.6.1.
+Add notes on SourceForge release process for CppUnit.
+Tweak a few other docs.
+@
+text
+@d7 1
+a7 1
+	make doc
+d14 1
+a14 1
+	ftp uploads
+d19 2
+a20 1
+* go through the file release process
+d33 1
+a33 2
+*** for the 1.6.0 release, the file cookbook was not in the docs
+    tarball.  This needs to be corrected.
+d35 4
+@
+

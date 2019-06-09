@@ -1,0 +1,112 @@
+head	1.2;
+access;
+symbols
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.1
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2004.11.20.15.06.59;	author blep;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2004.08.04.21.21.56;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@#ifndef CPPUT_PROGRESSLISTENER_H_INCLUDED
+# define CPPUT_PROGRESSLISTENER_H_INCLUDED
+
+# include <cpput/test.h>
+# include <cpput/testlistener.h>
+# include <cpput/testresult.h>
+# include <iostream>
+
+namespace CppUT {
+
+class CPPUT_API BriefProgressListener : public TestListener
+{
+public: // overridden from CppUT::TestListener
+   void processTestResult( CppUT::TestResult &result, 
+                           CppUT::TestContext &context )
+   {
+      if ( result.failed() )
+      {
+         if ( result.isAssertionFailure() )
+            resultType_ = "ASSERTION";
+         else if ( result.isFaultFailure() )
+            resultType_ = "FAULT";
+         else // user custom failure
+            resultType_ = "FAILURE";
+      }
+   }
+
+   void enterTest( CppUT::Test &test, CppUT::TestContext &context )
+   {
+      resultType_ = "OK";
+      std::cout  <<  "Testing '" << path( test ) << "' : ";
+      std::cout.flush();
+   }
+
+   void exitTest( CppUT::Test &test, CppUT::TestContext &context )
+   {
+      std::cout  <<  resultType_  <<  std::endl;
+   }
+
+   std::string resultType_;
+};
+
+
+
+class CPPUT_API DotProgressListener : public TestListener
+{
+public: // overridden from CppUT::TestListener
+   void processTestResult( CppUT::TestResult &result, 
+                           CppUT::TestContext &context )
+   {
+      char out = '.';
+      if ( result.failed() )
+      {
+         if ( result.isAssertionFailure() )
+            out = 'A';
+         else if ( result.isFaultFailure() )
+            out = 'F';
+         else // user custom failure
+            out = 'E';
+      }
+
+      std::cout << out;
+      std::cout.flush();
+   }
+};
+
+} // namespace CppUT
+
+#endif // CPPUT_PROGRESSLISTENER_H_INCLUDED
+@
+
+
+1.1
+log
+@* moved drafty progress listener from main.cpp to include/cpput/progresslistener.h
+@
+text
+@@
+

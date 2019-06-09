@@ -1,0 +1,104 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@// @;
+
+
+1.2
+date	2008.07.13.08.16.05;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2007.08.19.20.13.24;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@- Made min/max int initialization more portable.
+@
+text
+@#include "valuetest.h"
+#include <cpptl/value.h>
+
+
+ValueTest::ValueTest()
+   : maxInt_( ((unsigned int)~0)/2 )
+   , minInt_( ~((unsigned int)(~0)/2) )
+{
+}
+
+
+ValueTest::~ValueTest()
+{
+}
+
+
+void 
+ValueTest::setUp()
+{
+}
+
+
+void 
+ValueTest::tearDown()
+{
+}
+
+
+void 
+ValueTest::testNone()
+{
+   CppTL::Value value;
+   CPPUT_CHECK_EXPR( value.isNone() );
+   CppTL::Value value2;
+   CPPUT_CHECK_EXPR( value2.isNone() );
+   CPPUT_CHECK_EXPR( value == value2 );
+   CPPUT_CHECK_EXPR_FALSE( value < value2 );
+   CPPUT_CHECK_EXPR( value <= value2 );
+   CPPUT_CHECK_EXPR_FALSE( value != value2 );
+   CPPUT_CHECK_EXPR( value >= value2 );
+   CPPUT_CHECK_EXPR_FALSE( value > value2 );
+}
+
+
+void 
+ValueTest::testLifeCycle()
+{
+   CppTL::Value value1 = CppTL::makeValue( maxInt_ );
+   CppTL::Value value1a = value1;
+   CppTL::Value value2 = CppTL::makeValue( minInt_ );
+   CppTL::Value value2a = CppTL::makeValue( minInt_ );
+   CPPUT_CHECK_EXPR_FALSE( value1a.isNone() );
+
+   CPPUT_CHECK_EXPR( value2 < value1 );
+   CPPUT_CHECK_EXPR( value2 <= value1 );
+   CPPUT_CHECK_EXPR( value1 != value2 );
+   CPPUT_CHECK_EXPR_FALSE( value1 == value2 );
+   CPPUT_CHECK_EXPR_FALSE( value2 >= value1 );
+   CPPUT_CHECK_EXPR_FALSE( value2 > value1 );
+
+   CPPUT_CHECK_EXPR( value1 == value1a );
+   CPPUT_CHECK_EXPR( value2 == value2a );
+}
+@
+
+
+1.1
+log
+@In progress of adding CppTL::Value to replace CppTL::Any in table fixture and input based fixture. Value allows optionaly comparison, conversion to other type, conversion to string...
+@
+text
+@d6 2
+a7 2
+   : maxInt_( 0x7ffffff )
+   , minInt_( ~(unsigned int(-1)/2) )
+@
+

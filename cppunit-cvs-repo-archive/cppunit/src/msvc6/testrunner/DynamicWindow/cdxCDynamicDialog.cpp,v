@@ -1,0 +1,161 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1
+	REL_1_11_4:1.1
+	REL_1_11_0:1.1
+	TG_CPPUNIT_NO_STREAM_AFTER:1.1
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.1
+	REL_1_10_2:1.1
+	REL_1_10_0:1.1
+	REL_1_9_14:1.1
+	REL_1_9_12:1.1
+	BRANCH_1_9_12:1.1.0.2
+	TG_BRANCH_1_9_12:1.1
+	TG_BEFORE_HPUX_PLUGIN:1.1
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.1
+date	2002.06.13.23.25.55;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@* src/cppunit/CompilerOutputter.cpp: fixed bug #549762 (line wrap).
+
+* src/msvc6/testrunner/DynamicWindow/*: added. Dynamic Window library
+  from Hans Bühler (hans.buehler@@topmail.de) to resize window.
+
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TestRunnerModel.cpp: removed dialog bounds from
+  settings. Added public registry keys for cppunit, main dialog, and
+  browse dialog.
+
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: dialog is now resizable.
+  Window placement is stored and restored.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replaced dialog resizing code
+  by usage of Hans Bühler's Dynamic Window library. Dialog placement
+  is stored/restored by that library. ProgressBar is now a child window.
+  Added edit field to see the details of the failure. List on show
+  the short description of the failure.
+
+* src/msvc6/testrunner/ProgressBar.h:
+* src/msvc6/testrunner/ProgressBar.cpp: is now a CWnd.
+
+* src/msvc6/testrunner/TestRunner.rc: named all static fill ID for resizing.
+  Added an invisble static field for progress bar placement.
+@
+text
+@// cdxCDynamicChildDlg.cpp : implementation file
+//
+
+#include "stdafx.h"
+#include "cdxCDynamicDialog.h"
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+// cdxCDynamicDialog dialog
+/////////////////////////////////////////////////////////////////////////////
+
+IMPLEMENT_DYNAMIC(cdxCDynamicDialog,CDialog);
+
+/////////////////////////////////////////////////////////////////////////////
+// message map
+/////////////////////////////////////////////////////////////////////////////
+
+BEGIN_MESSAGE_MAP(cdxCDynamicDialog, CDialog)
+	//{{AFX_MSG_MAP(cdxCDynamicDialog)
+	ON_WM_GETMINMAXINFO()
+	ON_WM_DESTROY()
+	ON_WM_PARENTNOTIFY()
+	ON_WM_SIZE()
+	ON_WM_SIZING()
+	ON_WM_TIMER()
+	//}}AFX_MSG_MAP
+END_MESSAGE_MAP()
+
+/////////////////////////////////////////////////////////////////////////////
+// cdxCDynamicDialog message handlers: redirect stuff to my class :)=
+/////////////////////////////////////////////////////////////////////////////
+
+BOOL cdxCDynamicDialog::OnInitDialog() 
+{
+	BOOL	bOK	=	CDialog::OnInitDialog();
+	DoInitWindow(*this);
+
+	return bOK;
+}
+
+BOOL cdxCDynamicDialog::DestroyWindow()
+{
+	DoOnDestroy();
+	return CDialog::DestroyWindow();
+}
+
+void cdxCDynamicDialog::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
+{
+	CDialog::OnGetMinMaxInfo(lpMMI);
+	DoOnGetMinMaxInfo(lpMMI);
+}
+
+void cdxCDynamicDialog::OnDestroy() 
+{
+	DoOnDestroy();
+	CDialog::OnDestroy();
+}
+
+void cdxCDynamicDialog::OnParentNotify(UINT message, LPARAM lParam) 
+{
+	CDialog::OnParentNotify(message, lParam);
+	DoOnParentNotify(message, lParam);
+}
+
+void cdxCDynamicDialog::OnSize(UINT nType, int cx, int cy) 
+{
+	CDialog::OnSize(nType, cx, cy);
+	DoOnSize(nType, cx, cy);
+}
+
+void cdxCDynamicDialog::OnSizing(UINT fwSide, LPRECT pRect) 
+{
+	CDialog::OnSizing(fwSide, pRect);
+	DoOnSizing(fwSide, pRect);
+}
+
+void cdxCDynamicDialog::OnTimer(UINT idEvent)
+{
+	CDialog::OnTimer(idEvent);
+	DoOnTimer(idEvent);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// cdxCDynamicChildDlg dialog
+/////////////////////////////////////////////////////////////////////////////
+
+IMPLEMENT_DYNAMIC(cdxCDynamicChildDlg,cdxCDynamicDialog);
+
+/////////////////////////////////////////////////////////////////////////////
+// message map
+/////////////////////////////////////////////////////////////////////////////
+
+@

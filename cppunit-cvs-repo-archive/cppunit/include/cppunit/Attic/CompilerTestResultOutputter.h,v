@@ -1,0 +1,169 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2001.10.07.19.37.53;	author blep;	state dead;
+branches;
+next	1.1;
+
+1.1
+date	2001.10.06.12.03.30;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* include/cppunit/CompilerTestResultOutputter.h :
+renamed CompilerOutputter.h
+
+* src/cppunit/CompilerTestResultOutputter.cpp :
+renamed CompilerOutputter.cpp
+
+* include/cppunit/CompilerTestResultOutputter.h :
+* src/cppunit/CompilerTestResultOutputter.cpp : ajust max line length
+for wrapping. Added static factory method defaultOutputter(). Print
+the number of test runs on success.
+
+* include/cppunit/CompilerTestResultOutputter.h : renamed
+CompilerOutputter.h.
+
+* src/cppunit/CompilerTestResultOutputter.cpp : renamed
+CompilerOutputter.cpp.
+
+* examples/cppunittest/CppUnitTestMain.cpp : use factory method
+CompilerTestResultOutputter::defaultOutputter().
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp : removed COM registration in
+post-build step. IT is automatically done by VC++ when the add-in is
+added. Caused build to failed if the add-in was used in VC++.
+
+* NEWS : updated.
+
+* src/cppunit/TestAssert.cpp : modified deprecated assert
+implementations to use Asserter.
+
+* examples/cppunittest/XmlTestResultOutputterTest.h :
+renamed XmlOutputterTest.h.
+
+* examples/cppunittest/XmlTestResultOutputterTest.cpp :
+renamed XmlOutputterTest.cpp.
+
+* NEWS :
+* examples/cppunittest/CppUnitTestMain.cpp :
+* examples/cppunittest/CppUnitTestMain.dsp :
+* examples/cppunittest/Makefile.am :
+* examples/cppunittest/XmlTestResultOutputterTest.h :
+* examples/cppunittest/XmlTestResultOutputterTest.cpp :
+* examples/msvc6/CppUniTestApp/CppUnitTestApp.dsp
+* include/cppunit/CompilerOutputter.h :
+* include/cppunit/Makefile.am :
+* include/cppunit/XmlTestResultOutputter.h :
+* src/cppunit/CompilerOutputter.cpp :
+* src/cppunit/cppunit.dsp :
+* src/cppunit/Makefile.am :
+* src/cppunit/XmlTestResultOutputter.cpp : change due to renaming
+CompilerTestResultOutputter to CompilerOutputter,
+XmlTestResultOutputter to XmlOuputter, XmlTestResultOutputterTest
+to XmlOutputterTest.
+@
+text
+@#ifndef CPPUNIT_COMPILERTESTRESULTOUTPUTTER_H
+#define CPPUNIT_COMPILERTESTRESULTOUTPUTTER_H
+
+#include <cppunit/Portability.h>
+#include <iostream>
+
+namespace CppUnit
+{
+
+class Exception;
+class SourceLine;
+class Test;
+class TestFailure;
+class TestResult;
+
+/*! \class CompilerTestResultOutputter
+ * \brief This class implements output test result in a compiler compatible format.
+ */
+class CompilerTestResultOutputter
+{
+public:
+  /*! Constructs a CompilerTestResultOutputter object.
+   */
+  CompilerTestResultOutputter( TestResult *result,
+                               std::ostream &stream );
+
+  /// Destructor.
+  virtual ~CompilerTestResultOutputter();
+
+  virtual void write( );
+
+  virtual void printSucess();
+  virtual void printFailureReport();
+  virtual void printFailuresList();
+  virtual void printStatistics();
+  virtual void printFailureDetail( TestFailure *failure );
+  virtual void printFailureLocation( SourceLine sourceLine );
+  virtual void printFailureType( TestFailure *failure );
+  virtual void printFailedTestName( TestFailure *failure );
+  virtual void printFailureMessage( TestFailure *failure );
+  virtual void printNotEqualMessage( Exception *thrownException );
+  virtual void printDefaultMessage( Exception *thrownException );
+  virtual std::string wrap( std::string message );
+
+private:
+  /// Prevents the use of the copy constructor.
+  CompilerTestResultOutputter( const CompilerTestResultOutputter &copy );
+
+  /// Prevents the use of the copy operator.
+  void operator =( const CompilerTestResultOutputter &copy );
+
+private:
+  TestResult *m_result;
+  std::ostream &m_stream;
+};
+
+
+}  // namespace CppUnit
+
+
+
+#endif  // CPPUNIT_COMPILERTESTRESULTOUTPUTTER_H
+@
+
+
+1.1
+log
+@* include/cppunit/CompilerTestResultOutputter.h :
+* src/cppunit/CompilerTestResultOutputter.cpp : added. Output result
+in a compiler compatible format.
+
+* src/cppunit/CppUnit.dsp :
+* include/cppunit/MakeFile.am :
+* src/cppunit/MakeFile.am : added CompilerTestResultOutputter.cpp
+and CompilerTestResultOutputter.h.
+
+* examples/cppunittest/CppUnitTestMain.cpp : if -selftest is specified
+on the command line, no standard test result are printed, but compiler
+compatible result at printed.
+
+* examples/cppunittest/CppUnitTestMain.dsp : added post-build step to
+run the test suite with -selftest.
+
+* NEWS : updated.
+
+* src/cppunit/TextTestRunner.cpp : skip a line after printing
+progress.
+@
+text
+@@
+

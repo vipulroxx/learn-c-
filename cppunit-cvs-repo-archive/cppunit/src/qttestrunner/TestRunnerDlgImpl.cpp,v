@@ -1,0 +1,434 @@
+head	1.4;
+access;
+symbols
+	REL_1_12_1:1.4
+	REL_1_11_6:1.4
+	REL_1_11_4:1.3
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1
+	REL_1_9_4:1.1
+	REL_1_9_0:1.1
+	REL_1_8_0:1.1
+	REL_1_7_8:1.1
+	REL_1_7_3:1.1
+	REL_1_7_1:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.4
+date	2005.12.12.07.40.09;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.07.05.21.17.41;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.07.13.10.33.50;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.10.14.12.23.31;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@* integrated Ernst patch for QtTestRunner and Qt 3.x.
+* upgrade QtTestRunner to Qt 3.x
+* enhanced qmake project files to handle multiple build configuration
+@
+text
+@#include <qcombobox.h>
+#include <qgroupbox.h>
+#include <qlabel.h>
+#include <qlistview.h>
+#include <qmultilineedit.h>
+#include <qprogressbar.h>
+#include <qpushbutton.h>
+#include <cppunit/Exception.h>
+#include "TestRunnerDlgImpl.h"
+#include "TestBrowserDlgImpl.h"
+#include "MostRecentTests.h"
+#include "TestRunnerModel.h"
+#include "TestFailureListViewItem.h"
+
+
+/* 
+ *  Constructs a TestRunnerDlg which is a child of 'parent', with the 
+ *  name 'name' and widget flags set to 'f' 
+ *
+ *  The dialog will by default be modeless, unless you set 'modal' to
+ *  TRUE to construct a modal dialog.
+ */
+TestRunnerDlg::TestRunnerDlg( QWidget* parent,  const char* name, bool modal, WFlags fl )
+    : TestRunnerDlgBase( parent, name, modal, fl ),
+    _model( NULL ),
+    _recentTests( new MostRecentTests() )
+{
+}
+
+
+/*  
+ *  Destroys the object and frees any allocated resources
+ */
+TestRunnerDlg::~TestRunnerDlg()
+{
+  delete _model;
+  delete _recentTests;
+}
+
+
+void 
+TestRunnerDlg::setModel( TestRunnerModel *model,
+                         bool autorunTest )
+{
+  delete _model;
+
+  _model = model;
+
+  // update combo when recent list change
+  connect( _recentTests, SIGNAL( listChanged() ),
+           SLOT( refreshRecentTests() ) );
+
+  // make selected test in combo the "most recent"
+  connect( _comboTest, SIGNAL( activated(int) ),
+           _recentTests, SLOT( selectTestToRun(int) ) );
+
+  // refresh the test report counters when a test is selected
+  connect( _recentTests, SIGNAL( testToRunChanged(CPPUNIT_NS::Test *) ),
+           _model, SLOT( resetTestReportCounterFor(CPPUNIT_NS::Test *) ) );
+
+  // refresh progress bar
+  connect( _model, SIGNAL( numberOfTestCaseChanged(int) ),
+           _progressRun, SLOT( setTotalSteps(int) ) );
+  connect( _model, SIGNAL( numberOfTestCaseRunChanged(int) ),
+           _progressRun, SLOT( setProgress(int) ) );
+  
+  // refresh test report counters
+  connect( _model, SIGNAL( numberOfTestCaseChanged( int ) ),
+           SLOT( setNumberOfTestCase( int ) ) );
+  connect( _model, SIGNAL( numberOfTestCaseRunChanged( int ) ),
+           SLOT( setNumberOfTestCaseRun( int ) ) );
+  connect( _model, SIGNAL( numberOfTestCaseFailureChanged( int ) ),
+           SLOT( setNumberOfTestCaseFailure( int ) ) );
+
+  // clear failure list
+  connect( _model, SIGNAL( failuresCleared() ),
+           SLOT( clearTestFailureList() ) );
+
+  // clear failure detail list
+  connect( _model, SIGNAL( failuresCleared() ),
+           SLOT( clearFailureDetail() ) );
+
+  // add failure to failure list
+  connect( _model, SIGNAL( failureAdded(TestFailureInfo *) ),
+           SLOT( reportFailure(TestFailureInfo*) ) );
+
+  // show detail on failure selection
+  connect( _listFailures, SIGNAL( selectionChanged(QListViewItem*) ),
+           SLOT( showFailureDetailAt(QListViewItem*) ) );
+
+  // disable button when running test
+  connect( _model, SIGNAL( testRunStarted( CPPUNIT_NS::Test *, CPPUNIT_NS::TestResult *) ),
+           SLOT( beRunningTest() ) );
+
+  // enable button when finished running test
+  connect( _model, SIGNAL( testRunFinished() ),
+           SLOT( beCanRunTest() ) );
+
+  _recentTests->setTestToRun( model->rootTest() );
+  beCanRunTest();
+
+  if ( autorunTest )
+    runTest();
+}
+
+
+void 
+TestRunnerDlg::browseForTest()
+{
+  TestBrowser *dlg = new TestBrowser( this,
+                                      "Test Browser",
+                                      TRUE );
+  dlg->setRootTest( _model->rootTest() );
+
+  if ( dlg->exec() )
+    _recentTests->setTestToRun( dlg->selectedTest() );
+
+  delete dlg;
+}
+
+
+void 
+TestRunnerDlg::runTest()
+{
+  CPPUNIT_NS::Test *testToRun = _recentTests->testToRun();
+  if ( testToRun == NULL )
+    return;
+  _model->runTest( testToRun );
+}
+
+
+void 
+TestRunnerDlg::stopTest()
+{
+  _model->stopRunningTest();
+  if ( _model->isTestRunning() )
+    beStoppingTest();
+}
+
+
+void 
+TestRunnerDlg::clearTestFailureList()
+{
+  _listFailures->clear();
+}
+
+
+void 
+TestRunnerDlg::refreshRecentTests()
+{
+  _comboTest->clear();
+  for ( int index =0; index < _recentTests->testCount(); ++index )
+    _comboTest->insertItem( _recentTests->testNameAt( index ) );
+}
+
+
+void 
+TestRunnerDlg::setNumberOfTestCase( int numberOfTestCase )
+{
+  _labelTestCaseCount->setText( QString::number( numberOfTestCase ) );
+}
+
+
+void 
+TestRunnerDlg::setNumberOfTestCaseRun( int numberOfRun )
+{
+  _labelTestRunCount->setText( QString::number( numberOfRun ) );
+}
+
+
+void 
+TestRunnerDlg::setNumberOfTestCaseFailure( int numberOfFailure )
+{
+  _labelFailureCount->setText( QString::number( numberOfFailure ) );
+}
+
+
+void 
+TestRunnerDlg::reportFailure( TestFailureInfo *failure )
+{
+  QListViewItem *item = new TestFailureListViewItem( failure, 
+                                                     _listFailures );
+  item->setText( indexType, 
+                 failure->isError() ? tr("Error") : tr("Failure") );
+  std::string failedtestName = failure->failedTestName().c_str();
+  item->setText( indexTestName, QString::fromLatin1( failedtestName.c_str() ) );
+
+  CPPUNIT_NS::Exception *thrownException = failure->thrownException();
+//2.0  item->setText( indexMessage, thrownException->what() );
+  item->setText( indexMessage, QString(thrownException->what()).stripWhiteSpace() );
+  item->setText( indexFilename, failure->sourceLine().fileName().c_str() );
+  item->setText( indexLineNumber,
+                 QString::number( failure->sourceLine().lineNumber() ) );
+
+  _listFailures->insertItem( item );
+  _listFailures->triggerUpdate();
+
+  if ( _listFailures->childCount() == 1 )
+    _listFailures->setSelected( item, TRUE );
+}
+
+
+void 
+TestRunnerDlg::showFailureDetailAt( QListViewItem *selection )
+{
+  TestFailureInfo *failure = ((TestFailureListViewItem*)selection)->failure();
+  
+  QString title = tr("Failure detail for: ");
+  title += QString::fromLatin1( failure->failedTestName().c_str() );
+  _groupFailureDetail->setTitle( title );
+
+  QString location( failure->sourceLine().fileName().c_str() );
+  location += " (" + 
+              QString::number( failure->sourceLine().lineNumber() ) +
+              ")";
+  _labelFailureLocation->setText( location );
+
+  _editFailureMessage->setText( failure->thrownException()->what() );
+}
+
+
+void 
+TestRunnerDlg::clearFailureDetail()
+{
+  _groupFailureDetail->setTitle( tr("Failure detail for:...") );
+  _labelFailureLocation->setText( QString::null );
+  _editFailureMessage->setText( QString::null );
+}
+
+
+void 
+TestRunnerDlg::beCanRunTest()
+{
+  _buttonRunTest->setEnabled( true );
+  _buttonBrowse->setEnabled( true );
+  _comboTest->setEnabled( true );
+  _buttonStop->setDisabled( true );
+  _buttonStop->setText( tr("Stop") );
+  _buttonClose->setEnabled( true );
+}
+
+
+void 
+TestRunnerDlg::beRunningTest()
+{
+  _buttonRunTest->setDisabled( true );
+  _buttonBrowse->setDisabled( true );
+  _comboTest->setDisabled( true );
+  _buttonStop->setEnabled( true );
+  _buttonStop->setText( tr("Stop") );
+  _buttonClose->setDisabled( true );
+}
+
+
+void 
+TestRunnerDlg::beStoppingTest()
+{
+  _buttonStop->setDisabled( true );
+  _buttonStop->setText( tr("Stopping") );
+}
+@
+
+
+1.3
+log
+@  * include/cppunit/TestResultCollector.h
+  * src/cppunit/TestResultCollector.cpp: fixed memory leak
+    occuring when calling reset().
+
+  * src/cppunit/DllMain.cpp: added work-around for mingw compilation
+    for BLENDFUNCTION macro issue when including windows.h.
+
+  * src/qttestrunner/TestRunnerDlgImpl.cpp: fixed display of multiline
+    messages.
+
+  * include/cppunit/Portability.h: better integration of compiler output
+    for gcc on Mac OS X with Xcode (contributed by Claus Broch).
+@
+text
+@a182 1
+  item->setMultiLinesEnabled( true );
+d189 2
+a190 1
+  item->setText( indexMessage, thrownException->what() );
+@
+
+
+1.2
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@d183 1
+@
+
+
+1.1
+log
+@* include/cppunitui/* : added, Qt TestRunner.
+
+* examples/qt/* : added, example showing the use of Qt TestRunner.
+
+* src/qttestrunner : added, source of the Qt TestRunner DLL.
+@
+text
+@d58 2
+a59 2
+  connect( _recentTests, SIGNAL( testToRunChanged(CppUnit::Test *) ),
+           _model, SLOT( resetTestReportCounterFor(CppUnit::Test *) ) );
+d92 1
+a92 1
+  connect( _model, SIGNAL( testRunStarted( CppUnit::Test *, CppUnit::TestResult *) ),
+d125 1
+a125 1
+  CppUnit::Test *testToRun = _recentTests->testToRun();
+d188 1
+a188 1
+  CppUnit::Exception *thrownException = failure->thrownException();
+@
+

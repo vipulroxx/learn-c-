@@ -1,0 +1,261 @@
+head	1.6;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.6
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.1
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.6
+date	2005.11.12.20.55.46;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.11.11.23.23.48;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.11.11.20.54.15;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.11.08.21.50.33;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.02.27.14.38.26;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.02.22.21.26.52;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@- added some documentation
+- fixed tabs display in html output.
+@
+text
+@#ifndef CPPUT_TESTFAILUREGUARD_H_INCLUDED
+# define CPPUT_TESTFAILUREGUARD_H_INCLUDED
+
+# include <cpput/forwards.h>
+# include <cpptl/intrusiveptr.h>
+# include <deque>
+
+/* Tests setUp(), tearDown(), run() call are protected by a ExceptionGuard.
+ *
+ * This guard chain ensures that any exceptions thrown by the call is caught and properly handled.
+ * The default guard chain handles AssertionException (thrown when an assertion fails),
+ * std::exception, and any other exception.
+ * 
+ * A ExceptionGuardElement can be added to the guard chain to handle exception type unknown
+ * to the test framework which are not derived from std::exception (MFC CException * for example).
+ */
+
+namespace CppUT {
+
+/*! 
+ * \ingroup group_testcases
+ */
+class CPPUT_API ExceptionGuardElement : public CppTL::IntrusiveCount
+{
+public:
+   struct Context;
+
+   virtual ~ExceptionGuardElement()
+   {
+   }
+
+   void setNextInChain( const ExceptionGuardElementPtr &deleguate );
+
+   /// Returns \c false if a failure or a fault occurred, \c true otherwise.
+   virtual bool protect( Context &context ) = 0;
+
+protected:
+   bool callNextInChain( Context &context );
+
+private:
+   ExceptionGuardElementPtr deleguate_;
+};
+
+
+/*! \brief Helpers to provide simple exception translation.
+ * \warning Ensure that either a fault, assertion is added to TestInfo, or
+ *          that TestStatus is set to \c failed otherwise the test will not fail!
+ * \ingroup group_testcases
+ */
+template<class ExceptionType
+        ,class Translator>
+class ExceptionTranslatorGuard : public ExceptionGuardElement
+{
+public:
+   ExceptionTranslatorGuard( Translator translator )
+      : translator_( translator )
+   {
+   }
+
+   // overridden from ExceptionGuardElement
+   bool protect( Context &context )
+   {
+      try
+      {
+         return callNextInChain( context );
+      }
+      catch ( const ExceptionType &e )
+      {
+         translator_( e );
+         return false;
+      }
+   }
+private:
+   Translator translator_;
+};
+
+
+/*!
+ * \ingroup group_testcases
+ * \see registerExceptionTranslation() to easily register custom exception translator.
+ */
+class CPPUT_API ExceptionGuard
+{
+public:
+   ExceptionGuard();
+
+   void append( const ExceptionGuardElementPtr &guard );
+
+   void removeLast();
+
+   /// Returns \c true if the test did not fail (skipped or passed TestStatus).
+   bool protect( CppTL::Functor0 test ) const;
+
+private:
+   typedef std::deque<ExceptionGuardElementPtr> Guards;
+   Guards guards_;
+};
+
+
+
+/*! \brief Register an exception translator.
+ * \ingroup group_testcases
+ * @@todo provides some helper to generate fault result...
+ * \code
+ * static void translateMFCException( CException *e ) {
+ *     TCHAR   szCause[255];
+ *     ex.GetErrorMessage(szCause, 255);
+ *     CString str( szCause );
+ *
+ *     OpenTest::Properties fault;
+ *     fault["type"] = "unexpected exception";
+ *     fault["exception_type"] = "CException";
+ *     fault["message"].append( (const char *)str );
+ *     TestInfo::appendFaultToResult( fault );
+ * }    
+ * \endcode
+ * \warning Ensure that either a fault, assertion is added to TestInfo, or
+ *          that TestStatus is set to \c failed otherwise the test will not fail!
+ */
+template<class Translator
+        ,class ExceptionType>
+void registerExceptionTranslation( ExceptionGuard &guard,
+                                   Translator translator,
+                                   CppTL::Type<ExceptionType> )
+{
+   typedef ExceptionTranslatorGuard<ExceptionType,Translator> GuardType;
+   guard.append( ExceptionGuardElementPtr( new GuardType( translator ) ) );
+}
+
+
+} // namespace CppUT
+
+#endif // CPPUT_TESTFAILUREGUARD_H_INCLUDED
+@
+
+
+1.5
+log
+@Rough documentation: placed most function/class/macro in group.
+@
+text
+@d45 1
+a45 1
+/** Helpers to provide simple exception translation.
+d78 1
+a78 1
+/**
+@
+
+
+1.4
+log
+@- added unit tests for TestInfo
+- fixed bug in CPPUT_IGNORE_FAILURE and exception guard.
+- added 'isIgnoredFailure' to Assertion.
+- lighttestrunner now print ignored failure and skipped tests.
+@
+text
+@d20 3
+d48 1
+d79 2
+a80 1
+ * @@see registerExceptionTranslation() to easily register custom exception translator.
+d101 2
+a102 1
+/** Register an exception translator.
+@
+
+
+1.3
+log
+@Now using InstrusivePtr.
+@
+text
+@d43 2
+d86 1
+d97 1
+a97 1
+ * @@todo provides some helper to generate faul result...
+d111 2
+@
+
+
+1.2
+log
+@* changed cppunit 2 to use the new functors (cpptl/functor.h). bind_cfn & bind_memfn simplified some of the test code.
+@
+text
+@d5 1
+a5 1
+# include <cpptl/sharedptr.h>
+d20 1
+a20 1
+class CPPUT_API ExceptionGuardElement
+@
+
+
+1.1
+log
+@* renamed testfailureguard.h/cpp to exceptionguard.h/cpp
+@
+text
+@d5 1
+a5 1
+# include <cpput/functor.h>
+d84 1
+a84 1
+   bool protect( Functor0 test ) const;
+@
+

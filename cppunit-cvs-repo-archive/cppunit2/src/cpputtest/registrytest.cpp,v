@@ -1,0 +1,437 @@
+head	1.6;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.5
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.2
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.2
+	TG_AFTER_REMOVING_TESTCONTEXT:1.2
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.2
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.1.1.1
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@// @;
+
+
+1.6
+date	2008.07.08.20.42.00;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.11.08.23.25.31;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.02.27.15.47.38;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.02.27.15.27.09;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.11.17.21.47.10;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@- Fixed bug in Registry::remove() when a suite had multiple child suites.
+- Added Registry suite removal tests
+@
+text
+@#include "registrytest.h"
+#include "minitestrunner.h"
+
+namespace {
+   class MockFixture
+   {
+   public:
+      static CppUT::TestPtr suite()
+      {
+         return CppUT::makeFailingTestCase( "MockFixture", 
+                                            "MockFixture::suite" );
+      }
+   };
+
+   class MockNamableFixture
+   {
+   public:
+      static CppUT::TestPtr suite( const std::string &name = "" )
+      {
+         std::string testName = name;
+         if ( testName.empty() )
+            testName = "MockNamableFixture";
+         return CppUT::makeFailingTestCase( testName, 
+                                            "MockFixture::suite" );
+      }
+   };
+
+CPPUT_REGISTER_SUITE_TO_DEFAULT( MockFixture )
+CPPUT_REGISTER_SUITE_TO_DEFAULT( MockNamableFixture )
+CPPUT_REGISTER_NAMED_SUITE_TO_DEFAULT( MockNamableFixture, "NamedMockNamableFixture" )
+CPPUT_REGISTER_SUITE_IN( MockFixture, "DummyParentSuite" )
+CPPUT_REGISTER_SUITE_IN( MockNamableFixture, "DummyParentSuite" )
+CPPUT_REGISTER_NAMED_SUITE_IN( MockNamableFixture, "DummyParentSuite", 
+                               "NamedMockNamableFixture" )
+} // end anonymous namespace
+
+
+void 
+RegistryTest::setUp()
+{
+   registry_.reset( new CppUT::Registry() );
+   testNames_.clear();
+}
+
+
+void 
+RegistryTest::tearDown()
+{
+   registry_.reset();
+   testNames_.clear();
+}
+
+
+void 
+RegistryTest::testCreateDefaultTests()
+{
+   CppUT::TestSuitePtr suite = registry_->createDefaultTests();
+   CPPUT_ASSERT( testNames_.empty() );
+}
+
+
+void 
+RegistryTest::testAddTestToDefault()
+{
+   registry_->addToDefault( makeTestFactory( "Test1" ) );
+   registry_->addToDefault( makeTestFactory( "Test2" ) );
+   registry_->addToDefault( makeTestFactory( "Test3" ) );
+   CppUT::TestSuitePtr suite = registry_->createDefaultTests();
+
+   runTestSuite( suite );
+
+   CPPUT_ASSERT_EQUAL( 1, testNames_.count( "Test1" ) );
+   CPPUT_ASSERT_EQUAL( 1, testNames_.count( "Test2" ) );
+   CPPUT_ASSERT_EQUAL( 1, testNames_.count( "Test3" ) );
+}
+
+
+void 
+RegistryTest::testAddTestToNamed()
+{
+   registry_->add( "Name", makeTestFactory( "Test1" ) );
+   registry_->add( "Name", makeTestFactory( "Test2" ) );
+   registry_->add( "Name2", makeTestFactory( "Test3" ) );
+   CppUT::TestSuitePtr suite = registry_->createTests( "Name" );
+   CppUT::TestSuitePtr suite2 = registry_->createTests( "Name2" );
+
+   runTestSuite( suite );
+   CPPUT_ASSERT_EQUAL( 1, testNames_.count( "Test1" ) );
+   CPPUT_ASSERT_EQUAL( 1, testNames_.count( "Test2" ) );
+   CPPUT_ASSERT_EQUAL( 0, testNames_.count( "Test3" ) );
+
+   runTestSuite( suite2 );
+   CPPUT_ASSERT_EQUAL( 1, testNames_.count( "Test3" ) );
+}
+
+
+void 
+RegistryTest::testAddAndRemoveChild()
+{
+   registry_->add( "Name", makeTestFactory( "Test1" ) );
+   registry_->add( "Name", makeTestFactory( "Test2" ) );
+   registry_->add( "Name2", makeTestFactory( "Test3" ) );
+   registry_->add( "Name3", makeTestFactory( "Test4" ) );
+   registry_->addChild( "Name", "Name2" );
+   registry_->addChild( "Name", "Name3" );
+
+   // Checks that all tests are correctly executed
+   CppUT::TestSuitePtr suite = registry_->createTests( "Name" );
+   runTestSuite( suite );
+   CPPUT_ASSERT_EQUAL( 1, testNames_.count( "Test1" ) );
+   CPPUT_ASSERT_EQUAL( 1, testNames_.count( "Test2" ) );
+   CPPUT_ASSERT_EQUAL( 1, testNames_.count( "Test3" ) );
+   CPPUT_ASSERT_EQUAL( 1, testNames_.count( "Test4" ) );
+
+   // Checks that dynamic removal of child suite works
+   CPPUT_ASSERT_FALSE( registry_->removeChild( "Name", "ChildSuiteDoesNotExist" ) );
+   CPPUT_ASSERT( registry_->removeChild( "Name", "Name3" ) );
+   CPPUT_ASSERT( registry_->removeChild( "Name", "Name2" ) );
+   CPPUT_ASSERT_FALSE( registry_->removeChild( "Name", "ChildSuiteDoesNotExist" ) );
+
+   // Checks that child suite were actual removed
+   testNames_.clear();
+   CppUT::TestSuitePtr newSuite = registry_->createTests( "Name" );
+   runTestSuite( newSuite );
+   CPPUT_ASSERT_EQUAL( 1, testNames_.count( "Test1" ) );
+   CPPUT_ASSERT_EQUAL( 1, testNames_.count( "Test2" ) );
+   CPPUT_ASSERT_EQUAL( 0, testNames_.count( "Test3" ) );
+   CPPUT_ASSERT_EQUAL( 0, testNames_.count( "Test4" ) );
+}
+
+
+void 
+RegistryTest::testAutoRemoveByTestFactoryId()
+{
+   // @@todo
+   // Register test in the static registry and checks that they are correctly removed
+   typedef CppUT::SuiteRegisterer<MockNamableFixture> SuiteAutoRegisterer;
+   {
+      SuiteAutoRegisterer r1( "TestRegister1" );
+      SuiteAutoRegisterer r2( "TestRegister2" );
+      SuiteAutoRegisterer r3( CppUT::Impl::RegisterToNamedSuiteTag(),
+                              "ParentTestRegister1", 
+                              "TestRegister2" );
+      SuiteAutoRegisterer r4( CppUT::Impl::RegisterToNamedSuiteTag(),
+                              "ParentTestRegister1", 
+                              "TestRegister3" );
+      SuiteAutoRegisterer r5( CppUT::Impl::RegisterToNamedSuiteTag(),
+                              "ParentTestRegister2", 
+                              "TestRegister4" );
+
+      CppUT::SuiteRelationshipRegisterer rs1( "ParentTestRegister1" );
+      CppUT::SuiteRelationshipRegisterer rs2( "ParentTestRegister1", "ParentTestRegister2" );
+      // We have the following tree:
+      // Default Suite
+      // |- TestRegister1
+      // |- TestRegister2
+      // |- ParentTestRegister1
+      // |  |- TestRegister2
+      // |  |- TestRegister3
+      // |  |- ParentTestRegister2
+      // |     |- TestRegister4
+      // |- other statically registered test for testStaticRegistration()
+
+      CppUT::TestSuitePtr defaultSuite = CppUT::Registry::instance().createDefaultTests();
+      CPPUT_CHECK_EXPR( containsTestNamed( defaultSuite, "TestRegister1" ) );
+      CPPUT_CHECK_EXPR( containsTestNamed( defaultSuite, "TestRegister2" ) );
+      CPPUT_CHECK_EXPR( containsTestNamed( defaultSuite, "ParentTestRegister1" ) );
+
+      CppUT::TestSuitePtr parentSuite1 = CppUT::Registry::instance().createTests("ParentTestRegister1");
+      CPPUT_CHECK_EXPR( containsTestNamed( parentSuite1, "TestRegister2" ) );
+      CPPUT_CHECK_EXPR( containsTestNamed( parentSuite1, "TestRegister3" ) );
+      CPPUT_CHECK_EXPR( containsTestNamed( parentSuite1, "ParentTestRegister2" ) );
+
+      CppUT::TestSuitePtr parentSuite2 = CppUT::Registry::instance().createTests("ParentTestRegister2");
+      CPPUT_CHECK_EXPR( containsTestNamed( parentSuite2, "TestRegister4" ) );
+
+   }
+   // Checks that the registered suite have been removed
+   CppUT::TestSuitePtr defaultSuite = CppUT::Registry::instance().createDefaultTests();
+   CPPUT_CHECK_EXPR_FALSE( containsTestNamed( defaultSuite, "TestRegister1" ) );
+   CPPUT_CHECK_EXPR_FALSE( containsTestNamed( defaultSuite, "TestRegister2" ) );
+   CPPUT_CHECK_EXPR_FALSE( containsTestNamed( defaultSuite, "ParentTestRegister1" ) );
+
+   // Notes: calling createTests will automatically create an unparented suite of the
+   // specified name if it does not exist.
+   CppUT::TestSuitePtr parentSuite1 = CppUT::Registry::instance().createTests("ParentTestRegister1");
+   CPPUT_CHECK_EXPR_FALSE( containsTestNamed( parentSuite1, "TestRegister2" ) );
+   CPPUT_CHECK_EXPR_FALSE( containsTestNamed( parentSuite1, "TestRegister3" ) );
+   CPPUT_CHECK_EXPR_FALSE( containsTestNamed( parentSuite1, "ParentTestRegister2" ) );
+
+   CppUT::TestSuitePtr parentSuite2 = CppUT::Registry::instance().createTests("ParentTestRegister2");
+   CPPUT_CHECK_EXPR_FALSE( containsTestNamed( parentSuite2, "TestRegister4" ) );
+}
+
+
+void 
+RegistryTest::testStaticRegistration()
+{
+   CppUT::TestSuitePtr defaultSuite = CppUT::Registry::instance().createDefaultTests();
+   CPPUT_CHECK_EXPR( containsTestNamed( defaultSuite, "MockFixture" ) );
+   CPPUT_CHECK_EXPR( containsTestNamed( defaultSuite, "MockNamableFixture" ) );
+   CPPUT_CHECK_EXPR( containsTestNamed( defaultSuite, "NamedMockNamableFixture" ) );
+
+   CppUT::TestSuitePtr parentSuite = CppUT::Registry::instance().createTests("DummyParentSuite");
+   CPPUT_CHECK_EXPR( containsTestNamed( parentSuite, "MockFixture" ) );
+   CPPUT_CHECK_EXPR( containsTestNamed( parentSuite, "MockNamableFixture" ) );
+   CPPUT_CHECK_EXPR( containsTestNamed( parentSuite, "NamedMockNamableFixture" ) );
+}
+
+
+bool 
+RegistryTest::containsTestNamed( const CppUT::TestSuitePtr &suite,
+                                 const std::string &name )
+{
+   for ( int index = 0; index < suite->testCount(); ++index )
+   {
+      if ( suite->testAt(index)->name() == name )
+         return true;
+   }
+   return false;
+}
+
+
+CppUT::TestPtr 
+RegistryTest::makeTest( const std::string &testName )
+{
+   return CppUT::makeTestCase( CppTL::bind_memfn( this, 
+                                                  &RegistryTest::runTest,
+                                                  testName ),
+                               testName );
+}
+
+
+void 
+RegistryTest::runTestSuite( CppUT::TestSuitePtr suite )
+{
+   MiniTestRunner runner;
+   runner.run( suite );
+}
+
+
+void 
+RegistryTest::runTest( const std::string &testName )
+{
+   testNames_.insert( testName );
+}
+
+
+CppUT::TestFactory 
+RegistryTest::makeTestFactory( const std::string &testName )
+{
+   return CppTL::bind_memfnr( this, &RegistryTest::makeTest, testName );
+}
+@
+
+
+1.5
+log
+@- fixed static registration macro for Registry
+- static registration macros must no longer be followed by a semi-colon
+  (therefore we get compiler error if registry.h was not included)
+- allow registration macros to work with class implenting suite() or suite( const std::string &).
+@
+text
+@d98 1
+a98 1
+RegistryTest::testAddChild()
+d106 2
+a108 1
+
+d114 79
+@
+
+
+1.4
+log
+@* extracted MiniTestRunner from registry test.
+@
+text
+@d4 33
+d116 28
+@
+
+
+1.3
+log
+@* ported the Registry tests back to the new framework architecture.
+@
+text
+@d2 1
+a2 2
+#include <cpput/testcase.h>
+#include <cpput/testsuite.h>
+d96 2
+a97 8
+   for ( int index =0; index < suite->testCount(); ++index )
+   {
+      CppUT::TestPtr test = suite->testAt(index);
+      if ( test->isTestSuite() )
+         runTestSuite( CppTL::staticPointerCast<CppUT::TestSuite>( test ) );
+      else
+         CppTL::staticPointerCast<CppUT::AbstractTestCase>( test )->runTest();
+   }
+@
+
+
+1.2
+log
+@* started removing TestDriver stuff from CppUnit 2
+* Removed Test::run(), Test::totalTestCount and Test::parent
+* User can only subclass AbstractTestSuite or AbstractTestCase.
+* AbstractTest has been inlined into Test
+* Test no longer have parent
+* Removed TestListener::enterTest() & TestListener::exitTest()
+* Moved responsibility of running TestCase from AbstractTestCase to TestContext::run( AbstractTestCase &test ).
+* Removed method related to suite and enter/exit event from TestContext.
+* Disabled some unit tests (rely on running test which will change again shortly)
+@
+text
+@d3 1
+a3 1
+#include <cpput/testcontext.h>
+d38 2
+a39 2
+   CppUT::TestContext context;
+   suite->run( context );
+d55 1
+a55 2
+   CppUT::TestContext context;
+   suite->run( context );
+d60 1
+a60 1
+   suite2->run( context );
+d76 1
+a76 2
+   CppUT::TestContext context;
+   suite->run( context );
+d87 3
+a89 4
+   return CppUT::makeTestCase( CppUT::bind1( 
+                                   CppUT::makeMemFn1( this, 
+                                                      &RegistryTest::runTest),
+                                                      testName ),
+d95 14
+d118 1
+a118 3
+   return CppUT::bindR1( CppUT::makeMemFnR1<CppUT::TestPtr>( 
+                                   this, &RegistryTest::makeTest ), 
+                    testName );
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a25 1
+   CPPUT_ASSERT_EQUAL( 0, suite->totalTestCount() );
+a36 1
+   CPPUT_ASSERT_EQUAL( 3, suite->totalTestCount() );
+a53 2
+   CPPUT_ASSERT_EQUAL( 2, suite->totalTestCount() );
+   CPPUT_ASSERT_EQUAL( 1, suite2->totalTestCount() );
+a75 1
+   CPPUT_ASSERT_EQUAL( 4, suite->totalTestCount() );
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

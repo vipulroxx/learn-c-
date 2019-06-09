@@ -1,0 +1,922 @@
+head	1.6;
+access;
+symbols
+	REL_1_12_1:1.6
+	REL_1_11_6:1.6
+	REL_1_11_4:1.6
+	REL_1_11_0:1.6
+	TG_CPPUNIT_NO_STREAM_AFTER:1.6
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.6
+	REL_1_10_2:1.6
+	REL_1_10_0:1.6
+	REL_1_9_14:1.6
+	REL_1_9_12:1.6
+	BRANCH_1_9_12:1.6.0.2
+	TG_BRANCH_1_9_12:1.6
+	TG_BEFORE_HPUX_PLUGIN:1.6
+	TG_BEFORE_SUN4_PORT:1.6
+	REL_1_9_10:1.6
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.5
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.5
+	REL_1_9_6:1.5
+	REL_1_9_4:1.5
+	REL_1_9_0:1.4
+	REL_1_8_0:1.3
+	REL_1_7_8:1.2
+	REL_1_7_3:1.2
+	REL_1_7_1:1.1
+	REL_1_6_2:1.1
+	BRANCH_1_6:1.1.0.2
+	REL_1_6_1:1.1
+	REL_1_6_0:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.6
+date	2002.07.13.10.33.49;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2002.04.17.22.27.28;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2002.04.12.22.34.37;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.04.15.39.37;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.02.28.10.49.20;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.06.01.19.34.42;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@* include/cppunit/ui/text/TestRunner.h:
+* src/cppunit/TextTestRunner.cpp: Renamed TextUi::TestRunner
+  TextTestRunner and moved it to the CppUnit namespace. Added
+  a deprecated typedef for compatibility with previous version.
+
+* include/cppunit/ui/text/TextTestRunner.h: added.
+
+* include/cppunit/ui/mfc/TestRunner.h:
+* src/cppunit/msvc6/testrunner/TestRunner.cpp: Renamed MfcUi::TestRunner
+  MfcTestRunner. Added deprecated typedef for compatibility. Renamed
+  TestRunner.cpp to MfcTestRunner.cpp.
+
+* include/cppunit/ui/mfc/MfcTestRunner.h: added.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.cpp: renamed QtUi::TestRunner QtTestRunner
+  and moved it to CppUnit namespace. Added a deprecated typedef for
+  compatibility. Renamed TestRunner.cpp to QtTestRunner.cpp.
+
+* include/cppunit/ui/qt/TestRunner.h:
+* src/qttestrunner/TestRunner.h: Moved TestRunner to CppUnit namespace
+  and renamed it QtTestRunner. Added deprecated typedef for compatibility.
+
+* include/cppunit/Asserter.h:
+* src/cppunit/Asserter.cpp: changed namespace Asserter to a struct and
+  made all methods static.
+
+* include/cppunit/extensions/HelperMacros.h:
+* include/cppunit/extensions/SourceLine.h:
+* include/cppunit/extensions/TestAssert.h:
+* include/cppunit/extensions/TestPlugIn.h:
+* include/cppunit/Portability.h: changed CPPUNIT_NS(symbol) to a
+  symbol macro that expand either to CppUnit or nothing. The symbol is
+  no longer a parameter.
+
+* include/cppunit/portability/CppUnitVector.h:
+* include/cppunit/portability/CppUnitDeque.h:
+* include/cppunit/portability/CppUnitMap.h: added. STL Wrapper for
+  compilers that do not support template default argumenent and need
+  the allocator to be passed when instantiating STL container.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp:
+* src/msvc6/testrunner/*.h:
+* src/msvc6/testrunner/*.cpp:
+* src/msvc6/testpluginrunner/*.h:
+* src/msvc6/testpluginrunner/*.cpp:
+* src/qttestrunner/*.h:
+* src/qttestrunner/*.cpp: replaced occurence of CppUnit:: by CPPUNIT_NS.
+
+* src/cppunit/TestSuite.h:
+replaced occurence of std::vector by CppUnitVector.
+@
+text
+@#include <cppunit/TestAssert.h>
+#include <cppunit/TestFailure.h>
+#include "MockTestListener.h"
+
+
+MockTestListener::MockTestListener( std::string name )
+    : m_name( name )
+    , m_hasExpectationForStartTest( false )
+    , m_hasParametersExpectationForStartTest( false )
+    , m_expectedStartTestCallCount( 0 )
+    , m_startTestCall( 0 )
+    , m_hasExpectationForEndTest( false )
+    , m_hasParametersExpectationForEndTest( false )
+    , m_expectedEndTestCallCount( 0 )
+    , m_endTestCall( 0 )
+    , m_hasExpectationForStartSuite( false )
+    , m_hasParametersExpectationForStartSuite( false )
+    , m_expectedStartSuiteCallCount( 0 )
+    , m_startSuiteCall( 0 )
+    , m_hasExpectationForEndSuite( false )
+    , m_hasParametersExpectationForEndSuite( false )
+    , m_expectedEndSuiteCallCount( 0 )
+    , m_endSuiteCall( 0 )
+    , m_hasExpectationForStartTestRun( false )
+    , m_hasParametersExpectationForStartTestRun( false )
+    , m_expectedStartTestRunCallCount( 0 )
+    , m_startTestRunCall( 0 )
+    , m_hasExpectationForEndTestRun( false )
+    , m_hasParametersExpectationForEndTestRun( false )
+    , m_expectedEndTestRunCallCount( 0 )
+    , m_endTestRunCall( 0 )
+    , m_hasExpectationForAddFailure( false )
+    , m_hasExpectationForSomeFailure( false )
+    , m_hasParametersExpectationForAddFailure( false )
+    , m_expectedAddFailureCallCount( 0 )
+    , m_addFailureCall( 0 )
+    , m_expectedFailedTest( NULL )
+    , m_expectedException( NULL )
+    , m_expectedIsError( false )
+{
+}
+
+
+void 
+MockTestListener::setExpectFailure( CPPUNIT_NS::Test *failedTest,
+                                    CPPUNIT_NS::Exception *thrownException,
+                                    bool isError )
+{
+  m_hasExpectationForAddFailure = true;
+  m_hasParametersExpectationForAddFailure = true;
+  m_expectedAddFailureCallCount = 1;
+  m_expectedFailedTest = failedTest;
+  m_expectedException = thrownException;
+  m_expectedIsError = isError;
+}
+
+
+void 
+MockTestListener::setExpectNoFailure()
+{
+  m_hasExpectationForAddFailure = true;
+  m_expectedAddFailureCallCount = 0;
+}
+
+
+void 
+MockTestListener::setExpectFailure()
+{
+  m_hasExpectationForSomeFailure = true;
+}
+
+
+void 
+MockTestListener::setExpectedAddFailureCall( int callCount )
+{
+  m_hasExpectationForAddFailure = true;
+  m_expectedAddFailureCallCount = callCount;
+}
+
+
+void 
+MockTestListener::setExpectStartTest( CPPUNIT_NS::Test *test )
+{
+  m_hasExpectationForStartTest = true;
+  m_hasParametersExpectationForStartTest = true;
+  m_expectedStartTestCallCount = 1;
+  m_expectedStartTest = test;
+}
+
+
+void 
+MockTestListener::setExpectedStartTestCall( int callCount )
+{
+  m_hasExpectationForStartTest = true;
+  m_expectedStartTestCallCount = callCount;
+}
+
+
+void 
+MockTestListener::setExpectEndTest( CPPUNIT_NS::Test *test )
+{
+  m_hasExpectationForEndTest = true;
+  m_hasParametersExpectationForEndTest = true;
+  m_expectedEndTestCallCount = 1;
+  m_expectedEndTest = test;
+}
+
+
+void 
+MockTestListener::setExpectedEndTestCall( int callCount )
+{
+  m_hasExpectationForEndTest = true;
+  m_expectedEndTestCallCount = callCount;
+}
+
+
+void 
+MockTestListener::setExpectStartSuite( CPPUNIT_NS::Test *test )
+{
+  m_hasExpectationForStartSuite = true;
+  m_hasParametersExpectationForStartSuite = true;
+  m_expectedStartSuiteCallCount = 1;
+  m_expectedStartSuite = test;
+}
+
+
+void 
+MockTestListener::setExpectedStartSuiteCall( int callCount )
+{
+  m_hasExpectationForStartSuite = true;
+  m_expectedStartSuiteCallCount = callCount;
+}
+
+
+void 
+MockTestListener::setExpectEndSuite( CPPUNIT_NS::Test *test )
+{
+  m_hasExpectationForEndSuite = true;
+  m_hasParametersExpectationForEndSuite = true;
+  m_expectedEndSuiteCallCount = 1;
+  m_expectedEndSuite = test;
+}
+
+
+void 
+MockTestListener::setExpectedEndSuiteCall( int callCount )
+{
+  m_hasExpectationForEndSuite = true;
+  m_expectedEndSuiteCallCount = callCount;
+}
+
+
+void 
+MockTestListener::setExpectStartTestRun( CPPUNIT_NS::Test *test,
+                                         CPPUNIT_NS::TestResult *eventManager )
+{
+  m_hasExpectationForStartTestRun = true;
+  m_hasParametersExpectationForStartTestRun = true;
+  m_expectedStartTestRunCallCount = 1;
+  m_expectedStartTestRun = test;
+  m_expectedStartTestRun2 = eventManager;
+}
+
+
+void 
+MockTestListener::setExpectedStartTestRunCall( int callCount )
+{
+  m_hasExpectationForStartTestRun = true;
+  m_expectedStartTestRunCallCount = callCount;
+}
+
+
+void 
+MockTestListener::setExpectEndTestRun( CPPUNIT_NS::Test *test,
+                                       CPPUNIT_NS::TestResult *eventManager )
+{
+  m_hasExpectationForEndTestRun = true;
+  m_hasParametersExpectationForEndTestRun = true;
+  m_expectedEndTestRunCallCount = 1;
+  m_expectedEndTestRun = test;
+  m_expectedEndTestRun2 = eventManager;
+}
+
+
+void 
+MockTestListener::setExpectedEndTestRunCall( int callCount )
+{
+  m_hasExpectationForEndTestRun = true;
+  m_expectedEndTestRunCallCount = callCount;
+}
+
+
+void 
+MockTestListener::addFailure( const CPPUNIT_NS::TestFailure &failure )
+{
+  if ( m_hasExpectationForAddFailure  ||  m_hasExpectationForSomeFailure )
+    ++m_addFailureCall;
+
+  if ( m_hasExpectationForAddFailure )
+  {
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": unexpected call",
+                            m_addFailureCall <= m_expectedAddFailureCallCount );
+  }
+
+  if ( m_hasParametersExpectationForAddFailure )
+  {
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": bad test",
+                            m_expectedFailedTest == failure.failedTest() );
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": bad thrownException",
+                            m_expectedException == failure.thrownException() );
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": bad isError",
+                            m_expectedIsError == failure.isError() );
+  }
+}
+
+
+void 
+MockTestListener::startTest( CPPUNIT_NS::Test *test )
+{
+  if ( m_hasExpectationForStartTest )
+  {
+    ++m_startTestCall;
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": unexpected call",
+                            m_startTestCall <= m_expectedStartTestCallCount );
+  
+  }
+
+  if ( m_hasParametersExpectationForStartTest )
+  {
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": bad test",
+                            m_expectedStartTest == test );
+  }
+}
+
+
+void 
+MockTestListener::endTest( CPPUNIT_NS::Test *test )
+{
+  if ( m_hasExpectationForEndTest )
+  {
+    ++m_endTestCall;
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": unexpected call",
+                            m_endTestCall <= m_expectedEndTestCallCount );
+  }
+
+  if ( m_hasParametersExpectationForEndTest )
+  {
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": bad test",
+                            m_expectedEndTest == test );
+  }
+}
+
+
+void 
+MockTestListener::startSuite( CPPUNIT_NS::Test *test )
+{
+  if ( m_hasExpectationForStartSuite )
+  {
+    ++m_startSuiteCall;
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": unexpected call",
+                            m_startSuiteCall <= m_expectedStartSuiteCallCount );
+  }
+
+  if ( m_hasParametersExpectationForStartSuite )
+  {
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": bad test",
+                            m_expectedStartSuite == test );
+  }
+}
+
+
+void 
+MockTestListener::endSuite( CPPUNIT_NS::Test *test )
+{
+  if ( m_hasExpectationForEndSuite )
+  {
+    ++m_endSuiteCall;
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": unexpected call",
+                            m_endSuiteCall <= m_expectedEndSuiteCallCount );
+  }
+
+  if ( m_hasParametersExpectationForEndSuite )
+  {
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": bad test",
+                            m_expectedEndSuite == test );
+  }
+}
+
+
+void 
+MockTestListener::startTestRun( CPPUNIT_NS::Test *test, 
+                                CPPUNIT_NS::TestResult *eventManager )
+{
+  if ( m_hasExpectationForStartTestRun )
+  {
+    ++m_startTestRunCall;
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": unexpected call",
+                            m_startTestRunCall <= m_expectedStartTestRunCallCount );
+  }
+
+  if ( m_hasParametersExpectationForStartTestRun )
+  {
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": bad test",
+                            m_expectedStartTestRun == test );
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": bad eventManager",
+                            m_expectedStartTestRun2 == eventManager );
+  }
+}
+
+
+void 
+MockTestListener::endTestRun( CPPUNIT_NS::Test *test, 
+                              CPPUNIT_NS::TestResult *eventManager )
+{
+  if ( m_hasExpectationForEndTestRun )
+  {
+    ++m_endTestRunCall;
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": unexpected call",
+                            m_endTestRunCall <= m_expectedEndTestRunCallCount );
+  }
+
+  if ( m_hasParametersExpectationForEndTestRun )
+  {
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": bad test",
+                            m_expectedEndTestRun == test );
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": bad eventManager",
+                            m_expectedEndTestRun2 == eventManager );
+  }
+}
+
+
+void 
+MockTestListener::verify()
+{
+  if ( m_hasExpectationForStartTest )
+  {
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( m_name + ": missing startTest calls",
+                                  m_expectedStartTestCallCount, 
+                                  m_startTestCall );
+  }
+
+  if ( m_hasExpectationForEndTest )
+  {
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( m_name + ": missing endTest calls",
+                                  m_expectedEndTestCallCount, 
+                                  m_endTestCall );
+  }
+
+  if ( m_hasExpectationForStartSuite )
+  {
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( m_name + ": missing startSuite calls",
+                                  m_expectedStartSuiteCallCount, 
+                                  m_startSuiteCall );
+  }
+
+  if ( m_hasExpectationForEndSuite )
+  {
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( m_name + ": missing endSuite calls",
+                                  m_expectedEndSuiteCallCount, 
+                                  m_endSuiteCall );
+  }
+
+  if ( m_hasExpectationForStartTestRun )
+  {
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( m_name + ": missing startTestRun calls",
+                                  m_expectedStartTestRunCallCount, 
+                                  m_startTestRunCall );
+  }
+
+  if ( m_hasExpectationForEndTestRun )
+  {
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( m_name + ": missing endTestRun calls",
+                                  m_expectedEndTestRunCallCount, 
+                                  m_endTestRunCall );
+  }
+
+  if ( m_hasExpectationForAddFailure )
+  {
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( m_name + ": missing addFailure calls",
+                                  m_expectedAddFailureCallCount, 
+                                  m_addFailureCall );
+  }
+
+  if ( m_hasExpectationForSomeFailure )
+  {
+    CPPUNIT_ASSERT_MESSAGE( m_name + ": there was no call to "
+                                "MockTestListener::addFailure()",
+                            m_addFailureCall > 0 );
+  }
+}
+@
+
+
+1.5
+log
+@* bumped version to 1.9.3
+
+* FAQ: added question about 4786 warning on VC++.
+
+* NEWS: updated.
+
+* contrib/msvc/readme.txt: moved to contrib/readme.txt.
+
+* contrib/xml-xsl/report.xsl: added XML style sheet contributed by
+'cuppa' project team (http://sourceforge.jp/projects/cuppa/)
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for
+  startTestRun()/endTestRun().
+
+* examples/simple/*: added. A simple example.
+
+* include/cppunit/BriefTestProgressListener.h:
+* src/cppunit/BriefTestProgressListener.cpp: added. Verbose progess listener
+  that print the test name before running the test.
+
+* include/cppunit/TestListener.h: added startTestRun()/endTestRun().
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: added runTest(), to be called to run
+  a test by test runner.
+
+* src/cppunit/TextTestRunner.cpp:
+* src/cppunit/TestRunner.cpp: updated to use TestResult::runTest().
+
+* include/cppunit/plugin/PlugInManager.h:
+* src/cppunit/PlugInManager.cpp: added. Managers for all loaded plug-ins.
+
+* include/cppunit/plugin/TestPlugInDefaultImpl.h:
+* src/cppunit/TestPlugInDefaultImpl.cpp: renamed TestPlugInAdapter. All
+  implementations are empty.
+
+* include/cppunit/plugin/TestPlugInSuite.h: removed.
+* src/cppunit/TestPlugInSuite.cpp: removed. Replaced by PlugInManager.
+
+* include/cppunit/plugin/TestPlugIn.h: rewrote the plug-in interface to
+  provide more versatility. updated macros to match new interface.
+
+* include/cppunit/extensions/TestFactoryRegistry.h:
+* include/cppunit/extensions/TestFactoryRegistry.cpp: Added unregisterFactory().
+  Added convenience method addRegistry(). Rewrote registry life cycle
+  management. AutoRegisterSuite can now detect that the registry has been
+  destroy and not call to it to unregister its test factory.
+
+* include/cppunit/extensions/AutoRegisterTest.h: on destruction, the registered
+  factory is unregistered from the registry.
+
+* include/cppunit/extensions/HelperMacros.h: added macros
+  CPPUNIT_REGISTRY_ADD_TO_DEFAULT and CPPUNIT_REGISTRY_ADD to help
+  build test suite hierarchy.
+
+* src/cppunit/msvc/DllPlugInTester/*: moved to src/cppunit/DllPlugInTester/.
+
+* src/cppunit/DllPlugInTester/DllPlugInTester.cpp: removed UNICODE stuffs. Use
+  the PlugInManager instead of PlugInTestSuite. Simplified: only one test on
+  command line, but many DLL can be specified. Added configurations to link
+  against cppunit dll, those are now the default configuration (static linking
+  don't make much sense for plug-in).
+@
+text
+@d45 2
+a46 2
+MockTestListener::setExpectFailure( CppUnit::Test *failedTest,
+                                    CppUnit::Exception *thrownException,
+d82 1
+a82 1
+MockTestListener::setExpectStartTest( CppUnit::Test *test )
+d100 1
+a100 1
+MockTestListener::setExpectEndTest( CppUnit::Test *test )
+d118 1
+a118 1
+MockTestListener::setExpectStartSuite( CppUnit::Test *test )
+d136 1
+a136 1
+MockTestListener::setExpectEndSuite( CppUnit::Test *test )
+d154 2
+a155 2
+MockTestListener::setExpectStartTestRun( CppUnit::Test *test,
+                                         CppUnit::TestResult *eventManager )
+d174 2
+a175 2
+MockTestListener::setExpectEndTestRun( CppUnit::Test *test,
+                                       CppUnit::TestResult *eventManager )
+d194 1
+a194 1
+MockTestListener::addFailure( const CppUnit::TestFailure &failure )
+d218 1
+a218 1
+MockTestListener::startTest( CppUnit::Test *test )
+d237 1
+a237 1
+MockTestListener::endTest( CppUnit::Test *test )
+d255 1
+a255 1
+MockTestListener::startSuite( CppUnit::Test *test )
+d273 1
+a273 1
+MockTestListener::endSuite( CppUnit::Test *test )
+d291 2
+a292 2
+MockTestListener::startTestRun( CppUnit::Test *test, 
+                                CppUnit::TestResult *eventManager )
+d312 2
+a313 2
+MockTestListener::endTestRun( CppUnit::Test *test, 
+                              CppUnit::TestResult *eventManager )
+@
+
+
+1.4
+log
+@* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.h: deprecated defaultOuputter(). Added
+  setLocationFormat() and format specifiation in constructor. A string that
+  represent the location format is used to output the location. Default format
+  is defined by CPPUNIT_COMPILER_LOCATION_FORMAT.
+
+* include/cppunit/config-msvc6.h:
+* include/cppunit/Portability.h: added CPPUNIT_COMPILER_LOCATION_FORMAT. Use
+  gcc location format if VC++ is not detected.
+
+* include/cppunit/Test.h: fixed documentation.
+
+* include/cppunit/TestListener.h: added startSuite() and endSuite()
+  callbacks. Added new example to documentation.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp:
+* include/cppunit/TestComposite.h:
+* src/cppunit/TestComposite.cpp: Updated to inform the listeners.
+
+* src/qttestrunner/TestBrowserDlgImpl.cpp: used Test new composite interface
+  instead of RTTI to explore the test hierarchy.
+
+* examples/cppunittest/MockTestListener.h:
+* examples/cppunittest/MockTestListener.cpp: updated,added support for
+  startSuite() and endSuite().
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: added tests for startSuite()
+  and endSuite().
+@
+text
+@d24 8
+d154 40
+d291 42
+d361 14
+@
+
+
+1.3
+log
+@* NEW: added CPPUNIT_ASSERT_EQUAL_MESSAGE compatiblity break.
+
+* include/cppunit/TestAssert.h: changed arguments order for
+CPPUNIT_ASSERT_EQUAL_MESSAGE. 'message' is now the first argument instead
+of the last (like CPPUNIT_ASSERT_MESSAGE).
+
+* examples/cppunittest/MockTestCase.cpp:
+* examples/cppunittest/MockTestListener.cpp: updated to reflect change on
+CPPUNIT_ASSERT_EQUAL_MESSAGE.
+@
+text
+@d16 8
+d110 36
+d207 36
+d257 14
+@
+
+
+1.2
+log
+@* NEW: updated and restructured.
+
+* include/cppunit/CompilerOutputter.h:
+* src/cppunit/CompilerOutputter.cpp:
+updated against TestResultChange. Changed TestResult to TestResultCollector.
+
+* include/cppunit/extensions/HelperMacros.h: minor documentation fix.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all Outputter.
+
+* include/cppunit/Portability.h: made the fix on OStringStream suggested by
+Bob Summerwill to remove level 4 warning with VC++.
+
+* include/cppunit/TestAssert.h: added macro CPPUNIT_ASSERT_EQUAL_MESSAGE.
+
+* src/cppunit/TestFailure.cpp:
+* include/cppunit/TestFailure.h: added method clone() to duplicate a failure. Made
+all method virtual.
+
+* include/cppunit/TestListener.h: changed signature of addFailure() to
+addFailure( const TestFailure &failure ). Failure is now only a temporary object.
+
+* include/cppunit/Outputter.h: added. Abstract base class for all outputter. Used
+by TextTestRunner.
+
+* include/cppunit/SynchronizedObject.h:
+* src/cppunit/SynchronizedObject.cpp: added. Class extracted from TestResult.
+Base class for objects that can be accessed from different threads.
+
+* include/cppunit/TestResult.h: TestFailure.h is no longer included.
+
+* include/cppunit/TestResult.h:
+* src/cppunit/TestResult.cpp: extracted all methods related to keeping track
+of the result to the new TestResultCollector class which is a TestListener.
+
+* include/cppunit/TestResultCollector.h:
+* src/cppunit/TestResultCollector.cpp: added. TestListener which kept track
+of the result of the test run. All failure/error, and tests are tracked.
+
+* include/cppunit/TestSucessListener.h:
+* src/cppunit/TestSucessListener.cpp: added. TestListener extracted from
+TestResult. Is responsible for wasSucessful().
+
+* include/cppunit/TestCase.h:
+* src/cppunit/TestCase.cpp: reindented.
+
+* include/cppunit/TextOutputter.h:
+* src/cppunit/TextOutputter.cpp: added. Copied from the deprecated
+TextTestResult and modified to act as an Ouputter.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: Copied from the deprecated
+TextTestResult and modified to print the dot while the test are running.
+
+* include/cppunit/TextTestResult.h:
+* src/cppunit/TextTestResult.cpp: updated against TestResult change.
+No compatiblity break. Deprecated.
+
+* include/cppunit/TextTestRunner.h:
+* src/cppunit/TextTestRunner.cpp: updated to work with the new TestResult.
+Use TextTestProgressListener and TextOutputter instead of TextTestResult.
+Any outputter with interface Outputter can be used to print the test result
+(CompilerOutputter, XmlOutputter, TextOutputter...)
+
+* include/cppunit/XmlOutputter.h:
+* src/cppunit/XmlOutputter.cpp: updated against TestResultChange.
+Changed TestResult to TestResultCollector.
+
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/TestRunnerDlg.cpp: fixed the 'fullrowselect' feature of the list view.
+The dialog is a TestListener itself, it no longer use the GUITestResult class.
+
+* src/msvc6/TestRunner.rc: moved the "autorun test button" in such a way that it
+did not overlap the progress bar anymore.
+
+* src/msvc6/MfcSynchronizationObject.h: added. Generic SynchronizedObject
+lock for MFC.
+
+* src/msvc6/GUITestResult.h :
+* src/msvc6/GUITestResult.cpp : removed.
+
+* src/qttestrunner/TestRunnerModel.h:
+* src/qttestrunner/TestRunnerModel.cpp: changed addFailure() signature to reflect
+change on TestListener.
+
+* examples/cppunittest/CppUnitTestMain.cpp: updated to use the new Outputter
+abstraction and TextTestRunner facilities.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.cpp: removed. Replaced by MockTestCase.
+
+* examples/cppunittest/FailingTestCase.h:
+* examples/cppunittest/FailingTestCase.h:
+
+* examples/cppunittest/HelperMacrosTest.h:
+* examples/cppunittest/HelperMacrosTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/MockTestListener.h:
+* examples/cppunittest/MockTestListener.cpp: the class now behave like a mock
+object.
+
+* examples/cppunittest/MockTestCase.h:
+* examples/cppunittest/MockTestCase.cpp: added. Mock TestCase object.
+
+* examples/cppunittest/OrthodoxTest.h:
+* examples/cppunittest/OrthodoxTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult to check for sucess or failure.
+
+* examples/cppunittest/SynchronizedTestResult.h: Updated against TestResult
+change.
+
+* examples/cppunittest/TestCallerTest.h:
+* examples/cppunittest/TestCallerTest.cpp: Updated against TestResult change.
+Use MockTestListener instead of TestResult.
+
+* examples/cppunittest/TestCaseTest.h:
+* examples/cppunittest/TestCaseTest.cpp: Updated against TestResult change.
+Use MockTestListener and MockTestCase instead of FailingTestCase and TestResult.
+
+* examples/cppunittest/TestDecoratorTest.h:
+* examples/cppunittest/TestDecoratorTest.cpp: Updated against TestResult change.
+Use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/TestListenerTest.h:
+* examples/cppunittest/TestListenerTest.cpp: removed. Those unit tests have been
+rewrote and moved to TestResultTest.
+
+* examples/cppunittest/TestResultTest.h:
+* examples/cppunittest/TestResultTest.cpp: Updated to test the new interface.
+Tests from TestListenerTest have been moved here.
+
+* examples/cppunittest/TestResultCollectorTest.h:
+* examples/cppunittest/TestResultCollectorTest.cpp: added. Tests for the class
+that been extracted from TestResult.
+
+* examples/cppunittest/TestSetUpTest.h:
+* examples/cppunittest/TestSetUpTest.cpp: renamed SetUp inner class to MockSetUp.
+Changed interface to be more akin to a Mock object.
+
+* examples/cppunittest/TestSuiteTest.h:
+* examples/cppunittest/TestSuiteTest.cpp: Updated against TestResult change,
+and rewrote to use MockTestCase instead of FailingTestCase.
+
+* examples/cppunittest/XmlOutputterTest.h:
+* examples/cppunittest/XmlOutputterTest.cpp: Updated against TestResult change.
+Added some utility methods to make the update easier.
+@
+text
+@d167 3
+a169 3
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( m_expectedStartTestCallCount, 
+                                  m_startTestCall,
+                                  m_name + ": missing startTest calls" );
+d174 3
+a176 3
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( m_expectedEndTestCallCount, 
+                                  m_endTestCall,
+                                  m_name + ": missing endTest calls" );
+d181 3
+a183 3
+    CPPUNIT_ASSERT_EQUAL_MESSAGE( m_expectedAddFailureCallCount, 
+                                  m_addFailureCall,
+                                  m_name + ": missing addFailure calls" );
+@
+
+
+1.1
+log
+@* added project cppunittest to examples/: unit tests to test cppunit. The
+  main file is CppUnitTestMain.cpp. Unit tests have been implemented
+  for TestCaller and TestListener.
+* added project CppUnitTestApp to examples/msvc6: graphical runner for
+  cppunittest.
+* added TestListener to TestResult. It is a port of junit TestListener.
+* updated some .cvsignore to ignore files generated with VC++.
+@
+text
+@d1 2
+d6 18
+a23 1
+MockTestListener::MockTestListener()
+a24 1
+  reset();
+d29 23
+a51 1
+MockTestListener::addError( CppUnit::Test *test, CppUnit::Exception *e )
+d53 1
+a53 1
+  m_called = true;
+d58 1
+a58 1
+MockTestListener::addFailure( CppUnit::Test *test, CppUnit::Exception *e )
+d60 2
+a61 1
+  m_called = true;
+d66 37
+a102 1
+MockTestListener::startTest( CppUnit::Test *test )
+d104 18
+a121 1
+  m_called = true;
+d126 1
+a126 1
+MockTestListener::endTest( CppUnit::Test *test )
+d128 13
+a140 1
+  m_called = true;
+d144 2
+a145 2
+bool 
+MockTestListener::wasCalled() const
+d147 12
+a158 1
+  return m_called;
+d163 1
+a163 1
+MockTestListener::reset()
+d165 27
+a191 1
+  m_called = false;
+@
+

@@ -1,0 +1,1102 @@
+head	1.13;
+access;
+symbols
+	REL_1_12_1:1.13
+	REL_1_11_6:1.13
+	REL_1_11_4:1.13
+	REL_1_11_0:1.12
+	TG_CPPUNIT_NO_STREAM_AFTER:1.12
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.12
+	REL_1_10_2:1.12
+	REL_1_10_0:1.12
+	REL_1_9_14:1.11
+	REL_1_9_12:1.11
+	BRANCH_1_9_12:1.11.0.2
+	TG_BRANCH_1_9_12:1.11
+	TG_BEFORE_HPUX_PLUGIN:1.11
+	TG_BEFORE_SUN4_PORT:1.11
+	REL_1_9_10:1.11
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.11
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.11
+	REL_1_9_6:1.11
+	REL_1_9_4:1.11
+	REL_1_9_0:1.10
+	REL_1_8_0:1.10
+	REL_1_7_8:1.10
+	REL_1_7_3:1.9
+	REL_1_7_1:1.8
+	REL_1_6_2:1.8
+	BRANCH_1_6:1.8.0.2
+	REL_1_6_1:1.8
+	REL_1_6_0:1.8
+	REL_1_5_5:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.13
+date	2005.10.13.20.35.51;	author blep;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2004.06.16.19.02.40;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2002.04.19.14.11.38;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2002.03.25.07.15.06;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2001.10.24.20.03.29;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2001.09.19.20.13.31;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2001.09.17.21.27.15;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2001.06.27.21.23.22;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.06.05.21.35.57;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.06.02.19.53.06;	author smr99;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.05.18.19.32.42;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.05.05.23.34.50;	author bastiaan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.04.28.14.27.24;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.13
+log
+@* removed most warning when compiling with vc++ 6sp6.
+@
+text
+@# Microsoft Developer Studio Project File - Name="HostApp" - Package Owner=<4>
+# Microsoft Developer Studio Generated Build File, Format Version 6.00
+# ** DO NOT EDIT **
+
+# TARGTYPE "Win32 (x86) Application" 0x0101
+
+CFG=HostApp - Win32 Debug No Type Info Name
+!MESSAGE This is not a valid makefile. To build this project using NMAKE,
+!MESSAGE use the Export Makefile command and run
+!MESSAGE 
+!MESSAGE NMAKE /f "HostApp.mak".
+!MESSAGE 
+!MESSAGE You can specify a configuration when running NMAKE
+!MESSAGE by defining the macro CFG on the command line. For example:
+!MESSAGE 
+!MESSAGE NMAKE /f "HostApp.mak" CFG="HostApp - Win32 Debug No Type Info Name"
+!MESSAGE 
+!MESSAGE Possible choices for configuration are:
+!MESSAGE 
+!MESSAGE "HostApp - Win32 Release" (based on "Win32 (x86) Application")
+!MESSAGE "HostApp - Win32 Debug" (based on "Win32 (x86) Application")
+!MESSAGE "HostApp - Win32 Release Unicode" (based on "Win32 (x86) Application")
+!MESSAGE "HostApp - Win32 Debug Unicode" (based on "Win32 (x86) Application")
+!MESSAGE "HostApp - Win32 Debug No Type Info Name" (based on "Win32 (x86) Application")
+!MESSAGE 
+
+# Begin Project
+# PROP AllowPerConfigDependencies 0
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
+CPP=cl.exe
+MTL=midl.exe
+RSC=rc.exe
+
+!IF  "$(CFG)" == "HostApp - Win32 Release"
+
+# PROP BASE Use_MFC 6
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "Release"
+# PROP BASE Intermediate_Dir "Release"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 6
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "Release"
+# PROP Intermediate_Dir "Release"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /Zd /O2 /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /Yu"stdafx.h" /FD /c
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
+# ADD LINK32 ../../../Lib/cppunit.lib ../../../Lib/testrunner.lib /nologo /subsystem:windows /machine:I386
+# SUBTRACT LINK32 /incremental:yes
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug"
+
+# PROP BASE Use_MFC 6
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "Debug"
+# PROP BASE Intermediate_Dir "Debug"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 6
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "Debug"
+# PROP Intermediate_Dir "Debug"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /Yu"stdafx.h" /FD /c
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 ..\..\..\lib\cppunitd.lib ..\..\..\lib\testrunnerd.lib /nologo /subsystem:windows /incremental:no /debug /machine:I386 /pdbtype:sept
+# SUBTRACT LINK32 /pdb:none /map /nodefaultlib
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Release Unicode"
+
+# PROP BASE Use_MFC 6
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "HostApp___Win32_Release_Unicode"
+# PROP BASE Intermediate_Dir "HostApp___Win32_Release_Unicode"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 6
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "ReleaseUnicode"
+# PROP Intermediate_Dir "ReleaseUnicode"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MD /W3 /GR /GX /O2 /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /Zd /O2 /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D "_UNICODE" /Yu"stdafx.h" /FD /c
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 ../../../Lib/cppunit.lib ../../../Lib/testrunner.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 ../../../Lib/cppunit.lib ../../../Lib/testrunneru.lib /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /machine:I386
+# SUBTRACT LINK32 /incremental:yes
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Unicode"
+
+# PROP BASE Use_MFC 6
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "HostApp___Win32_Debug_Unicode"
+# PROP BASE Intermediate_Dir "HostApp___Win32_Debug_Unicode"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 6
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "DebugUnicode"
+# PROP Intermediate_Dir "DebugUnicode"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D "_UNICODE" /Yu"stdafx.h" /FD /c
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 ..\..\..\lib\cppunitd.lib ..\..\..\lib\testrunnerd.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# SUBTRACT BASE LINK32 /pdb:none /map /nodefaultlib
+# ADD LINK32 ..\..\..\lib\cppunitd.lib ..\..\..\lib\testrunnerud.lib /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /incremental:no /debug /machine:I386 /pdbtype:sept
+# SUBTRACT LINK32 /pdb:none /map /nodefaultlib
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug No Type Info Name"
+
+# PROP BASE Use_MFC 6
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "HostApp___Win32_Debug_No_Type_Info_Name"
+# PROP BASE Intermediate_Dir "HostApp___Win32_Debug_No_Type_Info_Name"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 6
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "DebugNoTypeInfoName"
+# PROP Intermediate_Dir "DebugNoTypeInfoName"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D CPPUNIT_USE_TYPEINFO_NAME=0 /Yu"stdafx.h" /FD /c
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 ..\..\..\lib\cppunitd.lib ..\..\..\lib\testrunnerd.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# SUBTRACT BASE LINK32 /pdb:none /map /nodefaultlib
+# ADD LINK32 ..\..\..\lib\cppunitd.lib ..\..\..\lib\testrunnerd.lib /nologo /subsystem:windows /incremental:no /debug /machine:I386 /pdbtype:sept
+# SUBTRACT LINK32 /pdb:none /map /nodefaultlib
+
+!ENDIF 
+
+# Begin Target
+
+# Name "HostApp - Win32 Release"
+# Name "HostApp - Win32 Debug"
+# Name "HostApp - Win32 Release Unicode"
+# Name "HostApp - Win32 Debug Unicode"
+# Name "HostApp - Win32 Debug No Type Info Name"
+# Begin Group "Source Files"
+
+# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Source File
+
+SOURCE=.\ExampleTestCase.cpp
+# SUBTRACT CPP /YX /Yc /Yu
+# End Source File
+# Begin Source File
+
+SOURCE=.\HostApp.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\HostApp.rc
+# End Source File
+# Begin Source File
+
+SOURCE=.\HostAppDoc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\HostAppView.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MainFrm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\StdAfx.cpp
+# ADD CPP /Yc"stdafx.h"
+# End Source File
+# End Group
+# Begin Group "Header Files"
+
+# PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\ExampleTestCase.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\HostApp.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\HostAppDoc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\HostAppView.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MainFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\StdAfx.h
+# End Source File
+# End Group
+# Begin Group "Resource Files"
+
+# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\res\HostApp.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\HostApp.rc2
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\HostAppDoc.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\Toolbar.bmp
+# End Source File
+# End Group
+# Begin Group "DLL Dependencies"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\..\lib\testrunner.dll
+
+!IF  "$(CFG)" == "HostApp - Win32 Release"
+
+# Begin Custom Build - $(IntDir)\$(InputName).dll
+IntDir=.\Release
+InputPath=..\..\..\lib\testrunner.dll
+InputName=testrunner
+
+"$(IntDir)\$(InputName).dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) $(IntDir)\$(InputName).dll
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Release Unicode"
+
+# Begin Custom Build - $(IntDir)\$(InputName).dll
+IntDir=.\ReleaseUnicode
+InputPath=..\..\..\lib\testrunner.dll
+InputName=testrunner
+
+"$(IntDir)\$(InputName).dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) $(IntDir)\$(InputName).dll
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Unicode"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug No Type Info Name"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\lib\testrunnerd.dll
+
+!IF  "$(CFG)" == "HostApp - Win32 Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug"
+
+# Begin Custom Build - $(IntDir)\$(InputName).dll
+IntDir=.\Debug
+InputPath=..\..\..\lib\testrunnerd.dll
+InputName=testrunnerd
+
+"$(IntDir)\$(InputName).dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) $(IntDir)\$(InputName).dll
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Release Unicode"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Unicode"
+
+# Begin Custom Build - $(IntDir)\$(InputName).dll
+IntDir=.\DebugUnicode
+InputPath=..\..\..\lib\testrunnerd.dll
+InputName=testrunnerd
+
+"$(IntDir)\$(InputName).dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) $(IntDir)\$(InputName).dll
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug No Type Info Name"
+
+# Begin Custom Build - $(IntDir)\$(InputName).dll
+IntDir=.\DebugNoTypeInfoName
+InputPath=..\..\..\lib\testrunnerd.dll
+InputName=testrunnerd
+
+"$(IntDir)\$(InputName).dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) $(IntDir)\$(InputName).dll
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\lib\testrunneru.dll
+
+!IF  "$(CFG)" == "HostApp - Win32 Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Release Unicode"
+
+# Begin Custom Build - Updating DLL $(InputPath)
+IntDir=.\ReleaseUnicode
+InputPath=..\..\..\lib\testrunneru.dll
+InputName=testrunneru
+
+"$(IntDir)\$(InputName).dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) $(IntDir)\$(InputName).dll
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug No Type Info Name"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\lib\testrunnerud.dll
+
+!IF  "$(CFG)" == "HostApp - Win32 Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Release Unicode"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Unicode"
+
+# Begin Custom Build - Updating DLL $(InputPath)
+IntDir=.\DebugUnicode
+InputPath=..\..\..\lib\testrunnerud.dll
+InputName=testrunnerud
+
+"$(IntDir)\$(InputName).dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) $(IntDir)\$(InputName).dll
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug No Type Info Name"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=.\ReadMe.txt
+# End Source File
+# End Target
+# End Project
+@
+
+
+1.12
+log
+@* fixing project compilation settings (rtti not always enabled)
+@
+text
+@d49 1
+a49 1
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /Yu"stdafx.h" /FD /c
+d60 1
+d76 1
+a76 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /Yu"stdafx.h" /FD /c
+d86 1
+a86 1
+# ADD LINK32 ..\..\..\lib\cppunitd.lib ..\..\..\lib\testrunnerd.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+d104 1
+a104 1
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D "_UNICODE" /Yu"stdafx.h" /FD /c
+d115 1
+d132 1
+a132 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D "_UNICODE" /Yu"stdafx.h" /FD /c
+d143 1
+a143 1
+# ADD LINK32 ..\..\..\lib\cppunitd.lib ..\..\..\lib\testrunnerud.lib /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /pdbtype:sept
+d161 1
+a161 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR- /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D CPPUNIT_USE_TYPEINFO_NAME=0 /Yu"stdafx.h" /FD /c
+d172 1
+a172 1
+# ADD LINK32 ..\..\..\lib\cppunitd.lib ..\..\..\lib\testrunnerd.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+@
+
+
+1.11
+log
+@* src/cppunit/PlugInManager.cpp: fixed bug in unload().
+
+* include/cppunit/TypeInfoHelper.h:
+* src/cppunit/TypeInfoHelper.cpp: Implementation is now always available
+  is CPPUNIT_HAVE_RTTI is not 0. This removes the need to use
+  different libraries. CPPUNIT_USE_TYPEINFO_NAME can be set on a
+  case by case basis for HelperMacros.
+
+* src/cppunit/TestFactoryRegistry.cpp: removed unused include of
+  TypeInfoHelper.h.
+
+* include/cppunit/TextTestProgressListener.h:
+* src/cppunit/TextTestProgressListener.cpp: used endTest() instead
+  of done() to finalize.
+
+* src/msvc6/TestPlugInRunner/TestPlugIn.h:
+* src/msvc6/TestPlugInRunner/TestPlugIn.cpp: updated to use the
+  new test plug-in system.
+
+* examples/simple/SimplePlugIn.cpp:
+* examples/simple/simple_plugin.dsp: crossplatform test plug-in
+  example using 'simple'.
+
+* examples/msvc6/EasyTestPlugIn/*: projects replaced with the
+  crossplatform projecct examples/simple/simple_plugin.dsp.
+@
+text
+@d159 1
+a159 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D CPPUNIT_USE_TYPEINFO_NAME=0 /Yu"stdafx.h" /FD /c
+@
+
+
+1.10
+log
+@* INSTALL-WIN32.txt: updated for MFC Unicode TestRunner.
+
+* src/msvc6/testrunner/TestRunner.dsp: added Unicode configurations.
+
+* src/msvc6/testrunner/ListCtrlSetter.cpp:
+* src/msvc6/testrunner/ListCtrlSetter.h: replaced usage of std::string by
+CString for easier ansi/unicode switch.
+
+* src/msvc6/testrunner/MsDevCallerListCtrl.cpp:
+* src/msvc6/testrunner/TestRunnerDlg.cpp:
+* src/msvc6/testrunner/TestRunnerModel.cpp:
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: made changes to compile with
+either ANSI and UNICODE support.
+
+* examples/msvc6/HostApp/HostApp.cpp:
+* examples/msvc6/HostApp/HostApp.h:
+* examples/msvc6/HostApp/HostAppDoc.cpp:
+* examples/msvc6/HostApp/HostAppDoc.h: moved TestRunner execution to
+HostApp::RunUnitTests() and removed the MainFrame application window.
+
+* examples/msvc6/HostApp/HostApp.dsp: added Unicode configurations.
+@
+text
+@d7 1
+a7 1
+CFG=HostApp - Win32 Debug Unicode
+d16 1
+a16 1
+!MESSAGE NMAKE /f "HostApp.mak" CFG="HostApp - Win32 Debug Unicode"
+a21 1
+!MESSAGE "HostApp - Win32 Debug Crossplatform Setting" (based on "Win32 (x86) Application")
+d24 1
+a87 29
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Crossplatform Setting"
+
+# PROP BASE Use_MFC 6
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "HostApp___Win32_Debug_Without_CPPUNIT_USE_TYPEINFO"
+# PROP BASE Intermediate_Dir "HostApp___Win32_Debug_Without_CPPUNIT_USE_TYPEINFO"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 6
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "DebugCrossplatform"
+# PROP Intermediate_Dir "DebugCrossplatform"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D "CPPUNIT_USE_TYPEINFO" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D "CPPUNIT_DONT_USE_TYPEINFO" /Yu"stdafx.h" /FD /c
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 ..\..\..\lib\cppunitd.lib ..\..\..\lib\testrunnerd.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# SUBTRACT BASE LINK32 /pdb:none /map /nodefaultlib
+# ADD LINK32 ..\..\..\lib\cppunitcd.lib ..\..\..\lib\testrunnercd.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# SUBTRACT LINK32 /pdb:none /map /nodefaultlib
+
+d144 29
+a178 1
+# Name "HostApp - Win32 Debug Crossplatform Setting"
+d181 1
+a290 4
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Crossplatform Setting"
+
+# PROP Exclude_From_Build 1
+
+d308 5
+d318 1
+a318 1
+SOURCE=..\..\..\lib\testrunnercd.dll
+a325 4
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Crossplatform Setting"
+
+d327 3
+a329 3
+IntDir=.\DebugCrossplatform
+InputPath=..\..\..\lib\testrunnercd.dll
+InputName=testrunnercd
+a342 16
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\lib\testrunnerd.dll
+
+!IF  "$(CFG)" == "HostApp - Win32 Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug"
+
+d344 1
+a344 1
+IntDir=.\Debug
+d353 1
+a353 10
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Crossplatform Setting"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Release Unicode"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Unicode"
+d356 1
+a356 1
+IntDir=.\DebugUnicode
+a379 4
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Crossplatform Setting"
+
+# PROP Exclude_From_Build 1
+
+d396 5
+a415 4
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Crossplatform Setting"
+
+# PROP Exclude_From_Build 1
+
+d431 5
+@
+
+
+1.9
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+* examples/msvc6/HostApp/HostApp.dsp: use custom file build instead
+of post-build/pre-link step to copy the TestRunner DLL to the
+Release/Debug directory.
+
+* src/msvc6/ProgressBar.cpp:
+* src/msvc6/ProgressBar.h:
+* src/msvc6/TestRunner.rc:
+* src/msvc6/TestRunnerDlg.cpp:
+* src/msvc6/TestRunnerDlg.h:
+* src/msvc6/testRunner.dsp:
+* src/msvc6/TestRunnerModel.cpp:
+* src/msvc6/TestRunnerModel.h: included Gigi Sayfan (gigi@@morphink.com)
+patch. The dialog can now be resized, and list view columns and dialog
+sizes are saved.
+
+* src/msvc6/ProgressBar.cpp:
+* src/msvc6/ProgressBar.h: Minor refactoring.
+
+* THANKS: added Gigi Sayfan to the list.
+@
+text
+@d7 1
+a7 1
+CFG=HostApp - Win32 Debug Crossplatform Setting
+d16 1
+a16 1
+!MESSAGE NMAKE /f "HostApp.mak" CFG="HostApp - Win32 Debug Crossplatform Setting"
+d23 2
+d117 56
+d180 2
+d295 17
+d339 10
+d375 87
+@
+
+
+1.8
+log
+@* examples/cppunittest/makefile.am : added TestSetupTest.(cpp/h)
+
+* examples/examples.dsw: removed some unnecessary dependencies.
+
+* examples/msvc6/HostApp/HostApp.dsp: fixed release configuration
+
+* src/msvc6/DSPlugIn/DSPlugIn.dsp: fixed release configuration, and
+disabled the custom build command that does not work.
+
+* include/cppunit/extensions/HelperMacros.h: reordered header to remove
+some warning with VC++.
+
+* INSTALL-WIN32.txt : detailed what was in each project. Added a FAQ
+about the failing test case in cppunittest.
+@
+text
+@a57 4
+# Begin Special Build Tool
+SOURCE="$(InputPath)"
+PreLink_Cmds=copy ..\..\..\lib\testrunner.dll Release
+# End Special Build Tool
+a84 4
+# Begin Special Build Tool
+SOURCE="$(InputPath)"
+PreLink_Cmds=copy ..\..\..\lib\testrunnerd.dll Debug
+# End Special Build Tool
+a113 4
+# Begin Special Build Tool
+SOURCE="$(InputPath)"
+PreLink_Cmds=copy ..\..\..\lib\testrunnercd.dll DebugCrossplatform
+# End Special Build Tool
+d206 85
+@
+
+
+1.7
+log
+@* Makefile.am: Added INSTALL-WIN32.txt to EXTRA_DIST.
+
+* INSTALL-WIN32.txt: added, short documentation for CppUnit and VC++.
+
+* include/cppunit/extensions/HelperMacros.h: bug #448363, removed
+an extraneous ';' at the end of CPPUNIT_TEST_SUITE_END macro.
+
+* examples/cppunittest/TestCallerTest.cpp: bug #448332, fixed
+memory leaks.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.h:
+* src/msvc6/testpluginrunner/TestPlugInRunnerDlg.cpp: change to define
+IDD to a dummy value when subclassing the dialog.
+
+* src/cppunit/cppunit.dsp:
+* src/msvc6/testrunner/TestRunner.dsp:
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsp:
+* examples/cppunitttest/CppUnitTestMain.dsp:
+* examples/hierarchy.dsp:
+* examples/msvc6/TestPlugIn/TestPlugIn.dsp:
+* examples/msvc6/HostApp/HostApp.dsp: all configurations can be compiled.
+
+* src/msvc6/testpluginrunner/TestPlugInRunner.dsw: added dependency to
+cppunit.dsp and TestRunner.dsp.
+@
+text
+@d57 1
+a57 1
+# ADD LINK32 ..\..\..\lib\cppunit.lib ..\..\..\lib\testrunner.lib /nologo /subsystem:windows /machine:I386
+@
+
+
+1.6
+log
+@* examples/msvc6/CppUnitTestApp/CppUnitTestApp.dsp:
+moved dll copy from post-build to custom build setting, so that the
+dll is copied even if the CppUnitTestApp was not modified.
+
+* examples/msvc6/TestPlugIn/: a new example of test plug in.
+
+* src/msvc6/TestRunner/ListCtrlFormatter.*
+* src/msvc6/TestRunner/ListCtrlSetter.*:
+added, helper to manipulate list control.
+
+* src/msvc6/TestRunner/TestRunnerDlg.*: change to make the error list
+more compact. text moved to string resources. icons added for typ
+test tfailure type.
+
+* src/msvc6/TestRunner/MostRecentTests.*: added, classes that will
+replace the current implementation of MRU test which make it hard
+to subclass the dialog.
+
+* src/msvc6/TestRunner/res/errortype.bmp: added, bitmap with error
+types (failure and error).
+
+* src/msvc6/TestPlugInRunner/: A test runner to run test plug in.
+Test plug in are DLL that publish a specified plug in interface.
+Those DLL are loaded and reloaded by the TestPlugInRunner to run
+tests. This remove the need to wrap DLL with a executable to test
+them.
+
+* src/cppunit/cppunit.dsp:
+removed config.h from project
+added Portability.h and config-msvc6.h
+
+* include/cppunit/config-msvc6.h:
+undef CPPUNIT_FUNC_STRING_COMPARE_STRING_FIRST
+@
+text
+@d47 1
+a47 1
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D "CPPUNIT_USE_TYPEINFO" /Yu"stdafx.h" /FD /c
+d57 1
+a57 1
+# ADD LINK32 /nologo /subsystem:windows /machine:I386
+d60 1
+a60 1
+PreLink_Cmds=copy ..\..\..\lib\testrunner.dll Debug
+d77 1
+a77 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D "CPPUNIT_USE_TYPEINFO" /Yu"stdafx.h" /FD /c
+@
+
+
+1.5
+log
+@* src/cppunit/TypeInfoHelper.cpp: removed #include <config.h>, cppunit/config.h was already included.
+
+* src/cppunit/cppunit.dsp: removed TestAssert.cpp from project.
+
+* added/updated .cvsignore files for beter handling of windows projects.
+
+* added include/cppunit/config.h with a default configuration for VC++ 6.0.
+
+* include/cppunit/.cvsignore: removed config.h from the list of ignored file.
+
+* renamed VC++ configurations without RTTI from "Debug No CU_USE_TYPEINFO" to "Debug Crossplatform".
+
+* include/cppunit/TestAssert.h: added include <math.h> for fabs().
+@
+text
+@d44 1
+d47 1
+a47 1
+# ADD CPP /nologo /MD /W3 /GX /O2 /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D "CPPUNIT_USE_TYPEINFO" /Yu"stdafx.h" /FD /c
+d58 4
+a139 5
+
+!IF  "$(CFG)" == "HostApp - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug"
+
+a140 8
+
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Crossplatform Setting"
+
+# SUBTRACT BASE CPP /YX /Yc /Yu
+# SUBTRACT CPP /YX /Yc /Yu
+
+!ENDIF 
+
+@
+
+
+1.4
+log
+@Replace CU_ by CPPUNIT_.
+@
+text
+@d7 1
+a7 1
+CFG=HostApp - Win32 Debug Without CPPUNIT_USE_TYPEINFO
+d16 1
+a16 1
+!MESSAGE NMAKE /f "HostApp.mak" CFG="HostApp - Win32 Debug Without CPPUNIT_USE_TYPEINFO"
+d22 1
+a22 1
+!MESSAGE "HostApp - Win32 Debug Without CPPUNIT_USE_TYPEINFO" (based on "Win32 (x86) Application")
+d89 1
+a89 1
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Without CPPUNIT_USE_TYPEINFO"
+d99 2
+a100 2
+# PROP Output_Dir "DebugNoTypeInfo"
+# PROP Intermediate_Dir "DebugNoTypeInfo"
+d104 1
+a104 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /Yu"stdafx.h" /FD /c
+d115 1
+a115 1
+# ADD LINK32 ..\..\..\lib\cppunitnotypeinfod.lib ..\..\..\lib\testrunnernotypeinfod.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+d119 1
+a119 1
+PreLink_Cmds=copy ..\..\..\lib\testrunnernotypeinfod.dll DebugNoTypeInfo
+d128 1
+a128 1
+# Name "HostApp - Win32 Debug Without CPPUNIT_USE_TYPEINFO"
+d142 1
+a142 1
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Without CPPUNIT_USE_TYPEINFO"
+@
+
+
+1.3
+log
+@  * Symbol CU_USE_TYPEINFO must be defined instead of USE_TYPEINFO to
+    compile RTTI.
+  * Added back default constructor to TestSuiteBuilder which use RTTI.
+    It is available only if CU_USE_TYPEINFO is defined.
+  * Moved TypeInfoHelper.h from src/cppunit to include/cppunit/extensions.
+  * Macro CU_TEST_SUITE in HelperMacros.h now use TestSuiteBuilder default
+    constructor if CU_USE_TYPEINFO is defined, otherwise it use the
+    type name given to the CU_TEST_SUITE macro.
+  * TestFactoryRegistry::registerFactory(factory) now generate a dummy
+    name based on a serial number instead of using RTTI. The macro
+    CU_TEST_SUITE_REGISTRATION and class AutoRegisterSuite can now
+    when CU_USE_TYPEINFO is not defined.
+  * Added a new Configuration named "Debug Without CU_USE_TYPEINFO" to
+    msvc6 projects. The flag CU_USE_TYPEINFO is not defined in that
+    configuration.
+@
+text
+@d7 1
+a7 1
+CFG=HostApp - Win32 Debug Without CU_USE_TYPEINFO
+d16 1
+a16 1
+!MESSAGE NMAKE /f "HostApp.mak" CFG="HostApp - Win32 Debug Without CU_USE_TYPEINFO"
+d22 1
+a22 1
+!MESSAGE "HostApp - Win32 Debug Without CU_USE_TYPEINFO" (based on "Win32 (x86) Application")
+d46 1
+a46 1
+# ADD CPP /nologo /MD /W3 /GX /O2 /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D "CU_USE_TYPEINFO" /Yu"stdafx.h" /FD /c
+d72 1
+a72 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D "CU_USE_TYPEINFO" /Yu"stdafx.h" /FD /c
+d89 1
+a89 1
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Without CU_USE_TYPEINFO"
+d93 2
+a94 2
+# PROP BASE Output_Dir "HostApp___Win32_Debug_Without_CU_USE_TYPEINFO"
+# PROP BASE Intermediate_Dir "HostApp___Win32_Debug_Without_CU_USE_TYPEINFO"
+d103 1
+a103 1
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D "CU_USE_TYPEINFO" /Yu"stdafx.h" /FD /c
+d128 1
+a128 1
+# Name "HostApp - Win32 Debug Without CU_USE_TYPEINFO"
+d142 1
+a142 1
+!ELSEIF  "$(CFG)" == "HostApp - Win32 Debug Without CU_USE_TYPEINFO"
+@
+
+
+1.2
+log
+@Merge of CppUnitW 1.2 phase 2.
+@
+text
+@d7 1
+a7 1
+CFG=HostApp - Win32 Debug
+d16 1
+a16 1
+!MESSAGE NMAKE /f "HostApp.mak" CFG="HostApp - Win32 Debug"
+d22 1
+d46 1
+a46 1
+# ADD CPP /nologo /MD /W3 /GX /O2 /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D "USE_TYPEINFO" /Yu"stdafx.h" /FD /c
+d72 1
+a72 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "WIN32" /D "USE_TYPEINFO" /Yu"stdafx.h" /FD /c
+d89 33
+d128 1
+d140 5
+@
+
+
+1.1
+log
+@Merged msvc6 specific TestRunner and example adapted from Michael Feathers
+version by Baptiste Lepilleur.
+@
+text
+@d45 1
+a45 1
+# ADD CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
+d71 1
+a71 1
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "..\..\..\include" /I "..\..\..\include\msvc6" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
+@
+

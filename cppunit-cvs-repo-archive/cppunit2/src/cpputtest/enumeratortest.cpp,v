@@ -1,0 +1,990 @@
+head	1.8;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.8
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.7
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.7
+	TG_AFTER_REMOVING_TESTCONTEXT:1.5
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.5
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.5
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@// @;
+
+
+1.8
+date	2005.09.06.07.17.36;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.02.23.23.10.22;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2005.02.23.08.54.05;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.11.15.08.52.40;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.10.22.06.20.07;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.04.03.14.52.01;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.02.01.16.12.56;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.8
+log
+@* added CPPUT_ASSERT_DOUBLES_EQUAL and CPPUT_CHECK_DOUBLES_EQUAL
+@
+text
+@#include "enumeratortest.h"
+#include <algorithm>
+#include <iterator>
+
+// @@todo: add test for custom equality predicates
+// @@todo add test for different enumerated type
+
+#define ENUMERATORTEST_ASSERT_ENUM_EMPTY \
+   CPPUT_BEGIN_ASSERTION_MACRO() \
+   checkHasNoMoreElements
+
+namespace { // anonymous namespace
+   template<class EnumeratorType>
+   void checkHasValueType( const EnumeratorType & )
+   {
+      typedef CPPTL_TYPENAME EnumeratorType::value_type ValueType;
+   }
+
+   template<typename EnumeratorType>
+   void checkHasNoMoreElements( const EnumeratorType &e )
+   {
+      CppUT::checkFalse( e.hasNext(), "Enumerated should not have anymore elements." );
+      CppUT::checkFalse( e.is_open(), "Enumerated should not have anymore elements." );
+   }
+
+   template<typename EnumeratorType>
+   void checkContent( EnumeratorType e )
+   {  
+      checkHasValueType( e );
+
+      int v1 = 12;
+      int v2 = 23;
+      int v3 = 34;
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_EQUAL( v1, e.current() );
+      CPPUT_ASSERT_EQUAL( v1, *e );
+      CPPUT_ASSERT_EQUAL( v1, e.next() );
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_EQUAL( v2, e.current() );
+      CPPUT_ASSERT_EQUAL( v2, *e );
+      CPPUT_ASSERT_EQUAL( v2, *e++ );
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_EQUAL( v3, e.current() );
+      CPPUT_ASSERT_EQUAL( v3, *e );
+      CPPUT_ASSERT_EQUAL( v3, e.next() );
+      checkHasNoMoreElements( e );
+   }
+
+   template<typename EnumeratorType>
+   void checkTransformContent( EnumeratorType e, double divider )
+   {  
+      checkHasValueType( e );
+
+      double v1 = 12.0 / divider;
+      double v2 = 23.0 / divider;
+      double v3 = 34.0 / divider;
+      const double tolerance = 0.000001;
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_DOUBLE_EQUAL( v1, e.current(), tolerance );
+      CPPUT_ASSERT_DOUBLE_EQUAL( v1, *e, tolerance );
+      CPPUT_ASSERT_DOUBLE_EQUAL( v1, e.next(), tolerance );
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_DOUBLE_EQUAL( v2, e.current(), tolerance );
+      CPPUT_ASSERT_DOUBLE_EQUAL( v2, *e++, tolerance );
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_DOUBLE_EQUAL( v3, e.current(), tolerance );
+      CPPUT_ASSERT_DOUBLE_EQUAL( v3, *e, tolerance );
+      CPPUT_ASSERT_DOUBLE_EQUAL( v3, e.next(), tolerance );
+      checkHasNoMoreElements( e );
+   }
+
+   template<typename EnumeratorType>
+   void checkStringContent( EnumeratorType e )
+   {  
+      checkHasValueType( e );
+
+      std::string v1 = "abc";
+      std::string v2 = "def";
+      std::string v3 = "ghi";
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_EQUAL( v1, e.current() );
+      CPPUT_ASSERT_EQUAL( v1, *e );
+      CPPUT_ASSERT_EQUAL( v1, e.next() );
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_EQUAL( v2, e.current() );
+      CPPUT_ASSERT_EQUAL( v2, *e );
+      CPPUT_ASSERT_EQUAL( v2, *e++ );
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_EQUAL( v3, e.current() );
+      CPPUT_ASSERT_EQUAL( v3, *e );
+      CPPUT_ASSERT_EQUAL( v3, e.next() );
+      checkHasNoMoreElements( e );
+   }
+
+   template<typename EnumeratorType>
+   void checkFilteredContent( EnumeratorType e, int skew )
+   {  
+      checkHasValueType( e );
+
+      int v1 = 0 + skew;
+      int v2 = 2 + skew;
+      int v3 = 4 + skew;
+      int v4 = 6 + skew;
+      int v5 = 8 + skew;
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_EQUAL( v1, e.current() );
+      CPPUT_ASSERT_EQUAL( v1, *e );
+      CPPUT_ASSERT_EQUAL( v1, e.next() );
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_EQUAL( v2, e.current() );
+      CPPUT_ASSERT_EQUAL( v2, *e );
+      CPPUT_ASSERT_EQUAL( v2, *e++ );
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_EQUAL( v3, e.current() );
+      CPPUT_ASSERT_EQUAL( v3, *e );
+      CPPUT_ASSERT_EQUAL( v3, e.next() );
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_EQUAL( v4, e.next() );
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_EQUAL( v5, e.next() );
+      checkHasNoMoreElements( e );
+   }
+
+   template<typename EnumeratorType>
+   void checkContentRange( EnumeratorType e, int start, int end )
+   {  
+      checkHasValueType( e );
+      for ( int index = start; index < end; ++index )
+         CPPUT_ASSERT_EQUAL( index, e.next() );
+      checkHasNoMoreElements( e );
+   }
+
+   template<typename SequenceContainer>
+   void fillStringSequence( SequenceContainer &sequence )
+   {
+      sequence.push_back( "abc" );
+      sequence.push_back( "def" );
+      sequence.push_back( "ghi" );
+   }
+
+   struct Divide
+   {
+      typedef double result_type;
+
+      Divide( double divider )
+         : divider_( divider )
+      {
+      }
+
+      double operator()( int v ) const
+      {
+         return double(v) / divider_;
+      }
+
+      double divider_;
+   };
+
+   struct Int2StringAdaptor
+   {
+      typedef std::string result_type;
+
+      std::string operator()( int v ) const
+      {
+         switch ( v )
+         {
+         case 12: return "abc";
+         case 23: return "def";
+         case 34: return "ghi";
+         default: return "?";
+         }
+      }
+   };
+
+   struct IsEvenFilter
+   {
+      IsEvenFilter( int skew = 0 )
+         : skew_( skew )
+      {
+      }
+
+      bool operator()( int v ) const
+      {
+         return (v+skew_) % 2 == 0;
+      }
+
+      int skew_;
+   };
+
+   // Thin enumerator to test sugar()
+   class SerieGeneratorEnumerator
+   {
+   public:
+      typedef int value_type;
+
+      SerieGeneratorEnumerator( int start = 0, int end = 0, int step = 1 )
+         : index_( start )
+         , end_( end )
+         , step_( step )
+      {
+      }
+
+      bool is_open() const
+      {
+         return index_ < end_;
+      }
+
+      value_type current() const
+      {
+         return index_;
+      }
+
+      void advance()
+      {
+         index_ += step_;
+      }
+
+   private:
+      int index_;
+      int end_;
+      int step_;
+   };
+
+} // anonymous namespace
+
+
+
+EnumeratorTest::EnumeratorTest()
+{
+}
+
+
+EnumeratorTest::~EnumeratorTest()
+{
+}
+
+
+void 
+EnumeratorTest::setUp()
+{
+   deque1_.clear();
+   deque1_.push_back( 12 );   // must be ordered
+   deque1_.push_back( 23 );
+   deque1_.push_back( 34 );
+
+   vector1_.clear();
+   std::copy( deque1_.begin(), deque1_.end(), std::back_inserter( vector1_ ) );
+
+   set1_.clear();
+   std::copy( deque1_.begin(), deque1_.end(), std::inserter( set1_, set1_.begin() ) );
+
+   list1_.clear();
+   std::copy( deque1_.begin(), deque1_.end(), std::back_inserter( list1_ ) );
+
+   map1_.clear();
+   map1_.insert( IntStringMap::value_type( 12, "abc" ) );
+   map1_.insert( IntStringMap::value_type( 23, "def" ) );
+   map1_.insert( IntStringMap::value_type( 34, "ghi" ) );
+}
+
+
+void 
+EnumeratorTest::tearDown()
+{
+   map1_.clear();
+   list1_.clear();
+   set1_.clear();
+   vector1_.clear();
+   deque1_.clear();
+}
+
+
+void 
+EnumeratorTest::testEmptyEnumerator()
+{
+   CppTL::EmptyEnumerator<int> e;
+   checkHasValueType( e );
+   CPPUT_ASSERT_EXPR_FALSE( e.is_open() );
+   CPPUT_ASSERT_EXPR_FALSE( e.hasNext() );
+}
+
+
+void 
+EnumeratorTest::testEmptyAnyEnumerator()
+{  // Tests template instantiation with EmptyEnumerator. any*() generator functions
+   // are tested in each enumerator test case
+   CppTL::AnyEnumerator<int> empty;
+   checkHasNoMoreElements( empty );
+}
+
+
+void 
+EnumeratorTest::testForwardItEnumerator()
+{
+   checkContent( CppTL::Enum::range( deque1_.begin(), deque1_.end() ) );
+#if !defined(CPPTL_NO_VECTOR_ITERATOR_VALUE_TYPE_DEDUCTION)
+// NOTES: supported only on platform where std::vector<>::iterator is not a pointer
+// or with template partial specialization
+   checkContent( CppTL::Enum::range( vector1_.begin(), vector1_.end() ) );
+#endif
+
+#if !defined(CPPTL_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+// NOTES: to be portable, the compiler need to be able to remove the optional 'const' 
+// before the deduced enumerator type. This can only be done using partial 
+// specialilzation. For portability, it is strongly recommanded to use the portable
+// syntax by passing the return type explicitely.
+   checkContent( CppTL::Enum::range( set1_.begin(), set1_.end() ) );
+#endif
+
+   checkContent( CppTL::Enum::range( list1_.begin(), list1_.end() ) );
+
+   checkContent( CppTL::Enum::anyRange( list1_.begin(), list1_.end() ) );
+
+   // Specifying Type ensure portability across all platforms.
+   checkContent( CppTL::Enum::range( deque1_.begin(), deque1_.end(), CppTL::Type<int>() ) );
+   checkContent( CppTL::Enum::range( vector1_.begin(), vector1_.end(), CppTL::Type<int>() ) );
+   checkContent( CppTL::Enum::range( set1_.begin(), set1_.end(), CppTL::Type<int>() ) );
+   checkContent( CppTL::Enum::range( list1_.begin(), list1_.end(), CppTL::Type<int>() ) );
+   checkContent( CppTL::Enum::anyRange( list1_.begin(), list1_.end(), CppTL::Type<int>() ) );
+}
+
+void 
+EnumeratorTest::testTransformForwardItEnumerator()
+{
+   Divide divider( 10 );
+   checkTransformContent( CppTL::Enum::rangeTransform( deque1_.begin(), 
+                                                       deque1_.end(), 
+                                                       divider ), 10.0 );
+
+   checkTransformContent( CppTL::Enum::rangeTransform( vector1_.begin(), 
+                                                       vector1_.end(), 
+                                                       divider ), 10.0 );
+
+   checkTransformContent( CppTL::Enum::rangeTransform( set1_.begin(), 
+                                                       set1_.end(), 
+                                                       divider ), 10.0 );
+
+   checkTransformContent( CppTL::Enum::rangeTransform( list1_.begin(), 
+                                                       list1_.end(), 
+                                                       divider ), 10.0 );
+
+   checkTransformContent( CppTL::Enum::anyRangeTransform( list1_.begin(), 
+                                                          list1_.end(), 
+                                                          divider ), 10.0 );
+}
+
+
+void 
+EnumeratorTest::testContainerEnumerator()
+{
+   checkContent( CppTL::Enum::container( deque1_ ) );
+   checkContent( CppTL::Enum::container( vector1_ ) );
+   checkContent( CppTL::Enum::container( set1_ ) );
+   checkContent( CppTL::Enum::container( list1_ ) );
+   checkContent( CppTL::Enum::anyContainer( list1_ ) );
+
+   checkContent( CppTL::Enum::container( deque1_, CppTL::Type<int>() ) );
+   checkContent( CppTL::Enum::container( vector1_, CppTL::Type<int>() ) );
+   checkContent( CppTL::Enum::container( set1_, CppTL::Type<int>() ) );
+   checkContent( CppTL::Enum::container( list1_, CppTL::Type<int>() ) );
+   checkContent( CppTL::Enum::anyContainer( list1_, CppTL::Type<int>() ) );
+}
+
+
+void 
+EnumeratorTest::testMapKeysEnumerator()
+{
+   checkContent( CppTL::Enum::keys( map1_ ) );
+
+   checkContent( CppTL::Enum::keys( map1_, CppTL::Type<int>() ) );
+
+   checkContent( CppTL::Enum::keysRange( map1_.begin(), map1_.end() ) );
+
+   checkContent( CppTL::Enum::anyKeys( map1_ ) );
+
+   checkContent( CppTL::Enum::anyKeysRange( map1_.begin(), map1_.end() ) );
+
+   checkContent( CppTL::Enum::keysRange( map1_.begin(), map1_.end(), CppTL::Type<int>() ) );
+
+   checkContent( CppTL::Enum::anyKeys( map1_, CppTL::Type<int>() ) );
+
+   checkContent( CppTL::Enum::anyKeysRange( map1_.begin(), map1_.end(), CppTL::Type<int>() ) );
+}
+
+
+void 
+EnumeratorTest::testMapValuesEnumerator()
+{
+   checkStringContent( CppTL::Enum::values( map1_ ) );
+
+   checkStringContent( CppTL::Enum::valuesRange( map1_.begin(), map1_.end() ) );
+
+   checkStringContent( CppTL::Enum::values( map1_, CppTL::Type<std::string>() ) );
+
+   checkStringContent( CppTL::Enum::valuesRange( map1_.begin(), 
+                                                 map1_.end(), 
+                                                 CppTL::Type<std::string>() ) );
+
+   checkStringContent( CppTL::Enum::anyValues( map1_ ) );
+
+   checkStringContent( CppTL::Enum::anyValuesRange( map1_.begin(), map1_.end() ) );
+
+   checkStringContent( CppTL::Enum::anyValuesRange( map1_.begin(), map1_.end(), 
+                                                    CppTL::Type<std::string>() ) );
+
+   checkStringContent( CppTL::Enum::anyValues( map1_, CppTL::Type<std::string>() ) );
+}
+
+
+void 
+EnumeratorTest::testTransformEnumerator()
+{
+   checkStringContent( CppTL::Enum::transform( CppTL::Enum::container(deque1_),
+                                               Int2StringAdaptor() ) );
+   checkStringContent( CppTL::Enum::transform( CppTL::Enum::container(list1_),
+                                               Int2StringAdaptor() ) );
+   checkStringContent( CppTL::Enum::transform( CppTL::Enum::keys(map1_),
+                                               Int2StringAdaptor() ) );
+   checkStringContent( CppTL::Enum::anyTransform( CppTL::Enum::container(list1_),
+                                                  Int2StringAdaptor() ) );
+}
+
+
+void 
+EnumeratorTest::testFilterEnumerator()
+{  // Tests with both even and odd filter to ensure skipping is correctly
+   // done at the beginning and at the end of the enumeration.
+   IntDeque even;
+   checkHasNoMoreElements( CppTL::Enum::filter( CppTL::Enum::container( even ), 
+                                                IsEvenFilter(0) ) );
+
+   for ( int index =0; index <10; ++index )
+      even.push_back( index );
+
+   checkFilteredContent( CppTL::Enum::filter( CppTL::Enum::container( even ), 
+                                              IsEvenFilter(0) ),
+                         0 );
+
+   IntDeque odd( even );
+   checkFilteredContent( CppTL::Enum::filter( CppTL::Enum::container( even ), 
+                                              IsEvenFilter( 1 ) ), 
+                         1 );
+   checkFilteredContent( CppTL::Enum::anyFilter( CppTL::Enum::container( even ), 
+                                                 IsEvenFilter( 1 ) ), 
+                         1 );
+}
+
+
+void 
+EnumeratorTest::testSliceEnumerator()
+{
+   IntDeque serie;
+   for ( int index =0; index <10; ++index )
+      serie.push_back( index );
+
+   int length = serie.size();
+   checkContentRange( CppTL::Enum::slice( CppTL::Enum::container( serie ), 0, 0 ), 
+                      0, 0 ); 
+   checkContentRange( CppTL::Enum::slice( CppTL::Enum::container( serie ), 0 ), 
+                      0, length ); 
+   checkContentRange( CppTL::Enum::slice( CppTL::Enum::container( serie ), length ), 
+                      length, length ); 
+   checkContentRange( CppTL::Enum::slice( CppTL::Enum::container( serie ), 1, length ), 
+                      1, length ); 
+   checkContentRange( CppTL::Enum::slice( CppTL::Enum::container( serie ), 0, length-1 ), 
+                      0, length-1 ); 
+   checkContentRange( CppTL::Enum::slice( CppTL::Enum::container( serie ), 3, 7 ), 
+                      3, 7 ); 
+   checkContentRange( CppTL::Enum::slice( CppTL::Enum::container( serie ), 3, 3 ), 
+                      3, 3 ); 
+   checkContentRange( CppTL::Enum::anySlice( CppTL::Enum::container( serie ), 3, 7 ), 
+                      3, 7 ); 
+}
+
+
+void 
+EnumeratorTest::testSugarEnumerator()
+{
+   checkContentRange( CppTL::Enum::sugar( SerieGeneratorEnumerator() ), 
+                      0, 0 );
+   checkContentRange( CppTL::Enum::sugar( SerieGeneratorEnumerator(0, 10) ), 
+                      0, 10 );
+   checkContentRange( CppTL::Enum::sugar( SerieGeneratorEnumerator(3, 7) ), 
+                      3, 7 );
+   checkFilteredContent( CppTL::Enum::sugar( SerieGeneratorEnumerator(0, 10, 2) ), 0 );
+   checkFilteredContent( CppTL::Enum::sugar( SerieGeneratorEnumerator(1, 11, 2) ), 1 );
+
+   checkContentRange( CppTL::Enum::anySugar( SerieGeneratorEnumerator(3, 7) ), 
+                      3, 7 );
+   checkFilteredContent( CppTL::Enum::anySugar( SerieGeneratorEnumerator(1, 11, 2) ), 1 );
+}
+
+
+/*
+void 
+EnumeratorTest::testStlEnumerator()
+{
+   IntEnum e1 = CppUT::enumStl( deque1_ );
+   checkContent( e1 );
+
+   IntEnum e2 = CppUT::enumStl( vector1_ );
+   checkContent( e2 );
+
+   IntEnum e3 = CppUT::enumStl( set1_ );
+   checkContent( e3 );
+
+   CharEnum e4 = CppUT::enumStl( deque1_, CppUT::Type<char>() );
+   checkContent( e4 );
+
+   CharEnum e5 = CppUT::enumStl( vector1_, CppUT::Type<char>() );
+   checkContent( e5 );
+
+   CharEnum e6 = CppUT::enumStl( set1_, CppUT::Type<char>() );
+   checkContent( e6 );
+} 
+
+
+void 
+EnumeratorTest::testStlRangeEnumerator()
+{
+   IntEnum e1a = CppUT::enumStlRange( deque1_.begin(), deque1_.begin()+2 );
+   IntEnum e1b = CppUT::enumStlRange( deque1_.begin()+1, deque1_.begin()+3 );
+   checkRangesContent( e1a, e1b );
+
+// Range enumerator for vector type is not supported because return type can not be deduced.
+//   IntEnum e2a = CppUT::enumStlRange( vector1_.begin(), vector1_.begin()+2 );
+//   IntEnum e2b = CppUT::enumStlRange( vector1_.begin()+1, vector1_.begin()+3 );
+//   checkRangesContent( e2a, e2b );
+
+   IntSet::iterator itEnd = set1_.end();
+   --itEnd;
+   IntSet::iterator itStart = set1_.begin();
+   itStart++;
+
+   IntEnum e3a = CppUT::enumStlRange( set1_.begin(), itEnd );
+   IntEnum e3b = CppUT::enumStlRange( itStart, set1_.end() );
+   checkRangesContent( e3a, e3b );
+
+   CharEnum e4a = CppUT::enumStlRange( deque1_.begin(), deque1_.begin()+2, CppUT::Type<char>() );
+   CharEnum e4b = CppUT::enumStlRange( deque1_.begin()+1, deque1_.begin()+3, CppUT::Type<char>() );
+   checkRangesContent( e4a, e4b );
+
+   CharEnum e5a = CppUT::enumStlRange( vector1_.begin(), vector1_.begin()+2, CppUT::Type<char>() );
+   CharEnum e5b = CppUT::enumStlRange( vector1_.begin()+1, vector1_.begin()+3, CppUT::Type<char>() );
+   checkRangesContent( e5a, e5b );
+
+   CharEnum e6a = CppUT::enumStlRange( set1_.begin(), itEnd, CppUT::Type<char>() );
+   CharEnum e6b = CppUT::enumStlRange( itStart, set1_.end(), CppUT::Type<char>() );
+   checkRangesContent( e6a, e6b );
+} 
+
+*/
+@
+
+
+1.7
+log
+@* added missing EOL at EOF
+@
+text
+@d57 1
+d59 10
+a68 10
+      CPPUT_ASSERT_EQUAL( v1, e.current() );
+      CPPUT_ASSERT_EQUAL( v1, *e );
+      CPPUT_ASSERT_EQUAL( v1, e.next() );
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_EQUAL( v2, e.current() );
+      CPPUT_ASSERT_EQUAL( v2, *e++ );
+      CPPUT_ASSERT_EXPR( e.is_open() );
+      CPPUT_ASSERT_EQUAL( v3, e.current() );
+      CPPUT_ASSERT_EQUAL( v3, *e );
+      CPPUT_ASSERT_EQUAL( v3, e.next() );
+@
+
+
+1.6
+log
+@* removed include/cpput/enumerator.h which has been replaced by include/cpptl/enumerator.h
+* added explicit type passing to any*() generator functions.
+@
+text
+@d550 1
+a550 1
+*/@
+
+
+1.5
+log
+@* started implementing explicit type passing for returned enumerator in generator function.
+@
+text
+@d5 2
+a6 1
+// todo: add test for custom equality predicates
+d301 4
+d317 1
+d359 1
+d372 4
+d378 1
+a378 1
+   checkContent( CppTL::Enum::anyKeys( map1_ ) );
+d380 1
+a380 1
+   checkContent( CppTL::Enum::anyKeysRange( map1_.begin(), map1_.end() ) );
+d400 5
+@
+
+
+1.4
+log
+@* Replaced the EnumerationSugar strangely curring template  with a macro (compiler was too stressed)
+* Fixed Internal compiler error on Keys
+* Added sugar() enumeration for custom enumerator
+* Test cases for all enumerator
+@
+text
+@d299 1
+d301 1
+d306 6
+a343 1
+
+a344 1
+
+a345 1
+
+d347 1
+d349 4
+a352 1
+   checkContent( CppTL::Enum::anyContainer( list1_ ) );
+d361 2
+d365 2
+d380 6
+@
+
+
+1.3
+log
+@* renamed Enumerator::getNext() to Enumerator::next()
+@
+text
+@d12 2
+a13 2
+   template<typename EnumeratorType>
+   void checkHasNoMoreElements( EnumeratorType &e )
+d15 1
+a15 2
+      CppUT::checkFalse( e.hasNext(), "Enumerated should not have anymore elements." );
+      CPPUT_ASSERT_THROW( e.next(), CppUT::EnumeratorError );
+d22 69
+a90 6
+      try {
+         e.clone().next();
+         CppUT::fail( "Enumerator should have thrown." );
+      }
+      catch ( const CppUT::EnumeratorError & ) {
+      }
+d94 1
+a94 1
+   void checkContent( EnumeratorType &e )
+d96 23
+a118 3
+      CPPUT_ASSERT_EQUAL( 12, e.next() );
+      CPPUT_ASSERT_EQUAL( 23, e.next() );
+      CPPUT_ASSERT_EQUAL( 34, e.next() );
+d123 1
+a123 1
+   void checkRangesContent( EnumeratorType &e1, EnumeratorType &e2 )
+d125 4
+a128 7
+      CPPUT_ASSERT_EQUAL( 12, e1.next() );
+      CPPUT_ASSERT_EQUAL( 23, e1.next() );
+      checkHasNoMoreElements( e1 );
+
+      CPPUT_ASSERT_EQUAL( 23, e2.next() );
+      CPPUT_ASSERT_EQUAL( 34, e2.next() );
+      checkHasNoMoreElements( e2 );
+d138 83
+d248 8
+d262 2
+d271 143
+a413 1
+EnumeratorTest::testNullEnumerator()
+d415 22
+a436 2
+   IntEnum e;
+   checkHasNoMoreElements( e );
+a437 2
+   IntEnum e2( e );
+   checkHasNoMoreElements( e2 );
+d439 15
+a453 2
+   IntEnum e3( e.clone() );
+   checkHasNoMoreElements( e3 );
+d456 2
+d515 1
+a515 117
+
+void 
+EnumeratorTest::testStlEnumConstructAdapator()
+{
+   IntDequeEnum e = CppUT::enumStl( deque1_, CppUT::Type<IntDeque>() );  // force usage of IntDeque constructor
+   IntDeque a = e.next();
+   CPPUT_ASSERT_EQUAL( 12, a.size() );
+
+   IntDeque b = e.next();
+   CPPUT_ASSERT_EQUAL( 23, b.size() );
+
+   IntDeque c = e.next();
+   CPPUT_ASSERT_EQUAL( 34, c.size() );
+   checkHasNoMoreElements( e );
+}
+
+
+void 
+EnumeratorTest::testStlMapKeysEnumerator()
+{
+   StringIntMap map;
+   map.insert( StringIntMap::value_type( "abc", 123 ) );
+   map.insert( StringIntMap::value_type( "def", 234 ) );
+   map.insert( StringIntMap::value_type( "ghi", 345 ) );
+
+   StringIntMap::iterator itEnd = map.end();
+   --itEnd;
+   StringEnum e2 = CppUT::enumStlMapKeysRange( map.begin(), itEnd, CppUT::Type<std::string>() );
+   CPPUT_ASSERT_EQUAL( "abc", e2.next() );
+   CPPUT_ASSERT_EQUAL( "def", e2.next() );
+   checkHasNoMoreElements( e2 );
+
+   StringIntMap::iterator itStart = map.begin();
+   ++itStart;
+   StringIntMapFirstEnum e3 = CppUT::enumStlMapKeysRange( itStart, map.end() );
+   CPPUT_ASSERT_EQUAL( "def", e3.next() );
+   CPPUT_ASSERT_EQUAL( "ghi", e3.next() );
+   checkHasNoMoreElements( e3 );
+}
+
+
+void 
+EnumeratorTest::testStlMapValuesEnumerator()
+{
+   StringIntMap map;
+   map.insert( StringIntMap::value_type( "abc", 123 ) );
+   map.insert( StringIntMap::value_type( "def", 234 ) );
+   map.insert( StringIntMap::value_type( "ghi", 345 ) );
+
+   IntEnum e = CppUT::enumStlMapValues( map );
+   CPPUT_ASSERT_EQUAL( 123, e.next() );
+   CPPUT_ASSERT_EQUAL( 234, e.next() );
+   CPPUT_ASSERT_EQUAL( 345, e.next() );
+   checkHasNoMoreElements( e );
+
+   StringIntMap::iterator itEnd = map.end();
+   --itEnd;
+   IntEnum e2 = CppUT::enumStlMapValuesRange( map.begin(), itEnd, CppUT::Type<int>() );
+   CPPUT_ASSERT_EQUAL( 123, e2.next() );
+   CPPUT_ASSERT_EQUAL( 234, e2.next() );
+   checkHasNoMoreElements( e2 );
+
+   StringIntMap::iterator itStart = map.begin();
+   ++itStart;
+   StringIntMapSecondEnum e3 = CppUT::enumStlMapValuesRange( itStart, map.end() );
+   CPPUT_ASSERT_EQUAL( 234, e3.next() );
+   CPPUT_ASSERT_EQUAL( 345, e3.next() );
+   checkHasNoMoreElements( e3 );
+}
+
+
+void 
+EnumeratorTest::testSliceEnumerator()
+{
+   IntEnum e1 = CppUT::enumStl( deque1_ );
+   ENUMERATORTEST_ASSERT_ENUM_EMPTY( CppUT::enumSlice( e1, 0,0 ) );
+   ENUMERATORTEST_ASSERT_ENUM_EMPTY( CppUT::enumSlice( e1, 1,1 ) );
+   ENUMERATORTEST_ASSERT_ENUM_EMPTY( CppUT::enumSlice( e1, 2,2 ) );
+   ENUMERATORTEST_ASSERT_ENUM_EMPTY( CppUT::enumSlice( e1, 3,3 ) );
+   ENUMERATORTEST_ASSERT_ENUM_EMPTY( CppUT::enumSlice( e1, 3,1 ) );
+   ENUMERATORTEST_ASSERT_ENUM_EMPTY( CppUT::enumSlice( e1, 3,0 ) );
+
+   IntEnum e_03 = CppUT::enumSlice( e1, 0, 3 );
+   CPPUT_ASSERT_EQUAL( 12, e_03.next() );
+   CPPUT_ASSERT_EQUAL( 23, e_03.next() );
+   CPPUT_ASSERT_EQUAL( 34, e_03.next() );
+   ENUMERATORTEST_ASSERT_ENUM_EMPTY( e_03 );
+
+   IntEnum e_02 = CppUT::enumSlice( e1, 0, 2 );
+   CPPUT_ASSERT_EQUAL( 12, e_02.next() );
+   CPPUT_ASSERT_EQUAL( 23, e_02.next() );
+   ENUMERATORTEST_ASSERT_ENUM_EMPTY( e_02 );
+
+   IntEnum e_13 = CppUT::enumSlice( e1, 1, 3 );
+   CPPUT_ASSERT_EQUAL( 23, e_13.next() );
+   CPPUT_ASSERT_EQUAL( 34, e_13.next() );
+   ENUMERATORTEST_ASSERT_ENUM_EMPTY( e_13 );
+
+   IntEnum e_23 = CppUT::enumSlice( e1, 2, 3 );
+   CPPUT_ASSERT_EQUAL( 34, e_23.next() );
+   ENUMERATORTEST_ASSERT_ENUM_EMPTY( e_23 );
+
+   IntEnum e_16 = CppUT::enumSlice( e1, 1, 6 );
+   CPPUT_ASSERT_EQUAL( 23, e_16.next() );
+   CPPUT_ASSERT_EQUAL( 34, e_16.next() );
+   ENUMERATORTEST_ASSERT_ENUM_EMPTY( e_16 );
+
+   IntEnum e_16_clone = CppUT::enumSlice( e1, 1, 6 ).clone();  // test copy ctor
+   CPPUT_ASSERT_EQUAL( 23, e_16_clone.next() );
+   CPPUT_ASSERT_EQUAL( 34, e_16_clone.next() );
+   ENUMERATORTEST_ASSERT_ENUM_EMPTY( e_16_clone );
+
+   IntEnum e_1 = CppUT::enumSlice( e1, 1 );
+   CPPUT_ASSERT_EQUAL( 23, e_1.next() );
+   CPPUT_ASSERT_EQUAL( 34, e_1.next() );
+   ENUMERATORTEST_ASSERT_ENUM_EMPTY( e_1 );
+}
+@
+
+
+1.2
+log
+@* added /Za setting to project to force conformance to ANSI C++
+* fixed issues related to ANSI C++ conformance
+* fixed bug in SliceEnumerator copy constructor & added test
+@
+text
+@d16 1
+a16 1
+      CPPUT_ASSERT_THROW( e.getNext(), CppUT::EnumeratorError );
+d24 1
+a24 1
+         e.clone().getNext();
+d34 3
+a36 3
+      CPPUT_ASSERT_EQUAL( 12, e.getNext() );
+      CPPUT_ASSERT_EQUAL( 23, e.getNext() );
+      CPPUT_ASSERT_EQUAL( 34, e.getNext() );
+d43 2
+a44 2
+      CPPUT_ASSERT_EQUAL( 12, e1.getNext() );
+      CPPUT_ASSERT_EQUAL( 23, e1.getNext() );
+d47 2
+a48 2
+      CPPUT_ASSERT_EQUAL( 23, e2.getNext() );
+      CPPUT_ASSERT_EQUAL( 34, e2.getNext() );
+d173 1
+a173 1
+   IntDeque a = e.getNext();
+d176 1
+a176 1
+   IntDeque b = e.getNext();
+d179 1
+a179 1
+   IntDeque c = e.getNext();
+d196 2
+a197 2
+   CPPUT_ASSERT_EQUAL( "abc", e2.getNext() );
+   CPPUT_ASSERT_EQUAL( "def", e2.getNext() );
+d203 2
+a204 2
+   CPPUT_ASSERT_EQUAL( "def", e3.getNext() );
+   CPPUT_ASSERT_EQUAL( "ghi", e3.getNext() );
+d218 3
+a220 3
+   CPPUT_ASSERT_EQUAL( 123, e.getNext() );
+   CPPUT_ASSERT_EQUAL( 234, e.getNext() );
+   CPPUT_ASSERT_EQUAL( 345, e.getNext() );
+d226 2
+a227 2
+   CPPUT_ASSERT_EQUAL( 123, e2.getNext() );
+   CPPUT_ASSERT_EQUAL( 234, e2.getNext() );
+d233 2
+a234 2
+   CPPUT_ASSERT_EQUAL( 234, e3.getNext() );
+   CPPUT_ASSERT_EQUAL( 345, e3.getNext() );
+d251 3
+a253 3
+   CPPUT_ASSERT_EQUAL( 12, e_03.getNext() );
+   CPPUT_ASSERT_EQUAL( 23, e_03.getNext() );
+   CPPUT_ASSERT_EQUAL( 34, e_03.getNext() );
+d257 2
+a258 2
+   CPPUT_ASSERT_EQUAL( 12, e_02.getNext() );
+   CPPUT_ASSERT_EQUAL( 23, e_02.getNext() );
+d262 2
+a263 2
+   CPPUT_ASSERT_EQUAL( 23, e_13.getNext() );
+   CPPUT_ASSERT_EQUAL( 34, e_13.getNext() );
+d267 1
+a267 1
+   CPPUT_ASSERT_EQUAL( 34, e_23.getNext() );
+d271 2
+a272 2
+   CPPUT_ASSERT_EQUAL( 23, e_16.getNext() );
+   CPPUT_ASSERT_EQUAL( 34, e_16.getNext() );
+d276 2
+a277 2
+   CPPUT_ASSERT_EQUAL( 23, e_16_clone.getNext() );
+   CPPUT_ASSERT_EQUAL( 34, e_16_clone.getNext() );
+d281 2
+a282 2
+   CPPUT_ASSERT_EQUAL( 23, e_1.getNext() );
+   CPPUT_ASSERT_EQUAL( 34, e_1.getNext() );
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d11 51
+d275 5
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

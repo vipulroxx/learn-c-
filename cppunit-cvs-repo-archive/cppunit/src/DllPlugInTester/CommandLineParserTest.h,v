@@ -1,0 +1,175 @@
+head	1.3;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.2
+	REL_1_9_10:1.2
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.1
+	REL_1_9_6:1.1;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2004.06.18.08.15.29;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2002.07.14.19.48.32;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.04.21.10.57.52;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* src/DllPlugInTester/*.cpp: bug #941625, string literal using char *
+  instead of const char *. Patch contributed by Curt Arnold has been
+  applied.
+@
+text
+@#ifndef COMMANDLINEPARSERTEST_H
+#define COMMANDLINEPARSERTEST_H
+
+#include <cppunit/extensions/HelperMacros.h>
+
+
+class CommandLineParser;
+class CommandLineParserException;
+
+
+class CommandLineParserTest : public CPPUNIT_NS::TestCase
+{
+  CPPUNIT_TEST_SUITE( CommandLineParserTest );
+  CPPUNIT_TEST( testEmptyCommandLine );
+  CPPUNIT_TEST( testFlagCompiler );
+  CPPUNIT_TEST( testLongFlagBriefProgress );
+  CPPUNIT_TEST( testFileName );
+  CPPUNIT_TEST( testTestPath );
+  CPPUNIT_TEST( testParameterWithSpace );
+  CPPUNIT_TEST_EXCEPTION( testMissingStyleSheetParameterThrow, CommandLineParserException);
+  CPPUNIT_TEST_EXCEPTION( testMissingEncodingParameterThrow, CommandLineParserException);
+  CPPUNIT_TEST( testXmlFileNameIsOptional );
+  CPPUNIT_TEST( testPlugInsWithParameters );
+  CPPUNIT_TEST_SUITE_END();
+
+public:
+  CommandLineParserTest();
+  virtual ~CommandLineParserTest();
+
+  void setUp();
+  void tearDown();
+
+  void testEmptyCommandLine();
+  void testFlagCompiler();
+  void testLongFlagBriefProgress();
+  void testFileName();
+  void testTestPath();
+  void testParameterWithSpace();
+  void testMissingStyleSheetParameterThrow();
+  void testMissingEncodingParameterThrow();
+  void testXmlFileNameIsOptional();
+  void testPlugInsWithParameters();
+
+private:
+  CommandLineParserTest( const CommandLineParserTest &other );
+  void operator =( const CommandLineParserTest &other );
+
+  void parse( const char **lines );
+
+private:
+  CommandLineParser *_parser;
+};
+
+
+
+// Inlines methods for CommandLineParserTest:
+// ------------------------------------------
+
+
+
+#endif  // COMMANDLINEPARSERTEST_H
+@
+
+
+1.2
+log
+@* CodingGuideLines.txt: added. CppUnit's coding guidelines for portability.
+
+* include/cppunit/portability/CppUnitStack.h: added. wrapper for std::stack.
+
+* include/cppunit/portability/CppUnitSet.h: added. wrapper for std::set.
+
+* include/cppunit/ui/text/TestRunner.h: fixed namespace definition for
+  deprecated TestRunner.
+
+* include/cppunit/TestAssert.h:
+* src/cppunit/TestAssert.cpp: removed old deprecated functions that did
+  not use SourceLine. Moved assertEquals() and assertDoubleEquals() into
+  CppUnit namespace.
+
+* src/cppunit/TestFactoryRegistry.cpp: use CppUnitMap instead of std::map.
+
+* src/DllPlugInTester/CommandLineParser.h: use CppUnitDeque instead
+  std::deque.
+
+* examples/cppunittest/*.h:
+* examples/cppunittest/*.cpp: removed all usage of CppUnitTest namespace.
+  Everything is now in global space.
+
+* examples/*/*.h:
+* examples/*/*.cpp: replaced usage of CppUnit:: with CPPUNIT_NS::.
+
+* examples/ClockerPlugIn/ClockerModel.h: use CppUnit STL wrapper instead
+  of STL container.
+@
+text
+@d48 1
+a48 1
+  void parse( char **lines );
+@
+
+
+1.1
+log
+@* src/DllPlugInTester/makefile.am: removed ld.so from LDADD flags.
+
+* src/DllPlugInTester/CommandLineParser.h:
+* src/DllPlugInTester/CommandLineParser.cpp: rewrote, fixed problem
+  with double quotes in command line...
+
+* src/DllPlugInTester/CommandLineParserTest.h:
+* src/DllPlugInTester/CommandLineParserTest.cpp:
+* src/DllPlugInTester/DllPlugInTesterTest.cpp: added, unit tests for
+  CommandLineParser.
+
+* src/msvc6/TestPlugIn/*: removed.
+@
+text
+@d11 1
+a11 1
+class CommandLineParserTest : public CppUnit::TestCase
+@
+

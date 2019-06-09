@@ -1,0 +1,479 @@
+head	1.12;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.12
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.8
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.8
+	TG_AFTER_REMOVING_TESTCONTEXT:1.6
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.3
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.12
+date	2005.12.11.17.16.09;	author blep;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2005.07.04.08.11.26;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2005.07.02.20.27.36;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.02.28.22.31.37;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2004.11.21.22.24.46;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2004.11.20.16.17.33;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2004.11.20.15.26.38;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.11.20.15.07.00;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.11.20.12.17.51;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.11.19.21.39.14;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.11.17.21.47.10;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.11.15.08.37.13;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.12
+log
+@* rough sketch of a working OpenTest driver with CppUT adaptor for TestRunner.
+@
+text
+@#include <cpput/testrunner.h>
+#include <cpput/message.h>
+#include <cpput/testcase.h>
+#include <cpput/testinfo.h>
+#include <cpput/testsuite.h>
+#include <cpput/testvisitor.h>
+#include <cpptl/scopedptr.h>
+#include <opentest/properties.h>
+#include <opentest/testplan.h>
+
+
+namespace CppUT {
+
+
+// Class TestRunner::TestDeclaratorVisitor
+// //////////////////////////////////////////////////////////////////
+
+class TestRunner::TestDeclaratorVisitor : public TestVisitor
+{
+public:
+   TestDeclaratorVisitor( OpenTest::TestDeclarator &declarator,
+                          TestRunner::DeclaredTests &tests )
+      : declarator_( declarator )
+      , tests_( tests )
+   {
+   }
+
+public: // overridden from TestVisitor
+   void visitTestCase( Test &test )
+   {
+      OpenTest::TestId id = declarator_.addTest( test.name(), 
+                                                 test.info() );
+      tests_.insert( TestRunner::DeclaredTests::value_type( id, &test ) );
+   }
+
+   void visitTestSuite( AbstractTestSuite &suite )
+   {
+      OpenTest::TestId id = declarator_.beginSuite( suite.name(), 
+                                                    suite.info() );
+      tests_.insert( TestRunner::DeclaredTests::value_type( id, &suite ) );
+      for ( int index = 0; index < suite.testCount(); ++index )
+         suite.testAt( index )->accept( *this );
+      declarator_.endSuite();
+   }
+
+private:
+   OpenTest::TestDeclarator &declarator_;
+   TestRunner::DeclaredTests &tests_;
+};
+
+
+class TestRunner::TestResultUpdaterImpl : public TestResultUpdater
+{
+public:
+   TestResultUpdaterImpl( OpenTest::TestRunTracker &tracker )
+      : tracker_( tracker )
+      , testEntry_( 0 )
+   {
+   }
+
+   void setTestPlanEntry( const OpenTest::TestPlanEntry &entry )
+   {
+      testEntry_ = &entry;
+   }
+
+   // overridden from TestResultUpdater
+   void mergeInResult( const OpenTest::Properties &result )
+   {
+      tracker_.mergeInTestResult( *testEntry_, result );
+   }
+
+   void mergeInResult( const OpenTest::PropertyPath &path,
+                       const OpenTest::Value &value )
+   {
+      tracker_.mergeInTestResult( *testEntry_, path, value );
+   }
+
+   void appendToResult( const OpenTest::PropertyPath &path,
+                        const OpenTest::Value &value )
+   {
+      tracker_.appendToTestResult( *testEntry_, path, value );
+   }
+
+private:
+   OpenTest::TestRunTracker &tracker_;
+   const OpenTest::TestPlanEntry *testEntry_;
+};
+   
+
+// Class TestRunner
+// //////////////////////////////////////////////////////////////////
+
+
+TestRunner::TestRunner()
+   : suite_( new TestSuite( "All Tests" ) )
+{
+}
+
+
+void 
+TestRunner::setRootSuite( const AbstractTestSuitePtr &suite )
+{
+   suite_ = suite;
+}
+
+
+AbstractTestSuitePtr 
+TestRunner::rootSuite() const
+{
+   return suite_;
+}
+
+
+void 
+TestRunner::declareTests( OpenTest::TestDeclarator &declarator )
+{
+   TestDeclaratorVisitor visitor( declarator, tests_ );
+   suite_->accept( visitor );
+}
+
+
+void 
+TestRunner::runTests( const OpenTest::TestPlan &testPlan,
+                      OpenTest::TestRunTracker &tracker,
+                      const OpenTest::Properties &configuration )
+{
+   tracker.startTestRun();
+   CppTL::ScopedPtr<TestResultUpdaterImpl> resultUpdater( 
+      new TestResultUpdaterImpl( tracker ) );
+   TestInfo::setTestResultUpdater( *resultUpdater );
+
+   OpenTest::TestPlanEntryPtrEnum enumEntries = testPlan.entries();
+   while ( enumEntries.hasNext() )
+   {
+      const OpenTest::TestPlanEntry &entry = *enumEntries.next();
+      resultUpdater->setTestPlanEntry( entry );
+      OpenTest::TestId id = entry.test();
+      DeclaredTests::const_iterator itTest = tests_.find( id );
+      tracker.startTest( entry );
+      TestInfo::mergeInResult( configuration );
+      TestInfo::mergeInResult( entry.configuration() );
+      if ( itTest == tests_.end() ) // protocol error => unknown test
+      {
+         OpenTest::Properties openResult;
+         openResult["result"]["status"]["success"] = false;
+         openResult["result"]["status"]["type"] = "skip";
+         tracker.mergeInTestResult( entry, openResult );
+      }
+      else
+      {
+         Test &test = *( itTest->second );
+         if ( !test.isTestCase() )
+         {
+            OpenTest::Properties openResult;
+            openResult["result"]["status"]["success"] = false;
+            openResult["result"]["status"]["type"] = "skip";
+            openResult["result"]["status"]["message"] = "Can not run test suite.";
+            tracker.mergeInTestResult( entry, openResult );
+         }
+         else
+         {
+            AbstractTestCase &testCase = static_cast<AbstractTestCase &>( test );
+            testCase.runTest();
+         }
+      }
+      sendTestStatus( entry, tracker );
+      tracker.endTest( entry );
+   }
+
+   tracker.endTestRun();
+}
+
+
+void 
+TestRunner::sendTestStatus( const OpenTest::TestPlanEntry &entry,
+                            OpenTest::TestRunTracker &tracker )
+{
+   TestInfo::updateTestStatistics();
+   OpenTest::Properties result;
+   bool success = !TestInfo::testHasFailed();
+   result["result/status/success"] = success;
+   if ( TestInfo::testHasFailed() )
+      result["result/status/type"] = TestInfo::faultCount() ? "fault" : "assertion";
+   tracker.mergeInTestResult( entry, result );
+}
+
+
+} // namespace CppUT
+
+@
+
+
+1.11
+log
+@* fixed bug in lighttestrunner: called AbstractTestCase::run instead of runTest().
+* fixed usage of incomplete SharedPtr in TestRunner.
+@
+text
+@a139 1
+      TestInfo::startNewTest();
+@
+
+
+1.10
+log
+@* Added a simple test runner that does not rely on the open test framework to run cppunit2 tests.
+* added CppTL::ConstCharView to wrapper const char *strings.
+* added CppTL::quoteMultiLineString()
+* string assertion output actual and expected using quoteMultiLineString().
+* added serialize unit test for basic Properties
+* opentest tests now use the LightTestRunner.
+@
+text
+@d7 1
+d128 2
+a129 1
+   TestResultUpdaterImplPtr resultUpdater( new TestResultUpdaterImpl( tracker ) );
+@
+
+
+1.9
+log
+@* fixed propagation of test input.
+@
+text
+@d128 1
+a128 2
+   TestInfo::setTestResultUpdater( CppTL::staticPointerCast<TestResultUpdater>(
+      resultUpdater ) );
+@
+
+
+1.8
+log
+@* test result are propagated to the test runner during test
+@
+text
+@d141 1
+@
+
+
+1.7
+log
+@* added support for test descriptive data
+@
+text
+@d51 1
+a51 2
+/*
+class TestRunner::TestTrackerListener : public TestListener
+d54 1
+a54 1
+   TestTrackerListener( OpenTest::TestRunTracker &tracker )
+d65 11
+a75 23
+public: // overridden from TestListener
+   void processTestResult( TestResult &result, 
+                           TestContext &context )
+   {
+      if ( !testEntry_ )
+         return;
+
+      // Notes: at the current time, we don't retrieve the message
+      // in a structured way. => need to change message to use 
+      // OpenTest::Properties.
+
+      OpenTest::Properties openResult;
+      openResult["result"]["status"]["success"] = result.succeeded();
+      openResult["result"]["status"]["type"] = result.resultType();
+      openResult["result"]["status"]["message"] = result.message().toString();
+      if ( result.location().isValid() )
+      {
+         OpenTest::Value &openLocation = openResult["result"]["status"]["location"];
+         openLocation["file"] = result.location().fileName();
+         openLocation["line"] = result.location().lineNumber();
+         if ( result.location().hasFunctionName() )
+            openLocation["function"] = result.location().functionName();
+      }
+d77 4
+a80 1
+      tracker_.mergeInTestResult( *testEntry_, openResult );
+a86 1
+*/
+d127 3
+d135 1
+@
+
+
+1.6
+log
+@* Removed TestContext.
+* TestContext/AbstractTestCase: moved responsibility of running the test to AbstractTestCase.
+@
+text
+@d31 1
+a31 1
+                                                 OpenTest::Properties() );
+d38 1
+a38 1
+                                                    OpenTest::Properties() );
+d147 1
+@
+
+
+1.5
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@a3 1
+#include <cpput/testcontext.h>
+a136 2
+   TestContext testContext;
+
+d168 1
+a168 1
+            testContext.run( testCase );
+@
+
+
+1.4
+log
+@* moved the assertion implementation to using TestInfo.
+* added assertion (tested/failed) counter to TestInfo.
+@
+text
+@a5 2
+#include <cpput/testlistener.h>
+#include <cpput/testresult.h>
+d52 1
+a52 1
+
+d98 1
+a98 1
+
+a137 1
+   TestTrackerListener listener( tracker );
+a138 1
+   testContext.add( listener );
+a147 1
+      listener.setTestPlanEntry( entry );
+d174 1
+d182 14
+@
+
+
+1.3
+log
+@* modified TestRunner/TestDriver protocol to allow incremental result properties update.
+@
+text
+@d5 1
+d154 1
+@
+
+
+1.2
+log
+@* started removing TestDriver stuff from CppUnit 2
+* Removed Test::run(), Test::totalTestCount and Test::parent
+* User can only subclass AbstractTestSuite or AbstractTestCase.
+* AbstractTest has been inlined into Test
+* Test no longer have parent
+* Removed TestListener::enterTest() & TestListener::exitTest()
+* Moved responsibility of running TestCase from AbstractTestCase to TestContext::run( AbstractTestCase &test ).
+* Removed method related to suite and enter/exit event from TestContext.
+* Disabled some unit tests (rely on running test which will change again shortly)
+@
+text
+@d92 1
+a92 1
+      tracker_.addTestInfo( *testEntry_, openResult );
+d158 1
+a158 1
+         tracker.addTestInfo( entry, openResult );
+d169 1
+a169 1
+            tracker.addTestInfo( entry, openResult );
+@
+
+
+1.1
+log
+@* basic TestRunner implementation for use with OpenTest TestDriver.
+@
+text
+@d3 1
+d163 13
+a175 1
+         test.run( testContext );
+@
+

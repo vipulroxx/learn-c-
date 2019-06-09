@@ -1,0 +1,215 @@
+head	1.7;
+access;
+symbols
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.4
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.4
+	TG_AFTER_REMOVING_TESTCONTEXT:1.4
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.4
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.4
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@# @;
+
+
+1.7
+date	2005.09.06.07.45.55;	author blep;	state dead;
+branches;
+next	1.6;
+
+1.6
+date	2005.07.01.08.19.35;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.02.28.22.11.55;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.11.17.09.00.32;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.10.22.06.20.23;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.01.27.21.13.55;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.29;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.29;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@* moved project files to cppunit2/makefiles/vs71
+@
+text
+@Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpput", "cpput\cpput.vcproj", "{199257EE-17B2-4BC2-A3F7-D379217A86A0}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpputtest", "cpputtest\cpputtest.vcproj", "{F58E403C-FE39-43E5-B7FD-0478FCE3ACE4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{199257EE-17B2-4BC2-A3F7-D379217A86A0} = {199257EE-17B2-4BC2-A3F7-D379217A86A0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "input_based_test", "..\examples\input_based_test\input_based_test.vcproj", "{9EB5A164-9071-4E7E-90B3-094D35EA943C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{199257EE-17B2-4BC2-A3F7-D379217A86A0} = {199257EE-17B2-4BC2-A3F7-D379217A86A0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opentesttest", "opentesttest\opentest.vcproj", "{BC6A1042-3AC9-44E7-BCEB-1B2DB7D17895}"
+	ProjectSection(ProjectDependencies) = postProject
+		{199257EE-17B2-4BC2-A3F7-D379217A86A0} = {199257EE-17B2-4BC2-A3F7-D379217A86A0}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{199257EE-17B2-4BC2-A3F7-D379217A86A0}.Debug.ActiveCfg = Debug|Win32
+		{199257EE-17B2-4BC2-A3F7-D379217A86A0}.Debug.Build.0 = Debug|Win32
+		{199257EE-17B2-4BC2-A3F7-D379217A86A0}.Release.ActiveCfg = Release|Win32
+		{199257EE-17B2-4BC2-A3F7-D379217A86A0}.Release.Build.0 = Release|Win32
+		{F58E403C-FE39-43E5-B7FD-0478FCE3ACE4}.Debug.ActiveCfg = Debug|Win32
+		{F58E403C-FE39-43E5-B7FD-0478FCE3ACE4}.Debug.Build.0 = Debug|Win32
+		{F58E403C-FE39-43E5-B7FD-0478FCE3ACE4}.Release.ActiveCfg = Release|Win32
+		{F58E403C-FE39-43E5-B7FD-0478FCE3ACE4}.Release.Build.0 = Release|Win32
+		{9EB5A164-9071-4E7E-90B3-094D35EA943C}.Debug.ActiveCfg = Debug|Win32
+		{9EB5A164-9071-4E7E-90B3-094D35EA943C}.Debug.Build.0 = Debug|Win32
+		{9EB5A164-9071-4E7E-90B3-094D35EA943C}.Release.ActiveCfg = Release|Win32
+		{9EB5A164-9071-4E7E-90B3-094D35EA943C}.Release.Build.0 = Release|Win32
+		{BC6A1042-3AC9-44E7-BCEB-1B2DB7D17895}.Debug.ActiveCfg = Debug|Win32
+		{BC6A1042-3AC9-44E7-BCEB-1B2DB7D17895}.Debug.Build.0 = Debug|Win32
+		{BC6A1042-3AC9-44E7-BCEB-1B2DB7D17895}.Release.ActiveCfg = Release|Win32
+		{BC6A1042-3AC9-44E7-BCEB-1B2DB7D17895}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
+@
+
+
+1.6
+log
+@* started adding unit tests for opentest
+* added serializer unit test squeleton
+* fixed some bug in serializer
+* added opentesttest project to VS solution.
+@
+text
+@@
+
+
+1.5
+log
+@* moved texttestdriver.h class implementations into a .cpp
+@
+text
+@d16 5
+d39 4
+@
+
+
+1.4
+log
+@* moved CppUT::SmartPtr to CppTL::SharedPtr
+* moved CppUT::AtomicCounter to CppTL::AtomicCounter and inlined implementation
+@
+text
+@d11 5
+d30 4
+@
+
+
+1.3
+log
+@* Replaced the EnumerationSugar strangely curring template  with a macro (compiler was too stressed)
+* Fixed Internal compiler error on Keys
+* Added sugar() enumeration for custom enumerator
+* Test cases for all enumerator
+@
+text
+@a10 5
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpputrunner", "cpputrunner\cpputrunner.vcproj", "{8EC622CA-677A-4CAF-9B22-46F60DCD1822}"
+	ProjectSection(ProjectDependencies) = postProject
+		{199257EE-17B2-4BC2-A3F7-D379217A86A0} = {199257EE-17B2-4BC2-A3F7-D379217A86A0}
+	EndProjectSection
+EndProject
+a24 4
+		{8EC622CA-677A-4CAF-9B22-46F60DCD1822}.Debug.ActiveCfg = Debug|Win32
+		{8EC622CA-677A-4CAF-9B22-46F60DCD1822}.Debug.Build.0 = Debug|Win32
+		{8EC622CA-677A-4CAF-9B22-46F60DCD1822}.Release.ActiveCfg = Release|Win32
+		{8EC622CA-677A-4CAF-9B22-46F60DCD1822}.Release.Build.0 = Release|Win32
+@
+
+
+1.2
+log
+@* added .cvsignore files and a bit of documentation.
+@
+text
+@d11 5
+d30 4
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 1
+a1 1
+Microsoft Visual Studio Solution File, Format Version 7.00
+d3 2
+d7 3
+a9 2
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "parser", "..\examples\parser\parser.vcproj", "{062AF22A-37AF-4347-91A7-997141307217}"
+d13 2
+a14 6
+		ConfigName.0 = Debug
+		ConfigName.1 = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+		{F58E403C-FE39-43E5-B7FD-0478FCE3ACE4}.0 = {199257EE-17B2-4BC2-A3F7-D379217A86A0}
+		{062AF22A-37AF-4347-91A7-997141307217}.0 = {199257EE-17B2-4BC2-A3F7-D379217A86A0}
+a24 4
+		{062AF22A-37AF-4347-91A7-997141307217}.Debug.ActiveCfg = Debug|Win32
+		{062AF22A-37AF-4347-91A7-997141307217}.Debug.Build.0 = Debug|Win32
+		{062AF22A-37AF-4347-91A7-997141307217}.Release.ActiveCfg = Release|Win32
+		{062AF22A-37AF-4347-91A7-997141307217}.Release.Build.0 = Release|Win32
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

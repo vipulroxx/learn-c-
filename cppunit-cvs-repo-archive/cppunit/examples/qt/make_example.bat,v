@@ -1,0 +1,32 @@
+head	1.1;
+access;
+symbols
+	REL_1_12_1:1.1
+	REL_1_11_6:1.1;
+locks; strict;
+comment	@:: @;
+
+
+1.1
+date	2006.02.01.21.10.59;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@examples/qt: integrated Ernst patch from qt examples.
+@
+text
+@@@REM make_example.bat
+@@REM
+@@REM Create Makefile from project file and then make QtTestRunner example.
+
+qmake qt_example.pro
+nmake distclean
+nmake
+@

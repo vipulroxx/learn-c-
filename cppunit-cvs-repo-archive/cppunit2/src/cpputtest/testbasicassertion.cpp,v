@@ -1,0 +1,466 @@
+head	1.11;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.11
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.7
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.7
+	TG_AFTER_REMOVING_TESTCONTEXT:1.5
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.3
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.3
+	arelease:1.1.1.1
+	avendor:1.1.1;
+locks; strict;
+comment	@// @;
+
+
+1.11
+date	2005.11.13.10.12.01;	author blep;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2005.08.10.21.34.29;	author blep;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2005.02.27.16.50.35;	author blep;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2005.02.27.16.30.34;	author blep;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2005.02.23.23.09.29;	author blep;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2005.02.23.21.42.59;	author blep;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2004.11.20.15.07.00;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2004.11.20.12.17.52;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2004.08.04.08.42.27;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.08.04.08.01.15;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches
+	1.1.1.1;
+next	;
+
+1.1.1.1
+date	2004.01.27.20.34.36;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.11
+log
+@- renamed include/cpput/assert.h to include/cpput/assertcommon.h. This avoid clash with include <assert.h> in doxygen documentation
+- most Impl namespaces are now hidden from documentation using \cond and \endcond.
+@
+text
+@#include <cpput/assertcommon.h>
+#include <stdio.h>
+#include <stdexcept>
+
+
+static bool testAssertThrow()
+{
+   CppUT::TestInfo::threadInstance().startNewTest();
+   try
+   {
+      CPPUT_ASSERT_THROW( throw std::runtime_error( "dummy" ), std::runtime_error );
+   }
+   catch ( ... )
+   {
+      printf( "Test 1: CPPUT_ASSERT_THROW should not have thrown an exception\n" );
+      return false;
+   }
+
+   CppUT::TestInfo::threadInstance().startNewTest();
+   try
+   {
+      CPPUT_ASSERT_THROW( 1234, std::exception );
+      printf( "Test 2: expected AbortingAssertionException not thrown by CPPUT_ASSERT_THROW.\n" );
+      return false;
+   }
+   catch ( CppUT::AbortingAssertionException & )
+   {
+   }
+
+   return true;
+}
+
+
+static bool testAssertNoThrow()
+{
+   CppUT::TestInfo::threadInstance().startNewTest();
+   try
+   {
+      CPPUT_ASSERT_NO_THROW( 1234 );
+   }
+   catch ( CppUT::AbortingAssertionException &e )
+   {
+      printf( "Test 3: CPPUT_ASSERT_NO_THROW should not "
+              "have thrown an exception.\n%s\n", e.what() );
+      return false;
+   }
+
+   CppUT::TestInfo::threadInstance().startNewTest();
+   try
+   {
+      CPPUT_ASSERT_NO_THROW( throw std::runtime_error( "dummy" ) );
+      printf( "Test 4: expected AbortingAssertionException "
+              "not thrown by CPPUT_ASSERT_THROW.\n" );
+      return false;
+   }
+   catch ( CppUT::AbortingAssertionException & )
+   {
+   }
+
+   return true;
+}
+
+
+namespace
+{
+   // This unnamed enum is a type with no linkage. Used to check that stringize() can
+   // correctly stringize type without linkage.
+   enum { noLinkageTypeValue = 1 };
+}
+
+bool testBasicAssertions()
+{
+   printf( "Running bootstrap test: testBasicAssertions()...\n" );
+   if ( !testAssertThrow() )
+      return false;
+   if ( !testAssertNoThrow() )
+      return false;
+
+   CppUT::TestInfo::threadInstance().startNewTest();
+   try
+   {
+      // CPPUT_ASSERT
+      CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT( true ) ));
+      CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT( false ) ));
+
+      CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT( true, "should pass" ) ));
+      CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT( false, 
+         "should throw AbortingAssertionException"  ) ));
+
+      CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_EXPR( true ) ));
+      CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_EXPR( false ) ));
+
+      // CPPUT_ASSERT_FALSE
+      CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_FALSE( false ) ));
+      CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_FALSE( true ) ));
+
+      CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_FALSE( false, "should pass" ) ));
+      CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_FALSE( true, 
+         "should throw AbortingAssertionException"  ) ));
+
+      CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_EXPR_FALSE( false ) ));
+      CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_EXPR_FALSE( true ) ));
+
+      // CPPUT_ASSERT_EQUAL
+      CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_EQUAL( 1234567, 1234567 ) ));
+      CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_EQUAL( 1234567, 456 ) ));
+
+      CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_EQUAL( 1234567, 1234567, "should pass" ) ));
+      CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_EQUAL( 1234567, 456, "should fail"  ) ));
+
+      CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_EQUAL( std::string("abc"), "abc" ) ));
+      CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_EQUAL( "def", std::string("abc") ) ));
+
+      // @@todo: should we support this? Stringize a type without linkage
+//      CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_EQUAL( 1, noLinkageTypeValue ) );
+//      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_EQUAL( 2, noLinkageTypeValue ) );
+
+      // CPPUT_ASSERT_NOT_EQUAL
+      CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_NOT_EQUAL( 1234567, 456 ) ));
+      CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_NOT_EQUAL( 1234567, 1234567 ) ));
+
+      CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_NOT_EQUAL( 1234567, 456, "should pass" ) ));
+      CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_NOT_EQUAL( 1234567, 1234567, "should fail"  ) ));
+
+      CPPUT_ASSERT_ASSERTION_PASS(( CPPUT_ASSERT_NOT_EQUAL( std::string("abc"), "def" ) ));
+      CPPUT_ASSERT_ASSERTION_FAIL(( CPPUT_ASSERT_NOT_EQUAL( "abc", std::string("abc") ) ));
+   }
+   catch ( const CppUT::AbortingAssertionException &e )
+   {
+      printf( "testBasicAssertions() failed: %s\n", e.what() );
+      return false;
+   }
+   catch ( ... )
+   {
+      printf( "testBasicAssertions() failed (uncaught exception)." );
+      return false;
+   }
+
+   return true;
+}
+@
+
+
+1.10
+log
+@* Replaced function in namespace TestInfo by exposing the TestInfoData class and renaming it TestInfo. TestInfo in now an exposed per thread singleton.
+* startNewTest() is now called from TestCase::runTest() instead of being the test runner responsability. There still a few call to this method in cpput bootstrap test (which use assertion without run a test case).
+@
+text
+@d1 1
+a1 1
+#include <cpput/assert.h>
+@
+
+
+1.9
+log
+@* catch any exceptions that the test may leak.
+@
+text
+@d8 1
+a8 1
+   CppUT::TestInfo::startNewTest();
+d19 1
+a19 1
+   CppUT::TestInfo::startNewTest();
+d36 1
+a36 1
+   CppUT::TestInfo::startNewTest();
+d48 1
+a48 1
+   CppUT::TestInfo::startNewTest();
+d79 1
+a79 1
+   CppUT::TestInfo::startNewTest();
+@
+
+
+1.8
+log
+@* removed dependency on <iostream>.
+* added progress traces while running bootstrap tests.
+@
+text
+@d128 1
+a128 1
+   catch ( CppUT::AbortingAssertionException &e )
+d133 5
+@
+
+
+1.7
+log
+@* preprocessor portability fix: enclosed all CPPUT_ASSERT_ASSERTION... within double brace to ensure that the tested assertion is used as the first argument of the macro
+@
+text
+@d2 1
+a2 1
+#include <iostream>
+d15 1
+a15 1
+      std::cout << "Test 1: CPPUT_ASSERT_THROW should not have thrown an exception"  << std::endl;
+d23 1
+a23 1
+      std::cout << "Test 2: expected AbortingAssertionException not thrown by CPPUT_ASSERT_THROW."  <<  std::endl;
+d43 2
+a44 3
+      std::cout << "Test 3: CPPUT_ASSERT_NO_THROW should not "
+                   "have thrown an exception."  << std::endl
+                <<  e.what()  <<  std::endl;
+d52 2
+a53 2
+      std::cout << "Test 4: expected AbortingAssertionException "
+                   "not thrown by CPPUT_ASSERT_THROW."  <<  std::endl;
+d73 1
+d130 1
+a130 1
+      std::cout << "testAssertions() failed: "  <<  e.what()  <<  std::endl;
+@
+
+
+1.6
+log
+@* fixed portability issue (std::exception does not have a const char * constructor).
+@
+text
+@d83 2
+a84 2
+      CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT( true ) );
+      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT( false ) );
+d86 3
+a88 3
+      CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT( true, "should pass" ) );
+      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT( false, 
+         "should throw AbortingAssertionException"  ) );
+d90 2
+a91 2
+      CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_EXPR( true ) );
+      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_EXPR( false ) );
+d94 2
+a95 2
+      CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_FALSE( false ) );
+      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_FALSE( true ) );
+d97 3
+a99 3
+      CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_FALSE( false, "should pass" ) );
+      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_FALSE( true, 
+         "should throw AbortingAssertionException"  ) );
+d101 2
+a102 2
+      CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_EXPR_FALSE( false ) );
+      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_EXPR_FALSE( true ) );
+d105 2
+a106 2
+      CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_EQUAL( 1234567, 1234567 ) );
+      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_EQUAL( 1234567, 456 ) );
+d108 2
+a109 2
+      CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_EQUAL( 1234567, 1234567, "should pass" ) );
+      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_EQUAL( 1234567, 456, "should fail"  ) );
+d111 2
+a112 2
+      CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_EQUAL( std::string("abc"), "abc" ) );
+      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_EQUAL( "def", std::string("abc") ) );
+d119 2
+a120 2
+      CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_NOT_EQUAL( 1234567, 456 ) );
+      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_NOT_EQUAL( 1234567, 1234567 ) );
+d122 2
+a123 2
+      CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_NOT_EQUAL( 1234567, 456, "should pass" ) );
+      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_NOT_EQUAL( 1234567, 1234567, "should fail"  ) );
+d125 2
+a126 2
+      CPPUT_ASSERT_ASSERTION_PASS( CPPUT_ASSERT_NOT_EQUAL( std::string("abc"), "def" ) );
+      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_NOT_EQUAL( "abc", std::string("abc") ) );
+@
+
+
+1.5
+log
+@* TestContext: no longer rely on exception to retrieve failure
+* TestContext: removed TestListener support since everything is handled by TestInfo
+* TestFailureGuard: modified to report fault using TestInfo instead of exception
+* TestListener, TestResult, TestRunResult: removed, replaced by TestInfo
+* TextTestDriver: fixed bug in result merging (not prefixed with "/result"). Still need work to handle assertion and fault reporting.
+@
+text
+@d3 1
+d11 1
+a11 1
+      CPPUT_ASSERT_THROW( throw std::exception( "dummy" ), std::exception );
+d52 1
+a52 1
+      CPPUT_ASSERT_NO_THROW( throw std::exception( "dummy" ) );
+@
+
+
+1.4
+log
+@* moved the assertion implementation to using TestInfo.
+* added assertion (tested/failed) counter to TestInfo.
+@
+text
+@a1 1
+#include <cpput/resultexception.h>
+@
+
+
+1.3
+log
+@* added CPPUT_SUCCEED to report a success with a structured message (warning, time, actual/excepted values...). Throw SuccessException.
+@
+text
+@d8 1
+d19 1
+d23 1
+a23 1
+      std::cout << "Test 2: expected AssertException not thrown by CPPUT_ASSERT_THROW."  <<  std::endl;
+d26 1
+a26 1
+   catch ( CppUT::AssertException & )
+d36 1
+d41 1
+a41 1
+   catch ( CppUT::AssertException &e )
+d43 2
+a44 1
+      std::cout << "Test 3: CPPUT_ASSERT_NO_THROW should not have thrown an exception."  << std::endl
+d49 1
+d53 2
+a54 1
+      std::cout << "Test 4: expected AssertException not thrown by CPPUT_ASSERT_THROW."  <<  std::endl;
+d57 1
+a57 1
+   catch ( CppUT::AssertException & )
+d79 1
+a81 3
+      CPPUT_ASSERT_THROW( CPPUT_SUCCEED( CppUT::Message( "warning..." ) ),
+                          CppUT::SuccessException );
+
+d87 2
+a88 1
+      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT( false, "should throw AssertException"  ) );
+d98 2
+a99 1
+      CPPUT_ASSERT_ASSERTION_FAIL( CPPUT_ASSERT_FALSE( true, "should throw AssertException"  ) );
+d128 1
+a128 1
+   catch ( CppUT::AssertException &e )
+@
+
+
+1.2
+log
+@* renamed cpput/assertexception.h to cpput/resultexception.h
+@
+text
+@d75 3
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 1
+a2 1
+#include <cpput/assertexception.h>
+@
+
+
+1.1.1.1
+log
+@* initial import of cppunit 2
+@
+text
+@@

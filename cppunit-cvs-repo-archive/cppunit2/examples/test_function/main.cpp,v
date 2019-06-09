@@ -1,0 +1,64 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@// @;
+
+
+1.1
+date	2007.08.15.17.35.40;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@   Added initial support for table fixture (still like cell value automatic
+conversion, but it is usable).
+@
+text
+@#include <examples/common/examplecommon.h>
+#include <cpput/testfunction.h>
+
+static void test1() 
+{
+   CPPUT_CHECK( 1 == 2, "1 is not equal to 2..."  );
+   CPPUT_CHECK_EXPR( 1 + 2 == 4 );
+}
+
+// Register function test1 in the default test suite
+CPPUT_REGISTER_TEST_FUNCTION( test1 );
+
+
+// Register function test1 in the test suite named "MyTestSuite"
+CPPUT_REGISTER_TEST_FUNCTION_IN( test1, "MyTestSuite" );
+
+
+// Declare and register a function test2 in the default test suite
+CPPUT_TEST_FUNCTION( test2 )
+{
+   CPPUT_CHECK_FALSE( 1 == 1, "1 is equal to 1..."  );
+   CPPUT_CHECK_EXPR_FALSE( 1 + 1 == 2 );
+}
+
+
+// Declare and register a function test2 in the test suite named "MyTestSuite"
+CPPUT_TEST_FUNCTION_IN( test3, "MyTestSuite" )
+{
+   CPPUT_CHECK_EQUAL( 1, 2 );
+   CPPUT_CHECK_NOT_EQUAL( 34, 34 );
+}
+
+// Makes MyTestSuite a child of default.
+CPPUT_REGISTER_SUITE_RELATIONSHIP_TO_DEFAULT( "MyTestSuite" );
+
+int main( int argc, const char *argv[] )
+{
+   CppUT::TestSuitePtr allSuite = CppUT::Registry::instance().createDefaultTests();
+   return runExampleTests( argc, argv, allSuite.get() );
+}
+@

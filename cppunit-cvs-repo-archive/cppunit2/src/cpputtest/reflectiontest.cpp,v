@@ -1,0 +1,284 @@
+head	1.5;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.5;
+locks; strict;
+comment	@// @;
+
+
+1.5
+date	2005.09.06.07.26.12;	author blep;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.03.05.10.15.12;	author blep;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.03.05.09.41.00;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.03.03.20.48.54;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.03.03.08.15.54;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@* fixed compilation when RTTI was disabled.
+@
+text
+@#include "reflectiontest.h"
+#include <cpptl/reflection.h>
+
+
+namespace { // anonymous namespace
+class Sample1;
+} // anonymous namespace
+
+CPPTL_DECLARE_TYPE_AND_PTR_INFO( Sample1 );     // Not required if RTTI are always enabled
+
+namespace { // anonymous namespace
+class Sample1
+{
+public:
+   CPPTL_REFLECT_CLASS_BEGIN( Sample1 )
+      CPPTL_REFLECT_METHOD( initialize )
+      CPPTL_REFLECT_METHOD( add )
+      CPPTL_REFLECT_METHOD( multiplyAndAdd )
+      CPPTL_REFLECT_METHOD( checkTotal )
+      CPPTL_REFLECT_METHOD_WITH_RETURN( isInitialized )
+      CPPTL_REFLECT_METHOD_WITH_RETURN( getTotal )
+      CPPTL_REFLECT_ATTRIBUT( initialized_ )
+      CPPTL_REFLECT_RENAMED_ATTRIBUT( total_, "total" )
+   CPPTL_REFLECT_CLASS_END()
+
+   Sample1()
+      : initialized_( false )
+      , total_( 0 )
+   {
+   }
+
+   void initialize()
+   {
+      initialized_ = true;
+   }
+
+   void add( int value )
+   {
+      total_ += value;
+   }
+
+   void multiplyAndAdd( int x, int y )
+   {
+      total_ += x * y;
+   }
+
+   void checkTotal( int expected ) const
+   {
+      CPPUT_ASSERT_EQUAL( expected, total_, "Total did not match expected value" );
+   }
+
+   bool isInitialized() const
+   {
+      return initialized_;
+   }
+
+   int getTotal()
+   {
+      return total_;
+   }
+
+   bool initialized_;
+   int total_;
+};
+
+} // anonymous namespace
+
+
+CPPTL_REFLECT_REGISTER_CLASS( Sample1 )
+
+
+ReflectionTest::ReflectionTest()
+{
+}
+
+
+ReflectionTest::~ReflectionTest()
+{
+}
+
+
+void 
+ReflectionTest::setUp()
+{
+}
+
+
+void 
+ReflectionTest::tearDown()
+{
+}
+
+
+void 
+ReflectionTest::testBasicReflection()
+{
+   Sample1 sampleTarget;
+   CppTL::Any target = CppTL::makeAny( &sampleTarget );
+
+   const CppTL::Class *class_ = CppTL::Class::findClass( "Sample1" );
+   CPPUT_ASSERT( class_ != 0, "Class 'Sample1' not found by reflection." );
+
+   const CppTL::Method *initializeMethod = class_->findMethod( "initialize" );
+   CPPUT_ASSERT( initializeMethod != 0, "Method 'initialize' not found by reflection." );
+   CppTL::MethodParameters argsInitialize;
+   initializeMethod->invoke( target, argsInitialize );
+   CPPUT_ASSERT_EQUAL( true, sampleTarget.initialized_, "'initialize' was not called" );
+
+   const CppTL::Method *addMethod = class_->findMethod( "add" );
+   CPPUT_ASSERT( addMethod != 0, "Method 'add' not found by reflection." );
+   CppTL::MethodParameters argsAdd;
+   argsAdd.push_back( CppTL::makeAny( 7 ) );
+   addMethod->invoke( target, argsAdd );
+   CPPUT_ASSERT_EQUAL( 7, sampleTarget.total_ );
+
+   const CppTL::Method *multiplyAndAddMethod = class_->findMethod( "multiplyAndAdd" );
+   CPPUT_ASSERT( multiplyAndAddMethod != 0, "Method 'multiplyAndAdd' not found by reflection." );
+   CppTL::MethodParameters argsMultiplyAndAdd;
+   argsMultiplyAndAdd.push_back( CppTL::makeAny( 2 ) );
+   argsMultiplyAndAdd.push_back( CppTL::makeAny( 6 ) );
+   multiplyAndAddMethod->invoke( target, argsMultiplyAndAdd );
+   CPPUT_ASSERT_EQUAL( 7 + 2*6, sampleTarget.total_ );
+
+   const CppTL::Method *checkTotalMethod = class_->findMethod( "checkTotal" );
+   CPPUT_ASSERT( checkTotalMethod != 0, "Method 'checkTotal' not found by reflection." );
+   CppTL::MethodParameters argsCheckTotal;
+   argsCheckTotal.push_back( CppTL::makeAny( 7 + 2 * 6 ) );
+   checkTotalMethod->invoke( target, argsCheckTotal );
+   CPPUT_ASSERT_EQUAL( 7 + 2*6, sampleTarget.total_ );
+
+   const CppTL::Method *getTotalMethod = class_->findMethod( "getTotal" );
+   CPPUT_ASSERT( getTotalMethod != 0, "Method 'getTotal' not found by reflection." );
+   CppTL::MethodParameters argsGetTotal;
+   CPPUT_ASSERT_EQUAL( 7 + 2*6, any_cast( getTotalMethod->invoke( target, argsGetTotal ), 
+                                          CppTL::Type<int>() ) );
+
+   const CppTL::Method *isInitializedMethod = class_->findMethod( "isInitialized" );
+   CPPUT_ASSERT( isInitializedMethod != 0, "Method 'isInitialized' not found by reflection." );
+   CppTL::MethodParameters argsIsInitialized;
+   CPPUT_ASSERT_EQUAL( true, any_cast( isInitializedMethod->invoke( target, argsIsInitialized ), 
+                                       CppTL::Type<bool>() ) );
+
+   const CppTL::Attribut *initializedAttribut = class_->findAttribut( "initialized_" );
+   CPPUT_ASSERT( initializedAttribut != 0, "Attribut 'initialized_' not found by reflection." );
+   CPPUT_ASSERT_EQUAL( true, any_cast( initializedAttribut->get( target ), 
+                                       CppTL::Type<bool>() ) );
+
+   const CppTL::Attribut *totalAttribut = class_->findAttribut( "total" );
+   CPPUT_ASSERT( totalAttribut != 0, "Attribut 'total' not found by reflection." );
+   CPPUT_ASSERT_EQUAL( 7 + 2*6, any_cast( totalAttribut->get( target ), 
+                                          CppTL::Type<int>() ) );
+   totalAttribut->set( target, CppTL::makeAny( 945 ) );
+   CPPUT_ASSERT_EQUAL( 945, sampleTarget.total_ );
+}
+@
+
+
+1.4
+log
+@* added support for reflection of method with return value
+@
+text
+@d6 4
+d11 1
+@
+
+
+1.3
+log
+@* added support for reflection of const methods
+* factorised parameter type registration for better template function reuse.
+@
+text
+@d15 2
+d47 10
+d126 12
+@
+
+
+1.2
+log
+@* moved reflection implementation details in Impl namespace
+* added reflection support for attribut
+@
+text
+@d40 1
+a40 1
+   void checkTotal( int expected )
+@
+
+
+1.1
+log
+@* added unit tests for CppTL::Reflect
+@
+text
+@d15 2
+d80 4
+a83 2
+   Sample1 target;
+   const CppTL::Reflect::Class *class_ = CppTL::Reflect::Class::findClass( "Sample1" );
+d86 1
+a86 1
+   const CppTL::Reflect::Method *initializeMethod = class_->findMethod( "initialize" );
+d88 3
+a90 3
+   CppTL::Reflect::ArgValues argsInitialize;
+   CppTL::Reflect::invokeWithArgValues( &target, *initializeMethod, argsInitialize );
+   CPPUT_ASSERT_EQUAL( true, target.initialized_, "'initialize' was not called" );
+d92 1
+a92 1
+   const CppTL::Reflect::Method *addMethod = class_->findMethod( "add" );
+d94 1
+a94 1
+   CppTL::Reflect::ArgValues argsAdd;
+d96 2
+a97 2
+   CppTL::Reflect::invokeWithArgValues( &target, *addMethod, argsAdd );
+   CPPUT_ASSERT_EQUAL( 7, target.total_ );
+d99 1
+a99 1
+   const CppTL::Reflect::Method *multiplyAndAddMethod = class_->findMethod( "multiplyAndAdd" );
+d101 1
+a101 1
+   CppTL::Reflect::ArgValues argsMultiplyAndAdd;
+d104 2
+a105 2
+   CppTL::Reflect::invokeWithArgValues( &target, *multiplyAndAddMethod, argsMultiplyAndAdd );
+   CPPUT_ASSERT_EQUAL( 7 + 2*6, target.total_ );
+d107 1
+a107 1
+   const CppTL::Reflect::Method *checkTotalMethod = class_->findMethod( "checkTotal" );
+d109 1
+a109 1
+   CppTL::Reflect::ArgValues argsCheckTotal;
+d111 14
+a124 2
+   CppTL::Reflect::invokeWithArgValues( &target, *checkTotalMethod, argsCheckTotal );
+   CPPUT_ASSERT_EQUAL( 7 + 2*6, target.total_ );
+@
+

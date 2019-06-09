@@ -1,0 +1,250 @@
+head	1.2;
+access;
+symbols
+	REL_1_12_1:1.2
+	REL_1_11_6:1.2
+	REL_1_11_4:1.2
+	REL_1_11_0:1.2
+	TG_CPPUNIT_NO_STREAM_AFTER:1.2
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.2
+	REL_1_10_2:1.2
+	REL_1_10_0:1.2
+	REL_1_9_14:1.2
+	REL_1_9_12:1.2
+	BRANCH_1_9_12:1.2.0.2
+	TG_BRANCH_1_9_12:1.2
+	TG_BEFORE_HPUX_PLUGIN:1.2
+	TG_BEFORE_SUN4_PORT:1.1
+	REL_1_9_10:1.1;
+locks; strict;
+comment	@// @;
+
+
+1.2
+date	2002.12.02.19.45.54;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.06.13.23.25.55;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@* include/cppunit/plugin/DynamicLibraryManagerException.h: added constructor
+  to fix compilation issues on recents version of gcc and sun CC (bug #619059)
+
+* include/cppunit/input/XmlInputHelper.h: added.
+
+* include/cppunit/extensions/TestSuiteBuilderContext.h:
+* src/cppunit/TestSuiteBuilderContext.cpp: added addProperty() and
+  getStringProperty(). Added macros CPPUNIT_TEST_SUITE_PROPERTY.
+
+* src/msvc6/testrunner/TestRunnerDlg.cpp: integrated Tim Threlkeld's
+  bug fix #610162: browse button was disabled if history was empty.
+
+* src/msvc6/testrunner/DynamicWindow/cdxCSizeIconCtrl.cpp: integrated
+  Tim Threlkeld's bug fix #610191: common control were not initialized.
+
+* include/cppunit/extensions/ExceptionTestCaseDecorator.h: bug #603172,
+  missing Message construction.
+
+* src/cppunit/DefaultProtector.cpp: bug #603172. Fixed missing ';'.
+
+* src/cppunit/TestCase.cpp: bug #603671. Removed unguarded typeinfo
+  include.
+
+* examples/cppunittests/*Suite.h: bug #603666. Added missing Portability.h
+  include.
+@
+text
+@// cdxCSizeIconCtrl.cpp : implementation file
+//
+
+#include "stdafx.h"
+#include "cdxCSizeIconCtrl.h"
+
+#include	<winuser.h>
+
+#ifndef OBM_SIZE
+#define	OBM_SIZE		32766
+#pragma message("*** NOTE[cdxCSizeIconCtrl.cpp]: Please define OEMRESOURCE in your project settings !")
+// taken from WinresRc.h
+// if not used for any reason
+#endif
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+#pragma warning(disable: 4100)
+
+/////////////////////////////////////////////////////////////////////////////
+// cdxCSizeIconCtrl::AutoOEMImageList
+/////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+// construction
+/////////////////////////////////////////////////////////////////////////////
+
+/*
+ * one-step construction for my image list
+ * (allows to use the AutoOEMImageList as static member)
+ */
+
+cdxCSizeIconCtrl::AutoOEMImageList::AutoOEMImageList(UINT nBitmapID, COLORREF crMask)
+{
+	CBitmap	cbmp;
+	BITMAP	bmp;
+	VERIFY( cbmp.LoadOEMBitmap(nBitmapID) );
+	VERIFY( cbmp.GetBitmap(&bmp) );
+
+	m_szImage.cx	=	bmp.bmWidth;
+	m_szImage.cy	=	bmp.bmHeight;
+  
+	InitCommonControls();
+
+	VERIFY( Create(bmp.bmWidth,bmp.bmHeight,ILC_COLOR16|ILC_MASK,0,1) );
+	int	i	=	Add(&cbmp,crMask);
+	ASSERT(i == 0);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// cdxCSizeIconCtrl
+/////////////////////////////////////////////////////////////////////////////
+
+IMPLEMENT_DYNAMIC(cdxCSizeIconCtrl,CScrollBar);
+
+/////////////////////////////////////////////////////////////////////////////
+
+cdxCSizeIconCtrl::AutoOEMImageList	cdxCSizeIconCtrl::M_ilImage(OBM_SIZE,::GetSysColor(COLOR_BTNFACE));
+HCURSOR										cdxCSizeIconCtrl::M_hcSize	=	::LoadCursor(NULL,IDC_SIZENWSE);
+
+/////////////////////////////////////////////////////////////////////////////
+// construction
+/////////////////////////////////////////////////////////////////////////////
+
+BEGIN_MESSAGE_MAP(cdxCSizeIconCtrl, CScrollBar)
+	//{{AFX_MSG_MAP(cdxCSizeIconCtrl)
+	ON_WM_PAINT()
+	ON_WM_SETCURSOR()
+	ON_WM_LBUTTONDBLCLK()
+	//}}AFX_MSG_MAP
+END_MESSAGE_MAP()
+
+/////////////////////////////////////////////////////////////////////////////
+// cdxCSizeIconCtrl inlines
+/////////////////////////////////////////////////////////////////////////////
+
+/*
+ * create short-cut
+ */
+
+BOOL cdxCSizeIconCtrl::Create(CWnd *pParent, UINT id)
+{
+	ASSERT(pParent != NULL);
+	CRect	rect;pParent->GetClientRect(&rect);
+	if(!CScrollBar::Create(		SBS_SIZEBOX|SBS_SIZEBOXBOTTOMRIGHTALIGN|
+										WS_CHILD,
+										rect,
+										pParent,id))
+		return FALSE;
+
+	VERIFY( ModifyStyleEx(0,WS_EX_TRANSPARENT) );
+	return TRUE;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// cdxCSizeIconCtrl message handlers
+/////////////////////////////////////////////////////////////////////////////
+
+/*
+ * draw icon
+ */
+
+void cdxCSizeIconCtrl::OnPaint() 
+{
+	CPaintDC dc(this); // device context for painting
+
+	if(GetParent() && (!GetParent()->IsZoomed() || !m_bReflectParentState))
+	{
+		CRect	rect;GetClientRect(&rect);
+		CSize	sz	=	M_ilImage.Size();
+
+		VERIFY( M_ilImage.Draw(	&dc,
+								0,
+								CPoint(rect.right - sz.cx,rect.bottom - sz.cy),
+								ILD_NORMAL|ILD_TRANSPARENT) );
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// cdxCSizeIconCtrl Cursor
+/////////////////////////////////////////////////////////////////////////////
+
+/*
+ * set the cursor.
+ */
+
+BOOL cdxCSizeIconCtrl::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message) 
+{
+	if(GetParent() && (!GetParent()->IsZoomed() || !m_bReflectParentState))
+		::SetCursor((nHitTest == HTCLIENT) ? M_hcSize : NULL);
+	return TRUE;
+}
+
+/*
+ * catch Doubleclick - if you don't do that,
+ * the window will be maximized if you double-blick
+ * the control.
+ * Don't know why, but it's annoying.
+ */
+
+void cdxCSizeIconCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
+{
+//	CScrollBar::OnLButtonDblClk(nFlags, point);
+}
+@
+
+
+1.1
+log
+@* src/cppunit/CompilerOutputter.cpp: fixed bug #549762 (line wrap).
+
+* src/msvc6/testrunner/DynamicWindow/*: added. Dynamic Window library
+  from Hans Bühler (hans.buehler@@topmail.de) to resize window.
+
+* src/msvc6/testrunner/TestRunnerModel.h:
+* src/msvc6/testrunner/TestRunnerModel.cpp: removed dialog bounds from
+  settings. Added public registry keys for cppunit, main dialog, and
+  browse dialog.
+
+* src/msvc6/testrunner/TreeHierarchyDlg.h:
+* src/msvc6/testrunner/TreeHierarchyDlg.cpp: dialog is now resizable.
+  Window placement is stored and restored.
+
+* src/msvc6/testrunner/TestRunnerDlg.h:
+* src/msvc6/testrunner/TestRunnerDlg.cpp: replaced dialog resizing code
+  by usage of Hans Bühler's Dynamic Window library. Dialog placement
+  is stored/restored by that library. ProgressBar is now a child window.
+  Added edit field to see the details of the failure. List on show
+  the short description of the failure.
+
+* src/msvc6/testrunner/ProgressBar.h:
+* src/msvc6/testrunner/ProgressBar.cpp: is now a CWnd.
+
+* src/msvc6/testrunner/TestRunner.rc: named all static fill ID for resizing.
+  Added an invisble static field for progress bar placement.
+@
+text
+@d46 2
+@
+

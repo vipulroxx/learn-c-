@@ -1,0 +1,146 @@
+head	1.3;
+access;
+symbols
+	CPPUNIT2_TG_BEFORE_NEW_ASSERTION:1.3
+	CPPUNIT2_TG_AFTER_CONSTSTRING:1.3
+	CPPUNIT2_TG_BEFORE_CONSTSTRING:1.3
+	TG_AFTER_REMOVING_TESTCONTEXT:1.3
+	TG_BEFORE_MOVING_ASSERT_TO_TESTINFO:1.3
+	TG_BEFORE_REMOVING_TESTCONTEXT:1.3;
+locks; strict;
+comment	@# @;
+
+
+1.3
+date	2004.11.16.22.45.23;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2004.06.14.23.23.19;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.01.27.21.13.42;	author blep;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@* added short notes about documentation generation
+@
+text
+@This is a thorough rewrite of cppunit started from scratch. The aim is to provide a cleaner
+implementation using modern C++ features while increasing the ease of use and the overall
+flexibility.
+
+* Building the documentation
+
+Documentation is written using restructured text. You need docutils to build it (http://docutils.sourceforge.net/).
+
+* Dependencies:
+
+You need to copy the headers from the boost library in the include directory. You can download
+the library at: http://sf.net/projects/boost. Boost main page can be found at http://boost.org.
+
+Only boost configuration and boost shared_ptr are used. This dependencies will be made 
+optional over time.
+
+Your directory structure should be something like this:
+include/
+   boost/
+      shared_ptr.hpp
+      ...
+   cpput/
+src/
+   ...
+
+* Compiling:
+
+Projects are provided for VC++ 6.0 & VC++ 7.1 and are mainly used for development. A build 
+system will be setup to handle various build option and support other platform.
+
+* Where is what ?
+
+Unlike CppUnit 1.x, each headers contains a set of related classes/functions that provides
+a given feature.
+
+Text in square brackets indicates the level of maturity of the implementation:
+[experimental]: a working implementation, might undergo complete change or even removal
+[mature]: implementation is considered fairly robust. No significant change expect at time
+[alpha]: implementation that does the job. May or may not change depending on feedback and ideas
+[beta]: the interface is considered mature, but implementation may change for portability purpose.
+[pending]: somewhat working implementation. Expected to change.
+
+assert.h [mature]: assertion checkpoint, basic assertion functions and macros.
+assertenum.h [experimental]: assertion functions and macros that works with 
+    enumeration (from enumerator.h) & stl collections.
+assertexception.h [alpha]: exceptions thrown on test failure.
+assertstring.h [alpha]: string related assertion functions and macros
+atomiccounter.h [beta]: portable atomic counter to implement thread-safe reference counting
+autolink.h [pending]: provides automatic library linking on WIN32. Change: naming convention
+    need to be expanded to handle more configuration (thread-safe, rtti...)
+config.h [alpha]: defines supported optional features (thread-safety, dll, rtti...), as well as
+    compiler and stl 'specificities'.
+enumerator.h [experimental]: provides a enumeration abstraction that can easily be implemented for
+    any containers (STL, MFC...). For use with assertenum.h.
+equality.h [beta]: provides generic equality test for assertions.
+forwards.h [alpha]: forward declaration for CppUnit types & functions.
+functor.h [beta]: generic functors & binder.
+location.h [pending]: represents a failure location. Expecting addition of callstack.
+message.h [alpha]: structure failure message.
+registry.h [alpha]: test factory registy & macro for auto-registration.
+result.h [alpha]: test listener that holds a test run results.
+smartptr.h [beta]: smart-pointer implementation, or delegation to boost::shared_ptr.
+stringize.h [beta]: provides convertion of object to string for assertions;
+test.h [pending]: core abstraction for all tests. Expected change for descriptive data addition.
+testcase.h [alpha]: test case implementation, as well as factory function to create a test case
+    that delegates to setUp/run/tearDown to some functors.
+testcontext.h [alpha]: manage test listener, run a test and handle test failures.
+testfailure.h [alpha]: represents a test failure.
+testfailureguard.h [beta]: used to protect a test execution (known as Protector in CppUnit 1).
+testfixture.h [pending]: test fixture helper (what used to be HelperMacros.h in CppUnit 1). Expected
+    to change to handle test descriptive data, shared fixture... Current interface for test suite
+    and test should remain though. shared fixture are experimental.
+testsuite.h [alpha]: test suite
+testlistener.h [alpha]: test listener interface
+testvisitor.h [experimental]: visitor for test hierarchy. Might be removed if a nicer design
+    is found when implementing test plan.
+thread.h [beta]: minimal portable thread api. Expected addition of thread creation.
+translate.h [pending]: supposedly internationalization should be hooked there. Change are expected
+    though.
+typehelper.h [alpha]: used to extract a type name. Use RTTI is available.
+dllproxy.h [beta]: portable api to load dynamic libraries.
+
+
+Baptiste Lepilleur <blep@@users.sourceforge.net>
+
+
+
+@
+
+
+1.2
+log
+@* added rough description of the status of each headers.
+@
+text
+@d5 4
+@
+
+
+1.1
+log
+@* added .cvsignore files and a bit of documentation.
+@
+text
+@d27 53
+d81 3
+@
+

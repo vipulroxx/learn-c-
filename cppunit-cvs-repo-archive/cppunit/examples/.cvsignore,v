@@ -1,0 +1,103 @@
+head	1.4;
+access;
+symbols
+	REL_1_12_1:1.3
+	REL_1_11_6:1.3
+	REL_1_11_4:1.3
+	REL_1_11_0:1.3
+	TG_CPPUNIT_NO_STREAM_AFTER:1.3
+	TG_CPPUNIT_NO_STREAM_BEFORE:1.3
+	REL_1_10_2:1.3
+	REL_1_10_0:1.3
+	REL_1_9_14:1.3
+	REL_1_9_12:1.3
+	BRANCH_1_9_12:1.3.0.2
+	TG_BRANCH_1_9_12:1.3
+	TG_BEFORE_HPUX_PLUGIN:1.3
+	TG_BEFORE_SUN4_PORT:1.3
+	REL_1_9_10:1.3
+	TG_AFTER_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	TG_BEFORE_REMOVE_NOTEQUAL_EXCEPTION:1.3
+	REL_1_9_6:1.3
+	REL_1_9_4:1.3
+	REL_1_9_0:1.2
+	REL_1_8_0:1.2
+	REL_1_7_8:1.2
+	REL_1_7_3:1.2
+	REL_1_7_1:1.2
+	REL_1_6_2:1.2
+	BRANCH_1_6:1.2.0.2
+	REL_1_6_1:1.2
+	REL_1_6_0:1.2;
+locks; strict;
+comment	@# @;
+
+
+1.4
+date	2008.12.16.06.26.34;	author andydent;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2002.04.19.15.09.14;	author blep;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.06.11.19.58.18;	author blep;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.05.17.19.48.09;	author bastiaan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@Added updated project and instructions for building under Visual Studio.Net 2008
+@
+text
+@Makefile.in Makefile
+*.ncb
+*.opt
+*.suo
+*.ncb
+*.user
+@
+
+
+1.3
+log
+@* release 1.9.4
+@
+text
+@d3 4
+a6 1
+
+@
+
+
+1.2
+log
+@* examples/examples.dsw: added cppunittest projects to workspace.
+@
+text
+@a2 1
+*.opt
+@
+
+
+1.1
+log
+@Added .cvsignore files contributed by Steve M. Robbins" <steven.robbins@@videotron.ca>.
+@
+text
+@d2 3
+@
+
