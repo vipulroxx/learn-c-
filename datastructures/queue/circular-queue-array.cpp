@@ -20,12 +20,12 @@ struct Queue
 
 void Queue::enQueue(int value)
 {
-    if ((front == 0 && rear == size-1) || (rear == (front-1)%(size-1))) 
+    if ((front == 0 && rear == size-1) || (rear == (front-1)%(size-1)))
     {
         printf("\nQueue is Full");
         return;
     }
-    else if (front == -1) /* Insert First Element */
+    else if (front == -1)
     {
         front = rear = 0;
         arr[rear] = value;
